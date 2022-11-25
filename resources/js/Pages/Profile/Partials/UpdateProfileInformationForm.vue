@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
-import { Inertia } from '@inertiajs/inertia';
-import { Link, useForm } from '@inertiajs/inertia-vue3';
+import { Inertia } from '@inertiajs/vue3';
+import { Link, useForm } from '@inertiajs/vue3';
 import ActionMessage from '@/Components/ActionMessage.vue';
 import FormSection from '@/Components/FormSection.vue';
 import InputError from '@/Components/InputError.vue';
