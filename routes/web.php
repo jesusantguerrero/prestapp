@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\LoanController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -35,4 +36,5 @@ Route::middleware([
     })->name('dashboard');
 
     Route::resource('clients', ClientController::class);
+    Route::resource('loans', LoanController::class);
 });

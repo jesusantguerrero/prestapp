@@ -1,3 +1,4 @@
+// @ts-ignore: unexported from inertia
 import { router } from "@inertiajs/vue3";
 import { IClient } from "./clientEntity";
 

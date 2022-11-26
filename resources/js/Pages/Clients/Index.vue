@@ -13,7 +13,7 @@ const isModalOpen = ref(false);
 </script>
 
 <template>
-  <AppLayout>
+  <AppLayout title="Clientes">
     <main class="p-5">
       <h1>Clients</h1>
       <div v-for="client in data">

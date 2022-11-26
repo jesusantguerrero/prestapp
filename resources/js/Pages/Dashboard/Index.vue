@@ -27,6 +27,20 @@ const slideOptions = [
   <AppLayout title="Dashboard">
     <main class="py-12 max-w-7xl mx-auto sm:px-6 lg:px-8 text-gray-500">
       <section class="flex space-x-4">
+        <AtBackgroundIconCard
+          v-for="card in [
+            'Pagos de hoy',
+            'Acreedores',
+            'Prestamos activos',
+            'Total Acreditado',
+          ]"
+          class="text-white bg-blue-400 h-36 w-full"
+          icon="fas fa-wallet"
+          value="20,000"
+          :title="card"
+        />
+      </section>
+      <section class="flex space-x-4 mt-4">
         <IncomeSummaryWidget class="w-8/12" />
         <article class="w-5/12 space-y-5">
           <AtBackgroundIconCard

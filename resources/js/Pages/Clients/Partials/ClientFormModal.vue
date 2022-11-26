@@ -1,6 +1,6 @@
 <script setup>
 import { reactive } from "vue";
-import { AtButton, AtField, AtInput } from "atmosphere-ui";
+import { AtButton, AtField, AtInput, AtTextarea } from "atmosphere-ui";
 import Modal from "@/Components/Modal.vue";
 import { clientInteractor } from "@/Modules/clients/clientInteractor";
 import { router } from "@inertiajs/core";
@@ -26,6 +26,9 @@ const close = () => {
 const clientForm = reactive({
   names: "",
   lastnames: "",
+  email: "",
+  cellphone: "",
+  address_details: "",
 });
 
 const onSubmit = () => {
@@ -51,6 +54,17 @@ const onSubmit = () => {
         </AtField>
         <AtField label="Apellidos" class="w-full">
           <AtInput v-model="clientForm.lastnames" />
+        </AtField>
+      </section>
+      <AtField label="Direccion" class="w-full">
+        <AtTextarea v-model="clientForm.address_details" />
+      </AtField>
+      <section class="flex space-x-2">
+        <AtField label="Email" class="w-full">
+          <AtInput v-model="clientForm.email" />
+        </AtField>
+        <AtField label="No. Celular" class="w-full">
+          <AtInput v-model="clientForm.cellphone" />
         </AtField>
       </section>
     </main>
