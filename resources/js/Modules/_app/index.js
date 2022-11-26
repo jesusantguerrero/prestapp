@@ -37,6 +37,12 @@ export const useAppMenu = t => {
             as: Link
         },
         {
+            icon: 'fas fa-heart',
+            label:'Alquileres',
+            to: '/rents',
+            as: Link
+        },
+        {
             icon: 'fas fa-home',
             label: 'Pagos',
             to: '/payments',

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { Head, Link } from '@inertiajs/vue3';
 import { AtShell, AtSide } from "atmosphere-ui";
@@ -26,6 +26,10 @@ const switchToTeam = (team) => {
     });
 };
 
+const currentPath = computed(() => {
+    return document?.location?.pathname
+})
+const isExpanded = ref(true);
 const logout = () => {
     router.post(route('logout'));
 };
@@ -39,9 +43,9 @@ const { appMenu: currentMenu, headerMenu } = useAppMenu();
         <Head :title="title" />
 
         <Banner />
-        <AtShell>
+        <AtShell :is-expanded="isExpanded" :nav-class="[!$slots.header && `${panelShadow} border-b`]">
             <template #navigation>
-                <nav class="bg-white border-b border-gray-100">
+                <nav class="bg-white border-gray-100">
                     <!-- Primary Navigation Menu -->
                     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div class="flex justify-end h-16">
