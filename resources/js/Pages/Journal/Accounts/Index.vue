@@ -99,6 +99,7 @@ import {
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { AtButton } from "atmosphere-ui";
 import { onMounted, ref, computed } from "vue";
+import AtTable from "../../../Components/AtTable.vue";
 
 const props = defineProps({
   accounts: {

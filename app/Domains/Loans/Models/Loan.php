@@ -16,6 +16,10 @@ class Loan extends Transactionable {
         'start_date'
     ];
 
+    // protected 
+    protected $creditCategory = 'Loan and Line of Credit';
+    protected $creditAccount = 'Customer Demand Deposits';
+
     public function client() {
         return $this->belongsTo(Client::class, 'client_id');
     }
@@ -35,12 +39,15 @@ class Loan extends Transactionable {
     public function getTransactionDescription() {
         return "Desembolso de prestamo #code";
     }
+
     public function getTransactionDirection() {
         return Transaction::DIRECTION_CREDIT;
     }
+
     public function getAccountId() {
         return $this->account_id;
     }
+
     public function getCounterAccountId() {
         return $this->client_account_id;
     }
