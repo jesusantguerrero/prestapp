@@ -9,7 +9,8 @@ class LoanService {
     
     public static function createLoan(mixed $loanData, mixed $installments) {
         $loan = Loan::create($loanData);
-        return self::createInstallments($loan, $installments);
+        self::createInstallments($loan, $installments);
+        return self::createDisbursementTransaction($loan);
     }
 
     public static function createInstallments(Loan $loan, mixed $installments) {
@@ -31,7 +32,12 @@ class LoanService {
         }
 
         $loan->save();
-
         return $loan;
+    }
+
+    public static function createDisbursementTransaction($loan) {
+       return $loan->createTransaction([
+        "total" => $loan->amount
+       ]);
     }
 }

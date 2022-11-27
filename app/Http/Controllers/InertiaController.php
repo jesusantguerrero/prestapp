@@ -43,6 +43,10 @@ class InertiaController extends Controller {
         return Inertia::render($this->templates['edit'], $this->getEditProps($request, $id));
     }
 
+    public function show(Request $request, int $id) {
+        return Inertia::render($this->templates['show'], $this->getEditProps($request, $id));
+    }
+
     public function store(Request $request, Response $response) {
         $postData = $request->post();
         $postData['user_id'] = $request->user()->id;
@@ -50,7 +54,7 @@ class InertiaController extends Controller {
         $this->validate($request, $this->getValidationRules($postData));
 
         $resource = $this->createResource($request, $postData);
-        
+
         $this->afterSave($postData, $resource);
         if ($this->responseType == 'inertia') {
             return redirect()->back();

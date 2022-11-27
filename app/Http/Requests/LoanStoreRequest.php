@@ -25,7 +25,7 @@ class LoanStoreRequest extends FormRequest
     {
         return [
             // 'start_date' => 'string',
-            'contact_id' => 'numeric',
+            'client_id' => 'numeric',
             'amount' => 'numeric',
             'count' => 'numeric',
             'frequency' => 'string',

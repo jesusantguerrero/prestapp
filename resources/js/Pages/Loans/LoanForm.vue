@@ -6,6 +6,8 @@ import { format as formatDate } from "date-fns";
 import { createLoan, generateInstallments } from "../../Modules/loans/features";
 import { ILoan } from "../../Modules/loans/loanEntity";
 import { loanFrequencies } from "../../Modules/loans/constants";
+import { router } from "@inertiajs/core";
+import InstallmentTable from "./Partials/InstallmentTable.vue";
 
 defineProps<{
   loanData: ILoan[];
@@ -19,7 +21,7 @@ const loanForm = reactive<ILoan>({
   disbursement_date: formatDate(new Date(), "yyyy-MM-dd"),
   first_installment_date: "",
   grace_days: 0,
-  contact_id: 1,
+  client_id: 1,
 });
 
 const installments = ref<ILoanInstallment[]>([]);
@@ -54,6 +56,10 @@ const onSubmit = () => {
       console.log(err);
     });
 };
+
+const goToList = () => {
+  router.visit("/loans");
+};
 </script>
 
 <template>
@@ -84,23 +90,18 @@ const onSubmit = () => {
           </AtField>
         </section>
         <section v-if="hasInstallments">
-          <table class="table w-full">
-            <thead class="bg-blue-400 py-4 text-xl text-white">
-              <td class="bg-blue-400 p-2 text-white">Due Date</td>
-              <td class="bg-blue-400 p-2 text-white">Payment</td>
-              <td class="bg-blue-400 p-2 text-white">Principal</td>
-              <td class="bg-blue-400 p-2 text-white">Interest</td>
-            </thead>
-            <tr v-for="installment in installments">
-              <td class="p-2">{{ installment.due_date }}</td>
-              <td class="p-2">{{ installment.amount.toFixed(2) }}</td>
-              <td class="p-2">{{ installment.principal.toFixed(2) }}</td>
-              <td class="p-2">{{ installment.interest.toFixed(2) }}</td>
-            </tr>
-          </table>
+          <h4 class="text-xl font-bold">Tabla de amortización</h4>
+          <InstallmentTable :installments="installments" />
         </section>
       </article>
       <footer class="flex justify-end space-x-2">
+        <AtButton
+          class="text-red-400 font-bold bg-gray-100 rounded-md"
+          variant="secondary"
+          @click="goToList()"
+        >
+          Cancelar
+        </AtButton>
         <AtButton
           class="bg-blue-500 text-white rounded-md"
           @click="previewInstallments()"
@@ -108,17 +109,13 @@ const onSubmit = () => {
         >
           Calcular
         </AtButton>
-        <template v-if="hasInstallments">
-          <AtButton
-            class="bg-blue-500 text-white rounded-md"
-            @click="router.visit('/loans')"
-          >
-            Cancelar
-          </AtButton>
-          <AtButton class="bg-blue-500 text-white rounded-md" @click="onSubmit">
-            Crear
-          </AtButton>
-        </template>
+        <AtButton
+          class="bg-blue-500 text-white rounded-md"
+          @click="onSubmit"
+          v-if="hasInstallments"
+        >
+          Crear
+        </AtButton>
       </footer>
     </main>
   </AppLayout>

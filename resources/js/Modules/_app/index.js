@@ -27,7 +27,7 @@ export const useAppMenu = t => {
             to: '/loans',
             as: Link,
             isActiveFunction(url, currentPath) {
-               return /finance|budgets|trends/.test(currentPath)
+               return /loans/.test(currentPath)
             }
         },
         {

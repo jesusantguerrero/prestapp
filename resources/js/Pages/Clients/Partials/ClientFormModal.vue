@@ -1,8 +1,9 @@
-<script setup>
-import { reactive } from "vue";
-import { AtButton, AtField, AtInput, AtTextarea } from "atmosphere-ui";
+<script setup lang="ts">
+import { reactive, computed } from "vue";
+import { AtButton, AtField, AtInput, AtTextarea, AtSimpleSelect } from "atmosphere-ui";
 import Modal from "@/Components/Modal.vue";
 import { clientInteractor } from "@/Modules/clients/clientInteractor";
+import { documentTypes, DOCUMENT_TYPES } from "@/Modules/clients/constants";
 import { router } from "@inertiajs/core";
 
 defineProps({
@@ -29,6 +30,12 @@ const clientForm = reactive({
   email: "",
   cellphone: "",
   address_details: "",
+  dni_type: "DNI",
+  dni: "",
+});
+
+const documentType = computed(() => {
+  return documentTypes.find((doc) => doc.name == clientForm.dni_type).label;
 });
 
 const onSubmit = () => {
@@ -60,11 +67,19 @@ const onSubmit = () => {
         <AtTextarea v-model="clientForm.address_details" />
       </AtField>
       <section class="flex space-x-2">
+        <AtField label="Tipo Documento" class="w-full">
+          <AtSimpleSelect :options="documentTypes" v-model="clientForm.dni_type" />
+        </AtField>
+        <AtField :label="documentType" class="w-full">
+          <AtInput v-model="clientForm.dni" type="tel" />
+        </AtField>
+      </section>
+      <section class="flex space-x-2">
         <AtField label="Email" class="w-full">
           <AtInput v-model="clientForm.email" />
         </AtField>
-        <AtField label="No. Celular" class="w-full">
-          <AtInput v-model="clientForm.cellphone" />
+        <AtField label="Telefono" class="w-full">
+          <AtInput v-model="clientForm.cellphone" type="tel" />
         </AtField>
       </section>
     </main>

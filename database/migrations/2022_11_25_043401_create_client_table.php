@@ -38,7 +38,7 @@ return new class extends Migration
             $table->string('sector')->nullable();
             $table->string('street')->nullable();
             $table->string('ext_number')->nullable();
-            $table->text('direction_details')->nullable();
+            $table->text('address_details')->nullable();
             //
             $table->boolean('is_company')->default(false);
             $table->enum('type', ['PROSPECT', 'CONTACT', 'CUSTOMER'])->default('PROSPECT');

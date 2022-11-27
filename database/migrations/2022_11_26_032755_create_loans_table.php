@@ -17,15 +17,19 @@ return new class extends Migration
             $table->id();
             $table->foreignId('team_id');
             $table->foreignId('user_id');
-            $table->foreignId('contact_id');
+            $table->foreignId('client_id');
+            // accounts
             $table->foreignId('account_id')->nullable();
-
-            $table->enum('frequency', ['WEEKLY', 'BIWEEKLY', 'MONTHLY']);
-            // Basic
+            $table->foreignId('client_account_id')->nullable();
+            $table->foreignId('interest_account_id')->nullable();
+            $table->foreignId('fees_account_id')->nullable();
+            $table->foreignId('penalty_account_id')->nullable();
+            // terms
             $table->decimal('amount', 11, 2)->default(0.00);
-            $table->decimal('interest_rate', 11, 2)->default(0.00);
             $table->decimal('total', 11, 2)->default(0.00);
-            
+            $table->enum('frequency', ['WEEKLY', 'BIWEEKLY', 'MONTHLY']);
+            $table->decimal('interest_rate', 11, 2)->default(0.00);
+            // Penalty config
             $table->decimal('penalty', 11, 2)->default(0.00);
             $table->enum('penalty_type', ['PERCENTAGE', 'FIXED'])->default('PERCENTAGE');
             // state

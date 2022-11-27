@@ -15,8 +15,8 @@
         </div>
       </div>
       <div class="w-full bg-white px-5 py-5 rounded-md shadow-md">
-        <el-tabs v-model="activeAccountSection">
-          <el-tab-pane
+        <ElTabs v-model="activeAccountSection">
+          <ElTabPane
             :label="category.name"
             :name="category.id"
             v-for="category in mainCategories"
@@ -44,7 +44,7 @@
                 </DisclosureButton>
                 <DisclosurePanel class="text-gray-500 font-bold">
                   <!-- accounts  -->
-                  <at-table
+                  <AtTable
                     :cols="cols(subCategory.name)"
                     :tableData="subCategory.accounts"
                   >
@@ -62,14 +62,14 @@
                     <template v-slot:actions="{}">
                       <button>Edit</button>
                     </template>
-                  </at-table>
+                  </AtTable>
                   <!-- accounts  -->
                 </DisclosurePanel>
               </Disclosure>
             </template>
             <!-- subCategories -->
-          </el-tab-pane>
-        </el-tabs>
+          </ElTabPane>
+        </ElTabs>
       </div>
 
       <FormModal

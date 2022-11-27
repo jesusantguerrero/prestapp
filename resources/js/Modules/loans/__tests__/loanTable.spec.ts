@@ -1,6 +1,7 @@
 import { LoanTable } from './../loanInstallmentEntity';
 import { it, expect, describe, beforeAll} from "vitest";
 import { LOAN_FREQUENCY } from '../constants';
+import { FrequencyType } from '../nextDate';
 
 describe("Instalment calculation", () => {
     const date = '2022-01-15';
@@ -9,7 +10,7 @@ describe("Instalment calculation", () => {
     beforeAll(() => {
         loanTable = new LoanTable({
             startDate: date, 
-            frequency: LOAN_FREQUENCY.MONTHLY,
+            frequency: LOAN_FREQUENCY.MONTHLY as FrequencyType,
             capital: 20000, 
             interestMonthlyRate: 20, 
             count: 12
@@ -25,6 +26,12 @@ describe("Instalment calculation", () => {
         expect(firstPayment.initial_balance).toBe(20000)
         expect(firstPayment.interest).toBe(4000)
         expect(firstPayment.principal).toBe(505.3)
+
+        const lastPayment = loanTable.getInstallment(12)
+        expect(lastPayment.initial_balance).toBe(3754.38)
+        expect(lastPayment.interest).toBe(750.88)
+        expect(lastPayment.principal).toBe(3754.42)
+        expect(lastPayment.final_balance).toBe(0)
     })
 
     it('calculates monthly the right dates', () => {

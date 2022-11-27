@@ -1,7 +1,8 @@
 import { LOAN_FREQUENCY } from './constants';
-import { addDays, addMonths, endOfMonth, format, parseISO, startOfMonth } from "date-fns";
+import { addDays, addMonths, endOfMonth, format, parseISO } from "date-fns";
 
-export const getNextDate = (dateString: string, frequency: 'MONTHLY' | 'WEEKLY' | 'BIWEEKLY' ) => {
+export type FrequencyType = 'MONTHLY' | 'WEEKLY' | 'BIWEEKLY';
+export const getNextDate = (dateString: string, frequency: FrequencyType ) => {
     const methods = {
         [LOAN_FREQUENCY.WEEKLY]: {
             method: addDays,

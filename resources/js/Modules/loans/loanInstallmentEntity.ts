@@ -1,21 +1,36 @@
 import { LOAN_FREQUENCY } from './constants';
-import { getNextDate } from './nextDate';
+import { FrequencyType, getNextDate } from './nextDate';
+import exactMath from "exact-math";
+import { MathHelper } from './mathHelper';
+
 type LoanInstallmentStatus = 'PENDING' | 'LATE' | 'PAID' | 'PARTIALLY_PAID' | 'GRACE'
 
 export interface ILoanInstallment {
-    due_date: string;
     installment_number: number;
-    initial_balance: number;
+    due_date: string;
+    paid_at?: string;
+    days: number;
+    // amounts
     amount: number;
-    interest: number;
     principal: number;
+    interest: number;
+    fees: number;
+    penalty: number
+    // payment track
+    principal_paid: number;
+    interest_paid: number;
+    fees_paid: number;
+    penalty_paid: number
+    // Balance summary
+    initial_balance: number;
     final_balance: number;
+    // status
     status?: LoanInstallmentStatus;
 }
 
 export interface LoanTableParams {
     startDate: string; 
-    frequency: string;
+    frequency: FrequencyType;
     capital: number;
     interestMonthlyRate: number; 
     count: number;
@@ -24,12 +39,12 @@ export interface LoanTableParams {
 export class LoanTable {
     payments: ILoanInstallment[] = [];
     startDate: string;
-    frequency: string;
+    frequency: FrequencyType;
     capital: number;
     interestMonthlyRate: number;
     count: number;
     payment: number;
-    nextDateCalculator: (dateString: string, frequency: string) => string;
+    nextDateCalculator: (dateString: string, frequency: FrequencyType) => string;
 
     constructor({startDate, capital, interestMonthlyRate, count, frequency }: LoanTableParams, nextDateCalculator = getNextDate) {
         this.startDate = startDate;
@@ -44,7 +59,12 @@ export class LoanTable {
 
     calculatePayment() {
         const interestRate = this.getFrequencyRate();
-        return this.capital * (interestRate/(1-Math.pow(1+interestRate, -this.count)))
+        return MathHelper.loanPayment({
+            interestRate,
+            capital: this.capital,
+            installments: this.count
+        })
+        
     }
 
     getMonthlyPayment() {
@@ -58,17 +78,24 @@ export class LoanTable {
         let dueDate = this.startDate;
         const interestRate = this.getFrequencyRate()
         for (let index = 0; index < this.count; index++) {
-            interest = balance * interestRate;
-            monthlyPrincipal = this.payment - interest;
-            const finalBalance = balance - monthlyPrincipal 
+            interest = MathHelper.mulWithRounding(balance, interestRate);
+            monthlyPrincipal = MathHelper.subWithRounding(this.payment, interest);
+            const finalBalance = MathHelper.subWithRounding(balance,  monthlyPrincipal)
 
             this.payments.push({
-                due_date: dueDate,
                 installment_number: index + 1,
-                initial_balance: balance,
+                due_date: dueDate,
+                days: 0,
                 amount: this.payment,
                 interest,
-                principal: parseFloat(monthlyPrincipal.toFixed(2)),
+                principal: monthlyPrincipal,
+                fees: 0,
+                penalty: 0,
+                principal_paid: 0,
+                interest_paid: 0,
+                fees_paid: 0,
+                penalty_paid: 0,
+                initial_balance: balance,
                 final_balance: finalBalance
             });
 
@@ -94,5 +121,7 @@ export class LoanTable {
         }
         return this.interestMonthlyRate / intervals[this.frequency];
     }
+
+   
 }
 

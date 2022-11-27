@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Domains\Loans\Models\Loan;
+use App\Domains\Loans\Models\LoanInstallment;
 use App\Domains\Loans\Services\LoanService;
 use App\Http\Requests\LoanStoreRequest;
 use Illuminate\Http\Request;
@@ -15,10 +16,11 @@ class LoanController extends InertiaController
         $this->searchable = ['name'];
         $this->templates = [
             "index" => 'Loans/Index',
-            "create" => 'Loans/LoanForm'
+            "create" => 'Loans/LoanForm',
+            "show" => 'Loans/Show'
         ];
         $this->validationRules = [
-            'contact_id' => 'numeric',
+            'client_id' => 'numeric',
             'amount' => 'numeric',
             'count' => 'numeric',
             'frequency' => 'string',
@@ -27,7 +29,7 @@ class LoanController extends InertiaController
             'installments' => 'array'
         ];
         $this->sorts = ['created_at'];
-        $this->includes = ['contact'];
+        $this->includes = ['client'];
         $this->filters = [];
         $this->resourceName= "loans";
         
@@ -36,5 +38,18 @@ class LoanController extends InertiaController
     protected function createResource(Request $request, $postData)
     {
         return LoanService::createLoan($postData, $request->get('installments'));
+    }
+
+    protected function getEditProps(Request $request, $id)
+    {
+        return [
+            'loans' => Loan::where('id', $id)->with(['client', 'installments'])->first()
+        ];
+    }
+
+    public function markAsPaid(Loan $loan, LoanInstallment $installment) {
+        if ($installment->loan_id == $loan->id) {
+            $installment->markAsPaid();
+        }
     }
 }

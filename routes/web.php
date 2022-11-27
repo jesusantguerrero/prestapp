@@ -37,4 +37,5 @@ Route::middleware([
 
     Route::resource('clients', ClientController::class);
     Route::resource('loans', LoanController::class);
+    Route::post('loans/:loanId/installments/:installment/mark-as-paid', [LoanController::class, 'markAsPaid']);
 });

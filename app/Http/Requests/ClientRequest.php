@@ -26,7 +26,11 @@ class ClientRequest extends FormRequest
         return [
             'names' => 'required',
             'lastnames' => 'required',
-            // 'dni' => 'required'
+            'dni' => 'alpha_num',
+            'dni_type' => 'string',
+            'address_details' => 'string',
+            'email' => 'string',
+            'cellphone' => 'alpha_num'
         ];
     }
 }

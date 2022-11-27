@@ -3,6 +3,7 @@ import AppLayout from "@/Components/templates/AppLayout.vue";
 import { router } from "@inertiajs/core";
 import AppSectionHeader from "../../Components/AppSectionHeader.vue";
 import { ILoan } from "../../Modules/loans/loanEntity";
+import { AtButton } from "atmosphere-ui";
 
 defineProps<{
   loans: ILoan[];
@@ -19,11 +20,15 @@ defineProps<{
       />
       <section class="mt-4">
         <ElTable :data="loans">
-          <ElTableColumn prop="contact.names" label="Nombres" />
-          <ElTableColumn prop="contact.lastnames" label="Apellidos" />
+          <ElTableColumn prop="client.names" label="Nombres" />
+          <ElTableColumn prop="client.lastnames" label="Apellidos" />
           <ElTableColumn prop="amount" label="Monto Prestado" />
           <ElTableColumn prop="interest_rate" label="Interes" />
           <ElTableColumn prop="start_date" label="Fecha Inicio" />
+          <ElTableColumn>
+            <AtButton> Edit</AtButton>
+            <AtButton> Delete</AtButton>
+          </ElTableColumn>
         </ElTable>
       </section>
     </main>

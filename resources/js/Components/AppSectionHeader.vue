@@ -17,20 +17,16 @@
       <slot name="actions">
         <div class="button-container">
           <div v-if="!resource || resource.id" class="flex">
-            <jet-button @click="$emit('saved')" v-if="!showEdit">
+            <AppButton @click="$emit('saved')" v-if="!showEdit">
               {{ saveButtonTitle }}
-            </jet-button>
-            <jet-button @click="$emit('edit')" v-if="showEdit">
+            </AppButton>
+            <AppButton @click="$emit('edit')" v-if="showEdit">
               {{ editButtonTitle }}
-            </jet-button>
+            </AppButton>
           </div>
-          <AtButton
-            class="bg-blue-500 text-white rounded-md"
-            v-else
-            @click="$emit('create')"
-          >
+          <AppButton v-else @click="$emit('create')">
             {{ createButtonTitle }}
-          </AtButton>
+          </AppButton>
         </div>
       </slot>
     </div>
@@ -38,8 +34,8 @@
 </template>
 
 <script setup>
-import { AtButton } from "atmosphere-ui";
 import { computed } from "vue";
+import AppButton from "@/Components/shared/AppButton.vue";
 
 const props = defineProps({
   title: {

@@ -1,8 +1,9 @@
 import { IClient } from "../clients/clientEntity";
+import { ILoanInstallment } from "./loanInstallmentEntity";
 
 export interface ILoan {
-    contact?: IClient;
-    contact_id: number;
+    client?: IClient;
+    client_id: number;
     // loan details
     interest_rate: number;
     amount: number;
@@ -14,3 +15,7 @@ export interface ILoan {
     grace_days: number;
 }
 
+
+export type ILoanWithInstallments = ILoan & {
+    installments: ILoanInstallment[]
+}

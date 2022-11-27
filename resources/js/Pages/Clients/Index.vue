@@ -23,7 +23,7 @@ const isModalOpen = ref(false);
           <ElTableColumn prop="names" label="Nombres" />
           <ElTableColumn prop="lastnames" label="Apellidos" />
           <ElTableColumn prop="dni" label="DNI/ID Doc." />
-          <ElTableColumn prop="celullar" label="Celular" />
+          <ElTableColumn prop="cellphone" label="Celular" />
           <ElTableColumn prop="address_details" label="Direccion" />
         </ElTable>
       </section>
