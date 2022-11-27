@@ -1,23 +1,31 @@
 <script setup lang="ts">
 import AppLayout from "@/Components/templates/AppLayout.vue";
-import { Link } from "@inertiajs/vue3";
+import { router } from "@inertiajs/core";
+import AppSectionHeader from "../../Components/AppSectionHeader.vue";
 import { ILoan } from "../../Modules/loans/loanEntity";
 
 defineProps<{
-  data: ILoan[];
+  loans: ILoan[];
 }>();
 </script>
 
 <template>
-  <AppLayout>
+  <AppLayout title="Prestamos">
     <main class="p-5">
-      <h1>Prestamos</h1>
-      <div v-for="loan in data">
-        {{ loan }}
-      </div>
-      <Link class="bg-blue-500 text-white rounded-md" href="/loans/create">
-        Nuevo Prestamo
-      </Link>
+      <AppSectionHeader
+        name="Prestamos"
+        class="rounded-md"
+        @create="router.visit('/loans/create')"
+      />
+      <section class="mt-4">
+        <ElTable :data="loans">
+          <ElTableColumn prop="contact.names" label="Nombres" />
+          <ElTableColumn prop="contact.lastnames" label="Apellidos" />
+          <ElTableColumn prop="amount" label="Monto Prestado" />
+          <ElTableColumn prop="interest_rate" label="Interes" />
+          <ElTableColumn prop="start_date" label="Fecha Inicio" />
+        </ElTable>
+      </section>
     </main>
   </AppLayout>
 </template>

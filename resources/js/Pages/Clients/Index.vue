@@ -3,6 +3,7 @@ import AppLayout from "@/Components/templates/AppLayout.vue";
 import { IClient } from "@/Modules/clients/clientEntity.ts";
 import { AtButton } from "atmosphere-ui";
 import { ref } from "vue";
+import AppSectionHeader from "../../Components/AppSectionHeader.vue";
 import ClientFormModal from "./Partials/ClientFormModal.vue";
 
 defineProps<{
@@ -15,13 +16,17 @@ const isModalOpen = ref(false);
 <template>
   <AppLayout title="Clientes">
     <main class="p-5">
-      <h1>Clients</h1>
-      <div v-for="client in data">
-        {{ client.names }}
-      </div>
-      <AtButton class="bg-blue-500 text-white rounded-md" @click="isModalOpen = true">
-        Agregar Cliente
-      </AtButton>
+      <AppSectionHeader name="Clientes" class="rounded-md" @create="isModalOpen = true" />
+
+      <section class="mt-5">
+        <ElTable :data="data">
+          <ElTableColumn prop="names" label="Nombres" />
+          <ElTableColumn prop="lastnames" label="Apellidos" />
+          <ElTableColumn prop="dni" label="DNI/ID Doc." />
+          <ElTableColumn prop="celullar" label="Celular" />
+          <ElTableColumn prop="address_details" label="Direccion" />
+        </ElTable>
+      </section>
 
       <ClientFormModal v-model:show="isModalOpen" />
     </main>

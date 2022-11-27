@@ -6,33 +6,33 @@ import IncomeSummaryWidget from "./Partials/IncomeSummaryWidget.vue";
 const slideOptions = [
   {
     name: "caja",
-    title: "Small Box",
+    title: "Caja Chica",
   },
   {
     name: "pagos",
-    title: "Next Payments",
+    title: "Pagos",
   },
   {
     name: "ganancias",
-    title: "Incomes",
+    title: "Ingresos",
   },
   {
     name: "debtors",
-    title: "Debtors",
+    title: "Deudores",
   },
 ];
 </script>
 
 <template>
   <AppLayout title="Dashboard">
-    <main class="py-12 max-w-7xl mx-auto sm:px-6 lg:px-8 text-gray-500">
+    <main class="p-5 mx-auto sm:px-6 lg:px-8 text-gray-500">
       <section class="flex space-x-4">
         <AtBackgroundIconCard
           v-for="card in [
-            'Pagos de hoy',
-            'Acreedores',
-            'Prestamos activos',
-            'Total Acreditado',
+            'Capital Total',
+            'Total Prestado',
+            'Interes Ganado',
+            'Total Interes pagado',
           ]"
           class="text-white bg-blue-400 h-36 w-full"
           icon="fas fa-wallet"
@@ -43,22 +43,6 @@ const slideOptions = [
       <section class="flex space-x-4 mt-4">
         <IncomeSummaryWidget class="w-8/12" />
         <article class="w-5/12 space-y-5">
-          <AtBackgroundIconCard
-            class="text-white bg-blue-400 h-36"
-            icon="fas fa-wallet"
-            value="20,000"
-            title="Capital Prestamo"
-          >
-            <template #action>
-              <AtButton
-                class="bg-blue-500 rounded-md"
-                @click="isTransferModalOpen = true"
-              >
-                Add Transaction
-              </AtButton>
-            </template>
-          </AtBackgroundIconCard>
-
           <AtDashlide class="h-full rounded-md" :slides="slideOptions">
             <template #caja>
               <AtBackgroundIconCard
