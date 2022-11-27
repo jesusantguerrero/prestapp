@@ -2,21 +2,22 @@
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import { AtButton, AtField, AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { ref, reactive, computed } from "vue";
-
+import { format as formatDate } from "date-fns";
 import { createLoan, generateInstallments } from "../../Modules/loans/features";
-import { ILoanInstallment, ILoan } from "../../Modules/loans/loanEntity";
+import { ILoan } from "../../Modules/loans/loanEntity";
 import { loanFrequencies } from "../../Modules/loans/constants";
 
 defineProps<{
   loanData: ILoan[];
 }>();
 
-const loanForm = reactive({
+const loanForm = reactive<ILoan>({
   amount: 0,
-  count: 0,
+  repayment_count: 0,
   interest_rate: 0,
   frequency: "MONTHLY",
-  start_date: "",
+  disbursement_date: formatDate(new Date(), "yyyy-MM-dd"),
+  first_installment_date: "",
   grace_days: 0,
   contact_id: 1,
 });
@@ -24,11 +25,23 @@ const loanForm = reactive({
 const installments = ref<ILoanInstallment[]>([]);
 
 const previewInstallments = () => {
-  installments.value = generateInstallments(loanForm);
+  installments.value = generateInstallments({
+    ...loanForm,
+    first_installment_date:
+      loanForm.first_installment_date &&
+      formatDate(loanForm.first_installment_date, "yyyy-MM-dd"),
+  });
 };
 
 const hasInstallments = computed(() => {
   return installments.value.length;
+});
+
+const canCalculate = computed(() => {
+  const { repayment_count, amount, interest_rate, first_installment_date } = loanForm;
+  return [repayment_count, amount, interest_rate, first_installment_date].every(
+    (val) => val
+  );
 });
 
 const onSubmit = () => {
@@ -56,7 +69,15 @@ const onSubmit = () => {
             <AtInput v-model="loanForm.interest_rate" />
           </AtField>
           <AtField label="Cuotas" class="w-full">
-            <AtInput v-model="loanForm.count" />
+            <AtInput v-model="loanForm.repayment_count" />
+          </AtField>
+        </section>
+        <section class="flex">
+          <AtField label="Fecha de desembolso">
+            <ElDatePicker v-model="loanForm.disbursement_date" size="large" />
+          </AtField>
+          <AtField label="Fecha de primer pago">
+            <ElDatePicker v-model="loanForm.first_installment_date" size="large" />
           </AtField>
           <AtField label="Frecuencia" class="w-full">
             <AtSimpleSelect :options="loanFrequencies" v-model="loanForm.frequency" />
@@ -65,11 +86,13 @@ const onSubmit = () => {
         <section v-if="hasInstallments">
           <table class="table w-full">
             <thead class="bg-blue-400 py-4 text-xl text-white">
+              <td class="bg-blue-400 p-2 text-white">Due Date</td>
               <td class="bg-blue-400 p-2 text-white">Payment</td>
               <td class="bg-blue-400 p-2 text-white">Principal</td>
               <td class="bg-blue-400 p-2 text-white">Interest</td>
             </thead>
             <tr v-for="installment in installments">
+              <td class="p-2">{{ installment.due_date }}</td>
               <td class="p-2">{{ installment.amount.toFixed(2) }}</td>
               <td class="p-2">{{ installment.principal.toFixed(2) }}</td>
               <td class="p-2">{{ installment.interest.toFixed(2) }}</td>
@@ -81,6 +104,7 @@ const onSubmit = () => {
         <AtButton
           class="bg-blue-500 text-white rounded-md"
           @click="previewInstallments()"
+          :disabled="!canCalculate"
         >
           Calcular
         </AtButton>

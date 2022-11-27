@@ -5,25 +5,36 @@ namespace App\Http\Controllers;
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Services\LoanService;
 use App\Http\Requests\LoanStoreRequest;
+use Illuminate\Http\Request;
 
-class LoanController extends Controller
+class LoanController extends InertiaController
 {
-    public function index() {
-        return inertia('Loans/Index', [
-            'data' => Loan::all()
-        ]);
-    }
-
-    public function create() {
-        return inertia('Loans/LoanForm');
-    }
-
-    public function store(LoanStoreRequest $loanRequest) {
-        $validatedData = $loanRequest->validated();
+    public function __construct(Loan $loan)
+    {
+        $this->model = $loan;
+        $this->searchable = ['name'];
+        $this->templates = [
+            "index" => 'Loans/Index',
+            "create" => 'Loans/LoanForm'
+        ];
+        $this->validationRules = [
+            'contact_id' => 'numeric',
+            'amount' => 'numeric',
+            'count' => 'numeric',
+            'frequency' => 'string',
+            'grace_days' => 'numeric',
+            'interest_rate' => 'numeric|max:100',
+            'installments' => 'array'
+        ];
+        $this->sorts = ['created_at'];
+        $this->includes = ['contact'];
+        $this->filters = [];
+        $this->resourceName= "loans";
         
-        LoanService::createLoan(array_merge($validatedData, [
-            'team_id' => $loanRequest->user()->current_team_id,
-            'user_id' => $loanRequest->user()->id
-        ]), $loanRequest->get('installments'));
+    }
+
+    protected function createResource(Request $request, $postData)
+    {
+        return LoanService::createLoan($postData, $request->get('installments'));
     }
 }

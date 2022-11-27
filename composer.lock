@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9abf936740be2b099803ceab54cb552b",
+    "content-hash": "46499565b317a17c4f0ef70a3a0ca99d",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -1069,17 +1069,14 @@
         },
         {
             "name": "insane/journal",
-            "version": "v0.4.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/insane-code/journal.git",
-                "reference": "b08bba6f2b62c994b19050bec58919febe3dfb6b"
-            },
+            "version": "dev-master",
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/insane-code/journal/zipball/b08bba6f2b62c994b19050bec58919febe3dfb6b",
-                "reference": "b08bba6f2b62c994b19050bec58919febe3dfb6b",
-                "shasum": ""
+                "type": "path",
+                "url": "../packages/journal",
+                "reference": "0fc3d553eed53d971655931152adce6dd02c6c13"
+            },
+            "require": {
+                "staudenmeir/belongs-to-through": "^2.5"
             },
             "require-dev": {
                 "fzaninotto/faker": "^1.9@dev",
@@ -1106,7 +1103,19 @@
                     "Insane\\Journal\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Insane\\Journal\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/phpunit"
+                ],
+                "test-coverage": [
+                    "vendor/bin/phpunit --coverage-html coverage"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -1118,14 +1127,13 @@
             ],
             "description": "Accounting module for atmosphere and laravel",
             "keywords": [
-                "Accounting",
+                "accounting",
                 "invoicing"
             ],
-            "support": {
-                "issues": "https://github.com/insane-code/journal/issues",
-                "source": "https://github.com/insane-code/journal/tree/v0.4.0"
-            },
-            "time": "2022-10-09T05:24:01+00:00"
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "jaybizzle/crawler-detect",
@@ -1964,16 +1972,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "3.10.3",
+            "version": "3.10.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "8013fb046c6a244b2b1b75cc95d732ed6bcdeb8a"
+                "reference": "a7790f3dd1b27af81d380e6b2afa77c16ab7e181"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/8013fb046c6a244b2b1b75cc95d732ed6bcdeb8a",
-                "reference": "8013fb046c6a244b2b1b75cc95d732ed6bcdeb8a",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/a7790f3dd1b27af81d380e6b2afa77c16ab7e181",
+                "reference": "a7790f3dd1b27af81d380e6b2afa77c16ab7e181",
                 "shasum": ""
             },
             "require": {
@@ -2035,7 +2043,7 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/flysystem/issues",
-                "source": "https://github.com/thephpleague/flysystem/tree/3.10.3"
+                "source": "https://github.com/thephpleague/flysystem/tree/3.10.4"
             },
             "funding": [
                 {
@@ -2051,7 +2059,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-11-14T10:42:43+00:00"
+            "time": "2022-11-26T19:48:01+00:00"
         },
         {
             "name": "league/mime-type-detection",
@@ -3506,6 +3514,60 @@
                 }
             ],
             "time": "2022-11-05T23:03:38+00:00"
+        },
+        {
+            "name": "staudenmeir/belongs-to-through",
+            "version": "v2.12.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/staudenmeir/belongs-to-through.git",
+                "reference": "8316d274db603f63b16bb1c67379b0fa73209d98"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/staudenmeir/belongs-to-through/zipball/8316d274db603f63b16bb1c67379b0fa73209d98",
+                "reference": "8316d274db603f63b16bb1c67379b0fa73209d98",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/database": "^9.0",
+                "php": "^8.0.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Znck\\Eloquent\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rahul Kadyan",
+                    "email": "hi@znck.me"
+                },
+                {
+                    "name": "Jonas Staudenmeir",
+                    "email": "mail@jonas-staudenmeir.de"
+                }
+            ],
+            "description": "Laravel Eloquent BelongsToThrough relationships",
+            "support": {
+                "issues": "https://github.com/staudenmeir/belongs-to-through/issues",
+                "source": "https://github.com/staudenmeir/belongs-to-through/tree/v2.12.1"
+            },
+            "funding": [
+                {
+                    "url": "https://paypal.me/JonasStaudenmeir",
+                    "type": "custom"
+                }
+            ],
+            "time": "2022-03-10T21:14:19+00:00"
         },
         {
             "name": "symfony/console",
@@ -8553,7 +8615,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "insane/journal": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

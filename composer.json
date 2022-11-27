@@ -4,11 +4,18 @@
     "description": "The Laravel Framework.",
     "keywords": ["framework", "laravel"],
     "license": "MIT",
+    "repositories": [{
+        "url": "../packages/journal",
+        "type": "path",
+        "options": {
+              "symlink": true
+          }
+    }],
     "require": {
         "php": "^8.0.2",
         "guzzlehttp/guzzle": "^7.2",
         "inertiajs/inertia-laravel": "^0.6.3",
-        "insane/journal": "^0.4.0",
+        "insane/journal": "dev-master",
         "laravel/framework": "^9.19",
         "laravel/jetstream": "^2.12",
         "laravel/sanctum": "^3.0",
