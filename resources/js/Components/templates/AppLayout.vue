@@ -310,7 +310,7 @@ const { appMenu: currentMenu, headerMenu } = useAppMenu();
         </header>
 
         <!-- Page Content -->
-        <main class="max-w-7xl mx-auto pt-8">
+        <main class="md:px-24 mx-auto pt-8">
           <slot />
         </main>
       </template>

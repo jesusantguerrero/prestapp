@@ -50,7 +50,7 @@ const onSubmit = () => {
   createLoan(loanForm, installments.value)
     .then(() => {
       close();
-      router.reload();
+      router.visit(`/loans/`);
     })
     .catch((err) => {
       console.log(err);

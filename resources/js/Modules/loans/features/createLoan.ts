@@ -9,7 +9,7 @@ export const createLoan = (loanData: ILoan, installments: ILoanInstallment[]) =>
             ...loanData,
             installments
         }, {
-            onSuccess(data) {
+            onSuccess( data) {
                 resolve(data)
             },
             onError(reason) {

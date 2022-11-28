@@ -1,5 +1,6 @@
 <script setup>
 import AppButton from "../../../Components/shared/AppButton.vue";
+import { formatMoney } from "@/utils/formatMoney";
 
 defineProps({
   installments: {
@@ -30,11 +31,11 @@ const tdHeaderClass = "bg-blue-400 p-2 text-white";
     </thead>
     <tr v-for="installment in installments">
       <td class="p-2">{{ installment.due_date }}</td>
-      <td class="p-2">{{ installment.amount }}</td>
-      <td class="p-2">{{ installment.principal }}</td>
-      <td class="p-2">{{ installment.interest }}</td>
-      <td class="p-2">{{ installment.final_balance }}</td>
-      <td class="p-2">{{ installment.payment_status }}</td>
+      <td class="p-2 text-right">{{ formatMoney(installment.amount) }}</td>
+      <td class="p-2 text-right">{{ formatMoney(installment.principal) }}</td>
+      <td class="p-2 text-right">{{ formatMoney(installment.interest) }}</td>
+      <td class="p-2 text-right">{{ formatMoney(installment.final_balance) }}</td>
+      <td class="p-2 text-right">{{ installment.payment_status }}</td>
       <td class="p-2">
         <AppButton> Pagar </AppButton>
       </td>

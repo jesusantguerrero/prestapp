@@ -90,7 +90,7 @@ class InertiaController extends Controller {
         }
     }
 
-    protected function getIndexProps(Request $request, Collection|ResourceCollection $resources): array {
+    protected function getIndexProps(Request $request, Collection|ResourceCollection|Array $resources): array {
         return [];
     }
 

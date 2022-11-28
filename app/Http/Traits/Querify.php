@@ -59,7 +59,8 @@ trait Querify
             $this->modelQuery->where(["team_id" => $request->user()->current_team_id]);
          }
 
-        return $this->getPaginate($limit, $page);
+        $result = $this->getPaginate($limit, $page);
+        return $result;
     }
 
     public function getServerParams() {
@@ -107,7 +108,6 @@ trait Querify
     private function getFilters($filters)
     {
         $this->filters = array_merge($this->filters, $filters);
-
         if (count($this->filters)) {
             foreach ($this->filters as $filter => $value) {
                 if ($valueField  = explode('.', $value)) {
@@ -191,7 +191,7 @@ trait Querify
     private function getPaginate($limit, $page)
     {
         if ($limit && $page) {
-            return $this->modelQuery->paginate($limit, $page);
+            return $this->modelQuery->paginate($limit)->toArray();
         } else if ($limit) {
             return $this->modelQuery->limit($limit);
         }

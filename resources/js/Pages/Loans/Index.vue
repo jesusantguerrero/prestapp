@@ -4,10 +4,15 @@ import { router } from "@inertiajs/core";
 import AppSectionHeader from "../../Components/AppSectionHeader.vue";
 import { ILoan } from "../../Modules/loans/loanEntity";
 import { AtButton } from "atmosphere-ui";
+import { computed } from "vue";
 
-defineProps<{
-  loans: ILoan[];
+const props = defineProps<{
+  loans: [ILoan[] | Object];
 }>();
+
+const listData = computed(() => {
+  return Array.isArray(props.loans) ? props.loans : props.loans.data;
+});
 </script>
 
 <template>
@@ -19,7 +24,7 @@ defineProps<{
         @create="router.visit('/loans/create')"
       />
       <section class="mt-4">
-        <ElTable :data="loans">
+        <ElTable :data="listData">
           <ElTableColumn prop="client.names" label="Nombres" />
           <ElTableColumn prop="client.lastnames" label="Apellidos" />
           <ElTableColumn prop="amount" label="Monto Prestado" />

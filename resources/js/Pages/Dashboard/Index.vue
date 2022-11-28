@@ -34,15 +34,32 @@ const slideOptions = [
             'Interes Ganado',
             'Total Interes pagado',
           ]"
-          class="text-white bg-blue-400 h-36 w-full"
+          class="bg-white border text-blue-400 h-36 w-full"
           icon="fas fa-wallet"
           value="20,000"
           :title="card"
         />
       </section>
-      <section class="flex space-x-4 mt-4">
+      <section class="flex space-x-4 mt-8">
         <IncomeSummaryWidget class="w-8/12" />
+
         <article class="w-5/12 space-y-5">
+          <AtBackgroundIconCard
+            class="text-white bg-blue-400 h-36"
+            icon="fas fa-wallet"
+            value="20,000"
+            title="Cartera de Prestamos"
+          >
+            <template #action>
+              <AtButton
+                class="bg-blue-500 rounded-md"
+                @click="isTransferModalOpen = true"
+              >
+                Add Transaction
+              </AtButton>
+            </template>
+          </AtBackgroundIconCard>
+
           <AtDashlide class="h-full rounded-md" :slides="slideOptions">
             <template #caja>
               <AtBackgroundIconCard

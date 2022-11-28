@@ -17,7 +17,7 @@ class Loan extends Transactionable {
     ];
 
     // protected 
-    protected $creditCategory = 'Loan and Line of Credit';
+    protected $creditCategory = 'loan_line_credit';
     protected $creditAccount = 'Customer Demand Deposits';
 
     public function client() {
