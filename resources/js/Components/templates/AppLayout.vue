@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from "vue";
-import { router } from "@inertiajs/vue3";
+import { router, usePage } from "@inertiajs/vue3";
 import { Head, Link } from "@inertiajs/vue3";
 import { AtShell, AtSide } from "atmosphere-ui";
 
@@ -11,6 +11,7 @@ import DropdownLink from "@/Components/DropdownLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 
 import { useAppMenu } from "@/Modules/_app";
+import { useSelect } from "@/Modules/shared/useSelects";
 
 defineProps({
   title: String,
@@ -39,6 +40,22 @@ const logout = () => {
 };
 
 const { appMenu: currentMenu, headerMenu } = useAppMenu();
+
+//  categories
+const pageProps = usePage().props;
+const { categoryOptions: transformCategoryOptions } = useSelect();
+transformCategoryOptions(pageProps.value.categories, "sub_categories", "categoryOptions");
+transformCategoryOptions(
+  pageProps.value.accounts,
+  "accounts",
+  "accountsOptions",
+  (account) => {
+    return {
+      ...account,
+      name: account.id,
+    };
+  }
+);
 </script>
 
 <template>

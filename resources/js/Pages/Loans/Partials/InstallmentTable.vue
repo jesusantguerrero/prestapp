@@ -11,8 +11,10 @@ defineProps({
   },
 });
 
-const markAsPaid = (id) => {
-  router.post();
+const emit = defineEmits(["pay"]);
+
+const handlePayment = (installment) => {
+  emit("pay", installment);
 };
 
 const tdHeaderClass = "bg-blue-400 p-2 text-white";
@@ -37,7 +39,7 @@ const tdHeaderClass = "bg-blue-400 p-2 text-white";
       <td class="p-2 text-right">{{ formatMoney(installment.final_balance) }}</td>
       <td class="p-2 text-right">{{ installment.payment_status }}</td>
       <td class="p-2">
-        <AppButton> Pagar </AppButton>
+        <AppButton @click="handlePayment(installment)"> Pagar </AppButton>
       </td>
     </tr>
   </table>

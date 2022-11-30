@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { Link } from "@inertiajs/vue3";
+import { Link, router } from "@inertiajs/vue3";
+import { ref } from "vue";
 import { ILoanWithInstallments } from "../../Modules/loans/loanEntity";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import AppSectionHeader from "../../Components/AppSectionHeader.vue";
 import InstallmentTable from "./Partials/InstallmentTable.vue";
+import PaymentFormModal from "./Partials/PaymentFormModal.vue";
+import { formatMoney } from "@/utils/formatMoney";
 
 export interface Props {
   loans: ILoanWithInstallments;
@@ -20,6 +23,22 @@ const tabs = {
   documents: "Tabla de Amortización",
   transactions: "Pagos",
   details: "Details",
+};
+
+const isPaymentModalOpen = ref(false);
+const selectedPayment = ref(null);
+const onPayment = (installment) => {
+  selectedPayment.value = {
+    ...installment,
+    id: null,
+    installment_id: installment.id,
+  };
+
+  isPaymentModalOpen.value = true;
+};
+
+const refresh = () => {
+  router.reload();
 };
 </script>
 
@@ -46,7 +65,7 @@ const tabs = {
             v-for="(tabLabel, tab) in tabs"
             :key="tab"
             :class="{ 'bg-gray-300': tab == currentTab }"
-            :href="`/loans/${loans.id}?tab=${tab}`"
+            :href="`/loans/${loans.id}?current-tab=${tab}`"
             replace
           >
             {{ tabLabel }}
@@ -69,13 +88,40 @@ const tabs = {
             {{ loans.payment_status }}
           </p>
 
-          <InstallmentTable :installments="loans.installments" accept-payment />
+          <InstallmentTable
+            :installments="loans.installments"
+            accept-payment
+            @pay="onPayment"
+          />
         </article>
         <article class="w-3/12 rounded-md border p-4 shadow-md space-y-2">
           <AppButton class="w-full"> Agregar Pago </AppButton>
           <AppButton class="w-full"> Recibo Multiple </AppButton>
+
+          <section class="mt-8 py-4 space-y-2">
+            <div v-for="payment in loans.payments" class="text-sm">
+              Pagado
+              <span class="text-green-500 font-bold">
+                {{ formatMoney(payment.amount) }}
+              </span>
+              en
+              <span class="text-primary font-bold">
+                {{ payment.payment_date }}
+              </span>
+            </div>
+          </section>
         </article>
       </section>
+
+      <PaymentFormModal
+        v-if="selectedPayment"
+        v-model="isPaymentModalOpen"
+        :payment="selectedPayment"
+        :endpoint="`/loans/${loans.id}/installments/${selectedPayment.installment_id}/pay`"
+        :payment-due="selectedPayment.amount"
+        :default-concept="`Pago ${loans.id} pago #${selectedPayment.number}`"
+        @saved="reload()"
+      />
     </main>
   </AppLayout>
 </template>

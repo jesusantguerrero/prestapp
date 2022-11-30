@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
 use App\Domains\Loans\Services\LoanService;
-use App\Http\Requests\LoanStoreRequest;
 use Illuminate\Http\Request;
 
 class LoanController extends InertiaController
@@ -43,8 +42,21 @@ class LoanController extends InertiaController
     protected function getEditProps(Request $request, $id)
     {
         return [
-            'loans' => Loan::where('id', $id)->with(['client', 'installments'])->first()
+            'loans' => Loan::where('id', $id)->with(['client', 'installments', 'payments'])->first()
         ];
+    }
+
+    public function pay(Loan $loan, LoanInstallment $installment, Request $request) {
+        $postData = $this->getPostData($request);
+        if ($installment->loan_id == $loan->id) {
+            $loan->createPayment(array_merge($postData, [
+                "client_id" => $loan->client_id,
+                "documents" => [
+                    "id" => $installment,
+                    "amount" => $postData['amount']
+                ]
+            ]));
+        }
     }
 
     public function markAsPaid(Loan $loan, LoanInstallment $installment) {

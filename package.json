@@ -23,7 +23,7 @@
     "dependencies": {
         "@headlessui/vue": "^1.7.4",
         "@inertiajs/vue3": "^1.0.0-beta.2",
-        "atmosphere-ui": "^1.0.4-beta",
+        "atmosphere-ui": "^1.0.5-beta",
         "date-fns": "^2.29.3",
         "element-plus": "^2.2.25",
         "exact-math": "^2.2.3"

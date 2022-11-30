@@ -2,17 +2,18 @@
 
 namespace App\Domains\Loans\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Insane\Journal\Traits\IPayableDocument;
 use Insane\Journal\Traits\HasPayments;
 
-class LoanInstallment extends HasPayments implements IPayableDocument {
+class LoanInstallment extends Model implements IPayableDocument {
+    use HasPayments;
+
     const STATUS_PENDING = 'PENDING'; 
     const STATUS_LATE =  'LATE'; 
     const STATUS_PAID = 'PAID';
     const STATUS_PARTIALLY_PAID = 'PARTIALLY_PAID';
     const STATUS_GRACE = 'GRACE';
-
-    protected $statusField = 'payment_status'; 
 
     protected $fillable = [
         'team_id', 

@@ -4,6 +4,8 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Insane\Journal\Models\Core\Account;
+use Insane\Journal\Models\Core\Category;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -36,8 +38,19 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+        $team = $user ? $user->currentTeam : null;
+
         return array_merge(parent::share($request), [
-            //
+            "accounts" => $team ? Account::getByDetailTypes($team->id) : [],
+            "categories" => $team ? Category::where([
+                'categories.team_id' => $team->id,
+                'categories.resource_type' => 'transactions'
+            ])
+                ->whereNull('parent_id')
+                ->orderBy('index')
+                ->with('subCategories')
+                ->get() : ['']
         ]);
     }
 }

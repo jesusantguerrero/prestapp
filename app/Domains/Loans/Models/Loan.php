@@ -4,8 +4,21 @@ namespace App\Domains\Loans\Models;
 
 use App\Domains\CRM\Models\Client;
 use Insane\Journal\Models\Core\Transaction;
+use Insane\Journal\Traits\HasPayments;
+use Insane\Journal\Traits\IPayableDocument;
 use Insane\Journal\Traits\Transactionable;
-class Loan extends Transactionable {
+class Loan extends Transactionable implements IPayableDocument {
+    use HasPayments;
+    
+    const STATUS_DRAFT = 'DRAFT';
+    const STATUS_APPROVED ='APPROVED';
+    const STATUS_DISPOSED = 'DISPOSED';
+    const STATUS_PENDING = 'PENDING'; 
+    const STATUS_LATE =  'LATE'; 
+    const STATUS_PAID = 'PAID';
+    const STATUS_PARTIALLY_PAID = 'PARTIALLY_PAID';
+    const STATUS_GRACE = 'GRACE';
+    const STATUS_CANCELLED = 'CANCELLED';
 
     protected $fillable = [
         'team_id', 
@@ -50,5 +63,18 @@ class Loan extends Transactionable {
 
     public function getCounterAccountId() {
         return $this->client_account_id;
+    }
+
+    // payment things
+    public static function calculateTotal($payable) {
+        return 0;
+    }
+
+    public static function checkStatus($payable) {
+        return self::STATUS_PENDING;
+    }
+
+    public function getConceptLine(): string {
+        return "";
     }
 }
