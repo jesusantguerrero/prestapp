@@ -41,6 +41,21 @@ class Loan extends Transactionable implements IPayableDocument {
         return $this->hasMany(LoanInstallment::class);
     }
 
+     /**
+     * Scope a query to only include popular users.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeLate($query)
+    {
+        return $query->where('payment_status', self::STATUS_LATE);
+    }
+
+    public function hasLateInstallments() {
+        return $this->installments()->late()->count();
+    }
+
     public function getTransactionItems() {
         return [];
     }
@@ -71,11 +86,21 @@ class Loan extends Transactionable implements IPayableDocument {
     } 
 
     public static function calculateTotal($payable) {
-        return 0;
+        $payable->total = $payable->installments()->sum('amount');
     }
 
     public static function checkStatus($payable) {
-        return self::STATUS_PENDING;
+            $debt = $payable->total - $payable->amount_paid;
+            if ($debt == 0) {
+                $status = self::STATUS_PAID;
+            } elseif ($debt > 0 && $debt < $payable->amount) {
+                $status = self::STATUS_PARTIALLY_PAID;
+            } elseif ($debt) {
+                $status = self::STATUS_LATE;
+            } else {
+                $status = $payable->payment_status;
+            }
+            return $status;
     }
 
     public function getConceptLine(): string {

@@ -29,6 +29,20 @@ class LoanInstallment extends Model implements IPayableDocument {
         'final_balance'
     ];
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeLate($query)
+    {
+        return $query->where('payment_status', self::STATUS_LATE);
+    }
+
+    public function loan() {
+        return $this->belongsTo(Loan::class);
+    }
         
     public function getStatusField(): string {
         return 'payment_status';
@@ -45,7 +59,7 @@ class LoanInstallment extends Model implements IPayableDocument {
         } elseif ($debt > 0 && $debt < $payable->amount) {
             $status = self::STATUS_PARTIALLY_PAID;
         } elseif ($debt) {
-            $status = self::STATUS_PENDING;
+            $status = self::STATUS_LATE;
         } else {
             $status = $payable->payment_status;
         }

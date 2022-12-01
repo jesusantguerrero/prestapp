@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BackgroundController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\LoanController;
 use Illuminate\Foundation\Application;
@@ -25,6 +26,9 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+
+Route::get('/background/run', BackgroundController::class);
+Route::get('/background/update-late-payments', [BackgroundController::class, 'updateLatePayments']);
 
 Route::middleware([
     'auth:sanctum',

@@ -30,6 +30,7 @@ const listData = computed(() => {
           <ElTableColumn prop="amount" label="Monto Prestado" />
           <ElTableColumn prop="interest_rate" label="Interes" />
           <ElTableColumn prop="start_date" label="Fecha Inicio" />
+          <ElTableColumn prop="payment_status" label="Estado" />
           <ElTableColumn>
             <AtButton> Edit</AtButton>
             <AtButton> Delete</AtButton>
