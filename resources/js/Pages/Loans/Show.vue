@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, router } from "@inertiajs/vue3";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { ILoanWithInstallments } from "../../Modules/loans/loanEntity";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
@@ -9,12 +9,14 @@ import AppSectionHeader from "../../Components/AppSectionHeader.vue";
 import InstallmentTable from "./Partials/InstallmentTable.vue";
 import PaymentFormModal from "./Partials/PaymentFormModal.vue";
 import { formatMoney } from "@/utils/formatMoney";
+import { ILoanInstallment } from "../../Modules/loans/loanInstallmentEntity";
 
 export interface Props {
   loans: ILoanWithInstallments;
   currentTab: string;
 }
-withDefaults(defineProps<Props>(), {
+
+const props = withDefaults(defineProps<Props>(), {
   currentTab: "summary",
 });
 
@@ -25,17 +27,30 @@ const tabs = {
   details: "Details",
 };
 
+type IPaymentMetaData = ILoanInstallment & {
+  installment_id?: number;
+};
+
 const isPaymentModalOpen = ref(false);
-const selectedPayment = ref(null);
-const onPayment = (installment) => {
+const selectedPayment = ref<IPaymentMetaData | null>(null);
+const onPayment = (installment: ILoanInstallment) => {
   selectedPayment.value = {
     ...installment,
-    id: null,
+    // @ts-ignore solve backend sending decimals as strings
+    amount: parseFloat(installment.amount_debt) || installment.amount,
+    id: undefined,
     installment_id: installment.id,
   };
 
   isPaymentModalOpen.value = true;
 };
+
+const paymentConcept = computed(() => {
+  return (
+    selectedPayment.value &&
+    `Pago ${props.loans.id} pago #${selectedPayment.value.installment_id}`
+  );
+});
 
 const refresh = () => {
   router.reload();
@@ -99,7 +114,7 @@ const refresh = () => {
           <AppButton class="w-full"> Recibo Multiple </AppButton>
 
           <section class="mt-8 py-4 space-y-2">
-            <div v-for="payment in loans.payments" class="text-sm">
+            <div v-for="payment in loans.payment_documents" class="text-sm">
               Pagado
               <span class="text-green-500 font-bold">
                 {{ formatMoney(payment.amount) }}
@@ -118,9 +133,9 @@ const refresh = () => {
         v-model="isPaymentModalOpen"
         :payment="selectedPayment"
         :endpoint="`/loans/${loans.id}/installments/${selectedPayment.installment_id}/pay`"
-        :payment-due="selectedPayment.amount"
-        :default-concept="`Pago ${loans.id} pago #${selectedPayment.number}`"
-        @saved="reload()"
+        :due="selectedPayment.amount"
+        :default-concept="paymentConcept"
+        @saved="refresh()"
       />
     </main>
   </AppLayout>

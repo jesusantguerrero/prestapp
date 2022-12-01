@@ -6,12 +6,15 @@ import { MathHelper } from './mathHelper';
 type LoanInstallmentStatus = 'PENDING' | 'LATE' | 'PAID' | 'PARTIALLY_PAID' | 'GRACE'
 
 export interface ILoanInstallment {
+    id?: number;
     installment_number: number;
     due_date: string;
     paid_at?: string;
     days: number;
     // amounts
     amount: number;
+    amount_debt: number;
+    amount_paid: number;
     principal: number;
     interest: number;
     fees: number;
@@ -87,6 +90,8 @@ export class LoanTable {
                 due_date: dueDate,
                 days: 0,
                 amount: this.payment,
+                amount_paid: 0,
+                amount_debt: this.payment,
                 interest,
                 principal: monthlyPrincipal,
                 fees: 0,

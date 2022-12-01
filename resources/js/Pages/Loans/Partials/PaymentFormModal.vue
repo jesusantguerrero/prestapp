@@ -6,13 +6,13 @@
   >
     <div class="">
       <section class="flex space-x-4">
-        <AtField class="w-full text-left" label="Concepto:">
+        <AtField class="w-full text-left" label="Concepto">
           <AtInput
             type="text"
             class="form-control"
             name="invoice-description"
             id="invoice-description"
-            v-model="invoicePayment.concept"
+            v-model="paymentForm.concept"
           />
         </AtField>
 
@@ -22,7 +22,7 @@
             class="form-control"
             name="invoice-description"
             id="invoice-description"
-            v-model="invoicePayment.reference"
+            v-model="paymentForm.reference"
           />
         </AtField>
 
@@ -30,7 +30,7 @@
           <AtInput
             type="number"
             class="form-control"
-            v-model="invoicePayment.amount"
+            v-model="paymentForm.amount"
             required
             min="1"
           />
@@ -40,8 +40,8 @@
       <section class="flex space-x-4">
         <AtField class="w-5/12 text-left mb-5" label="Cuenta de Pago">
           <AtSimpleSelect
-            v-model="invoicePayment.account_id"
-            v-model:selected="invoicePayment.paymentAccount"
+            v-model="paymentForm.account_id"
+            v-model:selected="paymentForm.paymentAccount"
             :options="categories"
             placeholder="Pick an account"
             class="w-full"
@@ -51,8 +51,8 @@
         </AtField>
         <AtField class="w-3/12 text-left mb-5" label="Metodo de Pago">
           <AtSimpleSelect
-            v-model="invoicePayment.payment_method"
-            v-model:selected="invoicePayment.paymentMethod"
+            v-model="paymentForm.payment_method"
+            v-model:selected="paymentForm.paymentMethod"
             :options="[
               {
                 id: 'cash',
@@ -74,11 +74,7 @@
           />
         </AtField>
         <AtField label="Fecha de pago" class="w-3/12">
-          <ElDatePicker
-            v-model="invoicePayment.payment_date"
-            size="large"
-            class="w-full"
-          />
+          <ElDatePicker v-model="paymentForm.payment_date" size="large" class="w-full" />
         </AtField>
       </section>
 
@@ -86,7 +82,7 @@
         <label for="">Notes</label>
         <textarea
           class="w-full border border-gray-200 rounded-md focus:outline-none focus:border-gray-400"
-          v-model="invoicePayment.notes"
+          v-model="paymentForm.notes"
           cols="3"
           rows="3"
         />
@@ -100,7 +96,7 @@
         </AtButton>
         <AppButton
           class="bg-blue-500 text-white"
-          v-if="invoicePayment.id"
+          v-if="paymentForm.id"
           @click="deletePayment()"
         >
           Delete
@@ -118,7 +114,7 @@ import { ElDatePicker, ElDialog } from "element-plus";
 import { inject, ref, watch } from "vue";
 import AppButton from "../../../Components/shared/AppButton.vue";
 
-const defaultInvoicePayment = {
+const defaultpaymentForm = {
   amount: 0,
   account_id: "",
 };
@@ -134,23 +130,23 @@ const props = defineProps({
     required: true,
   },
   payment: [Object, null],
-  paymentDue: Number,
+  due: Number,
   endpoint: {
     type: String,
     required: true,
   },
 });
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", "saved"]);
 
 const categories = inject("accountsOptions", []);
 
-const invoicePayment = ref({ ...defaultInvoicePayment });
+const paymentForm = ref({ ...defaultpaymentForm, concept: props.defaultConcept });
 
 watch(
-  props.defaultConcept,
-  () => {
-    invoicePayment.value.concept = props.defaultConcept;
+  () => props.defaultConcept,
+  (defaultConcept) => {
+    paymentForm.value.concept = defaultConcept;
   },
   {
     immediate: true,
@@ -158,10 +154,10 @@ watch(
 );
 
 watch(
-  props.paymentDue,
-  () => {
-    if (!invoicePayment.id) {
-      invoicePayment.value.amount = props.paymentDue;
+  () => props.due,
+  (due) => {
+    if (!paymentForm.value.id) {
+      paymentForm.value.amount = due;
     }
   },
   {
@@ -173,7 +169,7 @@ watch(
   props.payment,
   (payment) => {
     if (payment) {
-      invoicePayment.value = payment;
+      paymentForm.value = payment;
     }
   },
   {
@@ -183,7 +179,7 @@ watch(
 );
 
 function addPayment() {
-  if (!invoicePayment.value.amount) {
+  if (!paymentForm.value.amount) {
     notify({
       type: "error",
       message: "should specify an amount",
@@ -193,16 +189,13 @@ function addPayment() {
 
   const formData = {
     resource_id: props.resourceId,
-    payment_date: formatDate(
-      invoicePayment.value.payment_date || new Date(),
-      "yyyy-MM-dd"
-    ),
-    amount: invoicePayment.value.amount,
-    concept: invoicePayment.value.concept,
-    payment_method_id: invoicePayment.value.payment_method,
-    account_id: invoicePayment.value.account_id,
-    reference: invoicePayment.value.reference,
-    notes: invoicePayment.value.notes,
+    payment_date: formatDate(paymentForm.value.payment_date || new Date(), "yyyy-MM-dd"),
+    amount: paymentForm.value.amount,
+    concept: paymentForm.value.concept,
+    payment_method_id: paymentForm.value.payment_method,
+    account_id: paymentForm.value.account_id,
+    reference: paymentForm.value.reference,
+    notes: paymentForm.value.notes,
   };
 
   axios
@@ -212,6 +205,7 @@ function addPayment() {
       emit("saved");
     })
     .catch((err) => {
+      console.log(err);
       notify({
         type: "error",
         message: err.response ? err.response.data.status.message : "Ha ocurrido un error",
@@ -221,7 +215,7 @@ function addPayment() {
 
 function deletePayment() {
   axios
-    .delete(`${props.endpoint}/${invoicePayment.id}`)
+    .delete(`${props.endpoint}/${paymentForm.id}`)
     .then(() => {
       emit("saved");
       resetForm(true);
@@ -235,8 +229,8 @@ function deletePayment() {
 }
 
 function resetForm(shouldClose) {
-  invoicePayment = {
-    ...defaultInvoicePayment,
+  paymentForm.value = {
+    ...defaultpaymentForm,
     concept: props.defaultConcept,
   };
   if (shouldClose) {

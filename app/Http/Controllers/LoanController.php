@@ -42,7 +42,7 @@ class LoanController extends InertiaController
     protected function getEditProps(Request $request, $id)
     {
         return [
-            'loans' => Loan::where('id', $id)->with(['client', 'installments', 'payments'])->first()
+            'loans' => Loan::where('id', $id)->with(['client', 'installments', 'paymentDocuments'])->first()
         ];
     }
 
@@ -51,10 +51,11 @@ class LoanController extends InertiaController
         if ($installment->loan_id == $loan->id) {
             $loan->createPayment(array_merge($postData, [
                 "client_id" => $loan->client_id,
-                "documents" => [
-                    "id" => $installment,
+                "documents" => [[
+                    "payable_id" => $installment->id,
+                    "payable_type" => LoanInstallment::class,
                     "amount" => $postData['amount']
-                ]
+                ]]
             ]));
         }
     }

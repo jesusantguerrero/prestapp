@@ -39,7 +39,12 @@ const tdHeaderClass = "bg-blue-400 p-2 text-white";
       <td class="p-2 text-right">{{ formatMoney(installment.final_balance) }}</td>
       <td class="p-2 text-right">{{ installment.payment_status }}</td>
       <td class="p-2">
-        <AppButton @click="handlePayment(installment)"> Pagar </AppButton>
+        <AppButton
+            @click="handlePayment(installment)"
+            v-if="installment.payment_status !== 'PAID'"
+            >
+          Pagar
+        </AppButton>
       </td>
     </tr>
   </table>

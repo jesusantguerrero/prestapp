@@ -4,12 +4,12 @@ namespace App\Domains\Loans\Models;
 
 use App\Domains\CRM\Models\Client;
 use Insane\Journal\Models\Core\Transaction;
-use Insane\Journal\Traits\HasPayments;
+use Insane\Journal\Traits\HasPaymentDocuments;
 use Insane\Journal\Traits\IPayableDocument;
 use Insane\Journal\Traits\Transactionable;
 class Loan extends Transactionable implements IPayableDocument {
-    use HasPayments;
-    
+    use HasPaymentDocuments;
+
     const STATUS_DRAFT = 'DRAFT';
     const STATUS_APPROVED ='APPROVED';
     const STATUS_DISPOSED = 'DISPOSED';
@@ -66,6 +66,10 @@ class Loan extends Transactionable implements IPayableDocument {
     }
 
     // payment things
+    public function getStatusField(): string {
+        return 'payment_status';
+    } 
+
     public static function calculateTotal($payable) {
         return 0;
     }

@@ -29,12 +29,28 @@ class LoanInstallment extends Model implements IPayableDocument {
         'final_balance'
     ];
 
+        
+    public function getStatusField(): string {
+        return 'payment_status';
+    } 
+
     public static function calculateTotal($payable) {
         return 0;
     }
 
     public static function checkStatus($payable) {
-        return self::STATUS_PENDING;
+        $debt = $payable->amount - $payable->amount_paid;
+        if ($debt == 0) {
+            $status = self::STATUS_PAID;
+        } elseif ($debt > 0 && $debt < $payable->amount) {
+            $status = self::STATUS_PARTIALLY_PAID;
+        } elseif ($debt) {
+            $status = self::STATUS_PENDING;
+        } else {
+            $status = $payable->payment_status;
+        }
+
+        return $status;
     }
 
     public function getConceptLine(): string {
