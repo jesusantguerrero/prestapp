@@ -1,12 +1,11 @@
 <script setup>
-import { nextTick, ref } from 'vue';
+import { nextTick, ref, computed } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import { AtAuthBox, AtAuthForm, AtField, AtInput } from 'atmosphere-ui';
 
 const recovery = ref(false);
 
@@ -35,70 +34,68 @@ const toggleRecovery = async () => {
 const submit = () => {
     form.post(route('two-factor.login'));
 };
+
+const descriptionLabel = computed(() => {
+    return recovery.value
+    ? "Please confirm access to your account by entering one of your emergency recovery codes."
+    : " Please confirm access to your account by entering the authentication code provided by your authenticator application."
+});
+
+const linkLabel = computed(() => {
+    return recovery.value
+    ? "Use an authentication code"
+    : "Use a recovery code"
+});
 </script>
 
 <template>
     <Head title="Two-factor Confirmation" />
 
-    <AuthenticationCard>
-        <template #logo>
-            <AuthenticationCardLogo />
-        </template>
-
-        <div class="mb-4 text-sm text-gray-600">
-            <template v-if="! recovery">
-                Please confirm access to your account by entering the authentication code provided by your authenticator application.
+    <AtAuthBox>
+        <AtAuthForm
+            app-name="PrestApp"
+            btn-label="Login"
+            custom-link-label="Recovery"
+            btn-class="mb-2 font-bold border-2 rounded-md border-primary bg-gradient-to-br from-purple-400 to-primary hover:bg-primary"
+            link-class="text-primary hover:text-primary"
+            v-model:isLoading="form.processing"
+            mode="register"
+            :errors="form.errors"
+            @submit="submit"
+            @home-pressed="onHomePressed"
+            @link-pressed="toggleRecovery()"
+        >
+            <template #brand>
+                <AuthenticationCardLogo />
             </template>
 
-            <template v-else>
-                Please confirm access to your account by entering one of your emergency recovery codes.
+            <template #content>
+                <section>
+                    <div class="mb-4 text-sm text-body">
+                        {{ descriptionLabel }}
+                    </div>
+                    <AtField label="Code" v-if="!recovery">
+                        <AtInput
+                            id="code"
+                            ref="codeInput"
+                            v-model="form.code"
+                            type="text"
+                            inputmode="numeric"
+                            autofocus
+                            autocomplete="one-time-code"
+                        />
+                    </AtField>
+                    <AtField label="Recovery Code" field="recovery_code" :errors="form.errors" v-else>
+                        <AtInput
+                            id="recovery_code"
+                            ref="recoveryCodeInput"
+                            v-model="form.recovery_code"
+                            type="text"
+                            autocomplete="one-time-code"
+                        />
+                    </AtField>
+                </section>
             </template>
-        </div>
-
-        <form @submit.prevent="submit">
-            <div v-if="! recovery">
-                <InputLabel for="code" value="Code" />
-                <TextInput
-                    id="code"
-                    ref="codeInput"
-                    v-model="form.code"
-                    type="text"
-                    inputmode="numeric"
-                    class="mt-1 block w-full"
-                    autofocus
-                    autocomplete="one-time-code"
-                />
-                <InputError class="mt-2" :message="form.errors.code" />
-            </div>
-
-            <div v-else>
-                <InputLabel for="recovery_code" value="Recovery Code" />
-                <TextInput
-                    id="recovery_code"
-                    ref="recoveryCodeInput"
-                    v-model="form.recovery_code"
-                    type="text"
-                    class="mt-1 block w-full"
-                    autocomplete="one-time-code"
-                />
-                <InputError class="mt-2" :message="form.errors.recovery_code" />
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <button type="button" class="text-sm text-gray-600 hover:text-gray-900 underline cursor-pointer" @click.prevent="toggleRecovery">
-                    <template v-if="! recovery">
-                        Use a recovery code
-                    </template>
-
-                    <template v-else>
-                        Use an authentication code
-                    </template>
-                </button>
-
-                <PrimaryButton class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Log in
-                </PrimaryButton>
-            </div>
-        </form>
-    </AuthenticationCard>
+        </AtAuthForm>
+    </AtAuthBox>
 </template>

@@ -2,9 +2,9 @@
 import { ref, reactive, nextTick } from 'vue';
 import DialogModal from './DialogModal.vue';
 import InputError from './InputError.vue';
-import PrimaryButton from './PrimaryButton.vue';
-import SecondaryButton from './SecondaryButton.vue';
+import AppButton from "@/Components/shared/AppButton.vue"
 import TextInput from './TextInput.vue';
+import { AtField, AtInputPassword } from 'atmosphere-ui';
 
 const emit = defineEmits(['confirmed']);
 
@@ -84,33 +84,31 @@ const closeModal = () => {
             <template #content>
                 {{ content }}
 
-                <div class="mt-4">
-                    <TextInput
+                <AtField class="mt-4" :error="form.error">
+                    <AtInputPassword
                         ref="passwordInput"
                         v-model="form.password"
                         type="password"
-                        class="mt-1 block w-3/4"
                         placeholder="Password"
+                        class="border-t-0 border-b border-l-0 border-r-0"
                         @keyup.enter="confirmPassword"
                     />
-
-                    <InputError :message="form.error" class="mt-2" />
-                </div>
+                </AtField>
             </template>
 
             <template #footer>
-                <SecondaryButton @click="closeModal">
+                <AppButton variant="secondary" @click="closeModal">
                     Cancel
-                </SecondaryButton>
+                </AppButton>
 
-                <PrimaryButton
+                <AppButton
                     class="ml-3"
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                     @click="confirmPassword"
                 >
                     {{ button }}
-                </PrimaryButton>
+                </AppButton>
             </template>
         </DialogModal>
     </span>

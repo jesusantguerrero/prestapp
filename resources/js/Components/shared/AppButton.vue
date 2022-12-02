@@ -1,6 +1,6 @@
 <template>
   <AtButton
-    class="border transition font-bold rounded-md min-w-max inline-block"
+    class="inline-block font-bold transition border rounded-md min-w-max"
     :class="[typeClasses]"
   >
     <slot />
@@ -13,7 +13,7 @@ import { AtButton } from "atmosphere-ui";
 
 const variants = {
   primary: "bg-primary text-white",
-  secondary: "bg-secondary text-white",
+  secondary: "bg-secondary text-gray-600",
   inverse: "border-primary bg-primary/10 text-primary hover:bg-primary hover:text-white",
 };
 

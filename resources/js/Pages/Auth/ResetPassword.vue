@@ -1,11 +1,6 @@
 <script setup>
-import { Head, useForm } from '@inertiajs/vue3';
-import AuthenticationCard from '@/Components/AuthenticationCard.vue';
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import { AtAuthBox, AtAuthForm, AtField, AtInput, AtInputPassword } from 'atmosphere-ui';
 
 const props = defineProps({
     email: String,
@@ -29,56 +24,35 @@ const submit = () => {
 <template>
     <Head title="Reset Password" />
 
-    <AuthenticationCard>
-        <template #logo>
-            <AuthenticationCardLogo />
+    <AtAuthBox>
+        <AtAuthForm
+            app-name="PrestApp"
+            btn-label="Send email"
+            btn-class="mb-2 font-bold border-2 rounded-md border-primary bg-gradient-to-br from-purple-400 to-primary hover:bg-primary"
+            link-class="text-primary hover:text-primary"
+            v-model:isLoading="form.processing"
+            mode="register"
+            :errors="form.errors"
+            @submit="submit"
+            @home-pressed="onHomePressed"
+            @link-pressed="onLinkPressed"
+        >
+         <template #brand>
+            <Link href="/" class="w-full font-light font-brand">
+                PrestaApp
+            </Link>
+          </template>
+          <template #content>
+            <AtField label="Email">
+                <AtInput v-model="form.email" required />
+            </AtField>
+            <AtField label="Password">
+                <AtInputPassword class="bg-white" v-model="form.password" required />
+            </AtField>
+            <AtField label="Confirm Password">
+                <AtInputPassword class="bg-white" v-model="form.password_confirmation" required />
+            </AtField>
         </template>
-
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
-                <TextInput
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    required
-                    autofocus
-                />
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-                <TextInput
-                    id="password"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="new-password"
-                />
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
-                <TextInput
-                    id="password_confirmation"
-                    v-model="form.password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="new-password"
-                />
-                <InputError class="mt-2" :message="form.errors.password_confirmation" />
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Reset Password
-                </PrimaryButton>
-            </div>
-        </form>
-    </AuthenticationCard>
+        </AtAuthForm>
+    </AtAuthBox>
 </template>
