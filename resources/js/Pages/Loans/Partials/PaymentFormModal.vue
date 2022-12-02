@@ -1,6 +1,7 @@
 <template>
   <ElDialog
     title="Pagar prestamo"
+    @open="setFormData()"
     :model-value="modelValue"
     @update:model-value="$emit('update:modelValue', $event)"
   >
@@ -114,7 +115,7 @@ import { ElDatePicker, ElDialog } from "element-plus";
 import { inject, ref, watch } from "vue";
 import AppButton from "../../../Components/shared/AppButton.vue";
 
-const defaultpaymentForm = {
+const defaultPaymentForm = {
   amount: 0,
   account_id: "",
 };
@@ -141,7 +142,20 @@ const emit = defineEmits(["update:modelValue", "saved"]);
 
 const categories = inject("accountsOptions", []);
 
-const paymentForm = ref({ ...defaultpaymentForm, concept: props.defaultConcept });
+const paymentForm = ref(generatePaymentData());
+
+const setFormData = () => {
+  paymentForm.value = generatePaymentData();
+};
+
+function generatePaymentData() {
+  return {
+    ...defaultPaymentForm,
+    concept: props.defaultConcept,
+    amount: props.due,
+    payment_date: new Date(),
+  };
+}
 
 watch(
   () => props.defaultConcept,
@@ -230,7 +244,7 @@ function deletePayment() {
 
 function resetForm(shouldClose) {
   paymentForm.value = {
-    ...defaultpaymentForm,
+    ...defaultPaymentForm,
     concept: props.defaultConcept,
   };
   if (shouldClose) {

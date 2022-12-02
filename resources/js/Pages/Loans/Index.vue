@@ -5,6 +5,10 @@ import AppSectionHeader from "../../Components/AppSectionHeader.vue";
 import { ILoan } from "../../Modules/loans/loanEntity";
 import { AtButton } from "atmosphere-ui";
 import { computed } from "vue";
+import cols from "./cols";
+import AtTable from "../../Components/AtTable.vue";
+import AppButton from "../../Components/shared/AppButton.vue";
+import { Link } from "@inertiajs/vue3";
 
 const props = defineProps<{
   loans: [ILoan[] | Object];
@@ -24,18 +28,19 @@ const listData = computed(() => {
         @create="router.visit('/loans/create')"
       />
       <section class="mt-4">
-        <ElTable :data="listData">
-          <ElTableColumn prop="client.names" label="Nombres" />
-          <ElTableColumn prop="client.lastnames" label="Apellidos" />
-          <ElTableColumn prop="amount" label="Monto Prestado" />
-          <ElTableColumn prop="interest_rate" label="Interes" />
-          <ElTableColumn prop="start_date" label="Fecha Inicio" />
-          <ElTableColumn prop="payment_status" label="Estado" />
-          <ElTableColumn>
-            <AtButton> Edit</AtButton>
-            <AtButton> Delete</AtButton>
-          </ElTableColumn>
-        </ElTable>
+        <AtTable :table-data="listData" :cols="cols">
+          <template v-slot:actions="{ scope: { row } }" class="flex">
+            <div class="flex">
+              <Link
+                class="relative px-5 py-2 overflow-hidden focus:outline-none hover:bg-opacity-80 border transition font-bold rounded-md min-w-max inline-block bg-primary text-white"
+                :href="`/loans/${row.id}`"
+              >
+                Edit</Link
+              >
+              <AppButton> Delete</AppButton>
+            </div>
+          </template>
+        </AtTable>
       </section>
     </main>
   </AppLayout>

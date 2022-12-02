@@ -20,3 +20,35 @@ export const loanFrequencies = [{
     name: LOAN_FREQUENCY.MONTHLY,
     label: 'Mensual'
 }];
+
+export const LOAN_STATUS = {
+    LATE: 'En mora',
+    PARTIALLY_PAID: 'Parcialmente pagado',
+    PAID: 'Pagado',
+    PENDING: 'Pendiente'
+}
+
+export const loanStatus = {
+    'LATE': {
+        color: 'danger'
+    },
+    'PARTIALLY_PAID': {
+        color: 'success'
+    },
+    'PAID': {
+        color: 'success'
+    },
+    'PENDING': {
+        color: 'info'
+    }
+}
+
+export const getLoanStatus = (status: string): string => {
+    return LOAN_STATUS[status] || status;
+}
+
+export  type stateTypes =  'info'| 'danger'|'warning'|'primary'
+export const getLoanStatusColor = (status: string): stateTypes => {
+    console.log(status, loanStatus[status])
+    return loanStatus[status] ? loanStatus[status].color as stateTypes : 'info' as stateTypes;
+}

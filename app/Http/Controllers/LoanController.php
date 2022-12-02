@@ -57,6 +57,7 @@ class LoanController extends InertiaController
                     "amount" => $postData['amount']
                 ]]
             ]));
+            $loan->client->checkStatus();
         }
     }
 

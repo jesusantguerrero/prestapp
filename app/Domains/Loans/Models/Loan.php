@@ -96,7 +96,7 @@ class Loan extends Transactionable implements IPayableDocument {
             } elseif ($debt > 0 && $debt < $payable->amount) {
                 $status = self::STATUS_PARTIALLY_PAID;
             } elseif ($debt) {
-                $status = self::STATUS_LATE;
+                $status = self::STATUS_PENDING;
             } else {
                 $status = $payable->payment_status;
             }
@@ -105,5 +105,9 @@ class Loan extends Transactionable implements IPayableDocument {
 
     public function getConceptLine(): string {
         return "";
+    }
+
+    public function getTotalField() {
+        return 'total';
     }
 }
