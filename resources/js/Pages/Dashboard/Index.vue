@@ -2,7 +2,54 @@
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import { AtBackgroundIconCard, AtButton, AtDashlide } from "atmosphere-ui";
 import IncomeSummaryWidget from "./Partials/IncomeSummaryWidget.vue";
+import WelcomeWidget from "./Partials/WelcomeWidget.vue";
 
+const props = defineProps({
+        revenue: {
+            type: Object,
+            default() {
+                return {
+                    previousYear: {
+                        values: []
+                    },
+                    currentYear: {
+                        values: []
+                    }
+                }
+            }
+        },
+        user: {
+            type: Object,
+            required: true,
+        },
+        onboarding: {
+            type: Array,
+            default() {
+                return []
+            }
+        }
+});
+
+const welcomeCards = [{
+        label: 'Clientes con Prestamos',
+        value: 2000,
+        icon: 'fa-users'
+    }, {
+
+        label: 'Capital Prestado',
+        icon: 'fa-money',
+        value: 2000
+    }, {
+
+        label: 'Interes Ganado',
+        icon: 'fa-wallet',
+        value: 2000
+    }, {
+        label: 'Total Interes pagado',
+        value: 2000,
+        accent: true,
+    }
+]
 const slideOptions = [
   {
     name: "caja",
@@ -25,22 +72,13 @@ const slideOptions = [
 
 <template>
   <AppLayout title="Dashboard">
-    <main class="p-5 mx-auto sm:px-6 lg:px-8 text-gray-500">
-      <section class="flex space-x-4">
-        <AtBackgroundIconCard
-          v-for="card in [
-            'Capital Total',
-            'Total Prestado',
-            'Interes Ganado',
-            'Total Interes pagado',
-          ]"
-          class="bg-white border text-blue-400 h-36 w-full"
-          icon="fas fa-wallet"
-          value="20,000"
-          :title="card"
+    <main class="p-5 mx-auto text-gray-500 sm:px-6 lg:px-8">
+        <WelcomeWidget
+            message="Bienvenido a PrestApp"
+            :username="user.name"
+            :cards="welcomeCards"
         />
-      </section>
-      <section class="flex space-x-4 mt-8">
+      <section class="flex mt-8 space-x-4">
         <IncomeSummaryWidget class="w-8/12" />
 
         <article class="w-5/12 space-y-5">

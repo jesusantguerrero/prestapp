@@ -1,5 +1,5 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
-const colors = require('tailwindcss/colors');
+const themes = require('./resources/tailwindTheme/index');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -18,8 +18,8 @@ module.exports = {
                 sans: ['Nunito', ...defaultTheme.fontFamily.sans],
             },
             colors: {
-                primary: colors.blue[400]
-            }
+                ...themes.blueLight
+            },
         },
     },
 
