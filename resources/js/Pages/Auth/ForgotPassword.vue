@@ -1,5 +1,5 @@
 <script setup>
-    import { Head } from "@inertiajs/vue3";
+    import { Head, router } from "@inertiajs/vue3";
     import { AtAuthBox, AtAuthForm, AtField, AtInput } from "atmosphere-ui";
     import { useForm, Link } from "@inertiajs/inertia-vue3";
 
@@ -10,6 +10,10 @@
     const form = useForm({
         email: '',
     });
+
+    const onLinkPressed = () => {
+        router.visit('login');
+    }
 
     const submit = () => {
         form.post(route('password.email'));

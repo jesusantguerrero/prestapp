@@ -18,7 +18,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('team_id');
             $table->foreignId('user_id');
-            $table->foreignId('loan_id');
+            $table->foreignId('loan_id')->constrained()->cascadeOnDelete();
 
             $table->integer('installment_number');
             $table->date('due_date');
@@ -32,7 +32,7 @@ return new class extends Migration
             $table->decimal('interest', 11, 2)->default(0.00);
             $table->decimal('fees', 11, 2)->default(0.00);
             $table->decimal('penalty', 11, 2)->default(0.00);
-            
+
             $table->decimal('principal_paid', 11, 2)->default(0.00);
             $table->decimal('interest_paid', 11, 2)->default(0.00);
             $table->decimal('fees_paid', 11, 2)->default(0.00);
@@ -46,8 +46,8 @@ return new class extends Migration
                 LoanInstallment::STATUS_PENDING,
                 LoanInstallment::STATUS_PAID,
                 LoanInstallment::STATUS_PARTIALLY_PAID,
-                LoanInstallment::STATUS_GRACE, 
-                LoanInstallment::STATUS_LATE, 
+                LoanInstallment::STATUS_GRACE,
+                LoanInstallment::STATUS_LATE,
             ])->default(LoanInstallment::STATUS_PENDING);
 
             $table->timestamps();
