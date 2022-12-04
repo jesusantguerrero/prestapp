@@ -37,7 +37,7 @@ const onPayment = (installment: ILoanInstallment) => {
   selectedPayment.value = {
     ...installment,
     // @ts-ignore solve backend sending decimals as strings
-    amount: parseFloat(installment.amount_debt) || installment.amount,
+    amount: parseFloat(installment.amount_due) || installment.amount,
     id: undefined,
     installment_id: installment.id,
   };
@@ -62,7 +62,7 @@ const refresh = () => {
     <main class="p-5">
       <AppSectionHeader
         name="Prestamos"
-        class="rounded-md px-5 rounded-b-none border-2 shadow-md border-white"
+        class="px-5 border-2 border-white rounded-md rounded-b-none shadow-md"
         :resource="loans"
         :title="loans.client.names"
         @create="router.visit('/loans/create')"
@@ -87,8 +87,8 @@ const refresh = () => {
           </Link>
         </div>
       </div>
-      <section class="space-x-8 flex w-full border-t-none rounded-t-none">
-        <article class="w-9/12 rounded-md border p-4 shadow-md space-y-2">
+      <section class="flex w-full space-x-8 rounded-t-none border-t-none ">
+        <article class="w-9/12 p-4 space-y-2 border rounded-md shadow-md bg-base-lvl-3">
           <span> Cliente: {{ loans.client.names }} {{ loans.client.lastnames }} </span>
           <p>
             Monto Prestado:
@@ -109,18 +109,19 @@ const refresh = () => {
             @pay="onPayment"
           />
         </article>
-        <article class="w-3/12 rounded-md border p-4 shadow-md space-y-2">
+
+        <article class="w-3/12 p-4 space-y-2 border rounded-md shadow-md bg-base-lvl-3">
           <AppButton class="w-full"> Agregar Pago </AppButton>
           <AppButton class="w-full"> Recibo Multiple </AppButton>
 
-          <section class="mt-8 py-4 space-y-2">
+          <section class="py-4 mt-8 space-y-2">
             <div v-for="payment in loans.payment_documents" class="text-sm">
               Pagado
-              <span class="text-green-500 font-bold">
+              <span class="font-bold text-green-500">
                 {{ formatMoney(payment.amount) }}
               </span>
               en
-              <span class="text-primary font-bold">
+              <span class="font-bold text-primary">
                 {{ payment.payment_date }}
               </span>
             </div>

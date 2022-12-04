@@ -48,8 +48,8 @@ Route::middleware([
             'bank' => $reportHelper->smallBoxRevenue('bank', $teamId),
             'dailyBox' => $reportHelper->smallBoxRevenue('daily_box', $teamId),
             'cashOnHand' => $reportHelper->smallBoxRevenue('cash_on_hand', $teamId),
-            // 'nextInvoices' => $reportHelper->nextInvoices($teamId),
-            // 'debtors' => $reportHelper->debtors($teamId),
+            'nextInvoices' => $reportHelper->nextInvoices($teamId),
+            'debtors' => $reportHelper->debtors($teamId),
         ]
     );
     })->name('dashboard');

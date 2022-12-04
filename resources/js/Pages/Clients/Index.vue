@@ -24,6 +24,7 @@ const isModalOpen = ref(false);
           <ElTableColumn prop="lastnames" label="Apellidos" />
           <ElTableColumn prop="dni" label="DNI/ID Doc." />
           <ElTableColumn prop="cellphone" label="Celular" />
+          <ElTableColumn prop="status" label="Estatus" />
           <ElTableColumn prop="address_details" label="Direccion" />
         </ElTable>
       </section>

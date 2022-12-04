@@ -8,6 +8,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
+import VueApexCharts from 'vue3-apexcharts';
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
@@ -22,6 +23,7 @@ createInertiaApp({
             .use(plugin)
             .use(ZiggyVue, Ziggy)
             .use(ElementPlus)
+            .use(VueApexCharts)
             .mount(el);
     },
 });

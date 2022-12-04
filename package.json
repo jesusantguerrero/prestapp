@@ -23,9 +23,11 @@
     "dependencies": {
         "@headlessui/vue": "^1.7.4",
         "@inertiajs/vue3": "^1.0.0-beta.2",
+        "apexcharts": "^3.36.3",
         "atmosphere-ui": "^1.0.5-beta",
         "date-fns": "^2.29.3",
         "element-plus": "^2.2.25",
-        "exact-math": "^2.2.3"
+        "exact-math": "^2.2.3",
+        "vue3-apexcharts": "^1.4.1"
     }
 }

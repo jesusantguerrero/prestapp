@@ -1,17 +1,21 @@
 <script setup lang="ts">
+// @ts-ignore: its my template
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import { router } from "@inertiajs/core";
 import AppSectionHeader from "../../Components/AppSectionHeader.vue";
 import { ILoan } from "../../Modules/loans/loanEntity";
-import { AtButton } from "atmosphere-ui";
 import { computed } from "vue";
 import cols from "./cols";
 import AtTable from "../../Components/AtTable.vue";
 import AppButton from "../../Components/shared/AppButton.vue";
 import { Link } from "@inertiajs/vue3";
 
+interface IPaginatedData {
+    data: ILoan[]
+}
+
 const props = defineProps<{
-  loans: [ILoan[] | Object];
+  loans: ILoan[] | IPaginatedData;
 }>();
 
 const listData = computed(() => {
@@ -21,18 +25,19 @@ const listData = computed(() => {
 
 <template>
   <AppLayout title="Prestamos">
-    <main class="p-5">
-      <AppSectionHeader
+    <template #header>
+        <AppSectionHeader
         name="Prestamos"
-        class="rounded-md"
+        class="rounded-md bg-base-lvl-3"
         @create="router.visit('/loans/create')"
       />
-      <section class="mt-4">
-        <AtTable :table-data="listData" :cols="cols">
+    </template>
+    <main class="pt-16">
+        <AtTable :table-data="listData" :cols="cols" class="bg-white rounded-md text-body-1">
           <template v-slot:actions="{ scope: { row } }" class="flex">
             <div class="flex">
               <Link
-                class="relative px-5 py-2 overflow-hidden focus:outline-none hover:bg-opacity-80 border transition font-bold rounded-md min-w-max inline-block bg-primary text-white"
+                class="relative inline-block px-5 py-2 overflow-hidden font-bold text-white transition border rounded-md focus:outline-none hover:bg-opacity-80 min-w-max bg-primary"
                 :href="`/loans/${row.id}`"
               >
                 Edit</Link
@@ -41,7 +46,6 @@ const listData = computed(() => {
             </div>
           </template>
         </AtTable>
-      </section>
     </main>
   </AppLayout>
 </template>
