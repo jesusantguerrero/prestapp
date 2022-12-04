@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Domains\Loans\Models;
 
@@ -13,30 +13,31 @@ class Loan extends Transactionable implements IPayableDocument {
     const STATUS_DRAFT = 'DRAFT';
     const STATUS_APPROVED ='APPROVED';
     const STATUS_DISPOSED = 'DISPOSED';
-    const STATUS_PENDING = 'PENDING'; 
-    const STATUS_LATE =  'LATE'; 
+    const STATUS_PENDING = 'PENDING';
+    const STATUS_LATE =  'LATE';
     const STATUS_PAID = 'PAID';
     const STATUS_PARTIALLY_PAID = 'PARTIALLY_PAID';
     const STATUS_GRACE = 'GRACE';
     const STATUS_CANCELLED = 'CANCELLED';
 
     protected $fillable = [
-        'team_id', 
-        'user_id', 
-        'client_id', 
+        'team_id',
+        'user_id',
+        'client_id',
+        'first_installment_date',
         'amount',
         'interest_rate',
         'start_date'
     ];
 
-    // protected 
+    // protected
     protected $creditCategory = 'loan_line_credit';
     protected $creditAccount = 'Customer Demand Deposits';
 
     public function client() {
         return $this->belongsTo(Client::class, 'client_id');
     }
-    
+
     public function installments() {
         return $this->hasMany(LoanInstallment::class);
     }
@@ -83,7 +84,7 @@ class Loan extends Transactionable implements IPayableDocument {
     // payment things
     public function getStatusField(): string {
         return 'payment_status';
-    } 
+    }
 
     public static function calculateTotal($payable) {
         $payable->total = $payable->installments()->sum('amount');
@@ -95,6 +96,8 @@ class Loan extends Transactionable implements IPayableDocument {
                 $status = self::STATUS_PAID;
             } elseif ($debt > 0 && $debt < $payable->amount) {
                 $status = self::STATUS_PARTIALLY_PAID;
+            } elseif ($debt && $payable->hasLateInstallments()) {
+                $status = self::STATUS_LATE;
             } elseif ($debt) {
                 $status = self::STATUS_PENDING;
             } else {

@@ -13,7 +13,7 @@ export interface ILoanInstallment {
     days: number;
     // amounts
     amount: number;
-    amount_debt: number;
+    amount_due: number;
     amount_paid: number;
     principal: number;
     interest: number;
@@ -32,10 +32,10 @@ export interface ILoanInstallment {
 }
 
 export interface LoanTableParams {
-    startDate: string; 
+    startDate: string;
     frequency: FrequencyType;
     capital: number;
-    interestMonthlyRate: number; 
+    interestMonthlyRate: number;
     count: number;
 }
 
@@ -67,7 +67,7 @@ export class LoanTable {
             capital: this.capital,
             installments: this.count
         })
-        
+
     }
 
     getMonthlyPayment() {
@@ -91,7 +91,7 @@ export class LoanTable {
                 days: 0,
                 amount: this.payment,
                 amount_paid: 0,
-                amount_debt: this.payment,
+                amount_due: this.payment,
                 interest,
                 principal: monthlyPrincipal,
                 fees: 0,
@@ -127,6 +127,6 @@ export class LoanTable {
         return this.interestMonthlyRate / intervals[this.frequency];
     }
 
-   
+
 }
 

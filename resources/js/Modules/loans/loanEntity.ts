@@ -10,8 +10,8 @@ export interface ILoan {
     repayment_count: number;
     // payment details
     frequency: string,
-    disbursement_date: string,
-    first_installment_date: string,
+    disbursement_date: string | Date;
+    first_installment_date: string | Date;
     grace_days: number;
 }
 

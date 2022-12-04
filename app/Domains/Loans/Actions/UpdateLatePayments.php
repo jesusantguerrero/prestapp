@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Domains\Loans\Actions;
 
@@ -18,13 +18,13 @@ class UpdateLatePayments {
     public static function updateLatePayments($payments) {
         foreach ($payments as $payment) {
             $penaltyAmount = 0;
-            
+
             if ($payment->loan->penalty_type == 'PERCENTAGE') {
-                $penaltyAmount = ($payment->loan->penalty / 100) * $payment->amount_debt;
+                $penaltyAmount = ($payment->loan->penalty / 100) * $payment->amount_due;
             } else {
                 $penaltyAmount = $payment->loan->penalty;
             }
-            
+
             $payment->update([
                 'penalty' => $penaltyAmount,
                 'amount' => $payment->amount + $penaltyAmount
@@ -33,7 +33,8 @@ class UpdateLatePayments {
             $payment->loan->update([
                 'payment_status' => Loan::STATUS_LATE
             ]);
+
             $payment->loan->client->checkStatus();
         }
-    } 
+    }
 }

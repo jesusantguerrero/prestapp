@@ -1,5 +1,6 @@
 <?php
 
+use App\Domains\Loans\Models\Loan;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -24,16 +25,31 @@ return new class extends Migration
             $table->foreignId('interest_account_id')->nullable();
             $table->foreignId('fees_account_id')->nullable();
             $table->foreignId('penalty_account_id')->nullable();
+
             // terms
-            $table->decimal('amount', 11, 2)->default(0.00);
-            $table->decimal('total', 11, 2)->default(0.00);
+            $table->date('first_installment_date');
             $table->enum('frequency', ['WEEKLY', 'BIWEEKLY', 'MONTHLY']);
+
+            $table->decimal('amount', 11, 2)->default(0.00);
+            $table->decimal('amount_paid', 11, 2)->default(0.00);
+            $table->decimal('amount_due', 11, 2)->default(0.00);
+            $table->decimal('total', 11, 2)->default(0.00);
             $table->decimal('interest_rate', 11, 2)->default(0.00);
             // Penalty config
             $table->decimal('penalty', 11, 2)->default(0.00);
             $table->enum('penalty_type', ['PERCENTAGE', 'FIXED'])->default('PERCENTAGE');
             // state
-            $table->enum('payment_status', ['draft','unpaid','partial','overdue', 'paid', 'canceled'])->default('draft');
+            $table->enum('payment_status', [
+                Loan::STATUS_DRAFT,
+                Loan::STATUS_APPROVED,
+                Loan::STATUS_DISPOSED,
+                Loan::STATUS_PENDING,
+                Loan::STATUS_PARTIALLY_PAID,
+                Loan::STATUS_GRACE,
+                Loan::STATUS_LATE,
+                Loan::STATUS_PAID,
+                Loan::STATUS_CANCELLED
+            ])->default(Loan::STATUS_DRAFT);
             $table->timestamps();
         });
     }

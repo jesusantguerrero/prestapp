@@ -27,7 +27,7 @@ return new class extends Migration
             // Basic
             $table->decimal('amount', 11, 2)->default(0.00);
             $table->decimal('amount_paid', 11, 2)->default(0.00);
-            $table->decimal('amount_debt', 11, 2)->default(0.00);
+            $table->decimal('amount_due', 11, 2)->default(0.00);
             $table->decimal('principal', 11, 2)->default(0.00);
             $table->decimal('interest', 11, 2)->default(0.00);
             $table->decimal('fees', 11, 2)->default(0.00);

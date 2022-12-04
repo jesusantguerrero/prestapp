@@ -18,7 +18,7 @@ const loanForm = reactive<ILoan>({
   repayment_count: 0,
   interest_rate: 0,
   frequency: "MONTHLY",
-  disbursement_date: formatDate(new Date(), "yyyy-MM-dd"),
+  disbursement_date: new Date(),
   first_installment_date: "",
   grace_days: 0,
   client_id: 1,
@@ -29,9 +29,7 @@ const installments = ref<ILoanInstallment[]>([]);
 const previewInstallments = () => {
   installments.value = generateInstallments({
     ...loanForm,
-    first_installment_date:
-      loanForm.first_installment_date &&
-      formatDate(loanForm.first_installment_date, "yyyy-MM-dd"),
+    first_installment_date: formatDate(loanForm.first_installment_date, "yyyy-MM-dd"),
   });
 };
 
@@ -47,7 +45,12 @@ const canCalculate = computed(() => {
 });
 
 const onSubmit = () => {
-  createLoan(loanForm, installments.value)
+    const formData = {
+        ...loanForm,
+        disbursement_date: formatDate(loanForm.disbursement_date, "yyyy-MM-dd"),
+        first_installment_date: formatDate(loanForm.first_installment_date, 'y-M-d')
+    }
+  createLoan(formData, installments.value)
     .then(() => {
       close();
       router.visit(`/loans/`);
@@ -64,8 +67,8 @@ const goToList = () => {
 
 <template>
   <AppLayout title="Crear Prestamos">
-    <main class="p-5 w-full">
-      <h1>Crear Prestamo</h1>
+    <main class="w-full p-5 bg-white rounded-md">
+      <h1 class="font-bold">Datos Generales</h1>
       <article class="w-full">
         <section class="flex space-x-4">
           <AtField label="Monto" class="w-full">
@@ -96,21 +99,21 @@ const goToList = () => {
       </article>
       <footer class="flex justify-end space-x-2">
         <AtButton
-          class="text-red-400 font-bold bg-gray-100 rounded-md"
+          class="font-bold text-red-400 bg-gray-100 rounded-md"
           variant="secondary"
           @click="goToList()"
         >
           Cancelar
         </AtButton>
         <AtButton
-          class="bg-blue-500 text-white rounded-md"
+          class="text-white bg-blue-500 rounded-md"
           @click="previewInstallments()"
           :disabled="!canCalculate"
         >
           Calcular
         </AtButton>
         <AtButton
-          class="bg-blue-500 text-white rounded-md"
+          class="text-white bg-blue-500 rounded-md"
           @click="onSubmit"
           v-if="hasInstallments"
         >
