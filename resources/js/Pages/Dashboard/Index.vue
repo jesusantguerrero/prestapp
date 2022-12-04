@@ -23,6 +23,18 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    activeLoanClients: {
+        type: Number
+    },
+    loanCapital: {
+        type: Number
+    },
+    loanExpectedInterest: {
+        type: Number
+    },
+    loanPaidInterest: {
+        type: Number
+    },
     bank: {
         type: Number
     },
@@ -42,21 +54,21 @@ const props = defineProps({
 
 const welcomeCards = [{
         label: 'Clientes con Prestamos',
-        value: props.loanClients,
+        value: props.activeLoanClients,
         icon: 'fa-users'
     }, {
 
         label: 'Capital Prestado',
         icon: 'fa-money',
-        value: props.loanCapital
+        value: formatMoney(props.loanCapital)
     }, {
 
-        label: 'Interes Ganado',
+        label: 'Interes Esperado',
         icon: 'fa-wallet',
-        value: props.loanInterestProfit
+        value: formatMoney(props.loanExpectedInterest)
     }, {
         label: 'Total Interes pagado',
-        value: props.loanInterestProfit,
+        value: formatMoney(props.loanPaidInterest),
         accent: true,
     }
 ]
@@ -113,6 +125,7 @@ const comparisonRevenue = {
         },
     ],
 };
+
 </script>
 
 <template>

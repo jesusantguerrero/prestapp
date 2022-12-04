@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Domains\CRM\Models\Client;
+use App\Domains\CRM\Services\ClientService;
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
 use App\Domains\Loans\Services\LoanService;
@@ -31,7 +33,7 @@ class LoanController extends InertiaController
         $this->includes = ['client'];
         $this->filters = [];
         $this->resourceName= "loans";
-        
+
     }
 
     protected function createResource(Request $request, $postData)
@@ -39,10 +41,23 @@ class LoanController extends InertiaController
         return LoanService::createLoan($postData, $request->get('installments'));
     }
 
+
+    public function create(Request $request) {
+        $teamId = $request->user()->current_team_id;
+
+        return inertia($this->templates['create'], [
+            'loans' => null,
+            'clients' => ClientService::ofTeam($teamId),
+        ]);
+    }
+
     protected function getEditProps(Request $request, $id)
     {
+        $teamId = $request->user()->current_team_id;
+
         return [
-            'loans' => Loan::where('id', $id)->with(['client', 'installments', 'paymentDocuments'])->first()
+            'loans' => Loan::where('id', $id)->with(['client', 'installments', 'paymentDocuments'])->first(),
+            'clients' => ClientService::ofTeam($teamId),
         ];
     }
 

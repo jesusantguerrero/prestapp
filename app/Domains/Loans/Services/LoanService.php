@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Domains\Loans\Services;
 
@@ -6,7 +6,7 @@ use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
 
 class LoanService {
-    
+
     public static function createLoan(mixed $loanData, mixed $installments) {
         $loan = Loan::create($loanData);
         self::createInstallments($loan, $installments);
@@ -39,5 +39,17 @@ class LoanService {
        return $loan->createTransaction([
         "total" => $loan->amount
        ]);
+    }
+
+    public static function disposedCapitalFor(int $teamId) {
+        return Loan::where('team_id', $teamId)->sum('amount');
+    }
+
+    public static function expectedInterestFor(int $teamId) {
+        return LoanInstallment::where('team_id', $teamId)->sum('interest');
+    }
+
+    public static function paidInterestFor(int $teamId) {
+        return LoanInstallment::where('team_id', $teamId)->sum('interest_paid');
     }
 }

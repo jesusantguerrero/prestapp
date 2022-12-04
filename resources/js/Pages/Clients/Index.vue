@@ -15,8 +15,10 @@ const isModalOpen = ref(false);
 
 <template>
   <AppLayout title="Clientes">
+    <template #header>
+        <AppSectionHeader name="Clientes" class="rounded-md" @create="isModalOpen = true" />
+    </template>
     <main class="p-5">
-      <AppSectionHeader name="Clientes" class="rounded-md" @create="isModalOpen = true" />
 
       <section class="mt-5">
         <ElTable :data="data">

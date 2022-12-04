@@ -1,4 +1,5 @@
 export interface IClient {
+    id?: number;
     names: string;
-    lastNames: string;
+    lastnames: string;
 }

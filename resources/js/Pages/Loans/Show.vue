@@ -10,6 +10,7 @@ import InstallmentTable from "./Partials/InstallmentTable.vue";
 import PaymentFormModal from "./Partials/PaymentFormModal.vue";
 import { formatMoney } from "@/utils/formatMoney";
 import { ILoanInstallment } from "../../Modules/loans/loanInstallmentEntity";
+import { loanFrequencies } from "../../Modules/loans/constants";
 
 export interface Props {
   loans: ILoanWithInstallments;
@@ -29,6 +30,7 @@ const tabs = {
 
 type IPaymentMetaData = ILoanInstallment & {
   installment_id?: number;
+  documents: any[]
 };
 
 const isPaymentModalOpen = ref(false);
@@ -40,6 +42,21 @@ const onPayment = (installment: ILoanInstallment) => {
     amount: parseFloat(installment.amount_due) || installment.amount,
     id: undefined,
     installment_id: installment.id,
+  };
+
+  isPaymentModalOpen.value = true;
+};
+
+const onMultiplePayment = () => {
+  selectedPayment.value = {
+    // @ts-ignore solve backend sending decimals as strings
+    amount: 0,
+    id: undefined,
+    documents: props.loans.installments.map(installment => ({
+        selected: true,
+        name: '',
+        amount: parseFloat(installment.amount_due) || installment.amount
+    }))
   };
 
   isPaymentModalOpen.value = true;
@@ -111,8 +128,8 @@ const refresh = () => {
         </article>
 
         <article class="w-3/12 p-4 space-y-2 border rounded-md shadow-md bg-base-lvl-3">
-          <AppButton class="w-full"> Agregar Pago </AppButton>
-          <AppButton class="w-full"> Recibo Multiple </AppButton>
+          <AppButton class="w-full" @click="onMultiplePayment()"> Agregar Pago </AppButton>
+          <AppButton class="w-full" @click="onMultiplePayment()"> Recibo Multiple </AppButton>
 
           <section class="py-4 mt-8 space-y-2">
             <div v-for="payment in loans.payment_documents" class="text-sm">

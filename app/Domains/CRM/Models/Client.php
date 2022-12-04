@@ -21,6 +21,10 @@ class Client extends Model {
         return $this->loans()->late()->count();
     }
 
+    public function hasActiveLoans() {
+        return $this->loans()->active()->count();
+    }
+
     public function checkStatus() {
         if($this->hasLateLoans()) {
             $this->updateQuietly([

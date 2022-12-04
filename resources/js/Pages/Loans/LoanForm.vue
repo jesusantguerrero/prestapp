@@ -8,10 +8,21 @@ import { ILoan } from "../../Modules/loans/loanEntity";
 import { loanFrequencies } from "../../Modules/loans/constants";
 import { router } from "@inertiajs/core";
 import InstallmentTable from "./Partials/InstallmentTable.vue";
+import { IClient } from "../../Modules/clients/clientEntity";
 
-defineProps<{
-  loanData: ILoan[];
-}>();
+interface Props {
+    loanData: ILoan[];
+    clients: IClient[];
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    clients: []
+});
+
+const clientOptions = props.clients.map(client => ({
+    label: client.names + ' ' + client.lastnames,
+    id: client.id
+}));
 
 const loanForm = reactive<ILoan>({
   amount: 0,
@@ -22,6 +33,7 @@ const loanForm = reactive<ILoan>({
   first_installment_date: "",
   grace_days: 0,
   client_id: 1,
+  client: undefined
 });
 
 const installments = ref<ILoanInstallment[]>([]);
@@ -48,7 +60,8 @@ const onSubmit = () => {
     const formData = {
         ...loanForm,
         disbursement_date: formatDate(loanForm.disbursement_date, "yyyy-MM-dd"),
-        first_installment_date: formatDate(loanForm.first_installment_date, 'y-M-d')
+        first_installment_date: formatDate(loanForm.first_installment_date, 'y-M-d'),
+        client_id: loanForm.client.id
     }
   createLoan(formData, installments.value)
     .then(() => {
@@ -68,8 +81,20 @@ const goToList = () => {
 <template>
   <AppLayout title="Crear Prestamos">
     <main class="w-full p-5 bg-white rounded-md">
-      <h1 class="font-bold">Datos Generales</h1>
+      <article>
+          <h1 class="font-bold">Datos Del Cliente</h1>
+          <AtField label="Cliente" class="w-full">
+            <AtSimpleSelect
+                :options="clientOptions"
+                v-model="loanForm.client"
+                label="display_name"
+                track-by="id"
+                placeholder="Selecciona un cliente"
+            />
+          </AtField>
+      </article>
       <article class="w-full">
+        <h1 class="font-bold">Datos Generales</h1>
         <section class="flex space-x-4">
           <AtField label="Monto" class="w-full">
             <AtInput v-model="loanForm.amount" />
@@ -97,6 +122,7 @@ const goToList = () => {
           <InstallmentTable :installments="installments" />
         </section>
       </article>
+
       <footer class="flex justify-end space-x-2">
         <AtButton
           class="font-bold text-red-400 bg-gray-100 rounded-md"

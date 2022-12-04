@@ -14,11 +14,19 @@ class Loan extends Transactionable implements IPayableDocument {
     const STATUS_APPROVED ='APPROVED';
     const STATUS_DISPOSED = 'DISPOSED';
     const STATUS_PENDING = 'PENDING';
-    const STATUS_LATE =  'LATE';
-    const STATUS_PAID = 'PAID';
     const STATUS_PARTIALLY_PAID = 'PARTIALLY_PAID';
     const STATUS_GRACE = 'GRACE';
+    const STATUS_LATE =  'LATE';
+    const STATUS_PAID = 'PAID';
     const STATUS_CANCELLED = 'CANCELLED';
+
+    const ACTIVE_STATUSES = [
+        self::STATUS_DISPOSED,
+        self::STATUS_PENDING,
+        self::STATUS_PARTIALLY_PAID,
+        self::STATUS_GRACE,
+        self::STATUS_LATE,
+    ];
 
     protected $fillable = [
         'team_id',
@@ -51,6 +59,17 @@ class Loan extends Transactionable implements IPayableDocument {
     public function scopeLate($query)
     {
         return $query->where('payment_status', self::STATUS_LATE);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->whereIn('payment_status', [
+            self::STATUS_DISPOSED,
+            self::STATUS_PENDING,
+            self::STATUS_PARTIALLY_PAID,
+            self::STATUS_GRACE,
+            self::STATUS_LATE,
+        ]);
     }
 
     public function hasLateInstallments() {
