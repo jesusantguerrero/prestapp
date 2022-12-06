@@ -14,6 +14,7 @@
             name="invoice-description"
             id="invoice-description"
             v-model="paymentForm.concept"
+            rounded
           />
         </AtField>
 
@@ -24,22 +25,25 @@
             name="invoice-description"
             id="invoice-description"
             v-model="paymentForm.reference"
+            rounded
           />
         </AtField>
 
         <AtField class="w-full text-left" label="Monto Recibido">
           <AtInput
-            type="number"
             class="form-control"
+            :number-format="true"
             v-model="paymentForm.amount"
+            rounded
             required
             min="1"
           />
+          {{ documentTotal }}
         </AtField>
       </section>
 
       <section class="flex space-x-4">
-        <AtField class="w-5/12 text-left mb-5" label="Cuenta de Pago">
+        <AtField class="w-5/12 mb-5 text-left" label="Cuenta de Pago">
           <AtSimpleSelect
             v-model="paymentForm.account_id"
             v-model:selected="paymentForm.paymentAccount"
@@ -50,7 +54,7 @@
             key-track="id"
           />
         </AtField>
-        <AtField class="w-3/12 text-left mb-5" label="Metodo de Pago">
+        <AtField class="w-3/12 mb-5 text-left" label="Metodo de Pago">
           <AtSimpleSelect
             v-model="paymentForm.payment_method"
             v-model:selected="paymentForm.paymentMethod"
@@ -74,29 +78,34 @@
             key-track="id"
           />
         </AtField>
-        <AtField label="Fecha de pago" class="w-3/12">
-          <ElDatePicker v-model="paymentForm.payment_date" size="large" class="w-full" />
+        <AtField label="Fecha de pago" class="w-3/12" >
+          <ElDatePicker v-model="paymentForm.payment_date" size="large" class="w-full" rounded />
         </AtField>
       </section>
 
       <div class="w-full text-left">
         <label for="">Notes</label>
         <textarea
-          class="w-full border border-gray-200 rounded-md focus:outline-none focus:border-gray-400"
+          class="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:border-gray-400"
           v-model="paymentForm.notes"
           cols="3"
           rows="3"
         />
       </div>
+
+			<PaymentGrid 
+				:table-data="paymentForm.documents" 
+				:available-taxes="[]" 
+			/>
     </div>
 
     <template #footer>
-      <div class="dialog-footer space-x-2">
-        <AtButton @click="emitChange(false)" class="bg-white text-gray border rounded-md">
+      <div class="space-x-2 dialog-footer">
+        <AtButton @click="emitChange(false)" class="bg-white border rounded-md text-gray">
           Cancel
         </AtButton>
         <AppButton
-          class="bg-blue-500 text-white"
+          class="text-white bg-blue-500"
           v-if="paymentForm.id"
           @click="deletePayment()"
         >
@@ -112,8 +121,10 @@
 import { AtButton, AtField, AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { format as formatDate } from "date-fns";
 import { ElDatePicker, ElDialog } from "element-plus";
-import { inject, ref, watch } from "vue";
+import { inject, ref, watch, computed } from "vue";
 import AppButton from "../../../Components/shared/AppButton.vue";
+import { MathHelper } from "../../../Modules/loans/mathHelper";
+import PaymentGrid from "./PaymentGrid.vue";
 
 const defaultPaymentForm = {
   amount: 0,
@@ -192,6 +203,12 @@ watch(
   }
 );
 
+const documentTotal = computed(() => {
+    return paymentForm.value.documents.reduce((total, payment) => {
+        return MathHelper.sum(total, payment.payment)
+    }, 0)
+})
+
 function addPayment() {
   if (!paymentForm.value.amount) {
     notify({
@@ -210,6 +227,7 @@ function addPayment() {
     account_id: paymentForm.value.account_id,
     reference: paymentForm.value.reference,
     notes: paymentForm.value.notes,
+    documents: paymentForm.value.documents.filter(doc => doc.payment)
   };
 
   axios

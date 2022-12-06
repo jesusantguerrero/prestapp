@@ -28,6 +28,7 @@
         "date-fns": "^2.29.3",
         "element-plus": "^2.2.25",
         "exact-math": "^2.2.3",
+        "vue-cleave-component": "^3.0.2",
         "vue3-apexcharts": "^1.4.1"
     }
 }
