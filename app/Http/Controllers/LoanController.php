@@ -61,7 +61,22 @@ class LoanController extends InertiaController
         ];
     }
 
-    public function pay(Loan $loan, LoanInstallment $installment, Request $request) {
+    public function pay(Loan $loan, Request $request) {
+      $postData = $this->getPostData($request);
+    
+      $loan->createPayment(array_merge($postData, [
+          "client_id" => $loan->client_id,
+          "documents" => array_map(function ($document) {
+            $document['payable_id'] = $document['id'];
+            $document['payable_type'] = LoanInstallment::class;
+            $document['amount'] = $document['payment'];
+            return $document;
+          }, $postData['documents'])
+      ]));
+      $loan->client->checkStatus();
+  }
+
+    public function payInstallment(Loan $loan, LoanInstallment $installment, Request $request) {
         $postData = $this->getPostData($request);
         if ($installment->loan_id == $loan->id) {
             $loan->createPayment(array_merge($postData, [

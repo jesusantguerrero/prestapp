@@ -9,6 +9,14 @@ export const MathHelper = {
         return exactMath.mul(num1, num2);
     },
 
+    sum(num1: number, num2: number) {
+        return exactMath.add(num1, num2);
+    },
+
+    sumWithRounding(num1: number, num2: number) {
+      return this.rounding(this.sum(num1, num2));
+    },
+
     subWithRounding(num1: number, num2: number) {
         return this.rounding(this.sub(num1, num2))
     },

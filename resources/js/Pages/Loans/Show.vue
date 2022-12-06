@@ -28,6 +28,7 @@ const tabs = {
   details: "Details",
 };
 
+// payment related things
 type IPaymentMetaData = ILoanInstallment & {
   installment_id?: number;
   documents: any[]
@@ -46,28 +47,42 @@ const onPayment = (installment: ILoanInstallment) => {
 
   isPaymentModalOpen.value = true;
 };
-
 const onMultiplePayment = () => {
   selectedPayment.value = {
     // @ts-ignore solve backend sending decimals as strings
     amount: 0,
     id: undefined,
-    documents: props.loans.installments.map(installment => ({
-        selected: true,
-        name: '',
-        amount: parseFloat(installment.amount_due) || installment.amount
-    }))
+    documents: props.loans.installments
+    .map(installment => ({
+        name: `Pago ${installment.id}`,
+        ...installment,
+         // @ts-ignore solve backend sending decimals as strings
+         amount: parseFloat(installment.amount_due),
+         payment: 0
+        }))
+      .filter(doc => {
+        console.log(doc)
+      // @ts-ignore solve backend sending decimals as strings
+        return parseFloat(doc.amount || 0)}
+      )
   };
 
   isPaymentModalOpen.value = true;
 };
-
 const paymentConcept = computed(() => {
   return (
     selectedPayment.value &&
     `Pago ${props.loans.id} pago #${selectedPayment.value.installment_id}`
   );
 });
+
+const paymentUrl = computed(() => {
+    const baseUrl = `/loans/${props.loans.id}`
+    const url = selectedPayment.value?.documents?.length 
+    ? `${baseUrl}/pay`
+    : `${baseUrl}/installments/${selectedPayment.installment_id}/pay`
+    return url
+})
 
 const refresh = () => {
   router.reload();
@@ -150,10 +165,11 @@ const refresh = () => {
         v-if="selectedPayment"
         v-model="isPaymentModalOpen"
         :payment="selectedPayment"
-        :endpoint="`/loans/${loans.id}/installments/${selectedPayment.installment_id}/pay`"
+        :endpoint="paymentUrl"
         :due="selectedPayment.amount"
         :default-concept="paymentConcept"
         @saved="refresh()"
+        @closed="selectedPayment=null"
       />
     </main>
   </AppLayout>

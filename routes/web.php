@@ -41,10 +41,15 @@ Route::middleware([
 ])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
+    // CRM
     Route::resource('clients', ClientController::class);
+    
+    // Loans
     Route::resource('loans', LoanController::class);
     Route::post('/loans/:loanId/installments/:installment/mark-as-paid', [LoanController::class, 'markAsPaid']);
-    Route::post('/loans/{loan}/installments/{installment}/pay', [LoanController::class, 'pay']);
+    Route::post('/loans/{loan}/installments/{installment}/pay', [LoanController::class, 'payInstallment']);
+    Route::post('/loans/{loan}/pay', [LoanController::class, 'pay']);
 
+    // Properties
     Route::resource('rents', RentController::class);
 });
