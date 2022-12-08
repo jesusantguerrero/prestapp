@@ -17,7 +17,7 @@ export const useAppMenu = t => {
             to: '/clients',
             as: Link,
             isActiveFunction(url, currentPath) {
-                return /clientes/.test(currentPath)
+                return /clients/.test(currentPath)
             }
         },
         {
@@ -40,7 +40,10 @@ export const useAppMenu = t => {
             icon: 'fas fa-heart',
             label:'Alquileres',
             to: '/rents',
-            as: Link
+            as: Link,
+            isActiveFunction(url, currentPath) {
+              return /rents/.test(currentPath)
+           }
         },
         {
             icon: 'fas fa-home',

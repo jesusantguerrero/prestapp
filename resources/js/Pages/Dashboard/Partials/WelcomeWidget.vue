@@ -21,7 +21,7 @@ defineProps<Props>()
 <template>
     <article class="px-5 pt-3 transition border divide-y rounded-lg divide-base border-base bg-base-lvl-3">
         <section class="items-center pb-2 md:justify-between md:flex">
-            <h1 class="font-bold text-body">
+            <h1 class="font-bold text-body-1">
                 {{ message }} <span class="text-primary">{{ username }}</span>
             </h1>
             <div class="space-x-2">
