@@ -53,8 +53,6 @@ Route::middleware([
 
     // Properties
     Route::resource('rents', RentController::class);
-    Route::get('properties', PropertyController::class);
-    // Route::resource('properties', PropertyController::class, [
-    //   'properties.index' => '/properties/list'
-    // ]);
+    Route::get('properties/overview', PropertyController::class);
+    Route::resource('properties', PropertyController::class);
 });
