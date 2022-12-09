@@ -23,7 +23,7 @@ class Rent extends Transactionable implements IPayableDocument {
         'team_id',
         'user_id',
         'client_id',
-        'first_installment_date',
+        'first_invoice_date',
         'amount',
         'interest_rate',
         'start_date'
@@ -38,10 +38,10 @@ class Rent extends Transactionable implements IPayableDocument {
     }
 
     public function invoices() {
-        return $this->hasMany(Invoice::class);
+        return $this->morphMany(Invoice::class, 'invoiceable');
     }
 
-     /**
+    /**
      * Scope a query to only include popular users.
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
@@ -65,7 +65,7 @@ class Rent extends Transactionable implements IPayableDocument {
     }
 
     public function getTransactionDescription() {
-        return "Desembolso de prestamo #code";
+        return "Deposito de propiedad #code";
     }
 
     public function getTransactionDirection() {
@@ -86,7 +86,7 @@ class Rent extends Transactionable implements IPayableDocument {
     }
 
     public static function calculateTotal($payable) {
-        $payable->total = $payable->invoices()->sum('amount');
+        $payable->total = $payable->invoices()->sum('total');
     }
 
     public static function checkStatus($payable) {

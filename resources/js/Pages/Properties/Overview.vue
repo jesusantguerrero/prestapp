@@ -7,6 +7,7 @@ import { AtBackgroundIconCard, AtButton, AtTable } from "atmosphere-ui";
 import cols from "./cols";
 import AppButton from "../../Components/shared/AppButton.vue";
 import { router } from "@inertiajs/core";
+import PropertySectionNav from "./Partials/PropertySectionNav.vue";
 
 const props = defineProps({
   user: {
@@ -97,7 +98,15 @@ const comparisonRevenue = {
 
 <template>
   <AppLayout title="Propiedades">
-    <main class="p-5 mx-auto text-gray-500 sm:px-6 lg:px-8">
+    <template #header>
+      <PropertySectionNav> 
+          <template #actions>
+            <AppButton @click="router.visit(route('properties.create'))">Agregar Propiedad</AppButton>
+          </template>
+        </PropertySectionNav>
+    </template>
+    
+    <main class="p-5 mx-auto mt-8 text-gray-500 sm:px-6 lg:px-8">
       <WelcomeWidget
           message="Estadisticas de propiedades"
           class="text-body-1"

@@ -1,15 +1,11 @@
 export const MODULES = {
-    HOUSING: 'housing',
-    MEAL: 'meal',
-    FINANCE: 'finance',
-    RELATIONSHIP: 'relationship'
+    CRM: 'CRM',
+    LOAN: 'loan',
+    PROPERTY: 'property',
 }
 
-
-
-
 const menus = {
-    [MODULES.HOUSING]: [{
+    [MODULES.CRM]: [{
         label: 'Overview',
         url: '/housing'
     },
@@ -29,7 +25,7 @@ const menus = {
         label: 'Equipment',
         url: '/housing/equipments'
     }],
-    [MODULES.MEAL]: [
+    [MODULES.LOAN]: [
         {
             label: 'Planner',
             url: '/meal-planner'
@@ -45,21 +41,21 @@ const menus = {
             url: '/meals/menus',
             hidden: true
     }],
-    [MODULES.FINANCE]: [{
-        label: 'Overview',
-        url: '/finance'
+    [MODULES.PROPERTY]: [{
+        label: 'Resumen',
+        url: '/properties/overview'
     },
     {
-        label: 'Budget',
-        url: '/budgets'
+        label: 'Propiedades',
+        url: '/properties/'
     },
     {
-        label: 'Watchlist',
-        url: '/finance/watchlist'
+        label: 'Alquileres',
+        url: '/rents'
     },
     {
-        label: 'Transactions',
-        url: '/finance/transactions'
+        label: 'Pagos',
+        url: '/payments'
     },
      {
         label: 'Trends',

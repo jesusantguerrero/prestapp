@@ -3,15 +3,34 @@
 namespace App\Domains\Properties\Services;
 
 use App\Domains\Properties\Models\Property;
+use App\Domains\Properties\Models\Rent;
+use Exception;
 use Illuminate\Support\Facades\DB;
 
 class PropertyService {
-    public static function createDisbursementTransaction($loan) {
-       return $loan->createTransaction([
-        "total" => $loan->amount
+
+    public static function createRent(mixed $rentData, mixed $schedule = null) {
+      $property = Property::find($rentData['property_id'])->get();
+      if (!$property || $property->status !== Property::STATUS_AVAILABLE) {
+        throw new Exception('This property is not available at the time');
+      }
+      $rent = Rent::create($rentData);
+      $rent->property->update('status', Property::STATUS_RENTED);
+      return self::createDepositTransaction($rent);
+    }
+
+    public static function createDepositTransaction($rent) {
+       return $rent->createTransaction([
+        "total" => $rent->amount
        ]);
     }
 
+    public static function ofTeam($teamId, $status= Property::STATUS_AVAILABLE) {
+      return Property::where([
+        'team_id' =>  $teamId,
+        'status' => $status])
+      ->get();
+    }
 
     public static function totalByStatusFor(int $teamId) {
         $properties = Property::where('team_id', $teamId)
