@@ -31,8 +31,7 @@ class PropertyController extends InertiaController
       $this->resourceName= "properties";
   }
 
-  public function __invoke(Request $request)
-    {
+    public function __invoke(Request $request) {
             $reportHelper = new ReportHelper();
             $teamId = $request->user()->current_team_id;
 
@@ -61,8 +60,8 @@ class PropertyController extends InertiaController
       $teamId = $request->user()->current_team_id;
 
       return inertia($this->templates['create'], [
-          'properties' => null,
-          'clients' => ClientService::ofTeam($teamId),
-      ]);
-  }
+            'properties' => null,
+            'clients' => ClientService::ofTeam($teamId),
+        ]);
+    }
 }

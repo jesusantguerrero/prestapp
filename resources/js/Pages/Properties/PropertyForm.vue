@@ -5,7 +5,7 @@
 
   import AppLayout from '@/Components/templates/AppLayout.vue'
   import AppSectionHeader from '@/Components/AppSectionHeader.vue'
-  import { AtSelect } from 'atmosphere-ui'
+  import { AtField, AtSelect } from 'atmosphere-ui'
   import { useForm } from '@inertiajs/vue3'
 
   const props = defineProps([
@@ -100,8 +100,7 @@ const saveForm = () => {
               <div class="w-9/12 text-3xl font-bold">
                   <input v-model="formData.name" class="w-full font-bold border-b focus:outline-none" placeholder="Nombre de propiedad" >
               </div>
-              <div class="w-4/12">
-                <label for="invlice-client">Dueño de propiedad </label>
+              <AtField class="w-4/12" label="Dueño de propiedad">
                 <AtSelect
                     v-model="formData.owner_id"
                     v-model:selected="formData.owner"
@@ -110,7 +109,7 @@ const saveForm = () => {
                     label="names"
                     key-track="id"
                 />
-            </div>
+            </AtField>
           </div>
           <div class="space-y-4">
               <textarea v-model="formData.description" class="w-full border-b focus:outline-none" placeholder="Descripcion" />

@@ -26,4 +26,8 @@ class Property extends Model {
     public function owner() {
         return $this->belongsTo(Client::class, 'owner_id');
     }
+
+    public function activeContract() {
+      return $this->hasOne(Rent::class)->latestOfMany('created_at');
+  }
 }

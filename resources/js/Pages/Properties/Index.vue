@@ -9,6 +9,7 @@ import cols from "./propertyCols";
 import AtTable from "../../Components/AtTable.vue";
 import AppButton from "../../Components/shared/AppButton.vue";
 import { Link } from "@inertiajs/vue3";
+import PropertySectionNav from "./Partials/PropertySectionNav.vue";
 
 interface IPaginatedData {
     data: ILoan[]
@@ -26,13 +27,14 @@ const listData = computed(() => {
 <template>
   <AppLayout title="Propiedades">
     <template #header>
-        <AppSectionHeader
-        name="Propiedades"
-        class="rounded-md bg-base-lvl-3"
-        @create="router.visit('/properties/create')"
-      />
+      <PropertySectionNav> 
+          <template #actions>
+            <AppButton @click="router.visit(route('properties.create'))">Agregar Propiedad</AppButton>
+          </template>
+        </PropertySectionNav>
     </template>
-    <main class="pt-16">
+    
+    <main class="p-5 mx-auto mt-8 text-gray-500 sm:px-6 lg:px-8">
         <AtTable :table-data="listData" :cols="cols" class="bg-white rounded-md text-body-1">
           <template v-slot:actions="{ scope: { row } }" class="flex">
             <div class="flex">
