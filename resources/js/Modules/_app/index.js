@@ -33,8 +33,12 @@ export const useAppMenu = t => {
         {
             icon: 'fas fa-heart',
             label:'Propiedades',
-            to: '/properties',
-            as: Link
+            to: '/properties/overview',
+            as: Link,
+            isActiveFunction(url, currentPath) {
+              return /properties/.test(currentPath)
+            }
+
         },
         {
             icon: 'fas fa-heart',
