@@ -10,13 +10,14 @@ use Illuminate\Support\Facades\DB;
 class PropertyService {
 
     public static function createRent(mixed $rentData, mixed $schedule = null) {
-      $property = Property::find($rentData['property_id'])->get();
+      $property = Property::find($rentData['property_id']);
       if (!$property || $property->status !== Property::STATUS_AVAILABLE) {
         throw new Exception('This property is not available at the time');
+      } else {
+        $rent = Rent::create($rentData);
+        $rent->property->update(['status' => Property::STATUS_RENTED]);
+        return self::createDepositTransaction($rent);
       }
-      $rent = Rent::create($rentData);
-      $rent->property->update('status', Property::STATUS_RENTED);
-      return self::createDepositTransaction($rent);
     }
 
     public static function createDepositTransaction($rent) {

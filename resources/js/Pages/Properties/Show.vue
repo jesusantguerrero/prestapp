@@ -1,19 +1,17 @@
 <script setup lang="ts">
 import { Link, router } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
-import { ILoanWithInstallments } from "../../Modules/loans/loanEntity";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import AppSectionHeader from "../../Components/AppSectionHeader.vue";
-import InstallmentTable from "./Partials/InstallmentTable.vue";
-import PaymentFormModal from "./Partials/PaymentFormModal.vue";
-import { formatMoney, formatDate } from "@/utils";
+import { formatMoney } from "@/utils/formatMoney";
 import { ILoanInstallment } from "../../Modules/loans/loanInstallmentEntity";
 import PropertySectionNav from "../Properties/Partials/PropertySectionNav.vue";
+import { IProperty } from "../../Modules/properties/propertyEntity";
 
 export interface Props {
-  rents: ILoanWithInstallments;
+  properties: IProperty;
   currentTab: string;
 }
 
@@ -23,13 +21,13 @@ const props = withDefaults(defineProps<Props>(), {
 
 const tabs = {
   summary: "Detalles",
-  documents: "Tabla de Amortización",
-  transactions: "Pagos",
-  details: "Details",
+  reports: "Reportes",
+  contracts: "Contratos",
+  clients: "Inquilinos",
+  notes: "Notas",
+  documents: "Documentos",
+  settings: "Configuracion",
 };
-
-const clientName = computed(() => props.rents.client.names + " " + props.rents.client?.lastnames )
-const sectionTitle = computed(() => `Alquiler - ${clientName.value}`)
 
 type IPaymentMetaData = ILoanInstallment & {
   installment_id?: number;
@@ -52,7 +50,7 @@ const onPayment = (installment: ILoanInstallment) => {
 const paymentConcept = computed(() => {
   return (
     selectedPayment.value &&
-    `Pago ${props.rents.id} pago #${selectedPayment.value.installment_id}`
+    `Pago ${props.properties.id} pago #${selectedPayment.value.installment_id}`
   );
 });
 
@@ -62,29 +60,31 @@ const refresh = () => {
 </script>
 
 <template>
-  <AppLayout :title="sectionTitle">
+  <AppLayout title="Alquiler">
     <template #header>
       <PropertySectionNav> 
           <template #actions>
-            <AppButton variant="inverse" @click="router.visit(route('rents.create'))">Agregar Contrato</AppButton>
+            <AppButton @click="router.visit(route('properties.create'))">
+              Nuevo Contrato
+            </AppButton>
           </template>
         </PropertySectionNav>
     </template>
 
     <main class="p-5 mt-8">
       <AppSectionHeader
-        name="Contrato de Alquiler a"
-        class="px-5 bg-white border-2 border-white rounded-md rounded-b-none shadow-md"
-        :resource="rents"
-        :title="`${clientName}`"
+        name="Alquiler"
+        class="px-5 border-2 border-white rounded-md rounded-b-none shadow-md"
+        :resource="properties"
+        :title="properties.address"
+        @create="router.visit('/properties/create')"
         hide-action
-        @create="router.visit('/loans/create')"
       />
       <div
         class="w-full px-5 pt-10 pb-2 mb-5 space-y-5 text-gray-600 bg-white border-gray-200 shadow-md rounded-b-md"
       >
         <div>
-          Alquiler #{{ rents.id }} para {{ clientName }}
+          {{ properties.address }}
         </div>
         <div class="flex space-x-2">
           <Link
@@ -92,7 +92,7 @@ const refresh = () => {
             v-for="(tabLabel, tab) in tabs"
             :key="tab"
             :class="{ 'bg-gray-300': tab == currentTab }"
-            :href="`/rents/${rents.id}?current-tab=${tab}`"
+            :href="`/rents/${properties.id}?current-tab=${tab}`"
             replace
           >
             {{ tabLabel }}
@@ -101,22 +101,22 @@ const refresh = () => {
       </div>
       <section class="flex w-full space-x-8 rounded-t-none border-t-none ">
         <article class="w-9/12 p-4 space-y-2 border rounded-md shadow-md bg-base-lvl-3">
-          <span> Cliente: {{ clientName }} </span>
+          <span> Cliente: {{ properties.names }} {{ properties.lastnames }} </span>
           <p>
-            Mensualidad:
-            {{ rents.amount }}
+            Monto Prestado:
+            {{ properties.amount }}
           </p>
           <p>
-            Fecha de Inicio:
-            {{ formatDate(rents.date) }}
+            Fecha Primer Pago:
+            {{ properties.first_invoice_date }}
           </p>
           <p>
             Estatus:
-            {{ rents.status }}
+            {{ properties.status }}
           </p>
 
           <InstallmentTable
-            :installments="rents.installments"
+            :installments="properties.installments"
             accept-payment
             @pay="onPayment"
           />
@@ -127,17 +127,7 @@ const refresh = () => {
           <AppButton class="w-full"> Recibo Multiple </AppButton>
 
           <section class="py-4 mt-8 space-y-2">
-            <div class="text-sm" v-if="rents.transaction">
-              {{ rents.transaction.description}}
-              <span class="font-bold text-green-500">
-                {{ formatMoney(rents.transaction.total) }}
-              </span>
-              en
-              <span class="font-bold text-primary">
-                {{rents.date }}
-              </span>
-            </div>
-            <div v-for="payment in rents.transactions" class="text-sm">
+            <div v-for="payment in properties.payment_documents" class="text-sm">
               Pagado
               <span class="font-bold text-green-500">
                 {{ formatMoney(payment.amount) }}
@@ -155,7 +145,7 @@ const refresh = () => {
         v-if="selectedPayment"
         v-model="isPaymentModalOpen"
         :payment="selectedPayment"
-        :endpoint="`/loans/${rents.id}/installments/${selectedPayment.installment_id}/pay`"
+        :endpoint="`/loans/${properties.id}/installments/${selectedPayment.installment_id}/pay`"
         :due="selectedPayment.amount"
         :default-concept="paymentConcept"
         @saved="refresh()"

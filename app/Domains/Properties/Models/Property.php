@@ -17,6 +17,7 @@ class Property extends Model {
         'user_id',
         'owner_id',
         'address',
+        'status'
     ];
 
     // protected

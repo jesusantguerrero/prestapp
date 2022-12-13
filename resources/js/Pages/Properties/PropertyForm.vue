@@ -1,5 +1,5 @@
 <script setup>
-  import { reactive, nextTick, ref } from 'vue'
+  import { reactive, nextTick, ref, watch } from 'vue'
   import { Inertia } from '@inertiajs/inertia'
   import { format, parseISO, toDate } from 'date-fns'
 
@@ -9,17 +9,32 @@
   import { useForm } from '@inertiajs/vue3'
 
   const props = defineProps([
-    'form',
+    'properties',
     'clients'
   ]);
   
-const formData = useForm({
-  name: '',
-  code_name: '',
-  description: '',
-  owner_id: '',
-  address: ''
-});
+  const formData = useForm({
+    name: '',
+    code_name: '',
+    description: '',
+    owner_id: '',
+    address: '',
+  });
+
+  watch(() => props.properties, (propertyEntry) => {
+    if (propertyEntry) {
+      setInitialForm(propertyEntry, formData)
+    };
+  }, { immediate: true, deep: true })
+
+  function setInitialForm(entry, formData) {
+    Object.keys(formData).forEach(field => {
+      formData[field] = entry[field] || formData[field] 
+      if (field == 'owner_id') {
+        formData.owner = props.clients.find(client => client.id == formData['owner_id'])
+      }
+    })
+  }
 
 const client = null;
 
@@ -76,12 +91,18 @@ const addServiceBlock = () => {
 
 // api calls
 const saveForm = () => {
-    const method = formData.id ? "put" : "post";
-    const param = formData.id ? `/${formData.id}` : "";
+    const isEditing = props.properties?.id
+    const method = isEditing ? "put" : "post";
+    const param = isEditing ? `/${props.properties.id}` : "";
 
     formData.transform(data=> ({
       ...data,
-    }))[method](`/properties${param}`, formData)
+    }))[method](`/properties${param}`, formData, {
+      onsuccess() {
+        debugger
+        route.visit(route('properties'))
+      }
+    })
 }
 </script>
 
@@ -90,6 +111,7 @@ const saveForm = () => {
     <main class="p-5 mx-auto text-gray-500 sm:px-6 lg:px-8">
       <AppSectionHeader
           name="Propiedades"
+          :resource="properties"
           @saved="saveForm()"
           @create="saveForm()"
           class="px-4"
@@ -117,14 +139,13 @@ const saveForm = () => {
           </div>
       </div>
 
-      <at-board-block
+      <AtBoardBlock
           v-for="(field, index) in formData.boards" :key="`field-${index}`"
           :field="field"
           class="shadow-md"
           @delete="onDelete(index)"
           @copy="onCopy(field)"
-      >
-      </at-board-block>
+      />
     </main>
   </AppLayout>
 </template>

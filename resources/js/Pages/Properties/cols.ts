@@ -2,8 +2,7 @@ import { IClient } from './../../Modules/clients/clientEntity';
 import { h } from "vue";
 import { ElAvatar, ElTag } from "element-plus"
 // @ts-ignore
-import { getLoanStatus } from "@/Modules/loans/constants";
-import { getLoanStatusColor } from "../../Modules/loans/constants";
+import { getPropertyStatus, getPropertyStatusColor } from "@/Modules/properties/constants";
 
 interface IRent {
     client: IClient,
@@ -56,8 +55,7 @@ export default [
         name: 'status',
         label: 'Estado',
         render(row) {
-            console.log(getLoanStatusColor(row.status) );
-            return h(ElTag, { type: getLoanStatusColor(row.status) }, getLoanStatus(row.status))
+            return h(ElTag, { type: getPropertyStatusColor(row.status) }, getPropertyStatus(row.status))
         }
     },
     {

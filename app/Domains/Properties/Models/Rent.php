@@ -22,10 +22,12 @@ class Rent extends Transactionable implements IPayableDocument {
     protected $fillable = [
         'team_id',
         'user_id',
+        'property_id',
         'client_id',
+        'date',
         'first_invoice_date',
         'amount',
-        'interest_rate',
+        'commission',
         'start_date'
     ];
 
@@ -35,6 +37,10 @@ class Rent extends Transactionable implements IPayableDocument {
 
     public function client() {
         return $this->belongsTo(Client::class, 'client_id');
+    }
+
+    public function property() {
+        return $this->belongsTo(Property::class, 'property_id');
     }
 
     public function invoices() {
@@ -65,7 +71,7 @@ class Rent extends Transactionable implements IPayableDocument {
     }
 
     public function getTransactionDescription() {
-        return "Deposito de propiedad #code";
+        return "Deposito de propiedad " . $this->address;
     }
 
     public function getTransactionDirection() {
@@ -92,7 +98,7 @@ class Rent extends Transactionable implements IPayableDocument {
     public static function checkStatus($payable) {
             $debt = $payable->total - $payable->amount_paid;
             if ($debt == 0) {
-                $status = self::STATUS_PAID;
+                $status = self::STATUS_ACTIVE;
             } elseif ($debt > 0 && $debt < $payable->amount) {
                 $status = self::STATUS_PARTIALLY_PAID;
             } elseif ($debt && $payable->hasLateInvoices()) {
@@ -100,7 +106,7 @@ class Rent extends Transactionable implements IPayableDocument {
             } elseif ($debt) {
                 $status = self::STATUS_ACTIVE;
             } else {
-                $status = $payable->payment_status;
+                $status = $payable->status;
             }
             return $status;
     }

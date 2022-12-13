@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import AppLayout from "@/Components/templates/AppLayout.vue";
-import { AtButton, AtField, AtInput, AtSelect, AtSimpleSelect } from "atmosphere-ui";
-import { ref, reactive, computed } from "vue";
-import { add, addMonths, format as formatDate } from "date-fns";
-import { createLoan, generateInstallments } from "../../Modules/loans/features";
+import { AtButton, AtField, AtInput, AtSelect } from "atmosphere-ui";
+import {  addMonths, format as formatDate } from "date-fns";
 import { ILoan } from "../../Modules/loans/loanEntity";
 import { router } from "@inertiajs/core";
-import InstallmentTable from "./Partials/InstallmentTable.vue";
 import { IProperty } from "../../Modules/properties/propertyEntity";
 import { IClient } from "../../Modules/clients/clientEntity";
 import { useForm } from "@inertiajs/vue3";
@@ -23,7 +20,7 @@ const rentForm = useForm({
   date: new Date(),
   first_invoice_date: addMonths(new Date(), 1) ,
   amount: 0,
-  commission_rate: 0,
+  commission_rate: 10,
   commission_type: '',
   frequency: "MONTHLY",
 });
@@ -35,8 +32,9 @@ const onSubmit = () => {
       first_invoice_date: formatDate(rentForm.first_invoice_date, 'y-M-d')
     }))
     .submit('post', route('rents.store'), {
-      onSuccess: () => {
-        router.visit(`/loans/`);
+      onSuccess() {
+        debugger
+        router.visit(`/properties/`);
       }
     });
 };
@@ -79,7 +77,7 @@ const goToList = () => {
         <h1 class="font-bold">Datos Alquiler</h1>
         <section class="flex space-x-4">
           <AtField label="Precio de renta" class="w-full">
-            <AtInput v-model="rentForm.amount" />
+            <AtInput :number-format="true" v-model="rentForm.amount" />
           </AtField>
           <AtField label="Comisión" class="w-full">
             <AtInput v-model="rentForm.commission_rate" />
@@ -95,11 +93,11 @@ const goToList = () => {
           </AtField>
         </section>
         <section class="flex space-x-4">
-          <AtField label="Fecha de desembolso" class="flex flex-col">
+          <AtField label="Fecha de Inicio" class="flex flex-col">
             <ElDatePicker v-model="rentForm.date" size="large" />
           </AtField>
           <AtField label="Fecha de primer pago" class="flex flex-col">
-            <ElDatePicker v-model="rentForm.first_invoice_date" size="large" />
+            <ElDatePicker v-model="rentForm.first_invoice_date" size="large" disabled />
           </AtField>
         </section>
       </article>

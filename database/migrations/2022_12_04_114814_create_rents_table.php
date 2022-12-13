@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('team_id');
             $table->foreignId('user_id');
             $table->foreignId('client_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('property_id')->constrained()->cascadeOnDelete();
             // accounts
             $table->foreignId('account_id')->nullable();
             $table->foreignId('client_account_id')->nullable();
@@ -26,6 +27,7 @@ return new class extends Migration
             $table->foreignId('penalty_account_id')->nullable();
 
             // terms
+            $table->date('date');
             $table->date('first_invoice_date');
 
             $table->decimal('amount', 11, 2)->default(0.00);
