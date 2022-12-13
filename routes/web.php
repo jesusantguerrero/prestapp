@@ -34,6 +34,7 @@ Route::get('/', function () {
 
 Route::get('/background/run', BackgroundController::class);
 Route::get('/background/update-late-payments', [BackgroundController::class, 'updateLatePayments']);
+Route::get('/background/generate-rent-invoices', [BackgroundController::class, 'generateRentInvoices']);
 
 Route::middleware([
     'auth:sanctum',

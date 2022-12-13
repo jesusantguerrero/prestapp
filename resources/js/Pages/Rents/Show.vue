@@ -111,6 +111,10 @@ const refresh = () => {
             {{ formatDate(rents.date) }}
           </p>
           <p>
+            Proximo pago:
+            {{ formatDate(rents.next_invoice_date) }}
+          </p>
+          <p>
             Estatus:
             {{ rents.status }}
           </p>
@@ -134,17 +138,17 @@ const refresh = () => {
               </span>
               en
               <span class="font-bold text-primary">
-                {{rents.date }}
+                {{ formatDate(rents.date) }}
               </span>
             </div>
-            <div v-for="payment in rents.transactions" class="text-sm">
-              Pagado
+            <div v-for="payment in rents.invoices" class="text-sm">
+              {{ payment.concept }} {{ payment.description }}
               <span class="font-bold text-green-500">
-                {{ formatMoney(payment.amount) }}
+                {{ formatMoney(payment.total) }}
               </span>
               en
               <span class="font-bold text-primary">
-                {{ payment.payment_date }}
+                {{ payment.due_date }}
               </span>
             </div>
           </section>

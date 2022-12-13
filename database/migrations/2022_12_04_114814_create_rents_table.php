@@ -29,6 +29,7 @@ return new class extends Migration
             // terms
             $table->date('date');
             $table->date('first_invoice_date');
+            $table->date('next_invoice_date')->nullable();
 
             $table->decimal('amount', 11, 2)->default(0.00);
             $table->decimal('amount_paid', 11, 2)->default(0.00);
@@ -40,6 +41,7 @@ return new class extends Migration
             $table->enum('commission_type', ['PERCENTAGE', 'FIXED'])->default('PERCENTAGE');
             $table->decimal('penalty', 11, 2)->default(0.00);
             $table->enum('penalty_type', ['PERCENTAGE', 'FIXED'])->default('PERCENTAGE');
+            $table->json('generated_invoice_dates')->default('[]');
             // state
             $table->enum('status', [
                 Rent::STATUS_ACTIVE,

@@ -6,6 +6,7 @@ use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\Rent;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Insane\Journal\Models\Invoice\Invoice;
 
 class PropertyService {
 
@@ -25,6 +26,23 @@ class PropertyService {
         "total" => $rent->amount
        ]);
     }
+
+    public static function createInvoice($formData, Rent $rent) {
+      return Invoice::createDocument([
+          'user_id' => $rent->user_id,
+          'team_id' => $rent->team_id,
+          'client_id' => $rent->client_id,
+          'invoiceable_id' => $rent->id,
+          'invoiceable_type' => Rent::class,
+          'date' => $formData['date'] ?? date('Y-m-d'),
+          'type' => Invoice::DOCUMENT_TYPE_INVOICE,
+          'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
+          'concept' =>  $formData['concept'] ?? 'Invoice',
+          'description' => "Mensualidad $rent->name",
+          'total' =>  $formData['amount'] ?? $rent->amount,
+          'items' => $rent->services ?? []
+      ]);
+  }
 
     public static function ofTeam($teamId, $status= Property::STATUS_AVAILABLE) {
       return Property::where([

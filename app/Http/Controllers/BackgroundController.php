@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Domains\Loans\Actions\UpdateLatePayments;
+use App\Domains\Properties\Actions\UpdateLateInvoices;
 
 class BackgroundController extends Controller
 {
@@ -13,6 +14,10 @@ class BackgroundController extends Controller
 
     public function updateLatePayments() {
        return  UpdateLatePayments::run();
+    }
+
+    public function generateRentInvoices() {
+      return UpdateLateInvoices::generateInvoices();
     }
 
     private function backgroundPost(string $url) {

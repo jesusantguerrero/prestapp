@@ -46,7 +46,9 @@ class InertiaController extends Controller {
     }
 
     public function show(Request $request, int $id) {
-        return Inertia::render($this->templates['show'], $this->getEditProps($request, $id));
+        return Inertia::render($this->templates['show'],  array_merge(
+          [$this->model->getTable() => $this->getModelQuery($request, $id)[0]],
+          $this->getEditProps($request, $id)));
     }
 
     public function store(Request $request, Response $response) {

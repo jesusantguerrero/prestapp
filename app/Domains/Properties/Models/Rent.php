@@ -26,11 +26,16 @@ class Rent extends Transactionable implements IPayableDocument {
         'client_id',
         'date',
         'first_invoice_date',
+        'next_invoice_date',
         'amount',
         'commission',
-        'start_date'
+        'start_date',
+        'generated_invoice_dates',
     ];
 
+    protected $casts = [
+      'generated_invoice_dates' => 'array'
+    ];
     // protected
     protected $creditCategory = 'loan_line_credit';
     protected $creditAccount = 'Customer Demand Deposits';
