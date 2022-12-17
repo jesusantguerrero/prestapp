@@ -65,10 +65,10 @@ class PropertyService {
 
     public static function mapInStatus($results) {
       $status = [Property::STATUS_BUILDING, Property::STATUS_AVAILABLE, Property::STATUS_RENTED, Property::STATUS_MAINTENANCE];
-      
+
       return array_map(function ($state) use ($results) {
           $index = array_search($state, array_column($results, 'status'));
-  
+
           return  $index !== false ? $results[$index] : [
               "total" => 0,
               "status" => $state,

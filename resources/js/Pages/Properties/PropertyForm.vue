@@ -12,7 +12,7 @@
     'properties',
     'clients'
   ]);
-  
+
   const formData = useForm({
     name: '',
     code_name: '',
@@ -29,7 +29,7 @@
 
   function setInitialForm(entry, formData) {
     Object.keys(formData).forEach(field => {
-      formData[field] = entry[field] || formData[field] 
+      formData[field] = entry[field] || formData[field]
       if (field == 'owner_id') {
         formData.owner = props.clients.find(client => client.id == formData['owner_id'])
       }
@@ -109,11 +109,6 @@ const saveForm = () => {
 <template>
   <AppLayout title="Contratos de alquiler">
     <main class="p-5 mx-auto text-gray-500 sm:px-6 lg:px-8">
-      <AppSectionHeader
-          name="Propiedades"
-          :resource="properties"
-          @saved="saveForm()"
-          @create="saveForm()"
           class="px-4"
       />
 
