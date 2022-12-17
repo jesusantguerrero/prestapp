@@ -6,17 +6,19 @@ use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\Rent;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Insane\Journal\Models\Invoice\Invoice;
 
 class PropertyService {
 
     public static function createRent(mixed $rentData, mixed $schedule = null) {
-      $property = Property::find($rentData['property_id'])->get();
+      $property = Property::find($rentData['property_id']);
       if (!$property || $property->status !== Property::STATUS_AVAILABLE) {
         throw new Exception('This property is not available at the time');
+      } else {
+        $rent = Rent::create($rentData);
+        $rent->property->update(['status' => Property::STATUS_RENTED]);
+        return self::createDepositTransaction($rent);
       }
-      $rent = Rent::create($rentData);
-      $rent->property->update('status', Property::STATUS_RENTED);
-      return self::createDepositTransaction($rent);
     }
 
     public static function createDepositTransaction($rent) {
@@ -24,6 +26,23 @@ class PropertyService {
         "total" => $rent->amount
        ]);
     }
+
+    public static function createInvoice($formData, Rent $rent) {
+      return Invoice::createDocument([
+          'user_id' => $rent->user_id,
+          'team_id' => $rent->team_id,
+          'client_id' => $rent->client_id,
+          'invoiceable_id' => $rent->id,
+          'invoiceable_type' => Rent::class,
+          'date' => $formData['date'] ?? date('Y-m-d'),
+          'type' => Invoice::DOCUMENT_TYPE_INVOICE,
+          'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
+          'concept' =>  $formData['concept'] ?? 'Invoice',
+          'description' => "Mensualidad $rent->name",
+          'total' =>  $formData['amount'] ?? $rent->amount,
+          'items' => $rent->services ?? []
+      ]);
+  }
 
     public static function ofTeam($teamId, $status= Property::STATUS_AVAILABLE) {
       return Property::where([
@@ -46,10 +65,10 @@ class PropertyService {
 
     public static function mapInStatus($results) {
       $status = [Property::STATUS_BUILDING, Property::STATUS_AVAILABLE, Property::STATUS_RENTED, Property::STATUS_MAINTENANCE];
-      
+
       return array_map(function ($state) use ($results) {
           $index = array_search($state, array_column($results, 'status'));
-  
+
           return  $index !== false ? $results[$index] : [
               "total" => 0,
               "status" => $state,

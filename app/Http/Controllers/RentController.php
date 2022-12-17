@@ -29,7 +29,7 @@ class RentController extends InertiaController
             'installments' => 'array'
         ];
         $this->sorts = ['created_at'];
-        $this->includes = ['client'];
+        $this->includes = ['client', 'property'];
         $this->filters = [];
         $this->resourceName= "loans";
 
@@ -53,7 +53,7 @@ class RentController extends InertiaController
     protected function getEditProps(Request $request, $id)
     {
         return [
-            'rents' => Rent::where('id', $id)->with(['client', 'invoices', 'paymentDocuments'])->first()
+            'rents' => Rent::where('id', $id)->with(['client', 'invoices', 'transaction'])->first()
         ];
     }
 

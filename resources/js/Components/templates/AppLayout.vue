@@ -12,6 +12,7 @@ import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 
 import { useAppMenu } from "@/Modules/_app";
 import { useSelect } from "@/Modules/shared/useSelects";
+import AppButton from "../shared/AppButton.vue";
 
 defineProps({
   title: String,
@@ -61,18 +62,26 @@ transformCategoryOptions(
 <template>
   <div>
     <Head :title="title" />
-
     <Banner />
     <AtShell
       :is-expanded="isExpanded"
       :nav-class="[!$slots.header && `${panelShadow} border-b`]"
     >
       <template #navigation>
-        <nav class="bg-white border-gray-100">
           <!-- Primary Navigation Menu -->
-          <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between h-16 pr-4 mx-auto sm:pr-6 lg:pr-8 text-body-1/80">
+            <div class="flex items-center">
+              <AppButton @click="$emit('back')" v-if="showBackButton">
+                 <IconBack />
+              </AppButton>
+              <h4 :class="[showBackButton ? 'lg:ml-2' : 'lg:ml-6']" class="text-lg font-bold">
+                  {{ title }}
+              </h4>
+            </div>
+            
             <div class="flex justify-end h-16">
               <div class="hidden sm:flex sm:items-center sm:ml-6">
+                <AppButton>Agregar Nuevo</AppButton>
                 <!-- Settings Dropdown -->
                 <div class="relative ml-3">
                   <Dropdown align="right" width="48">
@@ -289,7 +298,6 @@ transformCategoryOptions(
               </div>
             </div>
           </div>
-        </nav>
       </template>
       <template #aside>
         <AtSide

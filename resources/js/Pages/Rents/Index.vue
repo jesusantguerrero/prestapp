@@ -40,7 +40,7 @@ const listData = computed(() => {
             <div class="flex">
               <Link
                 class="relative inline-block px-5 py-2 overflow-hidden font-bold text-white transition border rounded-md focus:outline-none hover:bg-opacity-80 min-w-max bg-primary"
-                :href="`/loans/${row.id}`"
+                :href="`/rents/${row.id}`"
               >
                 Edit</Link
               >

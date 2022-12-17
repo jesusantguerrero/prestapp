@@ -19,7 +19,8 @@ class PropertyController extends InertiaController
       $this->templates = [
           "index" => 'Properties/Index',
           "create" => 'Properties/PropertyForm',
-          "show" => 'Rents/Show'
+          "edit" => 'Properties/PropertyForm',
+          "show" => 'Properties/Show'
       ];
       $this->validationRules = [
           'owner_id' => 'numeric',
@@ -63,5 +64,13 @@ class PropertyController extends InertiaController
             'properties' => null,
             'clients' => ClientService::ofTeam($teamId),
         ]);
+    }
+
+    public function getEditProps(Request $request, $id) {
+      $teamId = $request->user()->current_team_id;
+
+      return [
+        'clients' => ClientService::ofTeam($teamId),
+      ];
     }
 }

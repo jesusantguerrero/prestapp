@@ -6,7 +6,7 @@ use App\Domains\Loans\Models\Loan;
 use Illuminate\Database\Eloquent\Model;
 
 class Client extends Model {
-    protected $fillable = ['names', 'lastnames', 'display_name', 'dni', 'dni_type', 'email', 'cellphone', 'address_details', 'status'];
+    protected $fillable = ['user_id', 'team_id', 'names', 'lastnames', 'display_name', 'dni', 'dni_type', 'email', 'cellphone', 'address_details', 'status'];
 
     const STATUS_INACTIVE = 'INACTIVE';
     const STATUS_ACTIVE = 'ACTIVE';

@@ -27,16 +27,22 @@ export default [
         }
     },
     {
-            name: 'number',
+            name: 'id',
             label: 'No. Contrato',
-            class: "text-right",
-            headerClass: "text-right",
+            class: "text-center",
+            headerClass: "text-center",
+            render(row) {
+              return `C_${row.id.toString().padStart(6, '0')}`
+            }
     },
     {
-            name: 'address',
+            name: 'property.address',
             label: 'Dirección',
-            class: "text-right",
-            headerClass: "text-right",
+            class: "text-ledt",
+            headerClass: "text-left",
+            render(row) {
+              return row.property?.address          
+            }
     },
     {
         name: 'commission',

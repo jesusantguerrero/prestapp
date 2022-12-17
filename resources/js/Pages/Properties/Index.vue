@@ -27,20 +27,20 @@ const listData = computed(() => {
 <template>
   <AppLayout title="Propiedades">
     <template #header>
-      <PropertySectionNav> 
+      <PropertySectionNav>
           <template #actions>
             <AppButton @click="router.visit(route('properties.create'))">Agregar Propiedad</AppButton>
           </template>
         </PropertySectionNav>
     </template>
-    
+
     <main class="p-5 mx-auto mt-8 text-gray-500 sm:px-6 lg:px-8">
         <AtTable :table-data="listData" :cols="cols" class="bg-white rounded-md text-body-1">
           <template v-slot:actions="{ scope: { row } }" class="flex">
             <div class="flex">
               <Link
                 class="relative inline-block px-5 py-2 overflow-hidden font-bold text-white transition border rounded-md focus:outline-none hover:bg-opacity-80 min-w-max bg-primary"
-                :href="`/properties/${row.id}`"
+                :href="`/properties/${row.id}/edit`"
               >
                 Edit</Link
               >

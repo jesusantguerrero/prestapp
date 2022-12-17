@@ -40,11 +40,15 @@ class InertiaController extends Controller {
     }
 
     public function edit(Request $request, int $id) {
-        return Inertia::render($this->templates['edit'], $this->getEditProps($request, $id));
+        return Inertia::render($this->templates['edit'], array_merge(
+          [$this->model->getTable() => $this->getModelQuery($request, $id)[0]],
+          $this->getEditProps($request, $id)));
     }
 
     public function show(Request $request, int $id) {
-        return Inertia::render($this->templates['show'], $this->getEditProps($request, $id));
+        return Inertia::render($this->templates['show'],  array_merge(
+          [$this->model->getTable() => $this->getModelQuery($request, $id)[0]],
+          $this->getEditProps($request, $id)));
     }
 
     public function store(Request $request, Response $response) {
@@ -99,9 +103,7 @@ class InertiaController extends Controller {
     }
 
     protected function getEditProps(Request $request, $id) {
-        return [
-            $this->model->getTable() => $this->getModelQuery($request, $id)[0]
-        ];
+      return [ ];
     }
 
     protected function afterSave($postData, $resource): void {

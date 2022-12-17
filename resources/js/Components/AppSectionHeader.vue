@@ -14,7 +14,7 @@
       >
     </h2>
     <div>
-      <slot name="actions">
+      <slot name="actions" v-if="!hideAction">
         <div class="button-container">
           <div v-if="!resource || resource.id" class="flex">
             <AppButton @click="$emit('saved')" v-if="!showEdit">
@@ -64,6 +64,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  hideAction: {
+    type: Boolean,
+    default: false,
+  }
 });
 
 const sectionTitle = computed(() => {
