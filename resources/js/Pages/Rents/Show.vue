@@ -11,6 +11,8 @@ import PaymentFormModal from "./Partials/PaymentFormModal.vue";
 import { formatMoney, formatDate } from "@/utils";
 import { ILoanInstallment } from "../../Modules/loans/loanInstallmentEntity";
 import PropertySectionNav from "../Properties/Partials/PropertySectionNav.vue";
+import { AtButton } from "atmosphere-ui";
+import InvoiceCard from "./Partials/InvoiceCard.vue";
 
 export interface Props {
   rents: ILoanWithInstallments;
@@ -32,18 +34,19 @@ const clientName = computed(() => props.rents.client.names + " " + props.rents.c
 const sectionTitle = computed(() => `Alquiler - ${clientName.value}`)
 
 type IPaymentMetaData = ILoanInstallment & {
-  installment_id?: number;
+  invoice_id?: number;
 };
 
 const isPaymentModalOpen = ref(false);
 const selectedPayment = ref<IPaymentMetaData | null>(null);
-const onPayment = (installment: ILoanInstallment) => {
+
+const onPayment = (invoice: ILoanInstallment) => {
   selectedPayment.value = {
-    ...installment,
+    ...invoice,
     // @ts-ignore solve backend sending decimals as strings
-    amount: parseFloat(installment.amount_due) || installment.amount,
+    amount: parseFloat(invoice.debt) || invoice.total,
     id: undefined,
-    installment_id: installment.id,
+    invoice_id: invoice.id,
   };
 
   isPaymentModalOpen.value = true;
@@ -56,6 +59,13 @@ const paymentConcept = computed(() => {
   );
 });
 
+const handleActions = (actionName, invoice) => {
+  if (actionName == 'payment') {
+    onPayment(invoice);
+  }
+}
+
+
 const refresh = () => {
   router.reload();
 };
@@ -64,7 +74,7 @@ const refresh = () => {
 <template>
   <AppLayout :title="sectionTitle">
     <template #header>
-      <PropertySectionNav> 
+      <PropertySectionNav>
           <template #actions>
             <AppButton variant="inverse" @click="router.visit(route('rents.create'))">Agregar Contrato</AppButton>
           </template>
@@ -118,17 +128,16 @@ const refresh = () => {
             Estatus:
             {{ rents.status }}
           </p>
-
-          <InstallmentTable
-            :installments="rents.installments"
-            accept-payment
-            @pay="onPayment"
-          />
+          <AtButton class="hover:bg-base-lvl-1" rounded @click="generarDeposito()">
+            Deposito {{ formatMoney(rents.deposit) }}
+          </AtButton>
         </article>
 
         <article class="w-3/12 p-4 space-y-2 border rounded-md shadow-md bg-base-lvl-3">
-          <AppButton class="w-full"> Agregar Pago </AppButton>
-          <AppButton class="w-full"> Recibo Multiple </AppButton>
+          <section class="flex space-x-4">
+            <AppButton class="w-full"> Agregar Pago </AppButton>
+            <AppButton class="w-full"> Recibo Multiple </AppButton>
+          </section>
 
           <section class="py-4 mt-8 space-y-2">
             <div class="text-sm" v-if="rents.transaction">
@@ -141,16 +150,28 @@ const refresh = () => {
                 {{ formatDate(rents.date) }}
               </span>
             </div>
-            <div v-for="payment in rents.invoices" class="text-sm">
-              {{ payment.concept }} {{ payment.description }}
-              <span class="font-bold text-green-500">
-                {{ formatMoney(payment.total) }}
-              </span>
-              en
-              <span class="font-bold text-primary">
-                {{ payment.due_date }}
-              </span>
-            </div>
+            <InvoiceCard
+              v-for="invoice in rents.invoices"
+              :invoice="invoice"
+              :actions="{
+                payment: {
+                  label: 'Registrar Pago',
+                },
+                send: {
+                  label: 'Enviar Correo'
+                },
+                download: {
+                  label: 'Descargar PDF'
+                },
+                view: {
+                  label: 'Ver factura'
+                },
+                delete: {
+                  label: 'Eliminar Factura'
+                }
+              }"
+              @action="handleActions($event, invoice)"
+            />
           </section>
         </article>
       </section>
@@ -159,7 +180,7 @@ const refresh = () => {
         v-if="selectedPayment"
         v-model="isPaymentModalOpen"
         :payment="selectedPayment"
-        :endpoint="`/loans/${rents.id}/installments/${selectedPayment.installment_id}/pay`"
+        :endpoint="`/rents/${rents.id}/invoices/${selectedPayment.invoice_id}/pay`"
         :due="selectedPayment.amount"
         :default-concept="paymentConcept"
         @saved="refresh()"

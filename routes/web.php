@@ -45,7 +45,7 @@ Route::middleware([
 
     // CRM
     Route::resource('clients', ClientController::class);
-    
+
     // Loans
     Route::resource('loans', LoanController::class);
     Route::post('/loans/:loanId/installments/:installment/mark-as-paid', [LoanController::class, 'markAsPaid']);
@@ -53,7 +53,8 @@ Route::middleware([
     Route::post('/loans/{loan}/pay', [LoanController::class, 'pay']);
 
     // Properties
-    Route::resource('rents', RentController::class);
     Route::get('properties/overview', PropertyController::class);
     Route::resource('properties', PropertyController::class);
+    Route::resource('rents', RentController::class);
+    Route::post('rents/{rent}/invoices/{invoice}/pay', [RentController::class, 'payInvoice']);
 });

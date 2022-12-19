@@ -23,12 +23,12 @@ const rentForm = useForm({
   client_id: null,
   date: new Date(),
   deposit: 0,
-  deposit_date: addMonths(new Date(), 1),
+  deposit_due: addMonths(new Date(), 1),
   is_deposit_received: false,
   amount: 0,
   first_invoice_date: addMonths(new Date(), 1) ,
   next_invoice_date: addMonths(new Date(), 1) ,
-  commission_rate: 10,
+  commission: 10,
   commission_type: '',
   frequency: "MONTHLY",
   additional_fees: [],
@@ -37,13 +37,13 @@ const rentForm = useForm({
 const onSubmit = () => {
     rentForm.transform(data => ({
       ...rentForm.data(),
+      deposit_due: formatDate(rentForm.deposit_due, 'y-M-d'),
       date: formatDate(rentForm.date, "yyyy-MM-dd"),
       first_invoice_date: formatDate(rentForm.first_invoice_date, 'y-M-d'),
       next_invoice_date: formatDate(rentForm.next_invoice_date, 'y-M-d')
     }))
     .submit('post', route('rents.store'), {
       onSuccess() {
-        debugger
         router.visit(`/properties/`);
       }
     });
@@ -125,7 +125,7 @@ const addAdditionalFee = () => {
               <AtInput :number-format="true" v-model="rentForm.deposit" />
             </AtField>
             <AtField label="Fecha de pago deposito" class="flex flex-col w-full">
-              <ElDatePicker v-model="rentForm.deposit_date" size="large" class="w-full" />
+              <ElDatePicker v-model="rentForm.deposit_due" size="large" class="w-full" />
             </AtField>
             <AtFieldCheck v-model="rentForm.is_deposit_paid" size="large" label="Recibido" />
           </section>
@@ -134,7 +134,7 @@ const addAdditionalFee = () => {
               <AtInput :number-format="true" v-model="rentForm.amount" />
             </AtField>
             <AtField label="Comisión" class="w-full">
-              <AtInput v-model="rentForm.commission_rate" />
+              <AtInput v-model="rentForm.commission" />
             </AtField>
             <AtField class="w-full" label="Tipo de comision">
               <AtSelect

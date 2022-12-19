@@ -31,7 +31,7 @@ const listData = computed(() => {
           <template #actions>
             <AppButton @click="router.visit(route('properties.create'))">Agregar Propiedad</AppButton>
           </template>
-        </PropertySectionNav>
+      </PropertySectionNav>
     </template>
 
     <main class="p-5 mx-auto mt-8 text-gray-500 sm:px-6 lg:px-8">
