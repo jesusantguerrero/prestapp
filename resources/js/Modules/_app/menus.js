@@ -54,6 +54,10 @@ const menus = {
         url: '/rents'
     },
     {
+      label: 'Plantillas',
+      url: '/templates'
+    },
+    {
         label: 'Pagos',
         url: '/payments'
     },
