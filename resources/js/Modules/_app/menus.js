@@ -47,22 +47,27 @@ const menus = {
         label: 'Propiedades',
         url: '/properties/'
     },
+    // {
+    //     label: 'Alquileres',
+    //     url: '/rents'
+    // },
+    // {
+    //   label: 'Plantillas',
+    //   url: '/templates'
+    // },
     {
-        label: 'Alquileres',
-        url: '/rents'
+      label: 'Pagos',
+      url: '/invoices/'
     },
     {
-      label: 'Plantillas',
-      url: '/templates'
+        label: 'Propietarios',
+        url: '/clients?type=owner'
     },
     {
-        label: 'Pagos',
-        url: '/invoices/'
-    },
-     {
-        label: 'Trends',
-        url: '/trends'
-    }],
+      label: 'Inquilinos',
+      url: '/clients?type=tenant'
+    }
+    ],
     [MODULES.ACCOUNTING]: [{
         label: 'Banco',
         url: '/properties/overview'
