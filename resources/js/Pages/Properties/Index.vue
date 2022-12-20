@@ -29,7 +29,7 @@ const listData = computed(() => {
     <template #header>
       <PropertySectionNav>
           <template #actions>
-            <AppButton @click="router.visit(route('properties.create'))">Agregar Propiedad</AppButton>
+            <AppButton variant="inverse" @click="router.visit(route('properties.create'))">Agregar Propiedad</AppButton>
           </template>
       </PropertySectionNav>
     </template>
@@ -39,12 +39,11 @@ const listData = computed(() => {
           <template v-slot:actions="{ scope: { row } }" class="flex">
             <div class="flex">
               <Link
-                class="relative inline-block px-5 py-2 overflow-hidden font-bold text-white transition border rounded-md focus:outline-none hover:bg-opacity-80 min-w-max bg-primary"
-                :href="`/properties/${row.id}/edit`"
+                class="relative inline-block px-5 py-2 overflow-hidden font-bold transition border rounded-md focus:outline-none hover:bg-opacity-80 min-w-max bg-primary/10 text-primary"
+                :href="`/properties/${row.id}`"
               >
-                Edit</Link
-              >
-              <AppButton> Delete</AppButton>
+                Ver Propiedad
+              </Link>
             </div>
           </template>
         </AtTable>

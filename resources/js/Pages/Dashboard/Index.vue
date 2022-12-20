@@ -4,6 +4,7 @@ import { AtBackgroundIconCard, AtButton, AtDashlide } from "atmosphere-ui";
 import IncomeSummaryWidget from "./Partials/IncomeSummaryWidget.vue";
 import WelcomeWidget from "./Partials/WelcomeWidget.vue";
 import { formatMoney } from "@/utils/formatMoney";
+import InvoiceCard from "../Rents/Partials/InvoiceCard.vue";
 
 const props = defineProps({
     revenue: {
@@ -178,11 +179,56 @@ const comparisonRevenue = {
             </template>
 
             <template #debtors>
+              <InvoiceCard
+              v-for="invoice in debtors"
+              :invoice="invoice"
+              :actions="{
+                payment: {
+                  label: 'Registrar Pago',
+                },
+                send: {
+                  label: 'Enviar Correo'
+                },
+                download: {
+                  label: 'Descargar PDF'
+                },
+                view: {
+                  label: 'Ver factura'
+                },
+                delete: {
+                  label: 'Eliminar Factura'
+                }
+              }"
+              @action="handleActions($event, invoice)"
+            />
                 {{ debtors }}
             </template>
 
             <template #pagos>
-                {{ nextInvoices }}
+              <div class="px-4 py-1 space-y-2">
+                <InvoiceCard
+                  v-for="invoice in nextInvoices"
+                  :invoice="invoice"
+                  :actions="{
+                    payment: {
+                      label: 'Registrar Pago',
+                    },
+                    send: {
+                      label: 'Enviar Correo'
+                    },
+                    download: {
+                      label: 'Descargar PDF'
+                    },
+                    view: {
+                      label: 'Ver factura'
+                    },
+                    delete: {
+                      label: 'Eliminar Factura'
+                    }
+                  }"
+                  @action="handleActions($event, invoice)"
+                />
+              </div>
             </template>
           </AtDashlide>
         </article>

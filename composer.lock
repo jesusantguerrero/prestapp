@@ -1073,7 +1073,7 @@
             "dist": {
                 "type": "path",
                 "url": "../packages/journal",
-                "reference": "7e359323f7f6ea3aea12e94f0370ad6c2e561237"
+                "reference": "9c94b9bacfa22f4583cd2a3b03e787fd165fb836"
             },
             "require": {
                 "staudenmeir/belongs-to-through": "^2.5"
