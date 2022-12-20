@@ -1,20 +1,15 @@
 <template>
   <AppLayout title="Cuentas">
-    <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
-      <div
-        class="flex justify-between items-center mb-10 border-4 border-white bg-gray-50 rounded-md py-2"
-      >
-        <div class="px-5 text-gray-600 font-bold">Chart of Accounts</div>
-
-        <div
-          class="flex text-gray-500 font-bold rounded-t-lg overflow-hidden max-w-min space-x-2"
-        >
-          <AtButton @click="isAccountDialogVisible = true" class="w-36">
-            Add Account
-          </AtButton>
-        </div>
-      </div>
-      <div class="w-full bg-white px-5 py-5 rounded-md shadow-md">
+    <template #header>
+      <AccountingSectionNav>
+        <template #actions>
+          <AppButton @click="isAccountDialogVisible = true" variant="inverse">Crear Cuenta</AppButton>
+        </template>
+      </AccountingSectionNav>
+    </template>
+    
+    <div class="py-10 mx-auto max-w-7xl sm:px-6 lg:px-8">
+      <div class="w-full px-5 py-5 bg-white rounded-md shadow-md">
         <ElTabs v-model="activeAccountSection">
           <ElTabPane
             :label="category.name"
@@ -33,7 +28,7 @@
                   class="flex justify-between w-full px-4 py-2 text-sm font-medium text-left text-blue-900 bg-blue-100 hover:bg-blue-200 focus:outline-none focus-visible:ring focus-visible:ring-blue-500 focus-visible:ring-opacity-75"
                   v-slot="{ open }"
                 >
-                  <span class="font-bold text-lg">
+                  <span class="text-lg font-bold">
                     {{ subCategory.name }}
                   </span>
 
@@ -42,7 +37,7 @@
                     :class="open ? 'transform rotate-180' : ''"
                   />
                 </DisclosureButton>
-                <DisclosurePanel class="text-gray-500 font-bold">
+                <DisclosurePanel class="font-bold text-gray-500">
                   <!-- accounts  -->
                   <AtTable
                     :cols="cols(subCategory.name)"
@@ -52,7 +47,7 @@
                       <div>
                         <div class="font-bold">{{ scope.row.name }}</div>
                         <div
-                          class="font-normal italic"
+                          class="italic font-normal"
                           v-if="scope.row.last_transaction_date"
                         >
                           Last transaction on: {{ scope.row.last_transaction_date.date }}
@@ -100,6 +95,8 @@ import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { AtButton } from "atmosphere-ui";
 import { onMounted, ref, computed } from "vue";
 import AtTable from "../../../Components/AtTable.vue";
+import AccountingSectionNav from "../Partials/AccountingSectionNav.vue";
+import AppButton from "../../../Components/shared/AppButton.vue";
 
 const props = defineProps({
   accounts: {

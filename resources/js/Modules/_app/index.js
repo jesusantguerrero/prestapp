@@ -42,30 +42,12 @@ export const useAppMenu = t => {
         },
         {
             icon: 'fas fa-home',
-            label: 'Pagos',
-            to: '/payments',
+            label: 'Ingresos',
+            to: '/invoices',
             as: Link,
             isActiveFunction(url, currentPath) {
-                return /pagos/.test(currentPath)
+                return /invoices/.test(currentPath)
              }
-        },
-        {
-          icon: 'fas fa-heart',
-          label:'Bancos',
-          to: '/rents',
-          as: Link,
-          isActiveFunction(url, currentPath) {
-            return /rents/.test(currentPath)
-         }
-        },
-        {
-          icon: 'fas fa-heart',
-          label:'Carteras',
-          to: '/rents',
-          as: Link,
-          isActiveFunction(url, currentPath) {
-            return /rents/.test(currentPath)
-         }
         },
         {
           icon: 'fas fa-heart',

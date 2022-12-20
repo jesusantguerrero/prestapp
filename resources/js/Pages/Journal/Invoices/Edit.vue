@@ -1,13 +1,14 @@
 <template>
+  <AppLayout title="Factura">
     <div class="py-10 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <app-header
+        <AppSectionHeader
             :name="type"
             :resource="invoice"
             extract-title="concept"
             @saved="saveForm(true)"
         />
 
-        <invoice-template
+        <InvoiceTemplate
             ref="InvoiceTemplateForm"
             :is-editing="true"
             :type="type"
@@ -17,44 +18,29 @@
             :available-taxes="availableTaxes"
         />
     </div>
+  </AppLayout>
 </template>
 
-<script>
-    import { provide, ref } from 'vue'
+<script setup>
+  import { provide, ref } from 'vue'
 
-    import JetSectionBorder from '@/Jetstream/SectionBorder.vue'
-    import JetButton from '@/Jetstream/Button.vue'
-    import AppHeader from '@/Atmosphere/Organisms/AppHeader.vue'
-    import InvoiceTemplate from "@/Atmosphere/Templates/InvoiceTemplate.vue";
+  import AppLayout from "@/Components/templates/AppLayout.vue";
+  import AppSectionHeader from '@/Components/AppSectionHeader.vue';
+  import InvoiceTemplate from "./Partials/InvoiceTemplate.vue";
 
-    export default {
-        props: [
-            'invoice',
-            'clients',
-            'products',
-            'categories',
-            'availableTaxes',
-            'type'
-        ],
+  const props = defineProps([
+      'invoice',
+      'clients',
+      'products',
+      'categories',
+      'availableTaxes',
+      'type'
+  ]);
 
-        components: {
-            JetSectionBorder,
-            JetButton,
-            AppHeader,
-            InvoiceTemplate
-        },
+  const InvoiceTemplateForm = ref(null);
+  const saveForm = (isApplied) => {
+      InvoiceTemplateForm.value.saveForm(isApplied);
+  }
 
-        setup(props) {
-            const InvoiceTemplateForm = ref(null);
-            const saveForm = (isApplied) => {
-                InvoiceTemplateForm.value.saveForm(isApplied);
-            }
-
-            provide('categories', props.categories);
-            return {
-                InvoiceTemplateForm,
-                saveForm
-            }
-        }
-    }
+  provide('categories', props.categories);
 </script>

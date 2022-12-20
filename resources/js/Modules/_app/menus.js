@@ -2,6 +2,7 @@ export const MODULES = {
     CRM: 'CRM',
     LOAN: 'loan',
     PROPERTY: 'property',
+    ACCOUNTING: 'accounting'
 }
 
 const menus = {
@@ -27,20 +28,17 @@ const menus = {
     }],
     [MODULES.LOAN]: [
         {
-            label: 'Planner',
-            url: '/meal-planner'
+            label: 'Carteras',
+            url: '/wallets'
         }, {
-            label: 'Recipes',
-            url: '/meals'
+            label: 'Prestamos',
+            url: '/loans'
         },
         {
-            label: 'Ingredients',
-            url: '/ingredients'
-        }, {
-            label: 'Menus',
-            url: '/meals/menus',
-            hidden: true
-    }],
+          label: 'Tipos Prestamos',
+          url: '/loan-products'
+      }
+    ],
     [MODULES.PROPERTY]: [{
         label: 'Resumen',
         url: '/properties/overview'
@@ -59,11 +57,35 @@ const menus = {
     },
     {
         label: 'Pagos',
-        url: '/payments'
+        url: '/invoices/'
     },
      {
         label: 'Trends',
         url: '/trends'
+    }],
+    [MODULES.ACCOUNTING]: [{
+        label: 'Banco',
+        url: '/properties/overview'
+    },
+    {
+        label: 'Ingresos',
+        url: '/invoices'
+    },
+    {
+        label: 'Egresos',
+        url: '/expenses'
+    },
+    {
+      label: 'Pagos',
+      url: '/payments'
+    },
+    {
+      label: 'Cuentas',
+      url: '/accounts'
+    },
+    {
+      label: 'Trends',
+      url: '/trends'
     }]
 }
 
