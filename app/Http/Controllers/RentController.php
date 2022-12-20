@@ -25,7 +25,7 @@ class RentController extends InertiaController
             'count' => 'numeric',
             'frequency' => 'string',
             'grace_days' => 'numeric',
-            'interest_rate' => 'numeric|max:100',
+            'commission' => 'numeric|max:100',
             'installments' => 'array'
         ];
         $this->sorts = ['created_at'];
@@ -57,9 +57,9 @@ class RentController extends InertiaController
         ];
     }
 
-    public function pay(Rent $rent, Invoice $invoice, Request $request) {
-        $postData = $this->getPostData($request);
-        if ($invoice->loan_id == $rent->id) {
+    public function payInvoice(Rent $rent, Invoice $invoice) {
+        $postData = $this->getPostData(request());
+        if ($invoice->invoiceable_id == $rent->id) {
             $rent->createPayment(array_merge($postData, [
                 "client_id" => $rent->client_id,
                 "documents" => [[
@@ -69,12 +69,6 @@ class RentController extends InertiaController
                 ]]
             ]));
             $rent->client->checkStatus();
-        }
-    }
-
-    public function markAsPaid(Rent $rent, Invoice $invoice) {
-        if ($invoice->resource_id == $rent->id) {
-            $invoice->markAsPaid();
         }
     }
 }

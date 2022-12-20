@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Domains\CRM\Models\Client;
 use Illuminate\Support\ServiceProvider;
+use Insane\Journal\Models\Invoice\Invoice;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +25,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+      Invoice::resolveRelationUsing('client', function ($clientModel) {
+        return $clientModel->belongsTo(Client::class, 'client_id');
+    });
     }
 }

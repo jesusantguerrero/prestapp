@@ -1,4 +1,4 @@
-import { formatDate } from "@/Atmosphere/utils/formatDate";
+import { formatDate } from "@/utils";
 
 export default [
     {

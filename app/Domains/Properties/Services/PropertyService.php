@@ -22,12 +22,26 @@ class PropertyService {
     }
 
     public static function createDepositTransaction($rent) {
-       return $rent->createTransaction([
-        "total" => $rent->amount
-       ]);
+      $formData = [
+        "date" => $rent->deposit_due,
+        "due_date" => $rent->deposit_due,
+        "concept" => "Factura deposito",
+        "description" => "Depositos de $rent->address",
+        "total" => $rent->deposit,
+        "items" => [[
+          "name" => "Depositos de $rent->address",
+          "concept" => "Depositos de $rent->address",
+          "quantity" => 1,
+          "price" => $rent->deposit,
+          "amount" => $rent->deposit,
+        ]]
+      ];
+      return self::createInvoice($formData, $rent, false);
     }
 
-    public static function createInvoice($formData, Rent $rent) {
+    public static function createInvoice($formData, Rent $rent, $withExtraServices = true) {
+      $additionalFees =  $rent->services ?? [];
+
       return Invoice::createDocument([
           'user_id' => $rent->user_id,
           'team_id' => $rent->team_id,
@@ -38,9 +52,9 @@ class PropertyService {
           'type' => Invoice::DOCUMENT_TYPE_INVOICE,
           'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
           'concept' =>  $formData['concept'] ?? 'Invoice',
-          'description' => "Mensualidad $rent->name",
+          'description' => $formData['description'] ?? "Mensualidad $rent->name",
           'total' =>  $formData['amount'] ?? $rent->amount,
-          'items' => $rent->services ?? []
+          'items' => array_merge($formData['items'] ?? [],  $withExtraServices ? $additionalFees : [])
       ]);
   }
 
@@ -61,7 +75,6 @@ class PropertyService {
           return [$item['status'] => $item['total']];
       });;
     }
-
 
     public static function mapInStatus($results) {
       $status = [Property::STATUS_BUILDING, Property::STATUS_AVAILABLE, Property::STATUS_RENTED, Property::STATUS_MAINTENANCE];

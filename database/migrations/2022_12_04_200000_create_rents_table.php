@@ -18,8 +18,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('team_id');
             $table->foreignId('user_id');
-            $table->foreignId('client_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('property_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('client_id');
+            $table->foreignId('property_id');
             // accounts
             $table->foreignId('account_id')->nullable();
             $table->foreignId('client_account_id')->nullable();
@@ -27,6 +27,9 @@ return new class extends Migration
             $table->foreignId('penalty_account_id')->nullable();
 
             // terms
+            $table->date('deposit_due');
+            $table->decimal('deposit', 11, 2)->default(0.00);
+
             $table->date('date');
             $table->date('first_invoice_date');
             $table->date('next_invoice_date')->nullable();
@@ -41,7 +44,10 @@ return new class extends Migration
             $table->enum('commission_type', ['PERCENTAGE', 'FIXED'])->default('PERCENTAGE');
             $table->decimal('penalty', 11, 2)->default(0.00);
             $table->enum('penalty_type', ['PERCENTAGE', 'FIXED'])->default('PERCENTAGE');
+
+            // config
             $table->json('generated_invoice_dates')->default('[]');
+            $table->json('additional_fees')->default('[]');
             // state
             $table->enum('status', [
                 Rent::STATUS_ACTIVE,

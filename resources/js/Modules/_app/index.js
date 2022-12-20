@@ -41,23 +41,41 @@ export const useAppMenu = t => {
 
         },
         {
-            icon: 'fas fa-heart',
-            label:'Alquileres',
-            to: '/rents',
+            icon: 'fas fa-home',
+            label: 'Ingresos',
+            to: '/invoices',
             as: Link,
             isActiveFunction(url, currentPath) {
-              return /rents/.test(currentPath)
-           }
+                return /invoices/.test(currentPath)
+             }
         },
         {
-            icon: 'fas fa-home',
-            label: 'Pagos',
-            to: '/payments',
-            as: Link,
-            isActiveFunction(url, currentPath) {
-                return /pagos/.test(currentPath)
-             }
-        }
+          icon: 'fas fa-heart',
+          label:'Documentos',
+          to: '/rents',
+          as: Link,
+          isActiveFunction(url, currentPath) {
+            return /rents/.test(currentPath)
+         }
+        },
+        {
+          icon: 'fas fa-heart',
+          label:'Acuerdos de Pago',
+          to: '/rents',
+          as: Link,
+          isActiveFunction(url, currentPath) {
+            return /rents/.test(currentPath)
+         }
+        },
+        {
+          icon: 'fas fa-heart',
+          label:'Reportes',
+          to: '/rents',
+          as: Link,
+          isActiveFunction(url, currentPath) {
+            return /rents/.test(currentPath)
+         }
+      },
     ].filter(item => !item.hidden);
 
     const headerMenu =  [

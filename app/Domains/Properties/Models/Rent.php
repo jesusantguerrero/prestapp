@@ -24,6 +24,8 @@ class Rent extends Transactionable implements IPayableDocument {
         'user_id',
         'property_id',
         'client_id',
+        'deposit',
+        'deposit_due',
         'date',
         'first_invoice_date',
         'next_invoice_date',

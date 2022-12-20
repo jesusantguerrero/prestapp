@@ -1,70 +1,79 @@
 <template>
+  <AppLayout title="Facturas de Ingresos">
+    <template #header>
+      <AccountingSectionNav>
+        <template #actions>
+          <AppButton @click="router.visit(`/${state.sectionName}/create`)" variant="inverse">Registrar Ingreso</AppButton>
+        </template>
+      </AccountingSectionNav>
+    </template>
+    
     <div class="py-10 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <app-header
-            :name="state.sectionName"
-            @create="$inertia.visit(`/${state.sectionName}/create`)"
-            class="px-5"
-        />
+        <AtTable
+            :cols="cols"
+            :tableData="invoices.data"
+            :show-prepend="true"
+            class="mt-10 bg-base-lvl-3"
+        >
+          <!-- Table Data -->
+          <template v-slot:date="{ scope: { row } }">
+              <div>
+                  <div class="font-bold text-blue-400"> {{ formatDate(row.date) }} </div>
+              </div>
+          </template>
 
-        <div class="w-full mt-8">
-                <at-table
-                    :cols="cols"
-                    :tableData="invoices.data"
-                    :show-prepend="true"
-                >
+          <template v-slot:concept="{ scope: { row } }">
+              <div class="text-blue-400 capitalize border-b border-blue-400 border-dashed cursor-pointer text-md">
+                  {{ row.concept }}
+                  <span class="font-bold text-gray-300"> {{ row.series }} #{{ row.number }} </span>
+              </div>
+          </template>
 
-                <!-- Table Data -->
-                    <template v-slot:date="{ scope: { row } }">
-                        <div>
-                            <div class="font-bold text-blue-400"> {{ formatDate(row.date) }} </div>
-                        </div>
-                    </template>
+          <template v-slot:status="{ scope: { row } }">
+              <div class="font-bold capitalize">
+                  {{ row.status }}
+              </div>
+          </template>
 
-                    <template v-slot:concept="{ scope: { row } }">
-                        <div class="text-blue-400 capitalize border-b border-blue-400 border-dashed cursor-pointer text-md">
-                            {{ row.concept }}
-                            <span class="font-bold text-gray-300"> {{ row.series }} #{{ row.number }} </span>
-                        </div>
-                    </template>
+          <template v-slot:total="{ scope: { row } }">
+              <div class="font-bold">
+                  {{ formatMoney(row.total) }}
+              </div>
+          </template>
 
-                    <template v-slot:status="{ scope: { row } }">
-                        <div class="font-bold capitalize">
-                            {{ row.status }}
-                        </div>
-                    </template>
+          <template v-slot:debt="{ scope: { row } }" >
+              <div class="font-bold" :class="[row.debt > 0 ?  'text-red-500' : 'text-green-500']">
+                  {{ formatMoney(row.debt) }}
+              </div>
+          </template>
 
-                    <template v-slot:total="{ scope: { row } }">
-                        <div class="font-bold">
-                            {{ formatMoney(row.total) }}
-                        </div>
-                    </template>
-
-                    <template v-slot:debt="{ scope: { row } }" >
-                        <div class="font-bold" :class="[row.debt > 0 ?  'text-red-500' : 'text-green-500']">
-                            {{ formatMoney(row.debt) }}
-                        </div>
-                    </template>
-
-                    <template v-slot:actions="{ scope: { row } }">
-                        <div class="flex space-x-2">
-                            <at-button @click="$inertia.visit(`${state.sectionName}/${row.id}/edit`)" class="w-8 h-8 text-gray-400 rounded-full hover:text-green-400"> <i class="fa fa-edit"></i> </at-button>
-                            <at-button class="w-8 h-8 text-gray-400 rounded-full hover:text-red-400"> <i class="fa fa-trash"></i> </at-button>
-                        </div>
-                    </template>
-                <!-- / Table data-->
-            </at-table>
-        </div>
+          <template v-slot:actions="{ scope: { row } }">
+              <div class="flex space-x-2">
+                  <AtButton @click="$inertia.visit(`${state.sectionName}/${row.id}/edit`)" class="w-8 h-8 text-gray-400 rounded-full hover:text-green-400"> 
+                    <i class="fa fa-edit"></i> 
+                  </AtButton>
+                  <ATButton class="w-8 h-8 text-gray-400 rounded-full hover:text-red-400"> 
+                    <i class="fa fa-trash"></i> 
+                  </ATButton>
+              </div>
+          </template>
+          <!-- / Table data-->
+        </AtTable>
     </div>
+  </AppLayout>
 </template>
 
 <script setup>
-import AtTable from "@/Atmosphere/Atoms/Table/CustomTable"
-import AppHeader from "@/Atmosphere/Organisms/AppHeader"
-import cols from "./cols";
-import formatMoney from "@/Atmosphere/utils/formatMoney";
-import { formatDate } from "@/Atmosphere/utils/formatDate";
-import { AtButton } from "atmosphere-ui"
 import { reactive, computed } from "vue";
+import { AtButton, AtTable } from "atmosphere-ui"
+
+import AppSectionHeader from "../../../Components/AppSectionHeader.vue";
+import AppLayout from "@/Components/templates/AppLayout.vue";
+
+import cols from "./cols";
+import { formatMoney, formatDate } from "@/utils";
+import AccountingSectionNav from "../Partials/AccountingSectionNav.vue";
+import AppButton from "../../../Components/shared/AppButton.vue";
 
 const props = defineProps({
     invoices: {
