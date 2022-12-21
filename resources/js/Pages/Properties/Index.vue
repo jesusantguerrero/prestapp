@@ -2,7 +2,6 @@
 // @ts-ignore: its my template
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import { router } from "@inertiajs/core";
-import AppSectionHeader from "../../Components/AppSectionHeader.vue";
 import { ILoan } from "../../Modules/loans/loanEntity";
 import { computed } from "vue";
 import cols from "./propertyCols";

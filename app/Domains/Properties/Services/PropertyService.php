@@ -63,7 +63,7 @@ class PropertyService {
           'total' =>  $formData['amount'] ?? $rent->amount,
           'items' => array_merge($formData['items'] ?? $items,  $withExtraServices ? $additionalFees : [])
       ]);
-  }
+    }
 
     public static function ofTeam($teamId, $status= Property::STATUS_AVAILABLE) {
       return Property::where([

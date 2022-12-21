@@ -8,7 +8,7 @@
       </AccountingSectionNav>
     </template>
     
-    <div class="py-10 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <div class="py-10 mx-auto sm:px-6 lg:px-8">
         <AtTable
             :cols="cols"
             :tableData="invoices.data"
@@ -48,13 +48,14 @@
           </template>
 
           <template v-slot:actions="{ scope: { row } }">
-              <div class="flex space-x-2">
+              <div class="flex items-center space-x-2">
                   <AtButton @click="$inertia.visit(`${state.sectionName}/${row.id}/edit`)" class="w-8 h-8 text-gray-400 rounded-full hover:text-green-400"> 
                     <i class="fa fa-edit"></i> 
                   </AtButton>
-                  <ATButton class="w-8 h-8 text-gray-400 rounded-full hover:text-red-400"> 
+                  <AtButton class="w-8 h-8 text-gray-400 rounded-full hover:text-red-400"> 
                     <i class="fa fa-trash"></i> 
-                  </ATButton>
+                  </AtButton>
+                  <InvoicePaymentOptions :invoice="row" />
               </div>
           </template>
           <!-- / Table data-->
@@ -74,6 +75,7 @@ import cols from "./cols";
 import { formatMoney, formatDate } from "@/utils";
 import AccountingSectionNav from "../Partials/AccountingSectionNav.vue";
 import AppButton from "../../../Components/shared/AppButton.vue";
+import InvoicePaymentOptions from "../../Rents/Partials/InvoicePaymentOptions.vue";
 
 const props = defineProps({
     invoices: {
