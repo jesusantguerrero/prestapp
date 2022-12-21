@@ -3,7 +3,6 @@ import { ElAvatar, ElTag } from "element-plus"
 import { IProperty } from '../../Modules/properties/propertyEntity';
 // @ts-ignore
 import { getPropertyStatus, getPropertyStatusColor } from "@/Modules/properties/constants";
-import { property } from "lodash";
 
 
 export default [

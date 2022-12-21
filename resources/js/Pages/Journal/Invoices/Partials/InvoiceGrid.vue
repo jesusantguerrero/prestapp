@@ -3,7 +3,7 @@
     <AtTable :cols="renderedCols" :tableData="tableData" :hide-empty-text="true">
       <template v-slot:item="{ scope }">
         <div class="d-flex">
-          <AtInput name="" v-model="scope.row.concept" class="bg-transparent border-0 border-transparent form-control" v-if="isEditing"/>
+          <AtInput name="" v-model="scope.row.concept" class="form-control" rounded v-if="isEditing"/>
           <span v-else> {{ scope.row.concept }}</span>
         </div>
       </template>
@@ -14,16 +14,18 @@
           min="1"
           type="number"
           v-model="scope.row.quantity"
-          class="form-control"
+          class="text-right form-control"
+          rounded
         />
       </template>
 
       <template v-slot:discount="{ scope }"  v-if="isEditing">
         <AtInput
-          class="form-control"
+          class="text-right form-control"
           type="number"
           max="100"
           min="0"
+          rounded
           :options="cleaveOptions.percent"
           v-model="scope.row.discount"
         />
@@ -33,19 +35,27 @@
         <div class="space-y-2">
             <AtInput
                 v-model="scope.row.price"
-                type="number"
                 v-bind="cleaveOptions.money"
+                number-format
+                rounded
+                class="text-right"
             />
             <div class="flex items-center space-x-1" v-for="(tax, index) in scope.row.taxes" :key="`tax-${index}`">
-                <AtSelect
+                <AtSimpleSelect
                     :options="availableTaxes"
-                    :modelValue="taxes"
+                    :model-value="tax"
                     v-model:selected="scope.row.taxes[index]"
+                    @update:model-value="setTax(scope.$index, index, $event)"
                     placeholder="Tax"
                     option-template="${name} - ${rate}%"
+                    label="name"
+                    track-by="id"
                     class="w-full"
                 />
-                <button class="h-10 px-2 mt-auto ml-2 transition border focus:outline-none hover:text-gray-900 hover:bg-gray-200"  @click="removeTax(scope.$index, index)"><IconTrash class="w-4 h-4 text-gray-400" /> </button>
+                <button class="h-10 px-2 mt-auto ml-2 transition border focus:outline-none hover:text-gray-900 hover:bg-gray-200"  
+                @click="removeTax(scope.$index, index)">
+                  <IconTrash class="w-4 h-4 text-gray-400" /> 
+                </button>
             </div>
         </div>
       </template>
@@ -55,40 +65,26 @@
           @click="removeRow(scope.$index, scope.row)"
           class="invoice-grid__remove-row"
         >
-          <font-awesome-icon icon="trash-alt" />
+          <i class="fas fa-trash-alt" />
         </button>
       </template>
 
       <!-- table slots -->
       <template v-slot:append v-if="isEditing">
         <button
-          @click="addMode = true"
+          @click="addRow()"
           class="invoice-grid__add-row"
-          v-if="!addMode"
         >
           Add Row
         </button>
-        <div v-else class="service-select">
-          <AtSelect
-            v-model:selected="rowToAdd"
-            :options="products"
-            label="name"
-            key-track="id"
-            @update:selected="addRow()"
-          />
-
-          <button @click="addMode = false" class="invoice-grid__remove-row">
-            <i class="fa fa-trash-alt" />
-          </button>
-        </div>
       </template>
     </AtTable>
   </div>
 </template>
 
 <script setup>
-import { AtInput, AtTable } from "atmosphere-ui";
-import { computed, reactive, toRefs } from "vue"
+import { AtInput, AtSimpleSelect, AtTable } from "atmosphere-ui";
+import { computed, reactive, toRefs , onMounted } from "vue"
 
 import IconTrash from "@/Components/icons/IconTrash.vue";
 
@@ -154,14 +150,15 @@ const state = reactive({
 })
 
 const addRow = () => {
-    const itemTaxes = state.rowToAdd.taxes.length ? state.rowToAdd.taxes : [];
+    const itemTaxes = state.rowToAdd.taxes?.length ? state.rowToAdd.taxes : [];
+    if (!props.tableData.length || props.tableData.at(-1).concept)
     props.tableData.push({
-        product_name: state.rowToAdd.name,
-        concept: state.rowToAdd.name,
+        product_name: state.rowToAdd?.name,
+        concept: state.rowToAdd?.name,
         product_id: state.rowToAdd.id,
         quantity: 1,
         discount: 0,
-        price: state.rowToAdd.price.value || 0,
+        price: state.rowToAdd.price?.value || 0,
         amount: 0,
         taxes: [
             ...itemTaxes,
@@ -169,9 +166,6 @@ const addRow = () => {
                 id: 'new',
             }],
     });
-
-    state.rowToAdd = {};
-    state.addMode = false;
 }
 
 const removeRow = (index, row) => {
@@ -184,13 +178,24 @@ const removeRow = (index, row) => {
       emit("deleted", deleted);
 }
 
+const setTax = (rowIndex, taxIndex, taxName) => {
+   const itemRow = props.tableData[rowIndex];
+   const tax = props.availableTaxes.find(availableTax => taxName == availableTax.name)
+   itemRow.taxes[taxIndex] = tax;
+   emit('taxes-updated', { rowIndex, taxes: itemRow.taxes })
+}
+
 const removeTax = (rowIndex, taxIndex) => {
    const itemRow = props.tableData[rowIndex];
    const taxes = itemRow.taxes.filter((_tax, index) => index !== taxIndex)
    emit('taxes-updated', { rowIndex, taxes })
 }
 
-const { rowToAdd, renderedCols, addMode, cleaveOptions } = toRefs(state)
+onMounted(() => {
+  addRow();
+})
+
+const { renderedCols, cleaveOptions } = toRefs(state)
 </script>
 
 <style lang="scss">

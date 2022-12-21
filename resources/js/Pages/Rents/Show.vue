@@ -6,12 +6,12 @@ import { ILoanWithInstallments } from "../../Modules/loans/loanEntity";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import AppSectionHeader from "../../Components/AppSectionHeader.vue";
-import PaymentFormModal from "./Partials/PaymentFormModal.vue";
 import { formatMoney, formatDate } from "@/utils";
 import { ILoanInstallment } from "../../Modules/loans/loanInstallmentEntity";
 import PropertySectionNav from "../Properties/Partials/PropertySectionNav.vue";
 import { AtButton } from "atmosphere-ui";
 import InvoiceCard from "./Partials/InvoiceCard.vue";
+import PaymentFormModal from "../Loans/Partials/PaymentFormModal.vue";
 
 export interface Props {
   rents: ILoanWithInstallments;

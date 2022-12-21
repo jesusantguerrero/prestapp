@@ -1,5 +1,6 @@
 <script setup>
 import { formatMoney, formatDate } from "@/utils";
+import { Link } from "@inertiajs/vue3";
 import AppButton from "../../../Components/shared/AppButton.vue";
 
 defineProps({
@@ -12,7 +13,11 @@ defineProps({
 <template>
   <section class="p-4 border rounded-md shadow-md bg-base-lvl-3">
     <header class="flex justify-between">
-      <h4 class="font-bold text-body">Contrato Activo</h4>
+      <h4 class="font-bold text-body">
+        <Link :href="`/rents/${contract.id}`">
+          Contrato Activo: {{ contract.client?.fullName }}
+        </Link>
+      </h4>
       <section class="space-x-2">
         <AppButton variant="inverse">Editar terminos</AppButton>
         <AppButton variant="inverse">Terminar Contrato</AppButton>

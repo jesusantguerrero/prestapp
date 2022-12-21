@@ -10,8 +10,8 @@ use Illuminate\Support\Carbon;
 
 class UpdateLateInvoices {
 
-    public static function generateInvoices() {
-      $rentWithInvoicesToCreate = Rent::whereRaw('next_invoice_date <= curdate()')
+    public static function generateScheduledInvoices() {
+      $rentWithInvoicesToCreate = Rent::whereRaw('next_invoice_date - curdate() <= 31')
       ->whereNotIn('status', [Rent::STATUS_CANCELLED, Rent::STATUS_PAID])
       ->get();
 
@@ -26,6 +26,24 @@ class UpdateLateInvoices {
           ]);
         }
           }
+    }
+
+    public static function generateNextInvoices() {
+      $rentWithInvoicesToCreate = Rent::whereNotNull('next_invoice_date')
+      ->whereNotIn('status', [Rent::STATUS_CANCELLED, Rent::STATUS_PAID])
+      ->get();
+
+      foreach ($rentWithInvoicesToCreate as $rent) {
+        if (!in_array($rent->next_invoice_date, $rent->generated_invoice_dates))  {
+          PropertyService::createInvoice([
+            'date' => $rent->next_invoice_date
+          ], $rent);
+          $rent->update([
+            'next_invoice_date' => self::getNextDate($rent->next_invoice_date),
+            'generated_invoice_dates' => array_merge()
+          ]);
+        }
+      }
     }
 
     public static function chargeLateFee($payments) {

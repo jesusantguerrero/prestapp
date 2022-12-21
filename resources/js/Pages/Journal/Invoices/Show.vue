@@ -1,25 +1,10 @@
-<template>
-    <div class="py-10 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <app-header
-            name="invoice"
-            :resource="invoice"
-            extract-title="concept"
-            @saved="saveForm(true)"
-        />
-
-        <component
-            :is="InvoiceSimple"
-            :type="type"
-            :business-data="businessData"
-            :invoice-data="invoice"
-        />
-    </div>
-</template>
-
 <script setup>
+import { router } from "@inertiajs/vue3";
 
-import AppHeader from '@/Atmosphere/Organisms/AppHeader'
-import InvoiceSimple from "@/Atmosphere/Templates/invoices/Simple.vue";
+import InvoiceSimple from "./printTemplates/Simple.vue";
+import AppLayout from "../../../Components/templates/AppLayout.vue";
+import AccountingSectionNav from "../Partials/AccountingSectionNav.vue";
+import AppButton from "../../../Components/shared/AppButton.vue";
 
 defineProps({
     invoice: {
@@ -40,3 +25,25 @@ defineProps({
     }
 })
 </script>
+
+
+<template>
+  <AppLayout :title="invoice.concept">
+    <template #header>
+      <AccountingSectionNav>
+        <template #actions>
+          <AppButton @click="router.visit(route('invoices.edit', invoice))" variant="inverse">Editar Factura</AppButton>
+        </template>
+      </AccountingSectionNav>
+    </template>
+    
+    <div class="py-10 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <component
+            :is="InvoiceSimple"
+            :type="type"
+            :business-data="businessData"
+            :invoice-data="invoice"
+        />
+    </div>
+  </AppLayout>
+</template>

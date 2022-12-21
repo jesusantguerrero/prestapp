@@ -17,7 +17,7 @@ class BackgroundController extends Controller
     }
 
     public function generateRentInvoices() {
-      return UpdateLateInvoices::generateInvoices();
+      return UpdateLateInvoices::generateScheduledInvoices();
     }
 
     private function backgroundPost(string $url) {

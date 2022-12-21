@@ -77,10 +77,10 @@ const refresh = () => {
     <template #header>
       <PropertySectionNav> 
           <template #actions>
-            <AppButton @click="router.visit(route('properties.edit'))" variant="inverse">
+            <AppButton @click="router.visit(route('properties.edit', properties))" variant="inverse">
               Editar
             </AppButton>
-            <AppButton @click="router.visit(route('properties.create'))" variant="inverse">
+            <AppButton @click="router.visit(route('rents.create', {propertyId: properties.id}))" variant="inverse">
               Nuevo Contrato
             </AppButton>
           </template>
@@ -118,7 +118,7 @@ const refresh = () => {
             <section>
               <div class="flex items-center">
                 <IconCoins class="mr-2 text-yellow-600"/>
-                <span class="font-bold text-success"> {{ formatMoney(properties.rent_price) }} </span>
+                <span class="font-bold text-success"> {{ formatMoney(properties.price) }} </span>
               </div>
               <p class="text-bold text-body-1">
                 Renta Mensual
@@ -150,8 +150,9 @@ const refresh = () => {
           </section>
 
           <ContractCard 
+            v-if="properties.contract"
             class="p-4 border rounded-md shadow-md bg-base-lvl-3"
-            :contract="properties.active_contract"
+            :contract="properties.contract"
           />
         </article>
 

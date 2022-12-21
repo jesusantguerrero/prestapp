@@ -52,7 +52,7 @@ export default [
   {
     label: "",
     name: "actions",
-    width: "50",
+    width: "15",
     type: "custom",
     class: "no-print",
     headerClass: "no-print"

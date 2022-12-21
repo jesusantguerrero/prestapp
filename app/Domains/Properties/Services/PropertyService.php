@@ -25,8 +25,8 @@ class PropertyService {
       $formData = [
         "date" => $rent->deposit_due,
         "due_date" => $rent->deposit_due,
-        "concept" => "Factura deposito",
-        "description" => "Depositos de $rent->address",
+        "concept" => "Factura Déposito",
+        "description" => "Déposito de {$rent->client->fullName}",
         "total" => $rent->deposit,
         "items" => [[
           "name" => "Depositos de $rent->address",
@@ -41,8 +41,17 @@ class PropertyService {
 
     public static function createInvoice($formData, Rent $rent, $withExtraServices = true) {
       $additionalFees =  $rent->services ?? [];
+      $items = [[
+            "name" => "Factura de Renta",
+            "concept" => "Factura de {$rent->client->fullName}",
+            "quantity" => 1,
+            "price" => $rent->amount,
+            "amount" => $rent->amount,
+      ]];
 
       return Invoice::createDocument([
+          'concept' =>  $formData['concept'] ?? 'Factura de Renta',
+          'description' => $formData['description'] ?? "Mensualidad {$rent->client->fullName}",
           'user_id' => $rent->user_id,
           'team_id' => $rent->team_id,
           'client_id' => $rent->client_id,
@@ -51,10 +60,8 @@ class PropertyService {
           'date' => $formData['date'] ?? date('Y-m-d'),
           'type' => Invoice::DOCUMENT_TYPE_INVOICE,
           'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
-          'concept' =>  $formData['concept'] ?? 'Invoice',
-          'description' => $formData['description'] ?? "Mensualidad $rent->name",
           'total' =>  $formData['amount'] ?? $rent->amount,
-          'items' => array_merge($formData['items'] ?? [],  $withExtraServices ? $additionalFees : [])
+          'items' => array_merge($formData['items'] ?? $items,  $withExtraServices ? $additionalFees : [])
       ]);
   }
 

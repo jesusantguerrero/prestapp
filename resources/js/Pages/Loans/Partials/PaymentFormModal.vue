@@ -32,11 +32,10 @@
         <AtField class="w-full text-left" label="Monto Recibido">
           <AtInput
             class="form-control"
-            :number-format="true"
+            number-format
             v-model="paymentForm.amount"
             rounded
             required
-            min="1"
           />
           {{ documentTotal }}
         </AtField>
@@ -94,6 +93,7 @@
       </div>
 
 			<PaymentGrid 
+        v-if="paymentForm.documents"
 				:table-data="paymentForm.documents" 
 				:available-taxes="[]" 
 			/>
@@ -204,7 +204,7 @@ watch(
 );
 
 const documentTotal = computed(() => {
-    return paymentForm.value.documents.reduce((total, payment) => {
+    return paymentForm.value.documents?.reduce((total, payment) => {
         return MathHelper.sum(total, payment.payment)
     }, 0)
 })
@@ -227,7 +227,7 @@ function addPayment() {
     account_id: paymentForm.value.account_id,
     reference: paymentForm.value.reference,
     notes: paymentForm.value.notes,
-    documents: paymentForm.value.documents.filter(doc => doc.payment)
+    documents: paymentForm.value.documents?.filter(doc => doc.payment)
   };
 
   axios
