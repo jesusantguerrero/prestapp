@@ -5,10 +5,18 @@ import { ref, computed } from "vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import AppSectionHeader from "../../Components/AppSectionHeader.vue";
-import { formatMoney } from "@/utils/formatMoney";
+import IconMarker from "@/Components/icons/IconMarker.vue";
+import IconCoins from "@/Components/icons/IconCoins.vue";
+import IconPersonSafe from "@/Components/icons/IconPersonSafe.vue";
+
+import { formatMoney, formatDate } from "@/utils";
 import { ILoanInstallment } from "../../Modules/loans/loanInstallmentEntity";
 import PropertySectionNav from "../Properties/Partials/PropertySectionNav.vue";
 import { IProperty } from "../../Modules/properties/propertyEntity";
+import { ElTag } from "element-plus";
+import { AtBackgroundIconCard } from "atmosphere-ui";
+import ContractCard from "./Partials/ContractCard.vue";
+import EmptyAddTool from "./Partials/EmptyAddTool.vue";
 
 export interface Props {
   properties: IProperty;
@@ -29,6 +37,11 @@ const tabs = {
   settings: "Configuracion",
 };
 
+
+const propertyTitle = computed(() => {
+  const address = props.properties.address.split(',');
+  return address[0];
+})
 type IPaymentMetaData = ILoanInstallment & {
   installment_id?: number;
 };
@@ -60,11 +73,14 @@ const refresh = () => {
 </script>
 
 <template>
-  <AppLayout title="Alquiler">
+  <AppLayout :title="`Propiedades / ${propertyTitle}`">
     <template #header>
       <PropertySectionNav> 
           <template #actions>
-            <AppButton @click="router.visit(route('properties.create'))">
+            <AppButton @click="router.visit(route('properties.edit'))" variant="inverse">
+              Editar
+            </AppButton>
+            <AppButton @click="router.visit(route('properties.create'))" variant="inverse">
               Nuevo Contrato
             </AppButton>
           </template>
@@ -73,71 +89,97 @@ const refresh = () => {
 
     <main class="p-5 mt-8">
       <AppSectionHeader
-        name="Alquiler"
+        name="Propiedades"
         class="px-5 border-2 border-white rounded-md rounded-b-none shadow-md"
         :resource="properties"
-        :title="properties.address"
+        :title="propertyTitle"
         @create="router.visit('/properties/create')"
         hide-action
       />
-      <div
-        class="w-full px-5 pt-10 pb-2 mb-5 space-y-5 text-gray-600 bg-white border-gray-200 shadow-md rounded-b-md"
+      <header
+        class="w-full px-5 pb-2 mb-5 space-y-5 text-gray-600 bg-white border-gray-200 shadow-md rounded-b-md"
       >
-        <div>
-          {{ properties.address }}
-        </div>
-        <div class="flex space-x-2">
-          <Link
-            class="px-2 py-1 transition rounded-md cursor-pointer bg-gray-50 hover:bg-gray-200"
-            v-for="(tabLabel, tab) in tabs"
-            :key="tab"
-            :class="{ 'bg-gray-300': tab == currentTab }"
-            :href="`/rents/${properties.id}?current-tab=${tab}`"
-            replace
-          >
-            {{ tabLabel }}
-          </Link>
-        </div>
-      </div>
+        <section class="flex items-center justify-between py-4">
+          <article>
+            <p class="flex items-center space-x-2">
+              <IconMarker /> 
+              <span>
+                {{ properties.address }} 
+              </span>
+            </p>
+            <p class="flex items-center space-x-2 cursor-pointer text-primary group">
+              <IconPersonSafe /> 
+              <span class="group-hover:underline underline-offset-4">
+                {{ properties.owner.names }} {{ properties.owner.lastnames }} 
+              </span>
+            </p>
+          </article> 
+          <article class="flex space-x-5">
+            <section>
+              <div class="flex items-center">
+                <IconCoins class="mr-2 text-yellow-600"/>
+                <span class="font-bold text-success"> {{ formatMoney(properties.rent_price) }} </span>
+              </div>
+              <p class="text-bold text-body-1">
+                Renta Mensual
+              </p>
+            </section>
+            <ElTag> {{ properties.status }}</ElTag>
+          </article>
+        </section>
+      </header>
+      
       <section class="flex w-full space-x-8 rounded-t-none border-t-none ">
-        <article class="w-9/12 p-4 space-y-2 border rounded-md shadow-md bg-base-lvl-3">
-          <span> Cliente: {{ properties.names }} {{ properties.lastnames }} </span>
-          <p>
-            Monto Prestado:
-            {{ properties.amount }}
-          </p>
-          <p>
-            Fecha Primer Pago:
-            {{ properties.first_invoice_date }}
-          </p>
-          <p>
-            Estatus:
-            {{ properties.status }}
-          </p>
+        <article class="w-9/12 space-y-4">
+          <section class="flex space-x-4">
+            <AtBackgroundIconCard
+              class="w-full bg-white border h-28 text-body-1"
+              title="Balance de Cuenta"
+              :value="formatMoney(0)"
+            />    
+            <AtBackgroundIconCard
+              class="w-full bg-white border h-28 text-body-1"
+              title="Balance de Pendiente"
+              :value="formatMoney(0)"
+            />    
+            <AtBackgroundIconCard
+              class="w-full bg-white border h-28 text-body-1"
+              title="Dias de mora"
+              :value="0"
+            /> 
+          </section>
 
-          <InstallmentTable
-            :installments="properties.installments"
-            accept-payment
-            @pay="onPayment"
+          <ContractCard 
+            class="p-4 border rounded-md shadow-md bg-base-lvl-3"
+            :contract="properties.active_contract"
           />
         </article>
 
-        <article class="w-3/12 p-4 space-y-2 border rounded-md shadow-md bg-base-lvl-3">
-          <AppButton class="w-full"> Agregar Pago </AppButton>
-          <AppButton class="w-full"> Recibo Multiple </AppButton>
-
-          <section class="py-4 mt-8 space-y-2">
-            <div v-for="payment in properties.payment_documents" class="text-sm">
-              Pagado
-              <span class="font-bold text-green-500">
-                {{ formatMoney(payment.amount) }}
-              </span>
-              en
-              <span class="font-bold text-primary">
-                {{ payment.payment_date }}
-              </span>
+        <article class="w-3/12 space-y-2 rounded-md shadow-md ">
+          <div class="px-5 py-10 text-gray-600 bg-gray-200 rounded-md">
+            <div class="header">
+                <h2 class="text-lg font-bold">  Manejo de Propiedad </h2>
+                <small> Private place for you and your internal team to manage this project</small>
             </div>
-          </section>
+
+            <div class="mt-4 space-y-2">
+                <section class="flex space-x-4">
+                  <AppButton class="w-full"> Generar Pago a Dueño </AppButton>
+                </section>
+                <EmptyAddTool>
+                    Notes
+                </EmptyAddTool>
+                <EmptyAddTool>
+                  Imagenes
+                </EmptyAddTool>
+                <EmptyAddTool >
+                    Documentos
+                </EmptyAddTool>
+                <EmptyAddTool>
+                    Configuracion
+                </EmptyAddTool>
+            </div>
+        </div>
         </article>
       </section>
 

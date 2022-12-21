@@ -101,7 +101,7 @@ const comparisonRevenue = {
     <template #header>
       <PropertySectionNav> 
           <template #actions>
-            <AppButton @click="router.visit(route('properties.create'))">Agregar Propiedad</AppButton>
+            <AppButton variant="inverse" @click="router.visit(route('properties.create'))">Agregar Propiedad</AppButton>
           </template>
         </PropertySectionNav>
     </template>
@@ -117,7 +117,7 @@ const comparisonRevenue = {
         <article class="rounded-md bg-base-lvl-3 lg:w-7/12">
           <header class="flex justify-between px-5 py-2 text-body-1">
             <h4 class="text-xl font-bold">Proximos pagos</h4>
-            <AppButton @click="router.visit(route('properties.create'))">Agregar Propiedad</AppButton>
+            <AppButton variant="inverse" @click="router.visit(route('properties.create'))">Agregar Contrato</AppButton>
           </header>
           <AtTable :cols="cols" :table-data="[]" />
         </article>
@@ -141,8 +141,8 @@ const comparisonRevenue = {
           </AtBackgroundIconCard>
 
           <IncomeSummaryWidget class="order-2 mt-4 lg:w-full lg:mt-0 lg:order-1"
-              :chart="comparisonRevenue"
-              :headerInfo="comparisonRevenue.headers"
+            :chart="comparisonRevenue"
+            :headerInfo="comparisonRevenue.headers"
           />
         </article>
       </section>

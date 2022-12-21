@@ -42,31 +42,31 @@ export const useAppMenu = t => {
         },
         {
             icon: 'fas fa-home',
-            label: 'Ingresos',
+            label: 'Contabilidad',
             to: '/invoices',
             as: Link,
             isActiveFunction(url, currentPath) {
                 return /invoices/.test(currentPath)
              }
         },
-        {
-          icon: 'fas fa-heart',
-          label:'Documentos',
-          to: '/rents',
-          as: Link,
-          isActiveFunction(url, currentPath) {
-            return /rents/.test(currentPath)
-         }
-        },
-        {
-          icon: 'fas fa-heart',
-          label:'Acuerdos de Pago',
-          to: '/rents',
-          as: Link,
-          isActiveFunction(url, currentPath) {
-            return /rents/.test(currentPath)
-         }
-        },
+        // {
+        //   icon: 'fas fa-heart',
+        //   label:'Documentos',
+        //   to: '/rents',
+        //   as: Link,
+        //   isActiveFunction(url, currentPath) {
+        //     return /rents/.test(currentPath)
+        //  }
+        // },
+        // {
+        //   icon: 'fas fa-heart',
+        //   label:'Acuerdos de Pago',
+        //   to: '/rents',
+        //   as: Link,
+        //   isActiveFunction(url, currentPath) {
+        //     return /rents/.test(currentPath)
+        //  }
+        // },
         {
           icon: 'fas fa-heart',
           label:'Reportes',

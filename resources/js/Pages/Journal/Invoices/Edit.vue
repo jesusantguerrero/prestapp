@@ -1,22 +1,23 @@
 <template>
   <AppLayout title="Factura">
+    <template #header>
+      <AccountingSectionNav>
+        <template #actions>
+          <AppButton @click="saveForm(true)" variant="inverse">Guardar Factura</AppButton>
+        </template>
+      </AccountingSectionNav>
+    </template>
+    
     <div class="py-10 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <AppSectionHeader
-            :name="type"
-            :resource="invoice"
-            extract-title="concept"
-            @saved="saveForm(true)"
-        />
-
-        <InvoiceTemplate
-            ref="InvoiceTemplateForm"
-            :is-editing="true"
-            :type="type"
-            :clients="clients"
-            :products="products"
-            :invoice-data="invoice"
-            :available-taxes="availableTaxes"
-        />
+      <InvoiceTemplate
+          ref="InvoiceTemplateForm"
+          :is-editing="true"
+          :type="type"
+          :clients="clients"
+          :products="products"
+          :invoice-data="invoice"
+          :available-taxes="availableTaxes"
+      />
     </div>
   </AppLayout>
 </template>
@@ -27,6 +28,8 @@
   import AppLayout from "@/Components/templates/AppLayout.vue";
   import AppSectionHeader from '@/Components/AppSectionHeader.vue';
   import InvoiceTemplate from "./Partials/InvoiceTemplate.vue";
+  import AccountingSectionNav from "../Partials/AccountingSectionNav.vue";
+  import AppButton from "../../../Components/shared/AppButton.vue";
 
   const props = defineProps([
       'invoice',

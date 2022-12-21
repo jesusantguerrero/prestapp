@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { Link, router } from "@inertiajs/vue3";
-import { ref, computed } from "vue";
+import { ref, computed, nextTick } from "vue";
 import { ILoanWithInstallments } from "../../Modules/loans/loanEntity";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import AppSectionHeader from "../../Components/AppSectionHeader.vue";
-import InstallmentTable from "./Partials/InstallmentTable.vue";
 import PaymentFormModal from "./Partials/PaymentFormModal.vue";
 import { formatMoney, formatDate } from "@/utils";
 import { ILoanInstallment } from "../../Modules/loans/loanInstallmentEntity";
@@ -31,7 +30,7 @@ const tabs = {
 };
 
 const clientName = computed(() => props.rents.client.names + " " + props.rents.client?.lastnames )
-const sectionTitle = computed(() => `Alquiler - ${clientName.value}`)
+const sectionTitle = computed(() => `${clientName.value.split(',')[0]}`)
 
 type IPaymentMetaData = ILoanInstallment & {
   invoice_id?: number;
@@ -59,9 +58,28 @@ const paymentConcept = computed(() => {
   );
 });
 
+const linkToPrint = ref('');
+const invoiceLink = ref();
+
+const onDownload = (invoice) => {
+  linkToPrint.value = `/invoices/${invoice.id}/print`
+  console.log(linkToPrint.value, invoice);
+  nextTick(() => {
+    invoiceLink.value.click()
+    linkToPrint.value = ''
+  })
+}
+
 const handleActions = (actionName, invoice) => {
+  switch(actionName) {
+    case 'payment': 
+      onPayment(invoice);
+    break;
+    case 'download': 
+      onDownload(invoice);
+    break;
+  }
   if (actionName == 'payment') {
-    onPayment(invoice);
   }
 }
 
@@ -179,12 +197,15 @@ const refresh = () => {
       <PaymentFormModal
         v-if="selectedPayment"
         v-model="isPaymentModalOpen"
+        title="Pagar Renta"
         :payment="selectedPayment"
         :endpoint="`/rents/${rents.id}/invoices/${selectedPayment.invoice_id}/pay`"
         :due="selectedPayment.amount"
         :default-concept="paymentConcept"
         @saved="refresh()"
       />
+
+      <a :href="linkToPrint" download target="_blank" ref="invoiceLink" type="hidden"></a>
     </main>
   </AppLayout>
 </template>
