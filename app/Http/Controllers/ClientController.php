@@ -4,22 +4,32 @@ namespace App\Http\Controllers;
 
 use App\Domains\CRM\Models\Client;
 use App\Domains\CRM\Services\ClientService;
-use App\Http\Requests\ClientRequest;
 
-class ClientController extends Controller
+class ClientController extends InertiaController
 {
-    public function index() {
-        return inertia('Clients/Index', [
-            'data' => Client::all()
-        ]);
-    }
+  public function __construct(Client $client)
+  {
+      $this->model = $client;
+      $this->searchable = ['name'];
+      $this->templates = [
+          "index" => 'Clients/Index',
+          "show" => 'Clients/Show'
+      ];
+      // $this->validationRules = [
+      //     'owner_id' => 'numeric',
+      //     'address' => 'string',
+      //     'price' => 'required'
+      // ];
+      $this->sorts = ['created_at'];
+      $this->includes = ['properties', 'account'];
+      $this->filters = [];
+      $this->resourceName= "clients";
+  }
 
-    public function store(ClientRequest $clientFormRequest) {
-        $validatedData = $clientFormRequest->validated();
-        
-        ClientService::createClient(array_merge($validatedData, [
-            'team_id' => $clientFormRequest->user()->current_team_id,
-            'user_id' => $clientFormRequest->user()->id
-        ]));
-    }
+
+  public function generatePayment(Client $client) {
+    ClientService::generateBill($client);
+    return redirect("/bills/");
+  }
+
 }

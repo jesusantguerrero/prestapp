@@ -1,25 +1,21 @@
 <script setup lang="ts">
-import { Link, router } from "@inertiajs/vue3";
+import {  router } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import AppSectionHeader from "../../Components/AppSectionHeader.vue";
-import IconMarker from "@/Components/icons/IconMarker.vue";
-import IconCoins from "@/Components/icons/IconCoins.vue";
-import IconPersonSafe from "@/Components/icons/IconPersonSafe.vue";
 
 import { formatMoney, formatDate } from "@/utils";
 import { ILoanInstallment } from "../../Modules/loans/loanInstallmentEntity";
 import PropertySectionNav from "../Properties/Partials/PropertySectionNav.vue";
-import { IProperty } from "../../Modules/properties/propertyEntity";
 import { ElTag } from "element-plus";
 import { AtBackgroundIconCard } from "atmosphere-ui";
-import ContractCard from "./Partials/ContractCard.vue";
-import EmptyAddTool from "./Partials/EmptyAddTool.vue";
+import { IClient } from "../../Modules/clients/clientEntity";
+import EmptyAddTool from "../Properties/Partials/EmptyAddTool.vue";
 
 export interface Props {
-  properties: IProperty;
+  clients: IClient;
   currentTab: string;
 }
 
@@ -38,26 +34,12 @@ const tabs = {
 };
 
 
-const propertyTitle = computed(() => {
-  const address = props.properties.address.split(',');
-  return address[0];
-})
 type IPaymentMetaData = ILoanInstallment & {
   installment_id?: number;
 };
 
-const isPaymentModalOpen = ref(false);
-const selectedPayment = ref<IPaymentMetaData | null>(null);
-const onPayment = (installment: ILoanInstallment) => {
-  selectedPayment.value = {
-    ...installment,
-    // @ts-ignore solve backend sending decimals as strings
-    amount: parseFloat(installment.amount_due) || installment.amount,
-    id: undefined,
-    installment_id: installment.id,
-  };
-
-  isPaymentModalOpen.value = true;
+const generatePropertyPayment = () => {
+  router.post(`/clients/${props.clients.id}/generate-payment`);
 };
 
 const paymentConcept = computed(() => {
@@ -73,15 +55,15 @@ const refresh = () => {
 </script>
 
 <template>
-  <AppLayout :title="`Propiedades / ${propertyTitle}`">
+  <AppLayout :title="`Clientes / ${clients.fullName}`">
     <template #header>
       <PropertySectionNav> 
           <template #actions>
-            <AppButton @click="router.visit(route('properties.edit', properties))" variant="inverse">
+            <AppButton @click="" variant="inverse">
               Editar
             </AppButton>
-            <AppButton @click="router.visit(route('rents.create', {propertyId: properties.id}))" variant="inverse">
-              Nuevo Contrato
+            <AppButton @click="" variant="inverse">
+              Nueva Propiedad
             </AppButton>
           </template>
         </PropertySectionNav>
@@ -89,11 +71,10 @@ const refresh = () => {
 
     <main class="p-5 mt-8">
       <AppSectionHeader
-        name="Propiedades"
+        name="Clientes"
         class="px-5 border-2 border-white rounded-md rounded-b-none shadow-md"
-        :resource="properties"
-        :title="propertyTitle"
-        @create="router.visit('/properties/create')"
+        :resource="clients"
+        :title="clients?.fullName"
         hide-action
       />
       <header
@@ -104,27 +85,27 @@ const refresh = () => {
             <p class="flex items-center space-x-2">
               <IconMarker /> 
               <span>
-                {{ properties.address }} 
+                {{ clients.dni }} 
               </span>
             </p>
-            <p class="flex items-center space-x-2 cursor-pointer text-primary group" @click="router.visit(route('clients.show', properties.owner))">
+            <p class="flex items-center space-x-2 cursor-pointer text-primary group">
               <IconPersonSafe /> 
               <span class="group-hover:underline underline-offset-4">
-                {{ properties.owner.fullName }} 
+                {{ clients.account.name }} 
               </span>
             </p>
           </article> 
           <article class="flex space-x-5">
-            <section>
-              <div class="flex items-center">
+            <section class="text-center ">
+              <div class="flex items-center w-full text-center ">
                 <IconCoins class="mr-2 text-yellow-600"/>
-                <span class="font-bold text-success"> {{ formatMoney(properties.price) }} </span>
+                <span class="mx-auto font-bold text-success"> {{ clients.properties.length }} </span>
               </div>
               <p class="text-bold text-body-1">
-                Renta Mensual
+                Propiedades
               </p>
             </section>
-            <ElTag> {{ properties.status }}</ElTag>
+            <ElTag> {{ clients.status }}</ElTag>
           </article>
         </section>
       </header>
@@ -148,24 +129,20 @@ const refresh = () => {
               :value="0"
             /> 
           </section>
-
-          <ContractCard 
-            v-if="properties.contract"
-            class="p-4 border rounded-md shadow-md bg-base-lvl-3"
-            :contract="properties.contract"
-          />
         </article>
 
         <article class="w-3/12 space-y-2 rounded-md shadow-md ">
           <div class="px-5 py-10 text-gray-600 bg-gray-200 rounded-md">
             <div class="header">
-                <h2 class="text-lg font-bold">  Manejo de Propiedad </h2>
+                <h2 class="text-lg font-bold">  Manejo de Cliente </h2>
                 <small> Private place for you and your internal team to manage this project</small>
             </div>
 
             <div class="mt-4 space-y-2">
                 <section class="flex space-x-4">
-                  <AppButton class="w-full"> Generar Pago a Dueño </AppButton>
+                  <AppButton class="w-full" @click="generatePropertyPayment()"> 
+                    Generar de propiedades 
+                  </AppButton>
                 </section>
                 <EmptyAddTool>
                     Notes
@@ -183,7 +160,7 @@ const refresh = () => {
         </div>
         </article>
       </section>
-
+<!-- 
       <PaymentFormModal
         v-if="selectedPayment"
         v-model="isPaymentModalOpen"
@@ -192,7 +169,7 @@ const refresh = () => {
         :due="selectedPayment.amount"
         :default-concept="paymentConcept"
         @saved="refresh()"
-      />
+      /> -->
     </main>
   </AppLayout>
 </template>

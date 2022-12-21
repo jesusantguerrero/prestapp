@@ -3,8 +3,12 @@
 namespace App\Domains\CRM\Models;
 
 use App\Domains\Loans\Models\Loan;
+use App\Domains\Properties\Models\Property;
+use App\Domains\Properties\Models\Rent;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Insane\Journal\Models\Core\Account;
+use Insane\Journal\Models\Invoice\Invoice;
 
 class Client extends Model {
     protected $fillable = ['user_id', 'team_id', 'names', 'lastnames', 'display_name', 'dni', 'dni_type', 'email', 'cellphone', 'address_details', 'status'];
@@ -25,6 +29,25 @@ class Client extends Model {
 
     public function hasActiveLoans() {
         return $this->loans()->active()->count();
+    }
+
+    // As property owner
+    public function properties() {
+      return $this->hasMany(Property::class, 'owner_id');
+    }
+
+    public function getPropertyInvoices() {
+      return Invoice::where([
+        'rents.owner_id' => $this->id,
+        'invoices.status' => 'paid'
+      ])
+      ->where('invoiceable_type', Rent::class)
+      ->join('rents', 'invoiceable_id', 'rents.id')
+      ->get();
+    }
+
+    public function account() {
+      return $this->hasOne(Account::class);
     }
 
     public function checkStatus() {

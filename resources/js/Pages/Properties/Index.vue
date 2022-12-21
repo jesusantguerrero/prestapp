@@ -10,13 +10,10 @@ import AtTable from "../../Components/AtTable.vue";
 import AppButton from "../../Components/shared/AppButton.vue";
 import { Link } from "@inertiajs/vue3";
 import PropertySectionNav from "./Partials/PropertySectionNav.vue";
-
-interface IPaginatedData {
-    data: ILoan[]
-}
+import { IPaginatedData } from "@/utils/constants";
 
 const props = defineProps<{
-  properties: ILoan[] | IPaginatedData;
+  properties: ILoan[] | IPaginatedData<ILoan>;
 }>();
 
 const listData = computed(() => {

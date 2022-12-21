@@ -170,18 +170,12 @@
                 >
                     <template v-slot:add-payment v-if="!isDraft">
                         <div>
-                            <AtButton
-                                class="invoice-totals__add-payment"
+                            <AppButton
+                                class="w-full"
                                 @click="isPaymentDialogVisible = true"
                             >
                                 Add Payment
-                            </AtButton>
-                            <AtButton
-                                class="mt-4 invoice-totals__add-payment"
-                                @click="markAsPaid"
-                            >
-                                Mark as Paid
-                            </AtButton>
+                            </AppButton>
                         </div>
                     </template>
                 </InvoiceTotals>
@@ -227,6 +221,7 @@ import { computed, reactive, toRefs, watch, inject } from "vue";
 
 import InvoiceTotals from "./InvoiceTotals.vue";
 import InvoiceGrid from "./InvoiceGrid.vue";
+import AppButton from "../../../../Components/shared/AppButton.vue";
 
 const props = defineProps({
     type: {
@@ -317,7 +312,14 @@ const setInvoiceData = (data) => {
         })
         
         state.client = data.client;
-        state.tableData = data.lines.sort((a, b) => (a.index > b.index ? 1 : -1)) || [];
+        state.tableData = data.lines
+        .sort((a, b) => (a.index > b.index ? 1 : -1))
+        .map(line => {
+          const itemTaxes = line.taxes?.length ? line.taxes : [];
+          line.taxes = [...itemTaxes, { id: 'new'}]
+          return line
+        }) 
+        || [];
     }
 };
 
@@ -348,14 +350,16 @@ const setRequestData = (data) => {
             item.quantity = parseFloat(item.quantity);
             item.price = parseFloat(item.price);
             return item;
-        }),
+        }).filter(item => item.concept),
     };
     requestData.date = formatDate(data.date || new Date(), "yyyy-MM-dd");
     requestData.due_date = formatDate(
         data.due_date || requestData.date,
         "yyyy-MM-dd"
     );
-    requestData.resource_type_id = props.type;
+    const type = props.type != 'INVOICE' ? 'EXPENSE': props.type
+    requestData.resource_type_id = type;
+    requestData.type = type;
     requestData.concept = requestData.concept || state.section;
 
     requestData.total = state.totalValues.total;
@@ -485,26 +489,6 @@ const accountsOptions = inject('accountsOptions', [])
 
     .btn-primary {
         background: dodgerblue;
-    }
-}
-
-.invoice-totals {
-    &__add-payment {
-        width: 100%;
-        height: 34px;
-        background: dodgerblue;
-        color: white;
-        border: none;
-        font-weight: bolder;
-        transition: all ease 0.3s;
-
-        &:hover {
-            font-size: 1.01em;
-        }
-
-        &:focus {
-            outline: none;
-        }
     }
 }
 

@@ -40,24 +40,27 @@
                 rounded
                 class="text-right"
             />
-            <div class="flex items-center space-x-1" v-for="(tax, index) in scope.row.taxes" :key="`tax-${index}`">
-                <AtSimpleSelect
-                    :options="availableTaxes"
-                    :model-value="tax"
-                    v-model:selected="scope.row.taxes[index]"
-                    @update:model-value="setTax(scope.$index, index, $event)"
-                    placeholder="Tax"
-                    option-template="${name} - ${rate}%"
-                    label="name"
-                    track-by="id"
-                    class="w-full"
-                />
-                <button class="h-10 px-2 mt-auto ml-2 transition border focus:outline-none hover:text-gray-900 hover:bg-gray-200"  
-                @click="removeTax(scope.$index, index)">
-                  <IconTrash class="w-4 h-4 text-gray-400" /> 
-                </button>
-            </div>
         </div>
+      </template>
+
+      <template v-slot:taxes="{ scope }"  v-if="isEditing">
+          <div class="flex items-center w-full mx-auto" v-for="(tax, index) in scope.row.taxes" :key="`tax-${index}`">
+              <AtSimpleSelect
+                  :options="availableTaxes"
+                  :model-value="tax"
+                  v-model:selected="scope.row.taxes[index]"
+                  @update:model-value="setTax(scope.$index, index, $event)"
+                  placeholder="Tax"
+                  option-template="${name} - ${rate}%"
+                  label="name"
+                  track-by="id"
+                  class="w-full"
+              />
+              <button class="h-10 px-2 mt-auto ml-2 transition border focus:outline-none hover:text-gray-900 hover:bg-gray-200"  
+              @click="removeTax(scope.$index, index)">
+                <IconTrash class="w-4 h-4 text-gray-400" /> 
+              </button>
+          </div>
       </template>
 
       <template v-slot:actions="{ scope }" v-if="isEditing">
@@ -153,18 +156,17 @@ const addRow = () => {
     const itemTaxes = state.rowToAdd.taxes?.length ? state.rowToAdd.taxes : [];
     if (!props.tableData.length || props.tableData.at(-1).concept)
     props.tableData.push({
-        product_name: state.rowToAdd?.name,
-        concept: state.rowToAdd?.name,
-        product_id: state.rowToAdd.id,
-        quantity: 1,
-        discount: 0,
-        price: state.rowToAdd.price?.value || 0,
-        amount: 0,
-        taxes: [
-            ...itemTaxes,
-            {
-                id: 'new',
-            }],
+      product_name: state.rowToAdd?.name,
+      concept: state.rowToAdd?.name,
+      product_id: state.rowToAdd.id,
+      quantity: 1,
+      discount: 0,
+      price: state.rowToAdd.price?.value || 0,
+      amount: 0,
+      taxes: [
+          ...itemTaxes,
+        { id: 'new'}
+      ],
     });
 }
 
@@ -186,9 +188,11 @@ const setTax = (rowIndex, taxIndex, taxName) => {
 }
 
 const removeTax = (rowIndex, taxIndex) => {
-   const itemRow = props.tableData[rowIndex];
-   const taxes = itemRow.taxes.filter((_tax, index) => index !== taxIndex)
-   emit('taxes-updated', { rowIndex, taxes })
+  const itemRow = props.tableData[rowIndex];
+  if (itemRow.taxes.length > 1) {
+    const taxes = itemRow.taxes.filter((_tax, index) => index !== taxIndex)
+    emit('taxes-updated', { rowIndex, taxes })
+  }
 }
 
 onMounted(() => {
