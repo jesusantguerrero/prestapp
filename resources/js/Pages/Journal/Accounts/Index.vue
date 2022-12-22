@@ -8,11 +8,11 @@
       </AccountingSectionNav>
     </template>
     
-    <div class="py-10 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <div class="w-full py-10 mx-auto sm:px-6 lg:px-8">
       <div class="w-full px-5 py-5 bg-white rounded-md shadow-md">
         <ElTabs v-model="activeAccountSection">
           <ElTabPane
-            :label="category.name"
+            :label="`${category.number} - ${category.name}`"
             :name="category.id"
             v-for="category in mainCategories"
             :key="category.id"
@@ -29,7 +29,7 @@
                   v-slot="{ open }"
                 >
                   <span class="text-lg font-bold">
-                    {{ subCategory.name }}
+                    {{subCategory.number }} - {{ subCategory.name }}
                   </span>
 
                   <i
@@ -40,8 +40,9 @@
                 <DisclosurePanel class="font-bold text-gray-500">
                   <!-- accounts  -->
                   <AtTable
-                    :cols="cols(subCategory.name)"
+                    :cols="cols(' ')"
                     :tableData="subCategory.accounts"
+                    :empty-text="'No hay cuentas en esta categoria'"
                   >
                     <template v-slot:name="{ scope }">
                       <div>

@@ -95,7 +95,7 @@ const onSubmit = () => {
                     v-model:selected="formData.owner"
                     :options="clients"
                     placeholder="Selecciona un dueño"
-                    label="names"
+                    label="display_name"
                     key-track="id"
                 />
             </AtField>

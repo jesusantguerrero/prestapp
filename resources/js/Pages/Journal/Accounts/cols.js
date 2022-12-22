@@ -3,11 +3,15 @@ export default name => {
       {
         label: name || "Account Name",
         name: "display_id",
-        width: 200
+        width: 200,
+        type: "custom",
+        render(row) {
+          return `${row.number} - ${row.name}`
+        }
       },
       {
         label: "",
-        name: "name",
+        name: "display_id",
         width: 300
       },
       {

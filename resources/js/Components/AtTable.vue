@@ -7,8 +7,8 @@
     @sort-change="$emit('sort', $event)"
     @row-click="$emit('row-click', $event)"
   >
-    <thead>
-      <tr class="px-2 py-4 font-bold text-left text-body border-b border-gray-200">
+    <thead class="hidden">
+      <tr class="px-2 py-4 font-bold text-left border-b border-gray-200 text-body">
         <th
           v-for="col in cols"
           :key="col.name"
@@ -81,7 +81,7 @@
       <tr>
         <td :colspan="cols.length" class="flex flex-col w-full">
           <slot name="empty" v-if="!hideEmptyText">
-            <div class="py-5 text-center text-base-200 w-full">
+            <div class="w-full py-5 text-center text-base-200">
               {{ emptyText }}
             </div>
           </slot>
