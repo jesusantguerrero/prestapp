@@ -19,6 +19,14 @@ class Client extends Model {
     const STATUS_LATE =  'LATE';
     const STATUS_SUSPENDED = 'SUSPENDED';
 
+    protected static function boot()
+    {
+        parent::boot();
+        static::saving(function ($client) {
+            $client->display_name = $client->names . ' ' . $client->lastnames;
+        });
+    }
+
     public function loans() {
         return $this->hasMany(Loan::class);
     }
