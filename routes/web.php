@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\RentController;
+use App\Http\Controllers\SettingsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -56,4 +57,12 @@ Route::middleware([
     Route::resource('properties', PropertyController::class);
     Route::resource('rents', RentController::class);
     Route::post('rents/{rent}/invoices/{invoice}/pay', [RentController::class, 'payInvoice']);
+
+    // settings
+    Route::resource('/settings', SettingsController::class);
+    Route::get('/settings/tab/{tabName}', [SettingsController::class, 'index']);
+    Route::get('/settings/{name}', [SettingsController::class, 'section']);
+
+    Route::apiResource('/api/settings', SettingsController::class);
+    Route::apiResource('/api/taxes', TaxController::class);
 });

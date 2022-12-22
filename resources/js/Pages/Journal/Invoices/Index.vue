@@ -3,7 +3,11 @@
     <template #header>
       <AccountingSectionNav>
         <template #actions>
-          <AppButton @click="router.visit(`/${state.sectionName}/create`)" variant="inverse">Registrar Ingreso</AppButton>
+           <p>Total: {{ invoices.data.length }}</p>
+          <AtButton @click="router.visit(`/${state.sectionName}/create`)" variant="inverse">Imprimir</AtButton>
+          <AtButton @click="router.visit(`/${state.sectionName}/create`)" variant="inverse">Filtros</AtButton>
+          <AppButton @click="router.visit(`/${state.sectionName}/create`)" variant="inverse">Ingreso</AppButton>
+          <AppButton @click="router.visit(`/${state.sectionName}/create`)" variant="inverse">Egreso</AppButton>
         </template>
       </AccountingSectionNav>
     </template>
@@ -34,16 +38,22 @@
                   {{ row.status }}
               </div>
           </template>
+          
+          <template v-slot:category="{ scope: { row } }">
+              <div class="font-bold capitalize text-primary">
+                  {{ row.category }}
+              </div>
+              <p class="text-sm">
+                {{ row.account_name }}
+              </p>
+          </template>
 
           <template v-slot:total="{ scope: { row } }">
               <div class="font-bold">
                   {{ formatMoney(row.total) }}
-              </div>
-          </template>
-
-          <template v-slot:debt="{ scope: { row } }" >
-              <div class="font-bold" :class="[row.debt > 0 ?  'text-red-500' : 'text-green-500']">
-                  {{ formatMoney(row.debt) }}
+                  <p class="font-bold" :class="[row.debt > 0 ?  'text-red-500' : 'text-green-500']">
+                    {{ formatMoney(row.debt) }}
+                  </p>
               </div>
           </template>
 

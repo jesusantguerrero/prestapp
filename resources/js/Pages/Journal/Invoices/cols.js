@@ -15,8 +15,8 @@ export default [
         width: 300,
     },
     {
-        label: "Order No.",
-        name: "order_number",
+        label: "Categoria / Propiedad",
+        name: "category",
         width: 100,
     },
     {
@@ -30,13 +30,8 @@ export default [
         width: 200,
     },
     {
-        label: "Total",
+        label: "Total / Deuda",
         name: "total",
-        type: 'money'
-    },
-    {
-        label: "Balance Due",
-        name: "debt",
         type: 'money'
     },
     {

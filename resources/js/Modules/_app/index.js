@@ -11,8 +11,8 @@ export const useAppMenu = t => {
             as: Link
         },
         {
-            icon: 'far fa-calendar-alt',
-            label: 'Clientes',
+            icon: 'fas fa-users',
+            label: 'Contactos',
             name: 'mealPlanner',
             to: '/clients',
             as: Link,
@@ -41,9 +41,9 @@ export const useAppMenu = t => {
 
         },
         {
-            icon: 'fas fa-home',
+            icon: 'fas fa-dollar-sign',
             label: 'Contabilidad',
-            to: '/invoices',
+            to: '/invoices?filter[type]=expenses|invoice',
             as: Link,
             isActiveFunction(url, currentPath) {
                 return /invoices/.test(currentPath)
@@ -70,10 +70,10 @@ export const useAppMenu = t => {
         {
           icon: 'fas fa-heart',
           label:'Reportes',
-          to: '/rents',
+          to: '/statements',
           as: Link,
           isActiveFunction(url, currentPath) {
-            return /rents/.test(currentPath)
+            return /statements/.test(currentPath)
          }
       },
     ].filter(item => !item.hidden);
