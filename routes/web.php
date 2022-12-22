@@ -7,10 +7,8 @@ use App\Http\Controllers\LoanController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\RentController;
 use Illuminate\Foundation\Application;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Insane\Journal\Helpers\ReportHelper;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +43,7 @@ Route::middleware([
 
     // CRM
     Route::resource('clients', ClientController::class);
+    Route::post('/clients/{client}/generate-payment', [ClientController::class, 'generatePayment']);
 
     // Loans
     Route::resource('loans', LoanController::class);

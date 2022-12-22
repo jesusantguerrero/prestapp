@@ -2,7 +2,6 @@
 // @ts-ignore: its my template
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import { router } from "@inertiajs/core";
-import AppSectionHeader from "../../Components/AppSectionHeader.vue";
 import { ILoan } from "../../Modules/loans/loanEntity";
 import { computed } from "vue";
 import cols from "./propertyCols";
@@ -10,13 +9,10 @@ import AtTable from "../../Components/AtTable.vue";
 import AppButton from "../../Components/shared/AppButton.vue";
 import { Link } from "@inertiajs/vue3";
 import PropertySectionNav from "./Partials/PropertySectionNav.vue";
-
-interface IPaginatedData {
-    data: ILoan[]
-}
+import { IPaginatedData } from "@/utils/constants";
 
 const props = defineProps<{
-  properties: ILoan[] | IPaginatedData;
+  properties: ILoan[] | IPaginatedData<ILoan>;
 }>();
 
 const listData = computed(() => {

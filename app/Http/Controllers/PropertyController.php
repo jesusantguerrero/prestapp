@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Domains\CRM\Services\ClientService;
 use App\Domains\Loans\Services\LoanService;
 use App\Domains\Properties\Models\Property;
-use App\Domains\Properties\Models\Rent;
 use App\Domains\Properties\Services\PropertyService;
 use Illuminate\Http\Request;
 use Insane\Journal\Helpers\ReportHelper;
@@ -25,9 +24,10 @@ class PropertyController extends InertiaController
       $this->validationRules = [
           'owner_id' => 'numeric',
           'address' => 'string',
+          'price' => 'required'
       ];
       $this->sorts = ['created_at'];
-      $this->includes = ['owner', 'activeContract'];
+      $this->includes = ['owner', 'contract'];
       $this->filters = [];
       $this->resourceName= "properties";
   }

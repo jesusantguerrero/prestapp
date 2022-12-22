@@ -63,39 +63,41 @@
                                 v-model="invoice.client_id"
                                 v-model:selected="state.client"
                                 :options="clients"
-                                label="names"
+                                label="fullName"
                                 key-track="id"
                             />
                         </AtField>
                         <div v-if="state.client">
                             <p>
-                                {{ state.client.display_name }}
+                                {{ state.client.fullName }}
                             </p>
-                            <p> {{ state.client.country }}</p>
-                            <p> <span>CIF/NIF:</span> <span>{{ state.client.tax_number }}</span> </p>
+                            <p v-if="state.client.country"> {{ state.client.country }}</p>
+                            <p v-if="state.client.tax_number"> 
+                              <strong>CIF/NIF:</strong> <span>{{ state.client.tax_number }}</span> 
+                            </p>
                             <p>
                                 {{ state.client.email }}
                             </p>
                         </div>
-                        <AtField label="Account" class="w-4/12">
-                            <AtSelect
-                                filterable
-                                clearable
-                                tag
-                                v-model:value="invoice.account_id"
+                        <AtField label="Cuenta" class="w-4/12">
+                            <AtSimpleSelect
+                                v-model="invoice.account_id"
+                                v-model:selected="invoice.account"
                                 size="large"
                                 :default-expand-all="true"
                                 :options="accountsOptions"
+                                label="name"
+                                key-track="id"
                             />
                         </AtField>
                     </div>
 
                     <div class="flex justify-between w-6/12 space-x-4 text-left">
                         <div class="w-full">
-                            <AtField label="Date">
+                            <AtField label="Fecha" class="flex flex-col">
                                 <ElDatePicker
                                     v-if="invoice.date"
-                                    v-model:value="invoice.date"
+                                    v-model="invoice.date"
                                     size="large"
                                     id="invoice-date"
                                     type="date"
@@ -104,10 +106,10 @@
                                 />
                             </AtField>
 
-                            <AtField label="Due Date" class="mt-2">
+                            <AtField label="Fecha Limite" class="mt-2">
                                 <ElDatePicker
                                     v-if="invoice.due_date"
-                                    v-model:value="invoice.due_date"
+                                    v-model="invoice.due_date"
                                     size="large"
                                     id="invoice-due-date"
                                     type="date"
@@ -168,18 +170,12 @@
                 >
                     <template v-slot:add-payment v-if="!isDraft">
                         <div>
-                            <AtButton
-                                class="invoice-totals__add-payment"
+                            <AppButton
+                                class="w-full"
                                 @click="isPaymentDialogVisible = true"
                             >
                                 Add Payment
-                            </AtButton>
-                            <AtButton
-                                class="mt-4 invoice-totals__add-payment"
-                                @click="markAsPaid"
-                            >
-                                Mark as Paid
-                            </AtButton>
+                            </AppButton>
                         </div>
                     </template>
                 </InvoiceTotals>
@@ -220,11 +216,12 @@
 import { format as formatDate, toDate } from "date-fns";
 import parseISO from "date-fns/esm/fp/parseISO/index.js";
 import { useForm, router } from "@inertiajs/vue3";
-import { AtInput, AtButton, AtField, AtFieldCheck, AtSelect } from "atmosphere-ui";
+import { AtInput, AtButton, AtField, AtFieldCheck, AtSelect, AtSimpleSelect } from "atmosphere-ui";
 import { computed, reactive, toRefs, watch, inject } from "vue";
 
 import InvoiceTotals from "./InvoiceTotals.vue";
 import InvoiceGrid from "./InvoiceGrid.vue";
+import AppButton from "../../../../Components/shared/AppButton.vue";
 
 const props = defineProps({
     type: {
@@ -241,14 +238,14 @@ const props = defineProps({
 
 const labels = {
     "bill": {
-        contact: "Vendor",
+        contact: "Proveedor",
         documentNumber: "Bill Number",
         orderNumber: "P.O/S.O Number",
     },
     "invoice": {
-        contact: "Customer",
-        documentNumber: "Invoice Number",
-        orderNumber: "Order Number",
+        contact: "Cliente",
+        documentNumber: "No. factura",
+        orderNumber: "No. Orden",
     },
 }
 
@@ -307,14 +304,22 @@ const state = reactive({
 
 const setInvoiceData = (data) => {
     if (data) {
-        data.date = toDate(parseISO(data.date) || new Date());
-        data.due_date = toDate(parseISO(data.due_date) || new Date());
+        data.date = parseISO(data.date) || new Date();
+        data.due_date = parseISO(data.due_date) || new Date();
 
         Object.keys(data).forEach((key) => {
             state.invoice[key] = data[key];
         })
+        
         state.client = data.client;
-        state.tableData = data.lines.sort((a, b) => (a.index > b.index ? 1 : -1)) || [];
+        state.tableData = data.lines
+        .sort((a, b) => (a.index > b.index ? 1 : -1))
+        .map(line => {
+          const itemTaxes = line.taxes?.length ? line.taxes : [];
+          line.taxes = [...itemTaxes, { id: 'new'}]
+          return line
+        }) 
+        || [];
     }
 };
 
@@ -345,14 +350,16 @@ const setRequestData = (data) => {
             item.quantity = parseFloat(item.quantity);
             item.price = parseFloat(item.price);
             return item;
-        }),
+        }).filter(item => item.concept),
     };
     requestData.date = formatDate(data.date || new Date(), "yyyy-MM-dd");
     requestData.due_date = formatDate(
         data.due_date || requestData.date,
         "yyyy-MM-dd"
     );
-    requestData.resource_type_id = props.type;
+    const type = props.type != 'INVOICE' ? 'EXPENSE': props.type
+    requestData.resource_type_id = type;
+    requestData.type = type;
     requestData.concept = requestData.concept || state.section;
 
     requestData.total = state.totalValues.total;
@@ -367,7 +374,7 @@ const setRequestData = (data) => {
 };
 
 const sendRequest = (method, url, formData, message) => {
-    return Inertia[method](url, formData, {
+    return router[method](url, formData, {
         onSuccess: (response) => {
             reload();
         },
@@ -429,7 +436,7 @@ const onTaxesUpdated = ({rowIndex, taxes}) => {
     state.tableData[rowIndex].taxes = taxes
 }
 
-const { invoice, totals, modals, tableData, totalValues, isPaymentDialogVisible, isDraft } = toRefs(state);
+const { invoice, totals, tableData, totalValues, isPaymentDialogVisible, isDraft } = toRefs(state);
 
 defineExpose({
     saveForm,
@@ -482,26 +489,6 @@ const accountsOptions = inject('accountsOptions', [])
 
     .btn-primary {
         background: dodgerblue;
-    }
-}
-
-.invoice-totals {
-    &__add-payment {
-        width: 100%;
-        height: 34px;
-        background: dodgerblue;
-        color: white;
-        border: none;
-        font-weight: bolder;
-        transition: all ease 0.3s;
-
-        &:hover {
-            font-size: 1.01em;
-        }
-
-        &:focus {
-            outline: none;
-        }
     }
 }
 

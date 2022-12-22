@@ -34,6 +34,14 @@ export default [
     headerClass: 'text-right'
   },
   {
+    label: "Taxes",
+    name: "taxes",
+    width: "150",
+    type: "custom",
+    class: "text-primary text-center",
+    headerClass: 'text-center'
+  },
+  {
     label: "Amount",
     name: "amount",
     width: "120",
@@ -48,13 +56,5 @@ export default [
       row.amount = amount;
       return formatMoney(amount);
     }
-  },
-  {
-    label: "",
-    name: "actions",
-    width: "50",
-    type: "custom",
-    class: "no-print",
-    headerClass: "no-print"
   }
 ];

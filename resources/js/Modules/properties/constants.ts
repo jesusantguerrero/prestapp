@@ -1,25 +1,36 @@
-export const LOAN_FREQUENCY = {
-    WEEKLY: 'WEEKLY',
-    BIWEEKLY: 'BIWEEKLY',
-    MONTHLY: 'MONTHLY',
-    SEMIMONTHLY: 'SEMIMONTHLY'
+export const PROPERTY_TYPE = {
+    APARTMENT: 'apartment',
+    COMMERCIAL: 'commercial',
+    DUPLEX: 'duplex',
+    HOUSE: 'house',
+    MID_USE: 'mid-use',
+    OTHER: 'other'
 }
 
-export const loanFrequencies = [{
-    name: LOAN_FREQUENCY.WEEKLY,
-    label: 'Semanal'
+export const propertyTypes = [{
+    name: PROPERTY_TYPE.APARTMENT,
+    label: 'Apartamento'
 }, {
-    name: LOAN_FREQUENCY.BIWEEKLY,
-    label: 'Bi Semanal'
+    name: PROPERTY_TYPE.COMMERCIAL,
+    label: 'Comercial'
 },
 {
-    name: LOAN_FREQUENCY.SEMIMONTHLY,
-    label: 'Quincenal'
+    name: PROPERTY_TYPE.DUPLEX,
+    label: 'Duplex'
 }, 
 {
-    name: LOAN_FREQUENCY.MONTHLY,
-    label: 'Mensual'
-}];
+    name: PROPERTY_TYPE.HOUSE,
+    label: 'Casa'
+},
+{
+    name: PROPERTY_TYPE.MID_USE,
+    label: 'Compartida'
+},
+{
+  name: PROPERTY_TYPE.OTHER,
+  label: 'otro'
+}
+];
 
 export const PROPERTY_STATUS = {
     AVAILABLE: {

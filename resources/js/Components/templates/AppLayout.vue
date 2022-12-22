@@ -13,6 +13,7 @@ import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 import { useAppMenu } from "@/Modules/_app";
 import { useSelect } from "@/Modules/shared/useSelects";
 import AppButton from "../shared/AppButton.vue";
+import TheGlobals from "../TheGlobals.vue";
 
 defineProps({
   title: String,
@@ -338,5 +339,6 @@ transformCategoryOptions(
         </main>
       </template>
     </AtShell>
+    <TheGlobals />
   </div>
 </template>

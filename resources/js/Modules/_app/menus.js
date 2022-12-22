@@ -78,7 +78,7 @@ const menus = {
     },
     {
         label: 'Egresos',
-        url: '/expenses'
+        url: '/bills'
     },
     {
       label: 'Pagos',

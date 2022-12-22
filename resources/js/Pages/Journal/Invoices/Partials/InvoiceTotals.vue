@@ -87,12 +87,6 @@ const getRowTaxes = (row, taxFields) => {
   return taxes;
 }
 
-const calculateSubtotal = (amount, taxTotal, isIncluded) => {
-   if (isIncluded) {
-       return ExactMath.formula(`(${amount} / ((100 + ${taxTotal}) / 100))`);
-   }
-   return amount;
-}
 const calculateTaxableAmount = (amount, taxRate) => {
     return ExactMath.formula(`(${amount} / ((100 + ${taxRate}) / 100))`);
 }
@@ -106,21 +100,20 @@ const state = reactive({
           let subtotal = 0;
 
           row.taxes.forEach(tax => {
-              if( tax.name && tax.rate) {
+              if (tax.name && tax.rate) {
                 const taxableTotal = props.isTaxIncluded ? calculateTaxableAmount(rowTotal, tax.rate) : rowTotal;
-                const rowTax = ExactMath.formula(`${taxableTotal} * (${tax.rate} / ${100})`);
+                const rowTax = ExactMath.formula(`${taxableTotal} * (${tax.rate} / ${100})`) * (tax.type ?? 1);
                 total.taxes[tax.name] = (total.taxes[tax.name] || 0) + (rowTax || 0);
                 total.taxesTotal += rowTax;
                 taxesRowTotal += rowTax;
                 subtotal += taxableTotal;
-              } else {
-                subtotal += rowTotal;
               }
           });
+
           subtotal = subtotal || rowTotal;
           total.subtotal += subtotal;
           total.discountTotal += Number(row[props.discountField]);
-          total.total += ExactMath.add(subtotal, taxesRowTotal);
+          total.total += ExactMath.add(subtotal, taxesRowTotal ?? 0);
           total.taxesTotal += taxesRowTotal;
 
           return total;

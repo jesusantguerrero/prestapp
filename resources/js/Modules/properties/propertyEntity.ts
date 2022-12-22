@@ -6,4 +6,5 @@ export interface IProperty {
     // basic info
     address: string;
     // payment details
+    price: number
 }
