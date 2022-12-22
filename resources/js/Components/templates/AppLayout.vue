@@ -70,7 +70,7 @@ transformCategoryOptions(
     >
       <template #navigation>
           <!-- Primary Navigation Menu -->
-          <div class="flex items-center justify-between h-16 pr-4 mx-auto sm:pr-6 lg:pr-8 text-body-1/80">
+          <div class="flex items-center justify-between h-16 px-4 pr-4 mx-auto sm:pr-6 lg:pr-8 text-body-1/80">
             <div class="flex items-center">
               <AppButton @click="$emit('back')" v-if="showBackButton">
                  <IconBack />
@@ -342,3 +342,10 @@ transformCategoryOptions(
     <TheGlobals />
   </div>
 </template>
+
+<style>
+.app-content__inner {
+  overflow: auto;
+  min-height: 100vh;
+}
+</style>

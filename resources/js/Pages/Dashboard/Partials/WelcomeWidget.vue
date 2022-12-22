@@ -19,7 +19,7 @@ defineProps<Props>()
 </script>
 
 <template>
-    <article class="px-5 pt-3 transition border divide-y rounded-lg divide-base border-base bg-base-lvl-3">
+    <article class="px-5 pt-3 overflow-auto transition border divide-y rounded-lg divide-base border-base bg-base-lvl-3">
         <section class="items-center pb-2 md:justify-between md:flex">
             <h1 class="font-bold text-body-1">
                 {{ message }} <span class="text-primary">{{ username }}</span>
@@ -31,7 +31,7 @@ defineProps<Props>()
                 </AtButton>
             </div>
         </section>
-        <section class="flex py-4 space-x-4 divide-x-2 rounded-md divide-base-lvl-2 bg-base-lvl-3">
+        <section class="grid grid-cols-2 py-4 space-x-4 divide-x-2 rounded-md md:flex divide-base-lvl-2 bg-base-lvl-3">
           <AtBackgroundIconCard
             v-for="card in cards"
             class="w-full h-24 shadow-none"

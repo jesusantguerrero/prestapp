@@ -114,12 +114,12 @@ const comparisonRevenue = {
       />
 
       <section class="flex flex-col mt-8 lg:space-x-4 lg:flex-row">
-        <article class="rounded-md bg-base-lvl-3 lg:w-7/12">
+        <article class="overflow-auto rounded-md bg-base-lvl-3 lg:w-7/12">
           <header class="flex justify-between px-5 py-2 text-body-1">
             <h4 class="text-xl font-bold">Proximos pagos</h4>
             <AppButton variant="inverse" @click="router.visit(route('properties.create'))">Agregar Contrato</AppButton>
           </header>
-          <AtTable :cols="cols" :table-data="[]" />
+          <AtTable :cols="cols" :table-data="[]" class="overflow-auto" />
         </article>
 
         
