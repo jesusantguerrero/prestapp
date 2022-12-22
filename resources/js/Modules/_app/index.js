@@ -70,10 +70,10 @@ export const useAppMenu = t => {
         {
           icon: 'fas fa-heart',
           label:'Reportes',
-          to: '/rents',
+          to: '/statements',
           as: Link,
           isActiveFunction(url, currentPath) {
-            return /rents/.test(currentPath)
+            return /statements/.test(currentPath)
          }
       },
     ].filter(item => !item.hidden);

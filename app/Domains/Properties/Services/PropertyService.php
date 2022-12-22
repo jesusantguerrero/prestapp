@@ -28,6 +28,7 @@ class PropertyService {
         "concept" => "Factura Déposito",
         "description" => "Déposito de {$rent->client->fullName}",
         "total" => $rent->deposit,
+        "invoice_account_id" => $rent->property->deposit_account_id,
         "items" => [[
           "name" => "Depositos de $rent->address",
           "concept" => "Depositos de $rent->address",
@@ -49,20 +50,23 @@ class PropertyService {
             "amount" => $rent->amount,
       ]];
 
-      return Invoice::createDocument([
-          'concept' =>  $formData['concept'] ?? 'Factura de Renta',
-          'description' => $formData['description'] ?? "Mensualidad {$rent->client->fullName}",
-          'user_id' => $rent->user_id,
-          'team_id' => $rent->team_id,
-          'client_id' => $rent->client_id,
-          'invoiceable_id' => $rent->id,
-          'invoiceable_type' => Rent::class,
-          'date' => $formData['date'] ?? date('Y-m-d'),
-          'type' => Invoice::DOCUMENT_TYPE_INVOICE,
-          'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
-          'total' =>  $formData['amount'] ?? $rent->amount,
-          'items' => array_merge($formData['items'] ?? $items,  $withExtraServices ? $additionalFees : [])
+      $data = array_merge($formData, [
+        'concept' =>  $formData['concept'] ?? 'Factura de Renta',
+        'description' => $formData['description'] ?? "Mensualidad {$rent->client->fullName}",
+        'user_id' => $rent->user_id,
+        'team_id' => $rent->team_id,
+        'client_id' => $rent->client_id,
+        'invoiceable_id' => $rent->id,
+        'invoiceable_type' => Rent::class,
+        'date' => $formData['date'] ?? date('Y-m-d'),
+        'type' => Invoice::DOCUMENT_TYPE_INVOICE,
+        "invoice_account_id" => $rent->property->account_id,
+        'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
+        'total' =>  $formData['amount'] ?? $rent->amount,
+        'items' => array_merge($formData['items'] ?? $items,  $withExtraServices ? $additionalFees : [])
       ]);
+
+      return Invoice::createDocument($data);
     }
 
     public static function ofTeam($teamId, $status= Property::STATUS_AVAILABLE) {

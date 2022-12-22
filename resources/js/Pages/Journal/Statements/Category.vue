@@ -1,22 +1,26 @@
 <template>
-    <div class="py-10 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between py-2 mb-10 border-4 border-white rounded-md bg-gray-50">
-            <div class="px-5 font-bold text-gray-600">
-                Statements
-            </div>
-
-            <div class="flex space-x-2 overflow-hidden font-bold text-gray-500 rounded-t-lg max-w-min">
-                <AtButton type="primary" @click="$inertia.visit('/statements/income')" class="text-center w-28">
-                    Incomes
-                </AtButton>
-                <AtButton type="primary" @click="$inertia.visit('/statements/expense')" class="text-center w-28">
-                    Expenses
-                </AtButton>
-            </div>
+  <AppLayout :title="sectionTitle">
+    <template #header>
+      <div class="flex items-center justify-between mx-5 border-4 border-white rounded-md bg-gray-50">
+        <div class="px-5 font-bold text-gray-600">
+            
         </div>
+
+        <div class="flex space-x-2 overflow-hidden font-bold text-gray-500 rounded-t-lg max-w-min">
+            <AppButton variant="inverse" @click="$inertia.visit('/statements/income')" class="text-center w-28">
+                Ingresos
+            </AppButton>
+            <AppButton variant="inverse" @click="$inertia.visit('/statements/expense')" class="text-center w-28">
+                Egresos
+            </AppButton>
+        </div>
+    </div>
+    </template>
+
+    <div class="w-full py-10 mx-auto mt-8 sm:px-6 lg:px-8">
         <div class="w-full px-5 py-5 mb-10 bg-white rounded-md shadow-md">
             <header class="text-center text-gray-500">
-                <h4 class="text-3xl font-bold capitalize"> {{ categoryType }} Statement </h4>
+                <h4 class="text-3xl font-bold capitalize"> {{ sectionTitle }} </h4>
                 <h5 class="font-bold"> Neatforms </h5>
                 <p> From date to date</p>
             </header>
@@ -55,20 +59,17 @@
                 </div>
             </div>
         </div>
-        <transaction-modal
-            @close="state.isTransferModalOpen=false"
-            v-model:show="state.isTransferModalOpen"
-        />
     </div>
+  </AppLayout>
 </template>
 
 <script setup>
-import AppLayout from "@/Layouts/AppLayout.vue";
-import TransactionModal from "@/Components/TransactionModal.vue"
-import formatMoney from "@/Atmosphere/utils/formatMoney"
 import { AtButton } from "atmosphere-ui";
-import { useSelect } from "@/Atmosphere/utils/useSelects"
-import { reactive, computed, toRefs, ref } from "vue";
+import { reactive, computed, toRefs, ref, capitalize } from "vue";
+
+import { formatMoney } from "@/utils"
+import AppLayout from "../../../Components/templates/AppLayout.vue";
+import AppButton from "../../../Components/shared/AppButton.vue";
 
 const props = defineProps({
     categoryType: {
@@ -81,6 +82,10 @@ const props = defineProps({
     accounts: {
         type: Array,
     }
+})
+
+const sectionTitle = computed(() => {
+  return `${capitalize(props.categoryType)} - Statement`
 })
 
 const state = reactive({
@@ -111,10 +116,6 @@ const setPayment = (account) => {
     state.isTransferModalOpen = true;
     state.transferAccount = account;
 }
-
-const { categoryOptions: transformCategoryOptions } = useSelect()
-transformCategoryOptions(props.categories, true, 'categoryOptions');
-transformCategoryOptions(props.accounts, true, 'accountsOptions');
 
 const { isSummary, mainCategories, categoriesTotal } = toRefs(state);
 </script>
