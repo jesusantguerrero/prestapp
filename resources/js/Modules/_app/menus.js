@@ -47,26 +47,10 @@ const menus = {
         label: 'Propiedades',
         url: '/properties/'
     },
-    // {
-    //     label: 'Alquileres',
-    //     url: '/rents'
-    // },
-    // {
-    //   label: 'Plantillas',
-    //   url: '/templates'
-    // },
     {
-      label: 'Pagos',
-      url: '/invoices/'
+        label: 'Contratos',
+        url: '/rents/'
     },
-    {
-        label: 'Propietarios',
-        url: '/clients?type=owner'
-    },
-    {
-      label: 'Inquilinos',
-      url: '/clients?type=tenant'
-    }
     ],
     [MODULES.ACCOUNTING]: [{
         label: 'Banco',
