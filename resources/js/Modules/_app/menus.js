@@ -73,25 +73,14 @@ const menus = {
         url: '/properties/overview'
     },
     {
-        label: 'Ingresos',
+        label: 'Transacciones',
         url: '/invoices'
-    },
-    {
-        label: 'Egresos',
-        url: '/bills'
-    },
-    {
-      label: 'Pagos',
-      url: '/payments'
     },
     {
       label: 'Cuentas',
       url: '/accounts'
-    },
-    {
-      label: 'Trends',
-      url: '/trends'
-    }]
+    }
+    ]
 }
 
 

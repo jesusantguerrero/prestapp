@@ -1,9 +1,9 @@
 <template>
 <div class="flex justify-between w-full pr-8">
     <SectionNavTab
-        v-for="section in sections"
-        @click="handleClick(section)"
-        :is-selected="isSelected(section)"
+        v-for="(section, sectionName) in sections"
+        @click="handleClick(section, sectionName)"
+        :is-selected="isSelected(section, sectionName)"
         :key="section.url"
     >
         {{ section.label }}
@@ -35,17 +35,17 @@ const currentPath = computed(() => {
     return document?.location?.pathname
 })
 
-const isSelected = (section) => {
-    const sectionName = section.url || section.value
+const isSelected = (section, sectionValueName) => {
+    const sectionName = section.url || section.value || sectionValueName
     const value = props.modelValue || currentPath.value
     return sectionName == value
 }
 
-const handleClick = (section) => {
+const handleClick = (section, sectionName) => {
     if (section.url) {
         router.visit(section.url)
     } else {
-        emit('update:modelValue', section.value)
+        emit('update:modelValue', section.value || sectionName)
     }
 }
 </script>
