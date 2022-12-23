@@ -44,6 +44,8 @@ Route::middleware([
 
     // CRM
     Route::resource('clients', ClientController::class);
+    Route::get('/clients/{client}/{section}', [ClientController::class, 'getSection']);
+    Route::get('/clients/{client}/rents/{rent}/end', [ClientController::class, 'endRent']);
     Route::post('/clients/{client}/generate-payment', [ClientController::class, 'generatePayment']);
 
     // Loans

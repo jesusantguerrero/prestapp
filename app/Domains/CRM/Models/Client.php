@@ -58,6 +58,16 @@ class Client extends Model {
       return $this->hasOne(Account::class);
     }
 
+    // As tenant
+
+    public function rents() {
+      return $this->hasMany(Rent::class);
+    }
+
+    public function invoices() {
+      return $this->hasMany(Invoice::class);
+    }
+
     public function checkStatus() {
         if($this->hasLateLoans()) {
             $this->updateQuietly([

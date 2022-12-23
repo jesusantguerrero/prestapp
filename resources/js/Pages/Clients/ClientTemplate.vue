@@ -19,10 +19,12 @@ import InvoiceCard from "../Rents/Partials/InvoiceCard.vue";
 export interface Props {
   clients: IClient;
   currentTab: string;
+  hideStatistics: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   currentTab: "summary",
+  hideStatistics: false
 });
 
 const tabs = {
@@ -122,7 +124,7 @@ const refresh = () => {
       
       <section class="flex w-full space-x-8 rounded-t-none border-t-none ">
         <article class="w-9/12 space-y-4">
-          <section class="flex space-x-4">
+          <section class="flex space-x-4" v-if="!hideStatistics">
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
               title="Balance de Cuenta"
@@ -140,22 +142,7 @@ const refresh = () => {
             /> 
           </section>
 
-          <section class="w-full text-gray-600 rounded-md">
-            <template  v-if="currentTab=='contracts'">
-              <ContractCard
-                  v-for="lease in props.clients.leases"               
-                  :contract="lease"
-                  :client="props.clients"
-              />
-            </template>
-
-            <article v-if="currentTab=='transactions'" class="px-4 py-2 space-y-4 rounded-md shadow-md bg-base-lvl-3">
-              <InvoiceCard
-                  v-for="invoice in props.clients.invoices"
-                  :invoice="invoice"
-              />
-            </article>
-          </section>
+          <slot />
         </article>
 
         <article class="w-3/12 space-y-2 rounded-md shadow-md ">

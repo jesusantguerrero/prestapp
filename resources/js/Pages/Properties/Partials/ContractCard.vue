@@ -1,6 +1,6 @@
 <script setup>
 import { formatMoney, formatDate } from "@/utils";
-import { Link } from "@inertiajs/vue3";
+import { Link, router } from "@inertiajs/vue3";
 import AppButton from "../../../Components/shared/AppButton.vue";
 
 defineProps({
@@ -20,7 +20,7 @@ defineProps({
       </h4>
       <section class="space-x-2">
         <AppButton variant="inverse">Editar terminos</AppButton>
-        <AppButton variant="inverse">Terminar Contrato</AppButton>
+        <AppButton variant="inverse" @click="router.visit(`/clients/${contract.client_id}/rents/${contract.id}/end`)">Terminar Contrato</AppButton>
       </section>
     </header>
     <article>
