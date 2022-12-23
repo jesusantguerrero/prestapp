@@ -58,7 +58,7 @@ const menus = {
     },
     {
         label: 'Transacciones',
-        url: '/invoices'
+        url: '/invoices?filter[type]=expense|invoice',
     },
     {
       label: 'Cuentas',

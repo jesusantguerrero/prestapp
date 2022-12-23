@@ -107,10 +107,11 @@ class GenerateInvoices {
 
       $items = [];
       $total = 0;
+      
       foreach ($invoices as $invoice) {
         $items[] = [
-              "name" => $invoice->description,
-              "concept" => $invoice->description,
+              "name" => "$invoice->description $invoice->date",
+              "concept" => "$invoice->description $invoice->date",
               "quantity" => 1,
               "account_id" => $invoice->invoice_account_id,
               "price" => $invoice->total,

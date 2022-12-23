@@ -4,8 +4,7 @@
     <AtInput v-model="state.taxData.name" @input="update" />
  </AtField>
  <AtField label="Monto/Porcentaje">
-    <AtInput>
-      v-model="state.taxData.rate" @input="update"
+    <AtInput v-model="state.taxData.rate" @input="update">
       <template #suffix>
         <div class="h-10 mt-auto taxes-box__type">
           <div class="flex h-full">
@@ -23,7 +22,7 @@
     </AtInput>
  </AtField>
  <AtField label="Tipo">
-    <AtSimpleSelect v-model="state.taxData.type" @input="update" :options="[{
+    <AtSimpleSelect v-model="state.taxData.type" v-model:selected="state.taxData.Type" @input="update" :options="[{
       label: 'Comision Prestamo'
     }, {
       label: 'Comision Propiedades'

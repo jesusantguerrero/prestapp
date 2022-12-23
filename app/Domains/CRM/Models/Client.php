@@ -49,7 +49,7 @@ class Client extends Model {
     }
 
     public function getPropertyInvoices() {
-      return Invoice::where([
+      return Invoice::select('invoices.*')->where([
         'rents.owner_id' => $this->id,
         'invoices.status' => 'paid'
       ])
