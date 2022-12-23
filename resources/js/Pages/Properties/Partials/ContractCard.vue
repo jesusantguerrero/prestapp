@@ -15,7 +15,7 @@ defineProps({
     <header class="flex justify-between">
       <h4 class="font-bold text-body">
         <Link :href="`/rents/${contract.id}`">
-          Contrato Activo: {{ contract.client?.fullName }}
+          Contrato {{ contract.status}}: {{ contract.client?.fullName }}
         </Link>
       </h4>
       <section class="space-x-2">

@@ -26,9 +26,10 @@ return new class extends Migration
             $table->foreignId('commission_account_id')->nullable();
            
             // terms
-            $table->string('name');
+            $table->string('name')->nullable();
             $table->text('description')->nullable();
             $table->text('address');
+            $table->string('property_type')->nullable();
 
             $table->decimal('price', 11, 2)->default(0.00);
             $table->decimal('commission', 11, 2)->default(0.00);

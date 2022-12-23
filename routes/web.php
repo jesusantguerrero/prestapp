@@ -45,7 +45,10 @@ Route::middleware([
     // CRM
     Route::resource('clients', ClientController::class);
     Route::get('/clients/{client}/{section}', [ClientController::class, 'getSection']);
-    Route::get('/clients/{client}/rents/{rent}/end', [ClientController::class, 'endRent']);
+    // Tenant
+    Route::get('/clients/{client}/rents/{rent}/end', [ClientController::class, 'endRent'])->name('tenant.end-rent');;
+    Route::put('/clients/{client}/rents/{rent}/end', [ClientController::class, 'endRentAction'])->name('tenant.end-rent-action');
+    // Owner
     Route::post('/clients/{client}/generate-payment', [ClientController::class, 'generatePayment']);
 
     // Loans

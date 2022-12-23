@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Domains\CRM\Models\Client;
 use App\Domains\CRM\Services\ClientService;
 use App\Domains\Properties\Models\Rent;
+use App\Domains\Properties\Services\RentService;
+use Exception;
+use Illuminate\Http\Request;
 
 class ClientController extends InertiaController
 {
@@ -66,5 +69,14 @@ class ClientController extends InertiaController
         "depositsToReturn" => $client->invoices()->paid()->noRefunded()->invoiceAccount($rent->property->deposit_account_id)->get()
         // I should get the balance I have in liabilities of the deposit account instead
     ]);
+  }
+
+  public function endRentAction(Client $client, Rent $rent, Request $request) {
+    try {
+      RentService::endTerm($rent, $request->only(['move_out_at', 'move_out_notice']));
+      return redirect("/clients/$client->id/contracts");
+    } catch (Exception $e) {
+      back()->withErrors(["error" => "The rent is already cancelled"]);
+    }
   }
 }
