@@ -22,6 +22,7 @@ class Rent extends Transactionable implements IPayableDocument {
     protected $fillable = [
         'team_id',
         'user_id',
+        'owner_id',
         'property_id',
         'client_id',
         'deposit',

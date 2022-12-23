@@ -2,11 +2,10 @@
 
 namespace App\Domains\Properties\Actions;
 
-use App\Domains\Loans\Models\Loan;
+use App\Domains\Accounting\Helpers\InvoiceHelper;
+use App\Domains\CRM\Models\Client;
 use App\Domains\Properties\Models\Rent;
-use App\Domains\Properties\Services\PropertyService;
 use App\Domains\Properties\Services\RentService;
-use Exception;
 use Illuminate\Support\Carbon;
 use Insane\Journal\Models\Invoice\Invoice;
 
@@ -23,8 +22,8 @@ class GenerateInvoices {
             'date' => $rent->next_invoice_date
           ], $rent);
           $rent->update([
-            'next_invoice_date' => self::getNextDate($rent->next_invoice_date),
-            'generated_invoice_dates' => array_merge()
+            'next_invoice_date' => InvoiceHelper::getNextDate($rent->next_invoice_date),
+            'generated_invoice_dates' => array_merge($rent->next_invoice_date)
           ]);
         }
           }
@@ -41,7 +40,7 @@ class GenerateInvoices {
             'date' => $rent->next_invoice_date
           ], $rent);
           $rent->update([
-            'next_invoice_date' => self::getNextDate($rent->next_invoice_date),
+            'next_invoice_date' => InvoiceHelper::getNextDate($rent->next_invoice_date),
             'generated_invoice_dates' => array_merge()
           ]);
         }
@@ -57,7 +56,7 @@ class GenerateInvoices {
       if (count($lateInvoices)) {
           self::chargeLateFee($lateInvoices);
       }
-  }
+    }
 
     public static function chargeLateFee($invoices) {
       foreach ($invoices as $invoice) {
@@ -90,19 +89,56 @@ class GenerateInvoices {
       }
     }
 
-    public static function getNextDate($isoDate) {
-        $date = Carbon::createFromFormat('Y-m-d', $isoDate);
-        $month = $date->format('m');
-        return $month == '01' ?  self::getForFebruary($date) : $date->addMonths(1);
+    public static function forOwnerDistributions() {
+      $clientWithPendingDistributions = Client::whereNotNull('owner_distribution_date')
+      ->whereRaw("DATE_FORMAT(curdate(), concat('%Y-%m-', clients.owner_distribution_date)) = curdate()",)
+      ->get();
+      if (count($clientWithPendingDistributions)) {
+        foreach ($clientWithPendingDistributions as $client) {
+          if (!in_array(date('Y-m-d'), $client->generated_distribution_dates))  {
+            self::ownerDistribution($client);
+          }
+        }
+      }
     }
 
-    public static function getForFebruary($date){
-      $year = $date->format('Y');
-      $month = '02';
-      $day = $date->format('d');
-      if($day > 28) $day = '28';
-      $newDate = "$year-$month-$day";
-    
-      return Carbon::createFromFormat('Y-m-d', $newDate);
+    public static function ownerDistribution($client) {
+      $invoices = $client->getPropertyInvoices();
+
+      $items = [];
+      $total = 0;
+      foreach ($invoices as $invoice) {
+        $items[] = [
+              "name" => $invoice->description,
+              "concept" => $invoice->description,
+              "quantity" => 1,
+              "account_id" => $invoice->invoice_account_id,
+              "price" => $invoice->total,
+              "amount" => $invoice->total,
+        ];
+        $total += $invoice->total;
+      }
+
+      $today = date('Y-m-d');
+
+      Invoice::createDocument([
+          'concept' =>  $formData['concept'] ?? 'Factura de Propiedades',
+          'description' => $formData['description'] ?? "Mensualidad {$client->fullName}",
+          'user_id' => $client->user_id,
+          'team_id' => $client->team_id,
+          'client_id' => $client->id,
+          'invoiceable_id' => $client->id,
+          'invoiceable_type' => Client::class,
+          'invoice_account_id' => $client->properties()->first()->owner_account_id,
+          'date' => $formData['date'] ?? date('Y-m-d'),
+          'type' => Invoice::DOCUMENT_TYPE_BILL,
+          'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
+          'total' =>  $formData['amount'] ?? $total,
+          'items' => $formData['items'] ?? $items
+      ]); 
+
+      $client->update([
+        'generated_distribution_dates' => array_merge($client->generated_distribution_dates, [$today])
+      ]);
     }
 }

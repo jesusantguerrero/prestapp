@@ -27,10 +27,11 @@
           </template>
 
           <template v-slot:concept="{ scope: { row } }">
-              <div class="text-blue-400 capitalize border-b border-blue-400 border-dashed cursor-pointer text-md">
+
+              <Link :href="`${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}/edit`" class="text-blue-400 capitalize border-b border-blue-400 border-dashed cursor-pointer text-md">
                   {{ row.concept }}
                   <span class="font-bold text-gray-300"> {{ row.series }} #{{ row.number }} </span>
-              </div>
+              </Link>
           </template>
 
           <template v-slot:status="{ scope: { row } }">
@@ -86,6 +87,7 @@ import { formatMoney, formatDate } from "@/utils";
 import AccountingSectionNav from "../Partials/AccountingSectionNav.vue";
 import AppButton from "../../../Components/shared/AppButton.vue";
 import InvoicePaymentOptions from "../../Rents/Partials/InvoicePaymentOptions.vue";
+import { Link } from "@inertiajs/vue3";
 
 const props = defineProps({
     invoices: {

@@ -19,6 +19,10 @@ class Client extends Model {
     const STATUS_LATE =  'LATE';
     const STATUS_SUSPENDED = 'SUSPENDED';
 
+    protected $casts = [
+      'generated_distribution_dates' => 'array'
+    ];
+
     protected static function boot()
     {
         parent::boot();

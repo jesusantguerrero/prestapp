@@ -43,6 +43,8 @@ return new class extends Migration
             $table->boolean('is_company')->default(false);
             $table->enum('type', ['PROSPECT', 'CONTACT', 'CUSTOMER'])->default('PROSPECT');
 
+            $table->integer('owner_distribution_date')->nullable();
+            $table->json('generated_distribution_dates')->default('[]');
             // state
             $table->string('status')->default("INACTIVE");
             $table->timestamps();
