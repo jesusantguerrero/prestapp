@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Domains\Properties\Actions\UpdateLateInvoices;
+use App\Domains\Properties\Actions\GenerateInvoices as ActionsGenerateInvoices;
 use Illuminate\Console\Command;
 
-class GenerareInvoices extends Command
+class GenerateInvoices extends Command
 {
     /**
      * The name and signature of the console command.
@@ -28,9 +28,6 @@ class GenerareInvoices extends Command
      */
     public function handle()
     {
-      // if ($next) {
-        return UpdateLateInvoices::generateNextInvoices();
-      // } 
-      // return UpdateLateInvoices::generateScheduledInvoices();
+      return ActionsGenerateInvoices::scheduledRents();
     }
 }

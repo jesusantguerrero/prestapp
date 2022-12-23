@@ -143,14 +143,14 @@ return [
                 [
                   "resource" => "categories",
                   "display_id" => "rent",
-                  "number" => 2700,
+                  "number" => 2800,
                   "name" => "Renting",
                   "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
                 ],
                 [
                     "resource" => "categories",
                     "display_id" => "security_deposits",
-                    "number" => 2800,
+                    "number" => 2900,
                     "name" => "Security deposits",
                     "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
                 ]

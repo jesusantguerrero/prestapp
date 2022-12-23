@@ -24,7 +24,7 @@ return new class extends Migration
             $table->foreignId('account_id')->nullable();
             $table->foreignId('client_account_id')->nullable();
             $table->foreignId('commission_account_id')->nullable();
-            $table->foreignId('penalty_account_id')->nullable();
+            $table->foreignId('late_fee_account_id')->nullable();
 
             // terms
             $table->date('deposit_due');
@@ -42,8 +42,10 @@ return new class extends Migration
             // Penalty config
             $table->decimal('commission', 11, 2)->default(0.00);
             $table->enum('commission_type', ['PERCENTAGE', 'FIXED'])->default('PERCENTAGE');
-            $table->decimal('penalty', 11, 2)->default(0.00);
-            $table->enum('penalty_type', ['PERCENTAGE', 'FIXED'])->default('PERCENTAGE');
+
+            $table->decimal('late_fee', 11, 2)->default(0.00);
+            $table->enum('late_fee_type', ['PERCENTAGE', 'PERCENTAGE_OUTSTANDING', 'FIXED'])->default('PERCENTAGE');
+            $table->integer('grace_days')->default(0);
 
             // config
             $table->json('generated_invoice_dates')->default('[]');

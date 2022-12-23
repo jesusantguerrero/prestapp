@@ -19,14 +19,14 @@ class UpdateLatePayments {
         foreach ($payments as $payment) {
             $penaltyAmount = 0;
 
-            if ($payment->loan->penalty_type == 'PERCENTAGE') {
-                $penaltyAmount = ($payment->loan->penalty / 100) * $payment->amount_due;
+            if ($payment->loan->late_fee_type == 'PERCENTAGE') {
+                $penaltyAmount = ($payment->loan->late_fee / 100) * $payment->amount_due;
             } else {
-                $penaltyAmount = $payment->loan->penalty;
+                $penaltyAmount = $payment->loan->late_fee;
             }
 
             $payment->update([
-                'penalty' => $penaltyAmount,
+                'late_fee' => $penaltyAmount,
                 'amount' => $payment->amount + $penaltyAmount
             ]);
 
