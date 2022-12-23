@@ -16,6 +16,7 @@ class RentService {
         $rent = Rent::create(
           array_merge($rentData, [
             'account_id' => $property->account_id,
+            'owner_id' => $property->owner_id,
             'commission_account_id' => $property->commission_account_id,
             'late_fee_account_id' => $property->late_fee_account_id,
           ]));

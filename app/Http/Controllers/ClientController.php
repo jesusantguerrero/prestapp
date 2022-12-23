@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Domains\CRM\Models\Client;
 use App\Domains\CRM\Services\ClientService;
+use App\Domains\Properties\Actions\GenerateInvoices;
 use App\Domains\Properties\Models\Rent;
 use App\Domains\Properties\Services\RentService;
 use Exception;
@@ -27,7 +28,7 @@ class ClientController extends InertiaController
 
 
   public function generatePayment(Client $client) {
-    ClientService::generateBill($client);
+    GenerateInvoices::ownerDistribution($client);
     return redirect("/bills/");
   }
 
