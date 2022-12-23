@@ -31,7 +31,7 @@ return new class extends Migration
             $table->decimal('principal', 11, 2)->default(0.00);
             $table->decimal('interest', 11, 2)->default(0.00);
             $table->decimal('fees', 11, 2)->default(0.00);
-            $table->decimal('penalty', 11, 2)->default(0.00);
+            $table->decimal('late_fee', 11, 2)->default(0.00);
 
             $table->decimal('principal_paid', 11, 2)->default(0.00);
             $table->decimal('interest_paid', 11, 2)->default(0.00);

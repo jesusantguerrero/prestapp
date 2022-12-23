@@ -18,7 +18,7 @@ export interface ILoanInstallment {
     principal: number;
     interest: number;
     fees: number;
-    penalty: number
+    late_fee: number
     // payment track
     principal_paid: number;
     interest_paid: number;
@@ -95,7 +95,7 @@ export class LoanTable {
                 interest,
                 principal: monthlyPrincipal,
                 fees: 0,
-                penalty: 0,
+                late_fee: 0,
                 principal_paid: 0,
                 interest_paid: 0,
                 fees_paid: 0,

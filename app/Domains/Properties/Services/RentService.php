@@ -13,7 +13,12 @@ class RentService {
       if (!$property || $property->status !== Property::STATUS_AVAILABLE) {
         throw new Exception('This property is not available at the time');
       } else {
-        $rent = Rent::create($rentData);
+        $rent = Rent::create(
+          array_merge($rentData, [
+            'account_id' => $property->account_id,
+            'commission_account_id' => $property->commission_account_id,
+            'late_fee_account_id' => $property->late_fee_account_id,
+          ]));
         $rent->property->update(['status' => Property::STATUS_RENTED]);
         return self::createDepositTransaction($rent);
       }
