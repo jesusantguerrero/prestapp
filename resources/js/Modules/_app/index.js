@@ -43,7 +43,7 @@ export const useAppMenu = t => {
         {
             icon: 'fas fa-dollar-sign',
             label: 'Contabilidad',
-            to: '/invoices?filter[type]=expenses|invoice',
+            to: '/invoices?filter[type]=expense|invoice',
             as: Link,
             isActiveFunction(url, currentPath) {
                 return /invoices/.test(currentPath)
