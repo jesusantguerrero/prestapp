@@ -14,6 +14,7 @@ import { AtButton } from "atmosphere-ui";
 const variants = {
   primary: "bg-primary text-white",
   secondary: "bg-secondary text-gray-600",
+  error: "bg-error/80 text-white",
   inverse: "border-primary bg-primary/10 text-primary hover:bg-primary hover:text-white",
 };
 

@@ -1,6 +1,7 @@
 <script setup>
 import { formatDate, formatMoney } from '@/utils';
 import { ElDropdown, ElIcon } from 'element-plus';
+import InvoicePaymentOptions from './InvoicePaymentOptions.vue';
 
 defineProps({
   invoice: {
@@ -41,6 +42,7 @@ defineProps({
         <span>
           {{ invoice.status }}
         </span>
+        <InvoicePaymentOptions :invoice="invoice" />
     </section>
   </article>
 </template>
