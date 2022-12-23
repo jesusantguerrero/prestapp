@@ -48,6 +48,9 @@ return new class extends Migration
             // config
             $table->json('generated_invoice_dates')->default('[]');
             $table->json('additional_fees')->default('[]');
+
+            $table->date('move_out_at')->nullable();
+            $table->text('move_out_notice')->nullable();
             // state
             $table->enum('status', [
                 Rent::STATUS_ACTIVE,
