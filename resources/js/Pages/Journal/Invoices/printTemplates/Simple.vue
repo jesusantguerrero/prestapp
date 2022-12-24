@@ -46,7 +46,7 @@
             </div>
         </div>
 
-        <invoice-grid
+        <InvoiceGrid
             :tableData="tableData"
             :products="products"
             :is-editing="false"
@@ -54,7 +54,7 @@
         />
 
       <div class="flex justify-end px-4 mt-10 text-gray-600">
-        <invoice-totals
+        <InvoiceTotals
           :tableData="tableData"
           :subtotal-field="totals.subtotalField"
           :discount-field="totals.discountField"

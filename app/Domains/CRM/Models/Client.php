@@ -5,12 +5,16 @@ namespace App\Domains\CRM\Models;
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\Rent;
+use Database\Factories\ClientFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Invoice\Invoice;
 
 class Client extends Model {
+    use HasFactory;
+
     protected $fillable = ['user_id', 'team_id', 'names', 'lastnames', 'display_name', 'dni', 'dni_type', 'email', 'cellphone', 'address_details', 'status'];
     protected $appends = ['fullName'];
 
@@ -29,6 +33,16 @@ class Client extends Model {
         static::saving(function ($client) {
             $client->display_name = $client->names . ' ' . $client->lastnames;
         });
+    }
+
+    /**
+     * Create a new factory instance for the model.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    protected static function newFactory()
+    {
+        return ClientFactory::new();
     }
 
     public function loans() {
