@@ -217,7 +217,7 @@ import { format as formatDate, toDate } from "date-fns";
 import parseISO from "date-fns/esm/fp/parseISO/index.js";
 import { useForm, router } from "@inertiajs/vue3";
 import { AtInput, AtButton, AtField, AtFieldCheck, AtSelect, AtSimpleSelect } from "atmosphere-ui";
-import { computed, reactive, toRefs, watch, inject } from "vue";
+import { computed, reactive, toRefs, watch, inject, toRaw } from "vue";
 
 import InvoiceTotals from "./InvoiceTotals.vue";
 import InvoiceGrid from "./InvoiceGrid.vue";
@@ -315,7 +315,7 @@ const setInvoiceData = (data) => {
         state.tableData = data.lines
         .sort((a, b) => (a.index > b.index ? 1 : -1))
         .map(line => {
-          const itemTaxes = line.taxes?.length ? line.taxes : [];
+          const itemTaxes = line.taxes?.length ? toRaw(line.taxes) : [];
           line.taxes = [...itemTaxes, { id: 'new'}]
           return line
         }) 
@@ -353,10 +353,8 @@ const setRequestData = (data) => {
         }).filter(item => item.concept),
     };
     requestData.date = formatDate(data.date || new Date(), "yyyy-MM-dd");
-    requestData.due_date = formatDate(
-        data.due_date || requestData.date,
-        "yyyy-MM-dd"
-    );
+    requestData.due_date = formatDate(data.due_date || requestData.date, "yyyy-MM-dd");
+    
     const type = props.type != 'INVOICE' ? 'EXPENSE': props.type
     requestData.resource_type_id = type;
     requestData.type = type;
@@ -375,8 +373,9 @@ const setRequestData = (data) => {
 
 const sendRequest = (method, url, formData, message) => {
     return router[method](url, formData, {
-        onSuccess: (response) => {
-            reload();
+        onSuccess() {
+            const section = formData.type == 'EXPENSE' ? 'bills' : 'invoices' 
+            router.replace(`/${section}/${formData.id}`);
         },
     });
 };

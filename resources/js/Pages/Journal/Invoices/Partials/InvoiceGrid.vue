@@ -47,15 +47,16 @@
           <div class="flex items-center w-full mx-auto" v-for="(tax, index) in scope.row.taxes" :key="`tax-${index}`">
               <AtSimpleSelect
                   :options="availableTaxes"
-                  :model-value="tax"
+                  v-model="scope.row.taxes[index].tax_id"
                   v-model:selected="scope.row.taxes[index]"
                   @update:model-value="setTax(scope.$index, index, $event)"
                   placeholder="Tax"
                   option-template="${name} - ${rate}%"
                   label="name"
-                  track-by="id"
+                  key-track="id"
                   class="w-full"
               />
+              {{ tax.name }}
               <button class="h-10 px-2 mt-auto ml-2 transition border focus:outline-none hover:text-gray-900 hover:bg-gray-200"  
               @click="removeTax(scope.$index, index)">
                 <IconTrash class="w-4 h-4 text-gray-400" /> 
@@ -154,7 +155,7 @@ const state = reactive({
 
 const addRow = () => {
     const itemTaxes = state.rowToAdd.taxes?.length ? state.rowToAdd.taxes : [];
-    if (!props.tableData.length || props.tableData.at(-1).concept)
+    if (props.isEditing && (!props.tableData.length || props.tableData.at(-1).concept))
     props.tableData.push({
       product_name: state.rowToAdd?.name,
       concept: state.rowToAdd?.name,

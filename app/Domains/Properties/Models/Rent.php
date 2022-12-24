@@ -84,7 +84,7 @@ class Rent extends Transactionable implements IPayableDocument {
         return "Deposito de propiedad " . $this->address;
     }
 
-    public function getTransactionDirection() {
+    public function getTransactionDirection(): string {
         return Transaction::DIRECTION_CREDIT;
     }
 
@@ -92,7 +92,7 @@ class Rent extends Transactionable implements IPayableDocument {
         return $this->account_id;
     }
 
-    public function getCounterAccountId() {
+    public function getCounterAccountId(): int {
         return $this->client_account_id;
     }
 

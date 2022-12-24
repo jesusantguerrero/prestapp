@@ -26,7 +26,6 @@
   import { provide, ref } from 'vue'
 
   import AppLayout from "@/Components/templates/AppLayout.vue";
-  import AppSectionHeader from '@/Components/AppSectionHeader.vue';
   import InvoiceTemplate from "./Partials/InvoiceTemplate.vue";
   import AccountingSectionNav from "../Partials/AccountingSectionNav.vue";
   import AppButton from "../../../Components/shared/AppButton.vue";

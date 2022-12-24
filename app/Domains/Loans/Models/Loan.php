@@ -88,7 +88,7 @@ class Loan extends Transactionable implements IPayableDocument {
         return "Desembolso de prestamo #code";
     }
 
-    public function getTransactionDirection() {
+    public function getTransactionDirection(): string {
         return Transaction::DIRECTION_CREDIT;
     }
 
@@ -96,7 +96,7 @@ class Loan extends Transactionable implements IPayableDocument {
         return $this->account_id;
     }
 
-    public function getCounterAccountId() {
+    public function getCounterAccountId(): int {
         return $this->client_account_id;
     }
 

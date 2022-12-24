@@ -3,6 +3,7 @@
 namespace App\Domains\Loans\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Insane\Journal\Models\Core\Transaction;
 use Insane\Journal\Traits\IPayableDocument;
 use Insane\Journal\Traits\HasPayments;
 
@@ -72,5 +73,15 @@ class LoanInstallment extends Model implements IPayableDocument {
 
     public function getConceptLine(): string {
         return "";
+    }
+
+
+    // payable implementation
+    public function getCounterAccountId(): int {
+      return $this->client_account_id;
+    }
+
+    public function getTransactionDirection(): string {
+      return Transaction::DIRECTION_CREDIT;
     }
 }

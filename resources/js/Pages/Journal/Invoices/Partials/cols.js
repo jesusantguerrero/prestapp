@@ -39,7 +39,10 @@ export default [
     width: "150",
     type: "custom",
     class: "text-primary text-center",
-    headerClass: 'text-center'
+    headerClass: 'text-center', 
+    render(row) {
+      return row.taxes.map(row => row.name + ' ' + row.rate + '%').join(', ')
+    }
   },
   {
     label: "Amount",
