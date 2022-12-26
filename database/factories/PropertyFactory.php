@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Domains\Properties\Models\Property;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -10,6 +11,13 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class PropertyFactory extends Factory
 {
     /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Property::class;
+
+    /**
      * Define the model's default state.
      *
      * @return array<string, mixed>
@@ -17,7 +25,8 @@ class PropertyFactory extends Factory
     public function definition()
     {
         return [
-            //
+          'address' => $this->faker->address(),
+          'price' => 2000
         ];
     }
 }

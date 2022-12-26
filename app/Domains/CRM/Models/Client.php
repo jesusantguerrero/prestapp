@@ -47,16 +47,6 @@ class Client extends Model {
         });
     }
 
-    /**
-     * Create a new factory instance for the model.
-     *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
-     */
-    protected static function newFactory()
-    {
-        return ClientFactory::new();
-    }
-
     public function loans() {
         return $this->hasMany(Loan::class);
     }
@@ -123,4 +113,13 @@ class Client extends Model {
       return $this->names . ' ' . $this->lastnames;
     }
 
+    /**
+     * Create a new factory instance for the model.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    protected static function newFactory()
+    {
+        return ClientFactory::new();
+    }
 }
