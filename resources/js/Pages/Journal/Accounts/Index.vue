@@ -43,6 +43,7 @@
                     :cols="cols(' ')"
                     :tableData="subCategory.accounts"
                     :empty-text="'No hay cuentas en esta categoria'"
+                    hide-headers
                   >
                     <template v-slot:name="{ scope }">
                       <div>

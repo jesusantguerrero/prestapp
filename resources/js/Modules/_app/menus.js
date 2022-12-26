@@ -27,20 +27,29 @@ const menus = {
         url: '/housing/equipments'
     }],
     [MODULES.LOAN]: [
-        {
-            label: 'Carteras',
-            url: '/wallets'
-        }, {
-            label: 'Prestamos',
-            url: '/loans'
-        },
-        {
-          label: 'Tipos Prestamos',
-          url: '/loan-products'
+      {
+        label: 'Resumen de Prestamos',
+        url: '/loans/overview'
+      },
+      {
+        label: 'Prestamos',
+        url: '/loans'
+      },
+      {
+        label: 'Clientes',
+        url: '/clients'
+      },
+      {
+        label: 'Carteras',
+        url: '/wallets'
+      }, 
+      {
+        label: 'Tipos Prestamos',
+        url: '/loan-products'
       }
     ],
     [MODULES.PROPERTY]: [{
-        label: 'Resumen',
+        label: 'Resumen de Propiedades',
         url: '/properties/overview'
     },
     {
@@ -50,6 +59,14 @@ const menus = {
     {
         label: 'Contratos',
         url: '/rents/'
+    },
+    {
+        label: 'Clientes',
+        url: '/clients/'
+    },
+    {
+      label: 'Herramientas de agente',
+      url: '/management-tools/'
     },
     ],
     [MODULES.ACCOUNTING]: [{

@@ -6,19 +6,9 @@ export const useAppMenu = t => {
         {
             icon: 'fa fa-home',
             name: 'home',
-            label: 'Home',
+            label: 'Inicio',
             to: '/dashboard',
             as: Link
-        },
-        {
-            icon: 'fas fa-users',
-            label: 'Contactos',
-            name: 'mealPlanner',
-            to: '/clients',
-            as: Link,
-            isActiveFunction(url, currentPath) {
-                return /clients/.test(currentPath)
-            }
         },
         {
             icon: 'fas fa-dollar-sign',
@@ -31,7 +21,7 @@ export const useAppMenu = t => {
             }
         },
         {
-            icon: 'fas fa-heart',
+            icon: 'fas fa-building',
             label:'Propiedades',
             to: '/properties/overview',
             as: Link,

@@ -1,6 +1,9 @@
 import { h } from "vue";
 import { ElAvatar, ElTag } from "element-plus"
-import { IProperty } from '../../Modules/properties/propertyEntity';
+// @ts-ignore
+import { IProperty } from '@/Modules/properties/propertyEntity';
+// @ts-ignore
+import IconMarker from "@/Components/icons/IconMarker.vue"; 
 // @ts-ignore
 import { getPropertyStatus, getPropertyStatusColor } from "@/Modules/properties/constants";
 
@@ -11,24 +14,30 @@ export default [
         label: 'Dirección',
         class: "text-left",
         headerClass: "text-left",
-    },
-    {
-        name: 'id',
-        label: 'No.',
-        class: "text-center",
-        headerClass: "text-center",
+        render(row: IProperty) {
+          const ownerName = row.owner.names + ' ' + row.owner.lastnames
+          const initials = row.owner.names[0] + row.owner.lastnames[0];
+
+          return h('div', { class: 'justify-center' }, [
+              h('div', { class: 'flex items-center text-primary font-bold'}, [
+                h(IconMarker, { class: 'text-primary font-bold'}),
+                h('span', row.short_name)
+              ]),
+              h('span',{ class: 'text-body-1 text-sm'}, row.address)
+          ]);
+      }
     },
     {
       name: 'owner',
       label: 'Dueño',
       class: "text-center",
-      headerClass: "text-left",
+      headerClass: "text-center",
       minWidth: 200,
       render(row: IProperty) {
           const ownerName = row.owner.names + ' ' + row.owner.lastnames
           const initials = row.owner.names[0] + row.owner.lastnames[0];
 
-          return h('div', { class: 'flex items-center space-x-2' }, [
+          return h('div', { class: 'flex items-center space-x-2 justify-center' }, [
               h(ElAvatar, { shape: 'circle' }, initials),
               h('span', ownerName)
           ]);

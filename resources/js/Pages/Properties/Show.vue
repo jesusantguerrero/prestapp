@@ -89,7 +89,7 @@ const refresh = () => {
 
     <main class="p-5 mt-8">
       <AppSectionHeader
-        name="Propiedades"
+        name=""
         class="px-5 border-2 border-white rounded-md rounded-b-none shadow-md"
         :resource="properties"
         :title="propertyTitle"
