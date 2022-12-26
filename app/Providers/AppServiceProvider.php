@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Domains\CRM\Models\Client;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\ServiceProvider;
 use Insane\Journal\Models\Invoice\Invoice;
 
@@ -27,6 +29,11 @@ class AppServiceProvider extends ServiceProvider
     {
       Invoice::resolveRelationUsing('client', function ($clientModel) {
         return $clientModel->belongsTo(Client::class, 'client_id');
-    });
+      });
+
+      ParallelTesting::setUpTestDatabase(function ($database, $token) {
+        Artisan::call('db:seed');
+        Artisan::call('journal:set-accounts');
+      });
     }
 }
