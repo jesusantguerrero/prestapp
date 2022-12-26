@@ -15,7 +15,19 @@ use Insane\Journal\Models\Invoice\Invoice;
 class Client extends Model {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'team_id', 'names', 'lastnames', 'display_name', 'dni', 'dni_type', 'email', 'cellphone', 'address_details', 'status'];
+    protected $fillable = [
+      'user_id', 
+      'team_id', 
+      'names', 
+      'lastnames',
+      'display_name', 
+      'dni', 
+      'dni_type', 
+      'email', 
+      'cellphone', 
+      'address_details', 
+      'status'
+    ];
     protected $appends = ['fullName'];
 
     const STATUS_INACTIVE = 'INACTIVE';
