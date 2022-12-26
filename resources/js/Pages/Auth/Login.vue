@@ -1,6 +1,6 @@
 <script setup>
 import { AtAuthBox, AtAuthForm } from "atmosphere-ui";
-import { router, useForm, Link } from "@inertiajs/vue3";
+import { router, useForm, Link, Head } from "@inertiajs/vue3";
 
 defineProps({
     canResetPassword: Boolean,
@@ -36,6 +36,7 @@ const submit = (formData) => {
 
 <template>
     <Head title="Log in" />
+    
     <AtAuthBox>
         <AtAuthForm
             app-name="Loger"

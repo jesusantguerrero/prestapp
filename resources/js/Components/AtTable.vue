@@ -7,7 +7,7 @@
     @sort-change="$emit('sort', $event)"
     @row-click="$emit('row-click', $event)"
   >
-    <thead class="hidden">
+    <thead :class="{ hidden: hideHeaders }">
       <tr class="px-2 py-4 font-bold text-left border-b border-gray-200 text-body">
         <th
           v-for="col in cols"
@@ -136,6 +136,10 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  hideHeaders: {
+    type: Boolean,
+    default: false,
+  }
 });
 
 const getHeaderClass = ({ row }) => {
