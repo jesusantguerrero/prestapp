@@ -24,7 +24,8 @@ return new class extends Migration
             $table->foreignId('owner_account_id')->nullable();
             $table->foreignId('deposit_account_id')->nullable();
             $table->foreignId('commission_account_id')->nullable();
-           
+            $table->foreignId('late_fee_account_id')->nullable();
+
             // terms
             $table->string('name')->nullable();
             $table->text('description')->nullable();

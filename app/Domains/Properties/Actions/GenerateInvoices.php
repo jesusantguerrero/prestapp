@@ -68,7 +68,7 @@ class GenerateInvoices {
               $penaltyAmount = $invoice->invoiceable->debt;
           } else {
               $penaltyAmount = $invoice->invoiceable->late_fee;
-          }         
+          }
 
           $invoice->update([
             'status' => 'overdue'
@@ -81,7 +81,7 @@ class GenerateInvoices {
           RentService::createInvoice([
             "name" => "Factura de mora",
             "concept" => "Factura de mora {$invoice->invoiceable->client->fullName}",
-            'invoice_account_id' => $invoice->invoiceable->commission_account_id,
+            'invoice_account_id' => $invoice->invoiceable->late_fee_account_id,
             'total' => $penaltyAmount
           ], $invoice->invoiceable);
 
@@ -107,7 +107,7 @@ class GenerateInvoices {
 
       $items = [];
       $total = 0;
-      
+
       foreach ($invoices as $invoice) {
         $items[] = [
               "name" => "$invoice->description $invoice->date",
@@ -136,7 +136,7 @@ class GenerateInvoices {
           'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
           'total' =>  $formData['amount'] ?? $total,
           'items' => $formData['items'] ?? $items
-      ]); 
+      ]);
 
       $client->update([
         'generated_distribution_dates' => array_merge($client->generated_distribution_dates, [$today])

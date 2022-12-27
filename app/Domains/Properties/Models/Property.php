@@ -41,8 +41,9 @@ class Property extends Model {
         static::saving(function ($property) {
             $property->account_id = $property->account_id ?? self::createPayableAccount($property, 'rent');
             $property->owner_account_id = $property->account_owner_id ?? self::createPayableAccount($property, 'expected_payments_owners', $property->owner);
-            $property->deposit_account_id = $property->account_deposit_id ?? self::createPayableAccount($property, 'security_deposits');
-            $property->commission_account_id = $property->account_owner_id ?? self::createPayableAccount($property, 'expected_commissions_owners');
+            $property->deposit_account_id = $property->deposit_account_id ?? self::createPayableAccount($property, 'security_deposits');
+            $property->commission_account_id = $property->commission_account_id ?? self::createPayableAccount($property, 'expected_commissions_owners');
+            $property->late_fee_account_id = $property->late_fee_account_id ?? self::createPayableAccount($property, 'owed_commissions');
             $property->name = $property->name ?? $property->shortName;
         });
     }
@@ -57,12 +58,12 @@ class Property extends Model {
 
     public static function createPayableAccount($payable, $parentCategory, $client = null)
     {
-      
+
         if ($category = Category::where('display_id', $parentCategory)->first()) {
-            $accountName = $client 
+            $accountName = $client
             ? "Owner {$payable->owner_id} {$payable->owner?->fullName}"
             :"{$category->number}-{$payable->shortName}";
-  
+
           $accounts = Account::firstOrCreate([
             'display_id' =>  Str::slug($accountName, '_'),
             "category_id" => $category->id,
@@ -73,7 +74,7 @@ class Property extends Model {
             "currency_code" => "DOP",
             "name" => $accountName
           ]);
-  
+
           return $accounts->id;
         }
         echo $parentCategory. " ";
@@ -87,7 +88,7 @@ class Property extends Model {
             return explode(',', $attributes['address'])[0];
           }
           return '';
-        } 
+        }
       );
     }
 
