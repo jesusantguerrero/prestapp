@@ -13,13 +13,14 @@ class RentService {
       if (!$property || $property->status !== Property::STATUS_AVAILABLE) {
         throw new Exception('This property is not available at the time');
       } else {
-        $rent = Rent::create(
-          array_merge($rentData, [
-            'account_id' => $property->account_id,
-            'owner_id' => $property->owner_id,
-            'commission_account_id' => $property->commission_account_id,
-            'late_fee_account_id' => $property->late_fee_account_id,
-          ]));
+        $rentData =
+        array_merge($rentData, [
+          'account_id' => $property->account_id,
+          'owner_id' => $property->owner_id,
+          'commission_account_id' => $property->commission_account_id,
+          'late_fee_account_id' => $property->late_fee_account_id,
+        ]);
+        $rent = Rent::create($rentData);
         $rent->property->update(['status' => Property::STATUS_RENTED]);
         return self::createDepositTransaction($rent);
       }
@@ -72,7 +73,7 @@ class RentService {
 
       return Invoice::createDocument($data);
     }
-    
+
     public static function endTerm(Rent $rent, $formData) {
       if ($rent->status !== Rent::STATUS_CANCELLED) {
         $rent->update(array_merge($formData, ["status" => Rent::STATUS_CANCELLED]));

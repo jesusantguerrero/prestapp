@@ -32,6 +32,10 @@ class Rent extends Transactionable implements IPayableDocument {
         'next_invoice_date',
         'amount',
         'commission',
+        'commission_type',
+        'late_fee',
+        'late_fee_type',
+        'grace_days',
         'start_date',
         'move_out_at',
         'move_out_notice',
@@ -42,7 +46,7 @@ class Rent extends Transactionable implements IPayableDocument {
       'generated_invoice_dates' => 'array'
     ];
     // protected
-    protected $creditCategory = 'loan_line_credit';
+    protected $creditCategory = 'expected_payments_customers';
     protected $creditAccount = 'Customer Demand Deposits';
 
     public function client() {

@@ -12,7 +12,7 @@ return [
         [
             "resource" => "categories",
             "display_id" => "assets",
-            "number" => 1000,
+            "number" => 10000,
             "name" => "Assets",
             "Description" => "",
             "depth" => 0,
@@ -70,39 +70,59 @@ return [
         [
             "resource" => "categories",
             "name" => "Liabilities & Credit Cards",
-            "number" => 2000,
+            "number" => 20000,
             "display_id" => "liabilities",
             "Description" => "",
             "depth" => 0,
             "childs" => [
                 [
                     "resource" => "categories",
-                    "display_id" => "credit_card",
-                    "number" => 2100,
-                    "name" => "Credit Card",
-                    "Description" => "Use this to track purchases made using a credit card. Create an account for each credit card you use in your business. Purchases using your credit card, and payments to your credit card, should be recorded in the relevant credit card category.",
-                    "depth" => 1,
-                ],
-                [
-                    "resource" => "categories",
-                    "display_id" => "loan_line_credit",
-                    "number" => 2200,
-                    "name" => "Loan and Line of Credit",
-                    "Description" => "Use this to track the balance of outstanding loans or withdrawals you've made using a line of credit. The cash you receive as a result of a loan or line of credit is deposited into a Cash and Bank category.",
-                    "depth" => 1,
-                ],
-                [
-                    "resource" => "categories",
                     "display_id" => "expected_payments_vendors",
-                    "number" => 2300,
+                    "number" => 2100,
                     "name" => "Expected Payments to Vendors",
                     "Description" => "Use this to track the balance of what you owe vendors (i.e. suppliers, online subscriptions providers) after you accepted their service or receive items for which you have not yet paid. Journal in Wave are already tracked in the Accounts Payable category",
                     "depth" => 1,
                 ],
                 [
+                  "resource" => "categories",
+                  "display_id" => "rent",
+                  "number" => 2200,
+                  "name" => "Last Month's Rent",
+                  "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
+                ],
+                [
+                  "resource" => "categories",
+                  "display_id" => "customer_prepayments",
+                  "number" => 2300,
+                  "name" => "Customer Prepayments and Customer Credits",
+                  "Description" => "",
+                  "depth" => 1,
+                ],
+                [
+                  "resource" => "categories",
+                  "display_id" => "security_deposits",
+                  "number" => 2400,
+                  "name" => "Security deposits",
+                  "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
+                ],
+                [
+                  "resource" => "categories",
+                  "display_id" => "owner_held_security_deposits",
+                  "number" => 2500,
+                  "name" => "Owner held security deposits",
+                  "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
+                ],
+                [
+                  "resource" => "categories",
+                  "display_id" => "owner_held_security_deposits",
+                  "number" => 2600,
+                  "name" => "Owner held security deposits",
+                  "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
+                ],
+                [
                     "resource" => "categories",
                     "display_id" => "expected_payments_owners",
-                    "number" => 2300,
+                    "number" => 2700,
                     "name" => "Expected Payments to Owners",
                     "Description" => "Use this to track the balance of what you owe owners (i.e. suppliers, online subscriptions providers) after you accepted their service or receive items for which you have not yet paid. Journal in Wave are already tracked in the Accounts Payable category",
                     "depth" => 1,
@@ -110,56 +130,33 @@ return [
                 [
                     "resource" => "categories",
                     "display_id" => "sales_taxes",
-                    "number" => 2400,
+                    "number" => 2800,
                     "name" => "Sales Taxes",
                     "Description" => "Use this to track the sales taxes you have charged to customers during a sale, and sales tax amounts you have remitted to the government. The balance of this category indicates how much you have to remit to the government. This category can also be used to track sales taxes you been charged on purchases, so that you can reduce how much sales taxes you have to remit to the government. If you create a sales tax in Wave, a category here is created for you automatically.",
                     "depth" => 1,
                 ],
                 [
                     "resource" => "categories",
-                    "display_id" => "due_payroll",
-                    "number" => 2500,
-                    "name" => "Due for Payroll",
-                    "Description" => "Use this to track all amounts owed that relate to having employees and running a payroll. This includes salaries, wages, and employee reimbursements, but also all payroll taxes that must be paid to government agencies and other collectors (ie; insurance agencies and health savings providers).",
-
-                    "depth" => 1,
-                ],
-                [
-                    "resource" => "categories",
-                    "display_id" => "due_to_business",
-                    "number" => 2600,
+                    "display_id" => "owed_commissions",
+                    "number" => 2900,
                     "name" => "Due to You and Others Business Owners",
                     "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
                     "depth" => 1,
                 ],
                 [
                     "resource" => "categories",
-                    "display_id" => "customer_prepayments",
-                    "number" => 2700,
-                    "name" => "Customer Prepayments and Customer Credits",
-                    "Description" => "",
+                    "display_id" => "due_to_business",
+                    "number" => 2900,
+                    "name" => "Due to You and Others Business Owners",
+                    "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
                     "depth" => 1,
                 ],
-                [
-                  "resource" => "categories",
-                  "display_id" => "rent",
-                  "number" => 2800,
-                  "name" => "Renting",
-                  "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
-                ],
-                [
-                    "resource" => "categories",
-                    "display_id" => "security_deposits",
-                    "number" => 2900,
-                    "name" => "Security deposits",
-                    "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
-                ]
               ]
         ],
         [
           "resource" => "categories",
           "name" => "Equity",
-          "number" => 3000,
+          "number" => 30000,
           "display_id" => "equity",
           "description" => "",
           "depth" => 0,
@@ -185,7 +182,7 @@ return [
         [
             "resource" => "categories",
             "name" => "Income",
-            "number" => 4000,
+            "number" => 40000,
             "display_id" => "income",
             "Description" => "",
             "depth" => 0,
@@ -243,7 +240,7 @@ return [
         [
             "resource" => "categories",
             "name" => "Expense",
-            "number" => 5000,
+            "number" => 50000,
             "display_id" => "expenses",
             "Description" => "",
             "depth" => 0,
@@ -298,8 +295,9 @@ return [
                 ],
             ]
         ],
-      
+
     ],
+    "accounts.distance" => 100,
     "accounts_catalog" => [
         // Assets Accounts
         [
