@@ -7,7 +7,10 @@ use App\Domains\CRM\Services\ClientService;
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
 use App\Domains\Loans\Services\LoanService;
+use App\Models\Setting;
 use Illuminate\Http\Request;
+use Insane\Journal\Helpers\ReportHelper;
+use Insane\Journal\Models\Core\PaymentDocument;
 
 class LoanController extends InertiaController
 {
@@ -36,6 +39,25 @@ class LoanController extends InertiaController
 
     }
 
+    public function __invoke(Request $request) {
+      $reportHelper = new ReportHelper();
+      $teamId = $request->user()->current_team_id;
+
+      return inertia('Loans/Overview',
+      [
+          "revenue" => $reportHelper->revenueReport($teamId),
+          "activeLoanClients" => ClientService::clientsWithActiveLoans($teamId),
+          "loanCapital" => LoanService::disposedCapitalFor($teamId),
+          "loanExpectedInterest" => LoanService::expectedInterestFor($teamId),
+          "loanPaidInterest" => LoanService::paidInterestFor($teamId),
+          'bank' => $reportHelper->smallBoxRevenue('bank', $teamId),
+          'dailyBox' => $reportHelper->smallBoxRevenue('daily_box', $teamId),
+          'cashOnHand' => $reportHelper->smallBoxRevenue('cash_on_hand', $teamId),
+          'nextInvoices' => $reportHelper->nextInvoices($teamId),
+          'debtors' => $reportHelper->debtors($teamId),
+      ]);
+    }
+
     protected function createResource(Request $request, $postData)
     {
         return LoanService::createLoan($postData, $request->get('installments'));
@@ -61,9 +83,10 @@ class LoanController extends InertiaController
         ];
     }
 
+    // payable document related
     public function pay(Loan $loan, Request $request) {
       $postData = $this->getPostData($request);
-    
+
       $loan->createPayment(array_merge($postData, [
           "client_id" => $loan->client_id,
           "documents" => array_map(function ($document) {
@@ -74,7 +97,7 @@ class LoanController extends InertiaController
           }, $postData['documents'])
       ]));
       $loan->client->checkStatus();
-  }
+    }
 
     public function payInstallment(Loan $loan, LoanInstallment $installment, Request $request) {
         $postData = $this->getPostData($request);
@@ -95,5 +118,30 @@ class LoanController extends InertiaController
         if ($installment->loan_id == $loan->id) {
             $installment->markAsPaid();
         }
+    }
+
+    public function numberToWords($number) {
+      $formatter = new \NumberFormatter('es', \NumberFormatter::SPELLOUT);
+      return $formatter->format($number) . "\n";
+    }
+
+    public function printPaymentDocument(Loan $loan, PaymentDocument $paymentDocument) {
+      $teamId = request()->user()->current_team_id;
+      $user = request()->user();
+      $receipt = $paymentDocument->toArray();
+      $receipt['resource_name'] = 'Prestamo';
+      $receipt['client_name'] = $loan->client->display_name;
+      $receipt['total_in_words'] = $this->numberToWords($paymentDocument->amount);
+
+      $receipt['description'] = $paymentDocument->payments->reduce(function ($description, $payment) {
+
+        return $description . "Pagaré {$payment->payable->installment_number} ";
+      });
+
+      return inertia('Prints/Receipt', [
+        "company" => Setting::getBySection($teamId, 'business'),
+        "receipt" => $receipt,
+        "user" => $user
+      ]);
     }
 }

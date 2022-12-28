@@ -2,6 +2,7 @@ import { IClient } from "../clients/clientEntity";
 import { ILoanInstallment } from "./loanInstallmentEntity";
 
 export interface ILoan {
+    id?: number;
     client?: IClient;
     client_id: number;
     // loan details

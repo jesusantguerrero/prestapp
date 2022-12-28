@@ -7,11 +7,12 @@
   </AtButton>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
+// @ts-ignore
 import { AtButton } from "atmosphere-ui";
 
-const variants = {
+const variants: Record<string, string> = {
   primary: "bg-primary text-white",
   secondary: "bg-secondary text-gray-600",
   error: "bg-error/80 text-white",

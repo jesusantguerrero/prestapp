@@ -1,3 +1,18 @@
+export const paymentMethods = [
+  {
+    id: "cash",
+    name: "Efectivo",
+  },
+  {
+    id: "check",
+    name: "Cheque",
+  },
+  {
+    id: "bank",
+    name: "Banco",
+  },
+];
+
 export const LOAN_FREQUENCY = {
     WEEKLY: 'WEEKLY',
     BIWEEKLY: 'BIWEEKLY',
@@ -15,7 +30,7 @@ export const loanFrequencies = [{
 {
     name: LOAN_FREQUENCY.SEMIMONTHLY,
     label: 'Quincenal'
-}, 
+},
 {
     name: LOAN_FREQUENCY.MONTHLY,
     label: 'Mensual'

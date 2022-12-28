@@ -39,7 +39,7 @@ class Loan extends Transactionable implements IPayableDocument {
     ];
 
     // protected
-    protected $creditCategory = 'loan_line_credit';
+    protected $creditCategory = 'expected_payments_customers';
     protected $creditAccount = 'Customer Demand Deposits';
 
     public function client() {

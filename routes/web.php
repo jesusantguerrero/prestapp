@@ -52,10 +52,12 @@ Route::middleware([
     Route::post('/clients/{client}/generate-payment', [ClientController::class, 'generatePayment']);
 
     // Loans
+    Route::get('loans/overview', LoanController::class);
     Route::resource('loans', LoanController::class);
     Route::post('/loans/:loanId/installments/:installment/mark-as-paid', [LoanController::class, 'markAsPaid']);
     Route::post('/loans/{loan}/installments/{installment}/pay', [LoanController::class, 'payInstallment']);
     Route::post('/loans/{loan}/pay', [LoanController::class, 'pay']);
+    Route::get('/loans/{loan}/payments/{paymentDocument}/print', [LoanController::class, 'printPaymentDocument']);
 
     // Properties
     Route::get('properties/overview', PropertyController::class);

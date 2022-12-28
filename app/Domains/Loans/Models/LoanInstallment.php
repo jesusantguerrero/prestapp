@@ -78,10 +78,10 @@ class LoanInstallment extends Model implements IPayableDocument {
 
     // payable implementation
     public function getCounterAccountId(): int {
-      return $this->client_account_id;
+      return $this->loan->client_account_id;
     }
 
     public function getTransactionDirection(): string {
-      return Transaction::DIRECTION_CREDIT;
+      return Transaction::DIRECTION_DEBIT;
     }
 }

@@ -1,27 +1,30 @@
 <script setup lang="ts">
-import AppLayout from "@/Components/templates/AppLayout.vue";
+import { router } from "@inertiajs/core";
+// @ts-ignore
 import { AtButton, AtField, AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { ref, reactive, computed } from "vue";
-import { format as formatDate } from "date-fns";
-import { createLoan, generateInstallments } from "../../Modules/loans/features";
-import { ILoan } from "../../Modules/loans/loanEntity";
-import { loanFrequencies } from "../../Modules/loans/constants";
-import { router } from "@inertiajs/core";
+import { addMonths } from "date-fns";
+// @ts-ignore
+import AppLayout from "@/Components/templates/AppLayout.vue";
 import InstallmentTable from "./Partials/InstallmentTable.vue";
-import { IClient } from "../../Modules/clients/clientEntity";
+
+import { ILoan } from "@/Modules/loans/loanEntity";
+import { IClient } from "@/Modules/clients/clientEntity";
+import { createLoan, generateInstallments } from "../../Modules/loans/features";
+import { loanFrequencies } from "@/Modules/loans/constants";
+import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
+import { formatDate } from "@/utils";
 
 interface Props {
-    loanData: ILoan[];
-    clients: IClient[];
+  loanData: ILoan[];
+  clients: IClient[];
 }
 
-const props = withDefaults(defineProps<Props>(), {
-    clients: []
-});
+const props = defineProps<Props>();
 
-const clientOptions = props.clients.map(client => ({
-    label: client.names + ' ' + client.lastnames,
-    id: client.id
+const clientOptions = props.clients.map((client) => ({
+  label: client.names + " " + client.lastnames,
+  id: client.id,
 }));
 
 const loanForm = reactive<ILoan>({
@@ -30,10 +33,10 @@ const loanForm = reactive<ILoan>({
   interest_rate: 0,
   frequency: "MONTHLY",
   disbursement_date: new Date(),
-  first_installment_date: "",
+  first_installment_date: addMonths(new Date(), 1),
   grace_days: 0,
   client_id: 1,
-  client: undefined
+  client: undefined,
 });
 
 const installments = ref<ILoanInstallment[]>([]);
@@ -57,12 +60,12 @@ const canCalculate = computed(() => {
 });
 
 const onSubmit = () => {
-    const formData = {
-        ...loanForm,
-        disbursement_date: formatDate(loanForm.disbursement_date, "yyyy-MM-dd"),
-        first_installment_date: formatDate(loanForm.first_installment_date, 'y-M-d'),
-        client_id: loanForm.client.id
-    }
+  const formData = {
+    ...loanForm,
+    disbursement_date: formatDate(loanForm.disbursement_date, "yyyy-MM-dd"),
+    first_installment_date: formatDate(loanForm.first_installment_date, "y-M-d"),
+    client_id: loanForm.client.id,
+  };
   createLoan(formData, installments.value)
     .then(() => {
       close();
@@ -82,16 +85,16 @@ const goToList = () => {
   <AppLayout title="Crear Prestamos">
     <main class="w-full p-5 bg-white rounded-md">
       <article>
-          <h1 class="font-bold">Datos Del Cliente</h1>
-          <AtField label="Cliente" class="w-full">
-            <AtSimpleSelect
-                :options="clientOptions"
-                v-model="loanForm.client"
-                label="display_name"
-                track-by="id"
-                placeholder="Selecciona un cliente"
-            />
-          </AtField>
+        <h1 class="font-bold">Datos Del Cliente</h1>
+        <AtField label="Cliente" class="w-full">
+          <AtSimpleSelect
+            :options="clientOptions"
+            v-model="loanForm.client"
+            label="display_name"
+            track-by="id"
+            placeholder="Selecciona un cliente"
+          />
+        </AtField>
       </article>
       <article class="w-full">
         <h1 class="font-bold">Datos Generales</h1>
