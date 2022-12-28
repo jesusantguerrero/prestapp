@@ -28,7 +28,7 @@ export interface ILoanInstallment {
     initial_balance: number;
     final_balance: number;
     // status
-    status?: LoanInstallmentStatus;
+    payment_status?: LoanInstallmentStatus;
 }
 
 export interface LoanTableParams {

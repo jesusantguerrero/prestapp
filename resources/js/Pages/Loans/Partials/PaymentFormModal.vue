@@ -1,3 +1,166 @@
+<script setup>
+import { AtButton, AtField, AtInput, AtSimpleSelect } from "atmosphere-ui";
+import { format as formatDate } from "date-fns";
+import { ElDatePicker, ElDialog } from "element-plus";
+import { inject, ref, watch, computed } from "vue";
+
+import AppButton from "@/Components/shared/AppButton.vue";
+import PaymentGrid from "./PaymentGrid.vue";
+
+import { MathHelper } from "@/Modules/loans/mathHelper";
+import { paymentMethods } from "@/Modules/loans/constants";
+
+const defaultPaymentForm = {
+  amount: 0,
+  account_id: "",
+};
+
+const props = defineProps({
+  modelValue: Boolean,
+  defaultConcept: {
+    type: String,
+    required: true,
+  },
+  defaultAmount: {
+    type: Number,
+    required: true,
+  },
+  payment: [Object, null],
+  due: Number,
+  endpoint: {
+    type: String,
+    required: true,
+  },
+});
+
+const emit = defineEmits(["update:modelValue", "saved"]);
+
+const categories = inject("accountsOptions", []);
+
+const paymentForm = ref(generatePaymentData());
+
+const setFormData = () => {
+  paymentForm.value = generatePaymentData();
+};
+
+function generatePaymentData() {
+  return {
+    ...defaultPaymentForm,
+    concept: props.defaultConcept,
+    amount: props.due,
+    payment_method_id: paymentMethods[0].id,
+    paymentMethod: paymentMethods[0],
+    payment_date: new Date(),
+  };
+}
+
+watch(
+  () => props.defaultConcept,
+  (defaultConcept) => {
+    paymentForm.value.concept = defaultConcept;
+  },
+  {
+    immediate: true,
+  }
+);
+
+watch(
+  () => props.due,
+  (due) => {
+    if (!paymentForm.value.id) {
+      paymentForm.value.amount = due;
+    }
+  },
+  {
+    immediate: true,
+  }
+);
+
+watch(
+  props.payment,
+  (payment) => {
+    if (payment) {
+      setFormData();
+    }
+  },
+  {
+    deep: true,
+    immediate: true,
+  }
+);
+
+const documentTotal = computed(() => {
+  return paymentForm.value.documents?.reduce((total, payment) => {
+    return MathHelper.sum(total, payment.payment);
+  }, 0);
+});
+
+function addPayment() {
+  if (!paymentForm.value.amount) {
+    notify({
+      type: "error",
+      message: "should specify an amount",
+    });
+    return;
+  }
+
+  const formData = {
+    resource_id: props.resourceId,
+    payment_date: formatDate(paymentForm.value.payment_date || new Date(), "yyyy-MM-dd"),
+    amount: paymentForm.value.amount,
+    concept: paymentForm.value.concept,
+    payment_method_id: paymentForm.value.payment_method,
+    account_id: paymentForm.value.account_id,
+    reference: paymentForm.value.reference,
+    notes: paymentForm.value.notes,
+    documents: paymentForm.value.documents?.filter((doc) => doc.payment),
+  };
+
+  axios
+    .post(props.endpoint, formData)
+    .then(() => {
+      resetForm(true);
+      emit("saved");
+    })
+    .catch((err) => {
+      console.log(err);
+      notify({
+        type: "error",
+        message: err.response ? err.response.data.status.message : "Ha ocurrido un error",
+      });
+    });
+}
+
+function deletePayment() {
+  axios
+    .delete(`${props.endpoint}/${paymentForm.id}`)
+    .then(() => {
+      emit("saved");
+      resetForm(true);
+    })
+    .catch((err) => {
+      notify({
+        type: "error",
+        message: err.response ? err.response.data.status.message : "Ha ocurrido un error",
+      });
+    });
+}
+
+function resetForm(shouldClose) {
+  paymentForm.value = {
+    ...defaultPaymentForm,
+    concept: props.defaultConcept,
+  };
+  if (shouldClose) {
+    emitChange(false);
+  }
+}
+
+function emitChange(value) {
+  emit("update:modelValue", value);
+}
+</script>
+
 <template>
   <ElDialog
     title="Pagar prestamo"
@@ -5,7 +168,7 @@
     :model-value="modelValue"
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <div class="">
+    <div class="overflow-hidden">
       <section class="flex space-x-4">
         <AtField class="w-full text-left" label="Concepto">
           <AtInput
@@ -55,30 +218,22 @@
         </AtField>
         <AtField class="w-3/12 mb-5 text-left" label="Metodo de Pago">
           <AtSimpleSelect
-            v-model="paymentForm.payment_method"
+            v-model="paymentForm.payment_method_id"
             v-model:selected="paymentForm.paymentMethod"
-            :options="[
-              {
-                id: 'cash',
-                name: 'Efectivo',
-              },
-              {
-                id: 'check',
-                name: 'Cheque',
-              },
-              {
-                id: 'bank',
-                name: 'Banco',
-              },
-            ]"
+            :options="paymentMethods"
             placeholder="Seleccione metodo de pago"
             class="w-full"
             label="name"
             key-track="id"
           />
         </AtField>
-        <AtField label="Fecha de pago" class="w-3/12" >
-          <ElDatePicker v-model="paymentForm.payment_date" size="large" class="w-full" rounded />
+        <AtField label="Fecha de pago" class="w-3/12">
+          <ElDatePicker
+            v-model="paymentForm.payment_date"
+            size="large"
+            class="w-full"
+            rounded
+          />
         </AtField>
       </section>
 
@@ -92,11 +247,11 @@
         />
       </div>
 
-			<PaymentGrid 
+      <PaymentGrid
         v-if="paymentForm.documents"
-				:table-data="paymentForm.documents" 
-				:available-taxes="[]" 
-			/>
+        :table-data="paymentForm.documents"
+        :available-taxes="[]"
+      />
     </div>
 
     <template #footer>
@@ -116,161 +271,3 @@
     </template>
   </ElDialog>
 </template>
-
-<script setup>
-import { AtButton, AtField, AtInput, AtSimpleSelect } from "atmosphere-ui";
-import { format as formatDate } from "date-fns";
-import { ElDatePicker, ElDialog } from "element-plus";
-import { inject, ref, watch, computed } from "vue";
-import AppButton from "../../../Components/shared/AppButton.vue";
-import { MathHelper } from "../../../Modules/loans/mathHelper";
-import PaymentGrid from "./PaymentGrid.vue";
-
-const defaultPaymentForm = {
-  amount: 0,
-  account_id: "",
-};
-
-const props = defineProps({
-  modelValue: Boolean,
-  defaultConcept: {
-    type: String,
-    required: true,
-  },
-  defaultAmount: {
-    type: Number,
-    required: true,
-  },
-  payment: [Object, null],
-  due: Number,
-  endpoint: {
-    type: String,
-    required: true,
-  },
-});
-
-const emit = defineEmits(["update:modelValue", "saved"]);
-
-const categories = inject("accountsOptions", []);
-
-const paymentForm = ref(generatePaymentData());
-
-const setFormData = () => {
-  paymentForm.value = generatePaymentData();
-};
-
-function generatePaymentData() {
-  return {
-    ...defaultPaymentForm,
-    concept: props.defaultConcept,
-    amount: props.due,
-    payment_date: new Date(),
-  };
-}
-
-watch(
-  () => props.defaultConcept,
-  (defaultConcept) => {
-    paymentForm.value.concept = defaultConcept;
-  },
-  {
-    immediate: true,
-  }
-);
-
-watch(
-  () => props.due,
-  (due) => {
-    if (!paymentForm.value.id) {
-      paymentForm.value.amount = due;
-    }
-  },
-  {
-    immediate: true,
-  }
-);
-
-watch(
-  props.payment,
-  (payment) => {
-    if (payment) {
-      paymentForm.value = payment;
-    }
-  },
-  {
-    deep: true,
-    immediate: true,
-  }
-);
-
-const documentTotal = computed(() => {
-    return paymentForm.value.documents?.reduce((total, payment) => {
-        return MathHelper.sum(total, payment.payment)
-    }, 0)
-})
-
-function addPayment() {
-  if (!paymentForm.value.amount) {
-    notify({
-      type: "error",
-      message: "should specify an amount",
-    });
-    return;
-  }
-
-  const formData = {
-    resource_id: props.resourceId,
-    payment_date: formatDate(paymentForm.value.payment_date || new Date(), "yyyy-MM-dd"),
-    amount: paymentForm.value.amount,
-    concept: paymentForm.value.concept,
-    payment_method_id: paymentForm.value.payment_method,
-    account_id: paymentForm.value.account_id,
-    reference: paymentForm.value.reference,
-    notes: paymentForm.value.notes,
-    documents: paymentForm.value.documents?.filter(doc => doc.payment)
-  };
-
-  axios
-    .post(props.endpoint, formData)
-    .then(() => {
-      resetForm(true);
-      emit("saved");
-    })
-    .catch((err) => {
-      console.log(err);
-      notify({
-        type: "error",
-        message: err.response ? err.response.data.status.message : "Ha ocurrido un error",
-      });
-    });
-}
-
-function deletePayment() {
-  axios
-    .delete(`${props.endpoint}/${paymentForm.id}`)
-    .then(() => {
-      emit("saved");
-      resetForm(true);
-    })
-    .catch((err) => {
-      notify({
-        type: "error",
-        message: err.response ? err.response.data.status.message : "Ha ocurrido un error",
-      });
-    });
-}
-
-function resetForm(shouldClose) {
-  paymentForm.value = {
-    ...defaultPaymentForm,
-    concept: props.defaultConcept,
-  };
-  if (shouldClose) {
-    emitChange(false);
-  }
-}
-
-function emitChange(value) {
-  emit("update:modelValue", value);
-}
-</script>

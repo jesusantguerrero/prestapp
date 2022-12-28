@@ -1,19 +1,17 @@
-<script setup>
-import AppButton from "../../../Components/shared/AppButton.vue";
+<script setup lang="ts">
+import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
+import AppButton from "@/Components/shared/AppButton.vue";
 import { formatMoney } from "@/utils/formatMoney";
 
-defineProps({
-  installments: {
-    type: Array,
-  },
-  loanId: {
-    type: Number,
-  },
-});
+interface Props {
+  installments: ILoanInstallment[];
+  loanId: number;
+}
+defineProps<Props>();
 
 const emit = defineEmits(["pay"]);
 
-const handlePayment = (installment) => {
+const handlePayment = (installment: ILoanInstallment) => {
   emit("pay", installment);
 };
 
@@ -40,9 +38,9 @@ const tdHeaderClass = "bg-blue-400 p-2 text-white";
       <td class="p-2 text-right">{{ installment.payment_status }}</td>
       <td class="p-2">
         <AppButton
-            @click="handlePayment(installment)"
-            v-if="installment.payment_status !== 'PAID'"
-            >
+          @click="handlePayment(installment)"
+          v-if="installment.payment_status !== 'PAID'"
+        >
           Pagar
         </AppButton>
       </td>
