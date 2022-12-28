@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, router } from "@inertiajs/vue3";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 // @ts-ignore: its my template
 import AppLayout from "@/Components/templates/AppLayout.vue";
@@ -8,10 +8,11 @@ import AppLayout from "@/Components/templates/AppLayout.vue";
 import AtTable from "@/Components/AtTable.vue";
 // @ts-ignore: its my template
 import LoanSectionNav from "./Partials/LoanSectionNav.vue";
+import LoanProductModal from "./Partials/LoanProductModal.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 
 import { ILoan } from "@/Modules/loans/loanEntity";
-import cols from "./cols";
+import cols from "./loanProductCols";
 import { formatMoney } from "@/utils";
 
 interface IPaginatedData {
@@ -19,21 +20,23 @@ interface IPaginatedData {
 }
 
 const props = defineProps<{
-  loans: ILoan[] | IPaginatedData;
+  loanProducts: ILoan[] | IPaginatedData;
 }>();
 
 const listData = computed(() => {
-  return Array.isArray(props.loans) ? props.loans : props.loans.data;
+  return Array.isArray(props.loanProducts) ? props.loanProducts : props.loanProducts.data;
 });
+
+const isModalOpen = ref(false);
 </script>
 
 <template>
-  <AppLayout title="Prestamos">
+  <AppLayout title="Tipo de prestamos">
     <template #header>
       <LoanSectionNav>
         <template #actions>
-          <AppButton variant="inverse" @click="router.visit('/loans/create')">
-            Nuevo prestamo
+          <AppButton variant="inverse" @click="isModalOpen = !isModalOpen">
+            Nuevo tipo
           </AppButton>
         </template>
       </LoanSectionNav>
@@ -46,14 +49,14 @@ const listData = computed(() => {
         class="bg-white rounded-md text-body-1"
       >
         <template v-slot:actions="{ scope: { row } }" class="flex">
-          <div class="flex">
+          <div class="flex space-x-4 mx-auto">
             <Link
               class="relative inline-block px-5 py-2 overflow-hidden font-bold text-white transition border rounded-md focus:outline-none hover:bg-opacity-80 min-w-max bg-primary"
               :href="`/loans/${row.id}`"
             >
               Edit</Link
             >
-            <AppButton> Delete</AppButton>
+            <AppButton> Delete </AppButton>
           </div>
         </template>
         <template v-slot:amount="{ scope: { row } }">
@@ -65,6 +68,8 @@ const listData = computed(() => {
           </div>
         </template>
       </AtTable>
+
+      <LoanProductModal v-model:show="isModalOpen" />
     </main>
   </AppLayout>
 </template>
