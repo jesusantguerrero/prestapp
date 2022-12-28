@@ -4,6 +4,7 @@ use App\Http\Controllers\BackgroundController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoanController;
+use App\Http\Controllers\LoanProductController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\RentController;
 use App\Http\Controllers\SettingsController;
@@ -58,6 +59,8 @@ Route::middleware([
     Route::post('/loans/{loan}/installments/{installment}/pay', [LoanController::class, 'payInstallment']);
     Route::post('/loans/{loan}/pay', [LoanController::class, 'pay']);
     Route::get('/loans/{loan}/payments/{paymentDocument}/print', [LoanController::class, 'printPaymentDocument']);
+
+    Route::resource('/loan-products', LoanProductController::class);
 
     // Properties
     Route::get('properties/overview', PropertyController::class);

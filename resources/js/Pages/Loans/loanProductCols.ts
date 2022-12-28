@@ -1,4 +1,4 @@
-import { ILoanWithInstallments } from "./../../Modules/loans/loanEntity";
+import { ILoanWithInstallments } from "../../Modules/loans/loanEntity";
 import { h } from "vue";
 import { ElTag } from "element-plus";
 // @ts-ignore
@@ -7,45 +7,40 @@ import { getLoanStatusColor } from "../../Modules/loans/constants";
 
 export default [
   {
-    name: "first_installment_date",
+    name: "name",
     class: "text-center",
     headerClass: "text-center",
-    label: "Fecha de inicio",
+    label: "Nombre",
   },
   {
     name: "client",
-    label: "Cliente",
+    label: "Terminos",
     class: "text-center",
     headerClass: "text-center",
     render(row: ILoanWithInstallments) {
-      return row.client?.fullName;
+      return row.frequency;
     },
   },
   {
-    name: "amount",
-    label: "Prestado/Deuda",
-    type: "money",
-    class: "text-right",
-    headerClass: "text-right",
-  },
-  {
-    name: "interest_rate",
-    label: "Tasa de Interés",
+    name: "interest_rates",
+    label: "Tasas de Interés",
     class: "text-center",
     headerClass: "text-center",
     render(row: ILoanWithInstallments) {
-      return row.interest_rate + " %";
+      return row.interest_rates.map(interest => interest.trim()).join('%, ') + '%';
     },
   },
   {
-    name: "payment_status",
+    name: "status",
     label: "Estado",
+    class: "text-center",
+    headerClass: "text-center",
     render(row: ILoanWithInstallments) {
       return h(
         // @ts-ignore
         ElTag,
-        { type: getLoanStatusColor(row.payment_status) },
-        getLoanStatus(row.payment_status)
+        { type: 'success' },
+        'Activo'
       );
     },
   },
@@ -53,6 +48,6 @@ export default [
     name: "actions",
     label: "Acciones",
     class: "text-right",
-    headerClass: "text-right",
+    headerClass: "text-center",
   },
 ];

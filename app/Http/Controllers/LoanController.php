@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Domains\CRM\Models\Client;
 use App\Domains\CRM\Services\ClientService;
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
@@ -36,7 +35,6 @@ class LoanController extends InertiaController
         $this->includes = ['client'];
         $this->filters = [];
         $this->resourceName= "loans";
-
     }
 
     public function __invoke(Request $request) {

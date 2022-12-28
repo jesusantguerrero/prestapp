@@ -14,6 +14,7 @@ export interface ILoan {
     disbursement_date: string | Date;
     first_installment_date: string | Date;
     grace_days: number;
+    payment_status: string;
 }
 
 
