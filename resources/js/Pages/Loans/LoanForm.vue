@@ -2,21 +2,24 @@
 import { router } from "@inertiajs/core";
 // @ts-ignore
 import { AtButton, AtField, AtInput, AtSimpleSelect } from "atmosphere-ui";
-import { ref, reactive, computed } from "vue";
+import { ref, reactive, computed, watch } from "vue";
 import { addMonths } from "date-fns";
 // @ts-ignore
 import AppLayout from "@/Components/templates/AppLayout.vue";
+import AppButton from "@/Components/shared/AppButton.vue";
 import InstallmentTable from "./Partials/InstallmentTable.vue";
+// @ts-ignore: its my template
+import LoanSectionNav from "./Partials/LoanSectionNav.vue";
 
 import { ILoan } from "@/Modules/loans/loanEntity";
 import { IClient } from "@/Modules/clients/clientEntity";
-import { createLoan, generateInstallments } from "../../Modules/loans/features";
+import { saveLoan, generateInstallments } from "../../Modules/loans/features";
 import { loanFrequencies } from "@/Modules/loans/constants";
 import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
 import { formatDate } from "@/utils";
 
 interface Props {
-  loanData: ILoan[];
+  loans: ILoan;
   clients: IClient[];
 }
 
@@ -27,7 +30,8 @@ const clientOptions = props.clients.map((client) => ({
   id: client.id,
 }));
 
-const loanForm = reactive<ILoan>({
+const loanForm = reactive<Record<string, any>>({
+  id: null,
   amount: 0,
   repayment_count: 0,
   interest_rate: 0,
@@ -37,6 +41,28 @@ const loanForm = reactive<ILoan>({
   grace_days: 0,
   client_id: 1,
   client: undefined,
+});
+
+watch(
+  () => props.loans,
+  (loanData: ILoan) => {
+    if (loanData) {
+      Object.keys(loanForm).forEach((field) => {
+        loanForm[field] = loanData[field] || loanForm[field];
+      });
+      loanForm.client_id = props.loans.client?.id ?? 1;
+      loanForm.client = props.loans.client;
+    }
+  },
+  { immediate: true, deep: true }
+);
+
+const formTitle = computed(() => {
+  return props.loans.id ? `Prestamo ${props.loans.client?.fullName}` : "Crear Prestamo";
+});
+
+const saveButtonLabel = computed(() => {
+  return props.loans.id ? "Guardar prestamo" : "Crear Prestamo";
 });
 
 const installments = ref<ILoanInstallment[]>([]);
@@ -66,10 +92,11 @@ const onSubmit = () => {
     first_installment_date: formatDate(loanForm.first_installment_date, "y-M-d"),
     client_id: loanForm.client.id,
   };
-  createLoan(formData, installments.value)
+
+  saveLoan(formData, installments.value)
     .then(() => {
       close();
-      router.visit(`/loans/`);
+      goToList();
     })
     .catch((err) => {
       console.log(err);
@@ -82,8 +109,18 @@ const goToList = () => {
 </script>
 
 <template>
-  <AppLayout title="Crear Prestamos">
-    <main class="w-full p-5 bg-white rounded-md">
+  <AppLayout :title="formTitle">
+    <template #header>
+      <LoanSectionNav>
+        <template #actions>
+          <AppButton variant="inverse" @click="onSubmit()">
+            {{ saveButtonLabel }}
+          </AppButton>
+        </template>
+      </LoanSectionNav>
+    </template>
+
+    <main class="w-full mt-16 bg-white rounded-md p-4">
       <article>
         <h1 class="font-bold">Datos Del Cliente</h1>
         <AtField label="Cliente" class="w-full">

@@ -8,6 +8,8 @@ import AppLayout from "@/Components/templates/AppLayout.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 // @ts-ignore
 import AppSectionHeader from "@/Components/AppSectionHeader.vue";
+// @ts-ignore: its my template
+import LoanSectionNav from "./Partials/LoanSectionNav.vue";
 // @ts-ignore
 import InstallmentTable from "./Partials/InstallmentTable.vue";
 // @ts-ignore
@@ -97,7 +99,17 @@ const refresh = () => {
 
 <template>
   <AppLayout :title="`Prestamo ${clientName}`">
-    <main class="p-5">
+    <template #header>
+      <LoanSectionNav>
+        <template #actions>
+          <AppButton variant="inverse" @click="router.visit(`/loans/${loans.id}/edit`)">
+            Editar prestamo
+          </AppButton>
+        </template>
+      </LoanSectionNav>
+    </template>
+
+    <main class="mt-16">
       <AppSectionHeader
         name="Prestamos"
         class="px-5 border-2 border-white rounded-md rounded-b-none shadow-md"

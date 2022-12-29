@@ -1,0 +1,7 @@
+{
+  "loans": {
+      "errors": {
+        "hasPayments": "This loan already has payments and can't be deleted"
+      }
+  }
+}

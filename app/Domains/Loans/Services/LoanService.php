@@ -2,6 +2,7 @@
 
 namespace App\Domains\Loans\Services;
 
+use App\Domains\Loans\Jobs\CreateLoanTransaction;
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
 
@@ -10,12 +11,16 @@ class LoanService {
     public static function createLoan(mixed $loanData, mixed $installments) {
         $loan = Loan::create($loanData);
         self::createInstallments($loan, $installments);
-        return self::createDisbursementTransaction($loan);
+        CreateLoanTransaction::dispatch($loan);
+    }
+
+    public static function updateLoan(mixed $loanData, Loan $loan) {
+      $loan->update($loanData);
+      CreateLoanTransaction::dispatch($loan);
     }
 
     public static function createInstallments(Loan $loan, mixed $installments) {
-        // LoanInstallment::query()->where('loan_id', $loan->id)
-        // ->unpaid()->delete();
+        LoanInstallment::query()->where('loan_id', $loan->id)->unpaid()->delete();
         foreach ($installments as $item) {
             $loan->installments()->create([
                 "team_id" => $loan->team_id,
@@ -33,12 +38,6 @@ class LoanService {
 
         $loan->save();
         return $loan;
-    }
-
-    public static function createDisbursementTransaction($loan) {
-       return $loan->createTransaction([
-        "total" => $loan->amount
-       ]);
     }
 
     public static function disposedCapitalFor(int $teamId) {
