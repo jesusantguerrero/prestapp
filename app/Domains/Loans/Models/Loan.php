@@ -5,10 +5,12 @@ namespace App\Domains\Loans\Models;
 use App\Domains\CRM\Models\Client;
 use Insane\Journal\Models\Core\Transaction;
 use Insane\Journal\Traits\HasPaymentDocuments;
+use Insane\Journal\Traits\HasResourceAccounts;
 use Insane\Journal\Traits\IPayableDocument;
 use Insane\Journal\Traits\Transactionable;
 class Loan extends Transactionable implements IPayableDocument {
     use HasPaymentDocuments;
+    use HasResourceAccounts;
 
     const STATUS_DRAFT = 'DRAFT';
     const STATUS_APPROVED ='APPROVED';
@@ -33,14 +35,23 @@ class Loan extends Transactionable implements IPayableDocument {
         'user_id',
         'client_id',
         'first_installment_date',
+        'repayment_count',
         'amount',
         'interest_rate',
-        'start_date'
     ];
 
     // protected
     protected $creditCategory = 'expected_payments_customers';
     protected $creditAccount = 'Customer Demand Deposits';
+
+    protected static function boot() {
+      parent::boot();
+      static::saving(function ($loan) {
+          $loan->setResourceAccount('client_account_id', 'expected_payments_lenders', $loan->client);
+          $loan->setResourceAccount('fees_account_id', 'due_to_business');
+          $loan->late_fee_account_id = $loan->fees_account_id;
+      });
+    }
 
     public function client() {
         return $this->belongsTo(Client::class, 'client_id');

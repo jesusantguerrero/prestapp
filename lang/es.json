@@ -1,0 +1,8 @@
+{
+    "loans": {
+        "errors": {
+          "hasPayments": "Este prestamo ya tiene pagos y no puede borrarse"
+        }
+    },
+    "This loan already has payments and can't be deleted": "Este prestamo ya tiene pagos y no puede borrarse"
+}

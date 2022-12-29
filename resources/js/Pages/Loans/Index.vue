@@ -13,6 +13,7 @@ import AppButton from "@/Components/shared/AppButton.vue";
 import { ILoan } from "@/Modules/loans/loanEntity";
 import cols from "./cols";
 import { formatMoney } from "@/utils";
+import { ElMessageBox } from "element-plus";
 
 interface IPaginatedData {
   data: ILoan[];
@@ -25,6 +26,20 @@ const props = defineProps<{
 const listData = computed(() => {
   return Array.isArray(props.loans) ? props.loans : props.loans.data;
 });
+
+const deleteLoan = async (loan: ILoan) => {
+  const isValid = await ElMessageBox.confirm(
+    `Estas seguro de eliminar el prestamo ${loan.id} por ${loan.amount} a ${loan.client?.fullName}?`,
+    "Eliminar prestamo"
+  );
+  if (isValid) {
+    router.delete(route("loans.destroy", loan), {
+      onSuccess() {
+        router.reload();
+      },
+    });
+  }
+};
 </script>
 
 <template>
@@ -53,7 +68,7 @@ const listData = computed(() => {
             >
               Edit</Link
             >
-            <AppButton> Delete</AppButton>
+            <AppButton @click="deleteLoan(row)"> Delete </AppButton>
           </div>
         </template>
         <template v-slot:amount="{ scope: { row } }">

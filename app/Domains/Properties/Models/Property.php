@@ -7,12 +7,12 @@ use Database\Factories\PropertyFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 use Insane\Journal\Models\Core\Account;
-use Insane\Journal\Models\Core\Category;
+use Insane\Journal\Traits\HasResourceAccounts;
 
 class Property extends Model {
     use HasFactory;
+    use HasResourceAccounts;
 
     const STATUS_BUILDING = 'BUILDING';
     const STATUS_AVAILABLE =  'AVAILABLE';
@@ -39,11 +39,11 @@ class Property extends Model {
     protected static function boot() {
         parent::boot();
         static::saving(function ($property) {
-            $property->account_id = $property->account_id ?? self::createPayableAccount($property, 'rent');
-            $property->owner_account_id = $property->account_owner_id ?? self::createPayableAccount($property, 'expected_payments_owners', $property->owner);
-            $property->deposit_account_id = $property->deposit_account_id ?? self::createPayableAccount($property, 'security_deposits');
-            $property->commission_account_id = $property->commission_account_id ?? self::createPayableAccount($property, 'expected_commissions_owners');
-            $property->late_fee_account_id = $property->late_fee_account_id ?? self::createPayableAccount($property, 'owed_commissions');
+            $property->setResourceAccount('account_id', 'rent');
+            $property->setResourceAccount('owner_account_id', 'expected_payments_owners', $property->owner);
+            $property->setResourceAccount('deposit_account_id', 'security_deposits');
+            $property->setResourceAccount('commission_account_id', 'expected_commissions_owners');
+            $property->setResourceAccount('late_fee_account_id', 'owed_commissions');
             $property->name = $property->name ?? $property->shortName;
         });
     }
@@ -54,31 +54,6 @@ class Property extends Model {
 
     public function contract() {
       return $this->hasOne(Rent::class)->latestOfMany('created_at');
-    }
-
-    public static function createPayableAccount($payable, $parentCategory, $client = null)
-    {
-
-        if ($category = Category::where('display_id', $parentCategory)->first()) {
-            $accountName = $client
-            ? "Owner {$payable->owner_id} {$payable->owner?->fullName}"
-            :"{$category->number}-{$payable->shortName}";
-
-          $accounts = Account::firstOrCreate([
-            'display_id' =>  Str::slug($accountName, '_'),
-            "category_id" => $category->id,
-            'team_id' => $payable->team_id,
-            'user_id' => $payable->user_id
-          ], [
-            "client_id" => $payable->owner_id,
-            "currency_code" => "DOP",
-            "name" => $accountName
-          ]);
-
-          return $accounts->id;
-        }
-        echo $parentCategory. " ";
-        return null;
     }
 
     protected function shortName(): Attribute {

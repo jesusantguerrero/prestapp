@@ -22,12 +22,12 @@ return new class extends Migration
             // accounts
             $table->foreignId('account_id')->nullable();
             $table->foreignId('client_account_id')->nullable();
-            $table->foreignId('interest_account_id')->nullable();
             $table->foreignId('fees_account_id')->nullable();
             $table->foreignId('late_fee_account_id')->nullable();
 
             // terms
             $table->date('first_installment_date');
+            $table->integer('repayment_count');
             $table->enum('frequency', ['WEEKLY', 'BIWEEKLY', 'MONTHLY']);
 
             $table->decimal('amount', 11, 2)->default(0.00);

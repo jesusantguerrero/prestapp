@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\Querify;
+use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -68,7 +69,7 @@ class InertiaController extends Controller {
     }
 
     protected function createResource(Request $request, $postData) {
-        return $this->model::create($postData);   
+        return $this->model::create($postData);
     }
 
     public function update(Request $request, int $id) {
@@ -86,11 +87,14 @@ class InertiaController extends Controller {
 
     public function destroy(Request $request, int $id) {
         $resource = $this->model::findOrFail($id);
-        if ($this->validateDelete($request, $resource)) {
-            $resource->delete();
-            return Redirect::back();
-        } else {
-            return Redirect::back()->withErrors(['error' => 'You cannot delete this resource']);
+        try {
+          if ($this->validateDelete($request, $resource)) {
+              $resource->delete();
+              return Redirect::back();
+          }
+          return Redirect::back()->withErrors(['default' => 'You cannot delete this resource']);
+        } catch (Exception $e) {
+          return Redirect::back()->withErrors(['default' => $e->getMessage()]);
         }
     }
 

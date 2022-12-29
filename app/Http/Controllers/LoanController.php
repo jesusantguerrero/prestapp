@@ -7,6 +7,7 @@ use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
 use App\Domains\Loans\Services\LoanService;
 use App\Models\Setting;
+use Exception;
 use Illuminate\Http\Request;
 use Insane\Journal\Helpers\ReportHelper;
 use Insane\Journal\Models\Core\PaymentDocument;
@@ -20,6 +21,7 @@ class LoanController extends InertiaController
         $this->templates = [
             "index" => 'Loans/Index',
             "create" => 'Loans/LoanForm',
+            "edit" => 'Loans/LoanForm',
             "show" => 'Loans/Show'
         ];
         $this->validationRules = [
@@ -79,6 +81,19 @@ class LoanController extends InertiaController
             'loans' => Loan::where('id', $id)->with(['client', 'installments', 'paymentDocuments'])->first(),
             'clients' => ClientService::ofTeam($teamId),
         ];
+    }
+
+    public function update(Request $request, int $id) {
+      $loan = Loan::findOrFail($id);
+      $loanData = $request->post();
+      LoanService::updateLoan($loanData, $loan);
+    }
+
+    protected function validateDelete(Request $request, $resource) {
+      if ($resource->paymentDocuments()->count()) {
+        throw new Exception(__("This loan already has payments and can't be deleted", [], 'es'));
+      }
+      return true;
     }
 
     // payable document related

@@ -5,32 +5,6 @@
     v-model="isOpen"
     @saved="router.reload()"
   />
-
-  <DialogModal :show="confirmingPassword" @close="closeModal">
-    <template #title>
-        {{ title }}
-    </template>
-
-    <template #content>
-        {{ content }}
-    </template>
-
-    <template #footer>
-        <AppButton variant="secondary" @click="closeModal">
-            Cancel
-        </AppButton>
-
-        <AppButton
-            class="ml-3"
-            :class="{ 'opacity-25': form.processing }"
-            :disabled="form.processing"
-            @click="confirmPassword"
-        >
-            {{ button }}
-        </AppButton>
-    </template>
-</DialogModal>
-
 </template>
 
 <script setup>

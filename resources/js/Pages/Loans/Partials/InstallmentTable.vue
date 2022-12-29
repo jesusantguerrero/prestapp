@@ -2,6 +2,7 @@
 import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
 import AppButton from "@/Components/shared/AppButton.vue";
 import { formatMoney } from "@/utils/formatMoney";
+import { formatDate } from "@/utils";
 
 interface Props {
   installments: ILoanInstallment[];
@@ -30,7 +31,7 @@ const tdHeaderClass = "bg-blue-400 p-2 text-white";
       <td :class="tdHeaderClass">Acciones</td>
     </thead>
     <tr v-for="installment in installments">
-      <td class="p-2">{{ installment.due_date }}</td>
+      <td class="p-2">{{ formatDate(installment.due_date) }}</td>
       <td class="p-2 text-right">{{ formatMoney(installment.amount) }}</td>
       <td class="p-2 text-right">{{ formatMoney(installment.principal) }}</td>
       <td class="p-2 text-right">{{ formatMoney(installment.interest) }}</td>
