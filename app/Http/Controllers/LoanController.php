@@ -120,7 +120,9 @@ class LoanController extends InertiaController
                 "documents" => [[
                     "payable_id" => $installment->id,
                     "payable_type" => LoanInstallment::class,
-                    "amount" => $postData['amount']
+                    "amount" => $postData['amount'],
+                    "amount_due" =>$installment->total - $postData['amount'],
+                    "amount_paid" => $postData['amount']
                 ]]
             ]));
             $loan->client->checkStatus();

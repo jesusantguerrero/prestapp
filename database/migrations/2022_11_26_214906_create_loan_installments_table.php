@@ -26,17 +26,21 @@ return new class extends Migration
             $table->integer('days')->default(0);
             // Basic
             $table->decimal('amount', 11, 2)->default(0.00);
-            $table->decimal('amount_paid', 11, 2)->default(0.00);
             $table->decimal('amount_due', 11, 2)->default(0.00);
-            $table->decimal('principal', 11, 2)->default(0.00);
-            $table->decimal('interest', 11, 2)->default(0.00);
-            $table->decimal('fees', 11, 2)->default(0.00);
-            $table->decimal('late_fee', 11, 2)->default(0.00);
+            $table->decimal('amount_paid', 11, 2)->default(0.00);
 
+            $table->decimal('principal', 11, 2)->default(0.00);
             $table->decimal('principal_paid', 11, 2)->default(0.00);
+
+            $table->decimal('interest', 11, 2)->default(0.00);
             $table->decimal('interest_paid', 11, 2)->default(0.00);
+
+            $table->decimal('fees', 11, 2)->default(0.00);
             $table->decimal('fees_paid', 11, 2)->default(0.00);
-            $table->decimal('penalty_paid', 11, 2)->default(0.00);
+
+            $table->decimal('late_fee', 11, 2)->default(0.00);
+            $table->decimal('late_fee_paid', 11, 2)->default(0.00);
+
 
             $table->decimal('initial_balance', 11, 2)->default(0.00);
             $table->decimal('final_balance', 11, 2)->default(0.00);

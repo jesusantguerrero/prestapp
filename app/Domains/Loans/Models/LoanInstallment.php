@@ -50,7 +50,28 @@ class LoanInstallment extends Model implements IPayableDocument {
     }
 
     public static function calculateTotal($payable) {
-        return 0;
+      $result = [];
+
+      if ($payable) {
+          $totalPaid = $payable->payments()->sum('amount');
+          $paymentSchema = ['fees', 'late_fee', 'interest', 'principal'];
+          $balance = $totalPaid;
+
+          foreach ($paymentSchema as $fee) {
+            if ($payable->$fee > 0) {
+              $amountToPay = $balance >= $payable->$fee ? $payable->$fee : $balance;
+              $result[$fee."_paid"] = $amountToPay;
+              $balance -= $amountToPay;
+            } else {
+              $result[$fee."_paid"] = 0;
+            }
+          }
+
+          $result['amount_paid'] = $totalPaid;
+          $result['amount_due'] = $payable->amount - $totalPaid;
+          LoanInstallment::where(['id' => $payable->id])
+          ->update($result);
+      }
     }
 
     public static function checkStatus($payable) {
