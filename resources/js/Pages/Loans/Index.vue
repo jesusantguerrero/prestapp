@@ -15,6 +15,7 @@ import cols from "./cols";
 import { formatMoney } from "@/utils";
 import { ElMessageBox } from "element-plus";
 
+
 interface IPaginatedData {
   data: ILoan[];
 }
@@ -69,6 +70,14 @@ const deleteLoan = async (loan: ILoan) => {
               Edit</Link
             >
             <AppButton @click="deleteLoan(row)"> Delete </AppButton>
+          </div>
+        </template>
+        <template v-slot:amount="{ scope: { row } }">
+          <div class="font-bold">
+            {{ formatMoney(row.amount) }}
+            <p class="font-bold text-green-500">
+              {{ formatMoney(row.total) }}
+            </p>
           </div>
         </template>
         <template v-slot:amount="{ scope: { row } }">
