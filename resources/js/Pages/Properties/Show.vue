@@ -37,11 +37,10 @@ const tabs = {
   settings: "Configuracion",
 };
 
-
 const propertyTitle = computed(() => {
-  const address = props.properties.address.split(',');
+  const address = props.properties.address.split(",");
   return address[0];
-})
+});
 type IPaymentMetaData = ILoanInstallment & {
   installment_id?: number;
 };
@@ -67,6 +66,10 @@ const paymentConcept = computed(() => {
   );
 });
 
+const generatePropertyPayment = () => {
+  router.post(`/clients/${props.properties.owner_id}/generate-payment`);
+};
+
 const refresh = () => {
   router.reload();
 };
@@ -75,16 +78,22 @@ const refresh = () => {
 <template>
   <AppLayout :title="`Propiedades / ${propertyTitle}`">
     <template #header>
-      <PropertySectionNav> 
-          <template #actions>
-            <AppButton @click="router.visit(route('properties.edit', properties))" variant="inverse">
-              Editar
-            </AppButton>
-            <AppButton @click="router.visit(route('rents.create', {propertyId: properties.id}))" variant="inverse">
-              Nuevo Contrato
-            </AppButton>
-          </template>
-        </PropertySectionNav>
+      <PropertySectionNav>
+        <template #actions>
+          <AppButton
+            @click="router.visit(route('properties.edit', properties))"
+            variant="inverse"
+          >
+            Editar
+          </AppButton>
+          <AppButton
+            @click="router.visit(route('rents.create', { propertyId: properties.id }))"
+            variant="inverse"
+          >
+            Nuevo Contrato
+          </AppButton>
+        </template>
+      </PropertySectionNav>
     </template>
 
     <main class="p-5 mt-8">
@@ -102,85 +111,84 @@ const refresh = () => {
         <section class="flex items-center justify-between py-4">
           <article>
             <p class="flex items-center space-x-2">
-              <IconMarker /> 
+              <IconMarker />
               <span>
-                {{ properties.address }} 
+                {{ properties.address }}
               </span>
             </p>
-            <p class="flex items-center space-x-2 cursor-pointer text-primary group" @click="router.visit(route('clients.show', properties.owner))">
-              <IconPersonSafe /> 
+            <p
+              class="flex items-center space-x-2 cursor-pointer text-primary group"
+              @click="router.visit(route('clients.show', properties.owner))"
+            >
+              <IconPersonSafe />
               <span class="group-hover:underline underline-offset-4">
-                {{ properties.owner.fullName }} 
+                {{ properties.owner.fullName }}
               </span>
             </p>
-          </article> 
+          </article>
           <article class="flex space-x-5">
             <section>
               <div class="flex items-center">
-                <IconCoins class="mr-2 text-yellow-600"/>
-                <span class="font-bold text-success"> {{ formatMoney(properties.price) }} </span>
+                <IconCoins class="mr-2 text-yellow-600" />
+                <span class="font-bold text-success">
+                  {{ formatMoney(properties.price) }}
+                </span>
               </div>
-              <p class="text-bold text-body-1">
-                Renta Mensual
-              </p>
+              <p class="text-bold text-body-1">Renta Mensual</p>
             </section>
             <ElTag> {{ properties.status }}</ElTag>
           </article>
         </section>
       </header>
-      
-      <section class="flex w-full space-x-8 rounded-t-none border-t-none ">
+
+      <section class="flex w-full space-x-8 rounded-t-none border-t-none">
         <article class="w-9/12 space-y-4">
           <section class="flex space-x-4">
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
               title="Balance de Cuenta"
               :value="formatMoney(0)"
-            />    
+            />
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
               title="Balance de Pendiente"
               :value="formatMoney(0)"
-            />    
+            />
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
               title="Dias de mora"
               :value="0"
-            /> 
+            />
           </section>
 
-          <ContractCard 
+          <ContractCard
             v-if="properties.contract"
             class="p-4 border rounded-md shadow-md bg-base-lvl-3"
             :contract="properties.contract"
           />
         </article>
 
-        <article class="w-3/12 space-y-2 rounded-md shadow-md ">
+        <article class="w-3/12 space-y-2 rounded-md shadow-md">
           <div class="px-5 py-10 text-gray-600 bg-gray-200 rounded-md">
             <div class="header">
-                <h2 class="text-lg font-bold">  Manejo de Propiedad </h2>
-                <small> Private place for you and your internal team to manage this project</small>
+              <h2 class="text-lg font-bold">Manejo de Propiedad</h2>
+              <small>
+                Private place for you and your internal team to manage this project</small
+              >
             </div>
 
             <div class="mt-4 space-y-2">
-                <section class="flex space-x-4">
-                  <AppButton class="w-full"> Generar Pago a Dueño </AppButton>
-                </section>
-                <EmptyAddTool>
-                    Notes
-                </EmptyAddTool>
-                <EmptyAddTool>
-                  Imagenes
-                </EmptyAddTool>
-                <EmptyAddTool >
-                    Documentos
-                </EmptyAddTool>
-                <EmptyAddTool>
-                    Configuracion
-                </EmptyAddTool>
+              <section class="flex space-x-4">
+                <AppButton class="w-full" @click="generatePropertyPayment()">
+                  Generar Pago a Dueño
+                </AppButton>
+              </section>
+              <EmptyAddTool> Notes </EmptyAddTool>
+              <EmptyAddTool> Imagenes </EmptyAddTool>
+              <EmptyAddTool> Documentos </EmptyAddTool>
+              <EmptyAddTool> Configuracion </EmptyAddTool>
             </div>
-        </div>
+          </div>
         </article>
       </section>
 

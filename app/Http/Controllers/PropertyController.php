@@ -27,7 +27,7 @@ class PropertyController extends InertiaController
           'price' => 'required'
       ];
       $this->sorts = ['created_at'];
-      $this->includes = ['owner', 'contract'];
+      $this->includes = ['owner'];
       $this->filters = [];
       $this->resourceName= "properties";
   }

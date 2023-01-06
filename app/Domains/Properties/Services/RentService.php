@@ -3,25 +3,26 @@
 namespace App\Domains\Properties\Services;
 
 use App\Domains\Properties\Models\Property;
+use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Properties\Models\Rent;
 use Exception;
 use Insane\Journal\Models\Invoice\Invoice;
 
 class RentService {
     public static function createRent(mixed $rentData, mixed $schedule = null) {
-      $property = Property::find($rentData['property_id']);
-      if (!$property || $property->status !== Property::STATUS_AVAILABLE) {
-        throw new Exception('This property is not available at the time');
+      $unit = Property::find($rentData['unit_id']);
+      if (!$unit || $unit->status !== PropertyUnit::STATUS_AVAILABLE) {
+        throw new Exception('This unit is not available at the time');
       } else {
         $rentData =
         array_merge($rentData, [
-          'account_id' => $property->account_id,
-          'owner_id' => $property->owner_id,
-          'commission_account_id' => $property->commission_account_id,
-          'late_fee_account_id' => $property->late_fee_account_id,
+          'account_id' => $unit->property->account_id,
+          'owner_id' => $unit->property->owner_id,
+          'commission_account_id' => $unit->property->commission_account_id,
+          'late_fee_account_id' => $$unit->property->late_fee_account_id,
         ]);
         $rent = Rent::create($rentData);
-        $rent->property->update(['status' => Property::STATUS_RENTED]);
+        $rent->unit->update(['status' => PropertyUnit::STATUS_RENTED]);
         return self::createDepositTransaction($rent);
       }
     }
