@@ -8,7 +8,6 @@ use Insane\Journal\Models\Invoice\Invoice;
 use Insane\Journal\Traits\HasPaymentDocuments;
 use Insane\Journal\Traits\IPayableDocument;
 use Insane\Journal\Traits\Transactionable;
-use Illuminate\Support\Str;
 class Rent extends Transactionable implements IPayableDocument {
     use HasPaymentDocuments;
 
@@ -132,10 +131,9 @@ class Rent extends Transactionable implements IPayableDocument {
     }
 
     public function getTotalField($formData = []) {
-      if(Str::contains($formData['concept'], 'Déposito')) {
-        return 'deposit';
-      } else {
-        return 'total';
-      }
+      return 'total';
+    }
+    public function getTotal($formData = []) {
+        return $this->deposit + $this->total;
     }
 }

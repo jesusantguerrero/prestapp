@@ -121,19 +121,19 @@ class Loan extends Transactionable implements IPayableDocument {
     }
 
     public static function checkStatus($payable) {
-            $debt = $payable->total - $payable->amount_paid;
-            if ($debt == 0) {
-                $status = self::STATUS_PAID;
-            } elseif ($debt > 0 && $debt < $payable->amount) {
-                $status = self::STATUS_PARTIALLY_PAID;
-            } elseif ($debt && $payable->hasLateInstallments()) {
-                $status = self::STATUS_LATE;
-            } elseif ($debt) {
-                $status = self::STATUS_PENDING;
-            } else {
-                $status = $payable->payment_status;
-            }
-            return $status;
+      $debt = $payable->total - $payable->amount_paid;
+      if ($debt == 0) {
+          $status = self::STATUS_PAID;
+      } elseif ($debt > 0 && $debt < $payable->amount) {
+          $status = self::STATUS_PARTIALLY_PAID;
+      } elseif ($debt && $payable->hasLateInstallments()) {
+          $status = self::STATUS_LATE;
+      } elseif ($debt) {
+          $status = self::STATUS_PENDING;
+      } else {
+          $status = $payable->payment_status;
+      }
+      return $status;
     }
 
     public function getConceptLine(): string {

@@ -4,6 +4,7 @@ namespace App\Domains\Properties\Actions;
 
 use App\Domains\Accounting\Helpers\InvoiceHelper;
 use App\Domains\CRM\Models\Client;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Rent;
 use App\Domains\Properties\Services\RentService;
 use Illuminate\Support\Carbon;
@@ -109,37 +110,51 @@ class GenerateInvoices {
       $total = 0;
 
       foreach ($invoices as $invoice) {
-        $items[] = [
-              "name" => "$invoice->description $invoice->date",
-              "concept" => "$invoice->description $invoice->date",
-              "quantity" => 1,
-              "account_id" => $invoice->invoice_account_id,
-              "price" => $invoice->total,
-              "amount" => $invoice->total,
-        ];
-        $total += $invoice->total;
+        $hasDistribution = $invoice->relatedParents->map(function($related) {
+          return $related->pivot->name;
+        })->contains(PropertyInvoiceTypes::OwnerDistribution->name());
+        if (!$hasDistribution) {
+          $items[] = [
+                "name" => "$invoice->description $invoice->date",
+                "concept" => "$invoice->description $invoice->date",
+                "quantity" => 1,
+                "account_id" => $invoice->invoice_account_id,
+                "price" => $invoice->total,
+                "amount" => $invoice->total,
+          ];
+          $total += $invoice->total;
+        }
       }
 
-      $today = date('Y-m-d');
+      if (count($items)) {
+        $today = date('Y-m-d');
 
-      Invoice::createDocument([
-          'concept' =>  $formData['concept'] ?? 'Factura de Propiedades',
-          'description' => $formData['description'] ?? "Mensualidad {$client->fullName}",
-          'user_id' => $client->user_id,
-          'team_id' => $client->team_id,
-          'client_id' => $client->id,
-          'invoiceable_id' => $client->id,
-          'invoiceable_type' => Client::class,
-          'invoice_account_id' => $client->properties()->first()->owner_account_id,
-          'date' => $formData['date'] ?? date('Y-m-d'),
-          'type' => Invoice::DOCUMENT_TYPE_BILL,
-          'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
-          'total' =>  $formData['amount'] ?? $total,
-          'items' => $formData['items'] ?? $items
-      ]);
+        $clientProperty = $client->properties()->first();
 
-      $client->update([
-        'generated_distribution_dates' => array_merge($client->generated_distribution_dates, [$today])
-      ]);
+        Invoice::createDocument([
+            'concept' =>  $formData['concept'] ?? 'Factura de Propiedades',
+            'description' => $formData['description'] ?? "Mensualidad {$client->fullName}",
+            'user_id' => $client->user_id,
+            'team_id' => $client->team_id,
+            'client_id' => $client->id,
+            'invoiceable_id' => $client->id,
+            'invoiceable_type' => Client::class,
+            'invoice_account_id' => $clientProperty->owner_account_id,
+            'date' => $formData['date'] ?? date('Y-m-d'),
+            'type' => Invoice::DOCUMENT_TYPE_BILL,
+            'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
+            'total' =>  $formData['amount'] ?? $total,
+            'items' => $formData['items'] ?? $items,
+            'related_invoices' => [[
+                "name" => PropertyInvoiceTypes::OwnerDistribution->name(),
+                "items" => $invoices->pluck('id')
+              ]
+            ]
+        ]);
+
+        $client->update([
+          'generated_distribution_dates' => array_merge($client->generated_distribution_dates, [$today])
+        ]);
+      }
     }
 }

@@ -29,8 +29,10 @@ const tabs = {
   details: "Details",
 };
 
-const clientName = computed(() => props.rents.client.names + " " + props.rents.client?.lastnames )
-const sectionTitle = computed(() => `${clientName.value.split(',')[0]}`)
+const clientName = computed(
+  () => props.rents.client.names + " " + props.rents.client?.lastnames
+);
+const sectionTitle = computed(() => `${clientName.value.split(",")[0]}`);
 
 type IPaymentMetaData = ILoanInstallment & {
   invoice_id?: number;
@@ -58,31 +60,30 @@ const paymentConcept = computed(() => {
   );
 });
 
-const linkToPrint = ref('');
+const linkToPrint = ref("");
 const invoiceLink = ref();
 
 const onDownload = (invoice) => {
-  linkToPrint.value = `/invoices/${invoice.id}/print`
+  linkToPrint.value = `/invoices/${invoice.id}/print`;
   console.log(linkToPrint.value, invoice);
   nextTick(() => {
-    invoiceLink.value.click()
-    linkToPrint.value = ''
-  })
-}
+    invoiceLink.value.click();
+    linkToPrint.value = "";
+  });
+};
 
 const handleActions = (actionName, invoice) => {
-  switch(actionName) {
-    case 'payment': 
+  switch (actionName) {
+    case "payment":
       onPayment(invoice);
-    break;
-    case 'download': 
+      break;
+    case "download":
       onDownload(invoice);
-    break;
+      break;
   }
-  if (actionName == 'payment') {
+  if (actionName == "payment") {
   }
-}
-
+};
 
 const refresh = () => {
   router.reload();
@@ -93,10 +94,18 @@ const refresh = () => {
   <AppLayout :title="sectionTitle">
     <template #header>
       <PropertySectionNav>
-          <template #actions>
-            <AppButton variant="inverse" @click="router.visit(route('rents.create'))">Agregar Contrato</AppButton>
-          </template>
-        </PropertySectionNav>
+        <template #actions>
+          <AppButton variant="inverse" @click="router.visit(route('rents.create'))">
+            Crear Gasto
+          </AppButton>
+          <AppButton variant="inverse" @click="router.visit(route('rents.create'))">
+            Crear Mora
+          </AppButton>
+          <AppButton variant="inverse" @click="router.visit(route('rents.create'))">
+            Crear Cargo Extra
+          </AppButton>
+        </template>
+      </PropertySectionNav>
     </template>
 
     <main class="p-5 mt-8">
@@ -111,9 +120,7 @@ const refresh = () => {
       <div
         class="w-full px-5 pt-10 pb-2 mb-5 space-y-5 text-gray-600 bg-white border-gray-200 shadow-md rounded-b-md"
       >
-        <div>
-          Alquiler #{{ rents.id }} para {{ clientName }}
-        </div>
+        <div>Alquiler #{{ rents.id }} para {{ clientName }}</div>
         <div class="flex space-x-2">
           <Link
             class="px-2 py-1 transition rounded-md cursor-pointer bg-gray-50 hover:bg-gray-200"
@@ -127,7 +134,7 @@ const refresh = () => {
           </Link>
         </div>
       </div>
-      <section class="flex w-full space-x-8 rounded-t-none border-t-none ">
+      <section class="flex w-full space-x-8 rounded-t-none border-t-none">
         <article class="w-9/12 p-4 space-y-2 border rounded-md shadow-md bg-base-lvl-3">
           <span> Cliente: {{ clientName }} </span>
           <p>
@@ -159,7 +166,7 @@ const refresh = () => {
 
           <section class="py-4 mt-8 space-y-2">
             <div class="text-sm" v-if="rents.transaction">
-              {{ rents.transaction.description}}
+              {{ rents.transaction.description }}
               <span class="font-bold text-green-500">
                 {{ formatMoney(rents.transaction.total) }}
               </span>
@@ -176,17 +183,17 @@ const refresh = () => {
                   label: 'Registrar Pago',
                 },
                 send: {
-                  label: 'Enviar Correo'
+                  label: 'Enviar Correo',
                 },
                 download: {
-                  label: 'Descargar PDF'
+                  label: 'Descargar PDF',
                 },
                 view: {
-                  label: 'Ver factura'
+                  label: 'Ver factura',
                 },
                 delete: {
-                  label: 'Eliminar Factura'
-                }
+                  label: 'Eliminar Factura',
+                },
               }"
               @action="handleActions($event, invoice)"
             />

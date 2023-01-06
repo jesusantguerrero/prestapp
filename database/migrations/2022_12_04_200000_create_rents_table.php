@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreignId('client_id');
             $table->foreignId('owner_id');
             $table->foreignId('property_id');
+            $table->foreignId('unit_id');
             // accounts
             $table->foreignId('account_id')->nullable();
             $table->foreignId('client_account_id')->nullable();

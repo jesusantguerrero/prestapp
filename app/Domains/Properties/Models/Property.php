@@ -52,8 +52,8 @@ class Property extends Model {
         return $this->belongsTo(Client::class, 'owner_id');
     }
 
-    public function contract() {
-      return $this->hasOne(Rent::class)->latestOfMany('created_at');
+    public function units() {
+      return $this->hasMany(PropertyUnit::class);
     }
 
     protected function shortName(): Attribute {

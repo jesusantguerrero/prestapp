@@ -4,6 +4,7 @@ import { ElAvatar, ElTag } from "element-plus"
 // @ts-ignore
 import { getLoanStatus } from "@/Modules/loans/constants";
 import { getLoanStatusColor } from "../../Modules/loans/constants";
+import IconMarker from '@/Components/icons/IconMarker.vue';
 
 interface IRent {
     client: IClient,
@@ -20,39 +21,30 @@ export default [
             const clientName = row.client.names + ' ' + row.client.lastnames
             const initials = row.client.names[0] + row.client.lastnames[0];
 
-            return h('div', { class: 'flex items-center space-x-2' }, [
+            return h('div', [
+              h('div', { class: 'flex items-center space-x-2' }, [
                 h(ElAvatar, { shape: 'circle' }, initials),
                 h('span', clientName)
-            ]);
+              ]),
+              h('div', { class: 'flex items-center text-primary font-bold'}, [
+                h(IconMarker, { class: 'text-primary font-bold'}),
+                h('span', row.property.short_name)
+              ]),
+          ]);
         }
     },
     {
             name: 'id',
-            label: 'No. Contrato',
+            label: 'Terminos Contrato',
             class: "text-center",
             headerClass: "text-center",
             render(row) {
-              return `C_${row.id.toString().padStart(6, '0')}`
+              return h('div', [
+                h('p', `C_${row.id.toString().padStart(6, '0')}`),
+                h('p', row.commission + ' %'),
+              ])
             }
-    },
-    {
-            name: 'property.address',
-            label: 'Dirección',
-            class: "text-ledt",
-            headerClass: "text-left",
-            render(row) {
-              return row.property?.address          
-            }
-    },
-    {
-        name: 'commission',
-        label: 'Comisión',
-        class: "text-right",
-        headerClass: "text-right",
-        render(row) {
-            return row.commission + ' %'
-        }
-    }, {
+    },{
         name: 'total',
         class: "text-center",
         type: 'money',
