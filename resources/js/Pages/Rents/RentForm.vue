@@ -24,11 +24,16 @@ defineProps<{
 const rentForm = useForm({
   property_id: null,
   property: null,
+  unit_id: null,
+  unit: null,
   client_id: null,
   date: new Date(),
   deposit: 0,
   deposit_due: new Date(),
   is_deposit_received: false,
+  deposit_reference: "",
+  payment_account_id: null,
+  payment_method: "",
   amount: 0,
   first_invoice_date: addMonths(new Date(), 1),
   next_invoice_date: addMonths(new Date(), 1),
@@ -42,12 +47,28 @@ const rentForm = useForm({
 });
 
 watch(
-  () => rentForm.property,
-  (property) => {
-    if (property) {
-      rentForm.amount = property.price;
+  () => rentForm.unit,
+  (unit) => {
+    if (unit) {
+      rentForm.amount = unit.price;
     }
   }
+);
+
+watch(
+  () => rentForm.deposit_due,
+  (date) => {
+    rentForm.date = date;
+  },
+  { immediate: true }
+);
+
+watch(
+  () => rentForm.date,
+  (date) => {
+    rentForm.first_invoice_date = addMonths(date, 1);
+  },
+  { immediate: true }
 );
 
 const onSubmit = () => {
@@ -128,6 +149,16 @@ const addAdditionalFee = () => {
                 key-track="id"
               />
             </AtField>
+            <AtField class="w-6/12" v-if="rentForm.property" label="Unidad">
+              <AtSelect
+                v-model="rentForm.unit_id"
+                v-model:selected="rentForm.unit"
+                :options="rentForm.property.units"
+                placeholder="Selecciona una propiedad"
+                label="address"
+                key-track="id"
+              />
+            </AtField>
           </section>
         </article>
 
@@ -152,6 +183,28 @@ const addAdditionalFee = () => {
             </AtField>
             <AtField label="Fecha de pago deposito" class="flex flex-col w-full">
               <ElDatePicker v-model="rentForm.deposit_due" size="large" class="w-full" />
+            </AtField>
+          </FormSection>
+
+          <FormSection
+            title=""
+            v-if="rentForm.is_deposit_received"
+            section-class="flex w-full space-x-4"
+          >
+            <AtField label="Referencia" class="w-full">
+              <AtInput v-model="rentForm.deposit_reference" rounded />
+            </AtField>
+
+            <AtField label="Cuenta de pago" class="w-full">
+              <AtInput
+                :number-format="true"
+                v-model="rentForm.payment_account_id"
+                rounded
+              />
+            </AtField>
+
+            <AtField label="Metodo de pago" class="w-full">
+              <AtInput v-model="rentForm.payment_method" rounded />
             </AtField>
           </FormSection>
 

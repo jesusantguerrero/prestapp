@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Loans;
 
 use App\Domains\CRM\Services\ClientService;
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
 use App\Domains\Loans\Services\LoanService;
+use App\Http\Controllers\InertiaController;
 use App\Models\Setting;
 use Exception;
 use Illuminate\Http\Request;

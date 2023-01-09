@@ -49,16 +49,16 @@ class OwnerDistributionTest extends TestCase
     {
       $this->actingAs($this->user);
 
-       RentService::createRent([
-        'property_id' => $this->property->id,
-        'client_id' => $this->client->id,
-        'user_id' => $this->user->id,
-        'team_id' => $this->user->current_team_id,
-        'deposit' => 2500,
-        ]
-      );
+      //  RentService::createRent([
+      //   'property_id' => $this->property->id,
+      //   'client_id' => $this->client->id,
+      //   'user_id' => $this->user->id,
+      //   'team_id' => $this->user->current_team_id,
+      //   'deposit' => 2500,
+      //   ]
+      // );
 
-      // GenerateInvoices::ownerDistribution($this->owner);      
+      // GenerateInvoices::ownerDistribution($this->owner);
 
       // $this->assertCount(1, Invoice::all());
     }

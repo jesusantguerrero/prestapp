@@ -7,11 +7,18 @@ use Illuminate\Support\Facades\DB;
 
 class PropertyService {
 
+    public static function createProperty(mixed $propertyData, mixed $units = []) {
+      $rent = Property::create($propertyData);
+      foreach ($units as $unit) {
+        $rent->units()->create($unit);
+      }
+    }
+
     public static function ofTeam($teamId, $status= Property::STATUS_AVAILABLE) {
       return Property::where([
         'team_id' =>  $teamId,
         'status' => $status])
-      ->get();
+      ->with(['units'])->get();
     }
 
     public static function totalByStatusFor(int $teamId) {

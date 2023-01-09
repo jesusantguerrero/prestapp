@@ -42,7 +42,7 @@ const menus = {
       {
         label: 'Carteras',
         url: '/wallets'
-      }, 
+      },
       {
         label: 'Tipos Prestamos',
         url: '/loan-products'
@@ -66,7 +66,7 @@ const menus = {
     },
     {
       label: 'Herramientas de agente',
-      url: '/management-tools/'
+      url: '/properties/management-tools/'
     },
     ],
     [MODULES.ACCOUNTING]: [{

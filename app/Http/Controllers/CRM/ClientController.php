@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\CRM;
 
 use App\Domains\CRM\Models\Client;
-use App\Domains\CRM\Services\ClientService;
 use App\Domains\Properties\Actions\GenerateInvoices;
 use App\Domains\Properties\Models\Rent;
 use App\Domains\Properties\Services\RentService;
-use Exception;
+use App\Http\Controllers\InertiaController;
 use Illuminate\Http\Request;
+use Exception;
 
 class ClientController extends InertiaController
 {
@@ -24,6 +24,20 @@ class ClientController extends InertiaController
       $this->includes = ['properties', 'account'];
       $this->filters = [];
       $this->resourceName= "clients";
+  }
+
+  public function show(Request $request, int $id) {
+    $client = Client::where('id', $id)->first();
+
+    return inertia($this->templates['show'],
+    array_merge(
+        $this->getEditProps($request, $id), [
+        $this->model->getTable() => $client,
+        "outstanding" => $client->outstandingBalance(),
+        "deposits" => $client->deposits(),
+        "credits" => $client->credits
+      ])
+    );
   }
 
 
@@ -56,6 +70,7 @@ class ClientController extends InertiaController
     ]);
   }
 
+  // Tenant
   public function endRent(Client $client, Rent $rent) {
     $resourceName = $this->resourceName ?? $this->model->getTable();
     $resource = $client->toArray();

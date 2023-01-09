@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Loans;
 
 use App\Domains\Loans\Models\LoanProduct;
+use App\Http\Controllers\InertiaController;
 
 class LoanProductController extends InertiaController
 {

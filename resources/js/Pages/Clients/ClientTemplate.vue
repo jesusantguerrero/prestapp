@@ -14,7 +14,7 @@ import { AtBackgroundIconCard } from "atmosphere-ui";
 import { IClient } from "../../Modules/clients/clientEntity";
 import EmptyAddTool from "../Properties/Partials/EmptyAddTool.vue";
 import ContractCard from "../Properties/Partials/ContractCard.vue";
-import InvoiceCard from "../Rents/Partials/InvoiceCard.vue";
+import InvoiceCard from "../../Components/templates/InvoiceCard.vue";
 
 export interface Props {
   clients: IClient;
@@ -57,7 +57,7 @@ const refresh = () => {
 <template>
   <AppLayout :title="`Clientes / ${clients.fullName}`">
     <template #header>
-      <PropertySectionNav> 
+      <PropertySectionNav>
           <template #actions>
             <AppButton @click="" variant="inverse">
               Editar
@@ -83,18 +83,18 @@ const refresh = () => {
         <section class="flex items-center justify-between py-4">
           <article>
             <p class="flex items-center space-x-2">
-              <IconMarker /> 
+              <IconMarker />
               <span>
-                {{ clients.dni }} 
+                {{ clients.dni }}
               </span>
             </p>
             <p class="flex items-center space-x-2 cursor-pointer text-primary group">
-              <IconPersonSafe /> 
+              <IconPersonSafe />
               <span class="group-hover:underline underline-offset-4">
-                {{ clients.account?.name }} 
+                {{ clients.account?.name }}
               </span>
             </p>
-          </article> 
+          </article>
           <article class="flex space-x-5">
             <section class="text-center ">
               <div class="flex items-center w-full text-center ">
@@ -121,7 +121,7 @@ const refresh = () => {
           </Link>
         </div>
       </header>
-      
+
       <section class="flex w-full space-x-8 rounded-t-none border-t-none ">
         <article class="w-9/12 space-y-4">
           <section class="flex space-x-4" v-if="!hideStatistics">
@@ -129,17 +129,17 @@ const refresh = () => {
               class="w-full bg-white border h-28 text-body-1"
               title="Balance de Cuenta"
               :value="formatMoney(0)"
-            />    
+            />
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
               title="Balance de Pendiente"
               :value="formatMoney(0)"
-            />    
+            />
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
               title="Dias de mora"
               :value="0"
-            /> 
+            />
           </section>
 
           <slot />
@@ -154,8 +154,8 @@ const refresh = () => {
 
             <div class="mt-4 space-y-2">
                 <section class="flex space-x-4">
-                  <AppButton class="w-full" @click="generatePropertyPayment()"> 
-                    Generar de propiedades 
+                  <AppButton class="w-full" @click="generatePropertyPayment()">
+                    Generar de propiedades
                   </AppButton>
                 </section>
                 <EmptyAddTool>
@@ -174,7 +174,7 @@ const refresh = () => {
         </div>
         </article>
       </section>
-<!-- 
+<!--
       <PaymentFormModal
         v-if="selectedPayment"
         v-model="isPaymentModalOpen"

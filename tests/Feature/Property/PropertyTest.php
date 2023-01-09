@@ -4,6 +4,7 @@ namespace Tests\Feature\Property;
 
 use App\Domains\CRM\Models\Client;
 use App\Domains\Properties\Models\Property;
+use App\Domains\Properties\Models\PropertyUnit;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -13,6 +14,11 @@ class PropertyTest extends TestCase
 {
   use WithFaker;
   use RefreshDatabase;
+
+  private User $user;
+  private Client $client;
+  private Client $owner;
+  private mixed $propertyData;
 
   protected function setup(): void {
     parent::setup();
@@ -31,8 +37,18 @@ class PropertyTest extends TestCase
 
     $this->propertyData = [
       'address' => $this->faker->address(),
-      'price' => 2000
+      'price' => 2000,
+      'units' => [[
+        "price" => 5000
+      ]]
     ];
+  }
+
+  private function createProperty() {
+    $this->actingAs($this->user);
+    $this->post('/properties', $this->propertyData);
+
+    return Property::latest()->first();
   }
 
   /**
@@ -51,31 +67,48 @@ class PropertyTest extends TestCase
 
   public function testItShouldCreateProperty() {
     $this->actingAs($this->user);
-   
 
     $response = $this->post('/properties', $this->propertyData);
     $response->assertStatus(302);
     $this->assertCount(1, Property::all());
   }
 
-  // public function testItShouldUpdateClient() {
-  //   $this->actingAs($this->user);
-  //   $client = Client::factory()->create($this->clientData);
+  public function testItShouldCreatePropertyWithMultipleUnits() {
+    $this->actingAs($this->user);
 
-  //   $response = $this->put("/clients/{$client->id}", array_merge($this->clientData, [
-  //     "names" => 'Lebron James'
-  //   ]));
-  //   $response->assertStatus(302);
-  //   $client = Client::find($client->id);
-  //   $this->assertEquals($client->names, 'Lebron James');
-  // }
+    $units = PropertyUnit::factory()->count(3)
+    ->priced([6000, 7000, 6000])->make()->toArray();
 
-  // public function testItShouldDeleteClient() {
-  //   $this->actingAs($this->user);
-  //   $client = Client::factory()->create($this->clientData);
+    $response = $this->post('/properties', array_merge(
+      $this->propertyData,
+      [
+        "units" => $units,
+      ]
+    ));
+    $response->assertStatus(302);
 
-  //   $response = $this->delete("/clients/{$client->id}");
-  //   $response->assertStatus(302);
-  //   $this->assertCount(0, Client::all());
-  // }
+    $this->assertCount(1, Property::all());
+    $this->assertCount(3, PropertyUnit::all());
+  }
+
+  public function testItShouldUpdateProperty() {
+    $this->actingAs($this->user);
+    $property = $this->createProperty();
+
+    $response = $this->put("/properties/{$property->id}", [
+      "name" => 'My first property'
+    ]);
+    $response->assertStatus(302);
+    $property = Property::find($property->id);
+    $this->assertEquals($property->name, 'My first property');
+  }
+
+  public function testItShouldDeleteProperty() {
+    $this->actingAs($this->user);
+    $property = $this->createProperty();
+
+    $response = $this->delete("/properties/{$property->id}");
+    $response->assertStatus(302);
+    $this->assertCount(0, Property::all());
+  }
 }

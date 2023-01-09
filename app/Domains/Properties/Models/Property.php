@@ -7,7 +7,6 @@ use Database\Factories\PropertyFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Traits\HasResourceAccounts;
 
 class Property extends Model {
@@ -25,6 +24,7 @@ class Property extends Model {
         'owner_id',
         'account_id',
         'address',
+        'name',
         'description',
         'price',
         'property_type',

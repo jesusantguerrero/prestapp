@@ -5,7 +5,7 @@ import { AtButton, AtField } from "atmosphere-ui";
 import { Action, ElDatePicker, ElMessageBox } from "element-plus";
 
 import AppButton from "../../Components/shared/AppButton.vue";
-import InvoiceCard from "../Rents/Partials/InvoiceCard.vue";
+import InvoiceCard from "../../Components/templates/InvoiceCard.vue";
 import ClientTemplate from "./ClientTemplate.vue";
 
 import { IClient } from "../../Modules/clients/clientEntity";
@@ -93,7 +93,7 @@ const onSubmit = () => {
         </p>
         <AtButton>Agregar Nota</AtButton>
       </section>
-      
+
       <footer class="flex justify-between">
         <AtButton class="font-bold transition border text-body-1 hover:text-error hover:border-error" rounded>
           Cancelar

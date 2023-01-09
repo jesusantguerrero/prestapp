@@ -1,9 +1,9 @@
 <template>
   <AppLayout title="Facturas de Ingresos">
     <template #header>
-      <AccountingSectionNav>
+      <PropertySectionNav>
         <template #actions>
-          <p>Total: {{ invoices.data.length }}</p>
+          <p>Total: {{ invoices.length }}</p>
           <AtButton
             @click="router.visit(`/${state.sectionName}/create`)"
             variant="inverse"
@@ -25,11 +25,11 @@
             >Egreso</AppButton
           >
         </template>
-      </AccountingSectionNav>
+      </PropertySectionNav>
     </template>
 
     <div class="py-10 mx-auto sm:px-6 lg:px-8">
-      <InvoiceTable :invoice-data="invoices.data" class="mt-10 bg-base-lvl-3" />
+      <InvoiceTable :invoice-data="invoices" class="mt-10 bg-base-lvl-3" />
     </div>
   </AppLayout>
 </template>
@@ -38,13 +38,13 @@
 import { reactive, computed } from "vue";
 import { AtButton, AtTable } from "atmosphere-ui";
 
-import AppSectionHeader from "../../../Components/AppSectionHeader.vue";
+import AppSectionHeader from "@/Components/AppSectionHeader.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import InvoiceTable from "@/Components/templates/InvoiceTable";
 
 import { formatMoney, formatDate } from "@/utils";
-import AccountingSectionNav from "../Partials/AccountingSectionNav.vue";
-import AppButton from "../../../Components/shared/AppButton.vue";
+import PropertySectionNav from "./Partials/PropertySectionNav.vue";
+import AppButton from "@/Components/shared/AppButton.vue";
 import { Link } from "@inertiajs/vue3";
 
 const props = defineProps({

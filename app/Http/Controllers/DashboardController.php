@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Domains\CRM\Services\ClientService;
-use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Services\LoanService;
 use Illuminate\Http\Request;
 use Insane\Journal\Helpers\ReportHelper;

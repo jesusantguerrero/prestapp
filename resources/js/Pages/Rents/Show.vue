@@ -10,7 +10,7 @@ import { formatMoney, formatDate } from "@/utils";
 import { ILoanInstallment } from "../../Modules/loans/loanInstallmentEntity";
 import PropertySectionNav from "../Properties/Partials/PropertySectionNav.vue";
 import { AtButton } from "atmosphere-ui";
-import InvoiceCard from "./Partials/InvoiceCard.vue";
+import InvoiceCard from "../../Components/templates/InvoiceCard.vue";
 import PaymentFormModal from "../Loans/Partials/PaymentFormModal.vue";
 
 export interface Props {
@@ -88,6 +88,14 @@ const handleActions = (actionName, invoice) => {
 const refresh = () => {
   router.reload();
 };
+
+const generateNextInvoice = () => {
+  router.post(`/rents/${props.rents.id}/generate-next-invoice`, {
+    onSuccess() {
+      refresh();
+    },
+  });
+};
 </script>
 
 <template>
@@ -160,8 +168,9 @@ const refresh = () => {
 
         <article class="w-3/12 p-4 space-y-2 border rounded-md shadow-md bg-base-lvl-3">
           <section class="flex space-x-4">
-            <AppButton class="w-full"> Agregar Pago </AppButton>
-            <AppButton class="w-full"> Recibo Multiple </AppButton>
+            <AppButton class="w-full" @click="generateNextInvoice">
+              Generar proximo pago
+            </AppButton>
           </section>
 
           <section class="py-4 mt-8 space-y-2">
