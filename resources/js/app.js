@@ -9,6 +9,7 @@ import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import VueApexCharts from 'vue3-apexcharts';
+import VueMultiselect from 'vue-multiselect';
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
@@ -24,6 +25,7 @@ createInertiaApp({
             .use(ZiggyVue, Ziggy)
             .use(ElementPlus)
             .use(VueApexCharts)
+            .component('multiselect', VueMultiselect)
             .mount(el);
     },
 });

@@ -96,6 +96,22 @@ class PropertyController extends InertiaController
       return inertia('Properties/ManagementTools',
       [
           'invoices' => $invoices,
+          'outstanding' => $invoices->sum('debt'),
+          'paid' => $invoices->sum(function ($invoice) {
+            return $invoice->total - $invoice->debt;
+          }),
+          'owners' => $invoices->map(function($invoice) {
+            return [
+              "value" => $invoice->client_id,
+              "label" => $invoice->client_name,
+            ];
+          })->unique('value')->values(),
+          'properties' => $invoices->map(function($invoice) {
+              return [
+                "value" => $invoice->client_id,
+                "label" => $invoice->client_name,
+              ];
+          })
       ]);
     }
 }

@@ -5,6 +5,7 @@ import InvoicePaymentOptions from "@/Components/templates/InvoicePaymentOptions.
 import cols from "./cols";
 import { formatDate, formatMoney } from "@/utils";
 import { Link } from "@inertiajs/vue3";
+import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
 
 defineProps({
   invoiceData: {
@@ -28,17 +29,25 @@ defineProps({
 
     <template v-slot:concept="{ scope: { row } }">
       <Link
-        :href="`${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}/edit`"
-        class="text-blue-400 capitalize border-b border-blue-400 border-dashed cursor-pointer text-md"
+        :href="`/${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}`"
+        class="text-blue-400 capitalize border-b border-blue-400 border-dashed cursor-pointer text-sm"
       >
         {{ row.concept }}
         <span class="font-bold text-gray-300"> {{ row.series }} #{{ row.number }} </span>
       </Link>
+      <Link
+        class="text-sm text-body-1 mt-2"
+        :href="`/clients/${row.client_id || row.contact_id}`"
+      >
+        <i class="fa fa-user text-xs" />
+        {{ row.client_name }}
+      </Link>
     </template>
 
     <template v-slot:status="{ scope: { row } }">
-      <div class="font-bold capitalize">
-        {{ row.status }}
+      <div class="font-bold capitalize text-sm" :class="getStatusColor(row.status)">
+        <i :class="getStatusIcon(row.status)" />
+        {{ getStatus(row.status) }}
       </div>
     </template>
 

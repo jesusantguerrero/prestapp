@@ -355,7 +355,7 @@ watch(
         <header
           v-if="$slots.header"
           :class="[isExpanded ? 'lg:pr-56' : 'lg:pr-20', panelShadow]"
-          class="fixed z-30 w-full overflow-hidden border-b bg-base-lvl-3 base-deep-1"
+          class="fixed z-30 w-full border-b bg-base-lvl-3 base-deep-1"
         >
           <slot name="header" />
         </header>

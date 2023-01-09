@@ -33,6 +33,7 @@ class ClientController extends InertiaController
     array_merge(
         $this->getEditProps($request, $id), [
         $this->model->getTable() => $client,
+        "is_owner" => $client->is_owner,
         "outstanding" => $client->outstandingBalance(),
         "deposits" => $client->deposits(),
         "credits" => $client->credits

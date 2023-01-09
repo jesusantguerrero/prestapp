@@ -32,6 +32,7 @@ class ClientService {
         clients.display_name contact,
         clients.display_name client_name,
         clients.id contact_id,
+        clients.id client_id,
         invoices.debt,
         invoices.due_date,
         invoices.id id,
@@ -40,6 +41,7 @@ class ClientService {
         invoices.series,
         invoices.number,
         invoices.status,
+        invoices.total,
         categories.name category,
         accounts.name account_name")
         ->where([

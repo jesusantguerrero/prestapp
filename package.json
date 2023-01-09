@@ -10,7 +10,7 @@
         "@tailwindcss/typography": "^0.5.2",
         "@vitejs/plugin-vue": "^3.0.0",
         "autoprefixer": "^10.4.7",
-        "axios": "^1.1.2",
+        "axios": "^1.2.2",
         "laravel-vite-plugin": "^0.7.0",
         "lodash": "^4.17.19",
         "postcss": "^8.4.14",
@@ -18,17 +18,18 @@
         "tailwindcss": "^3.1.0",
         "vite": "^3.0.0",
         "vitest": "^0.25.3",
-        "vue": "^3.2.31"
+        "vue": "^3.2.45"
     },
     "dependencies": {
         "@headlessui/vue": "^1.7.4",
         "@inertiajs/vue3": "^1.0.0-beta.2",
         "apexcharts": "^3.36.3",
-        "atmosphere-ui": "^1.0.5-beta",
+        "atmosphere-ui": "^1.0.6-beta",
         "date-fns": "^2.29.3",
-        "element-plus": "^2.2.25",
+        "element-plus": "^2.2.28",
         "exact-math": "^2.2.3",
         "vue-cleave-component": "^3.0.2",
+        "vue-multiselect": "^3.0.0-alpha.2",
         "vue3-apexcharts": "^1.4.1"
     }
 }
