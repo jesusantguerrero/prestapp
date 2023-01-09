@@ -4,6 +4,7 @@ namespace App\Domains\Properties\Enums;
 
 enum PropertyInvoiceTypes: string {
   case Deposit = 'deposit';
+  case DepositRefund = 'deposit_refund';
   case Rent = 'rent';
   case Charge = 'charge';
   case Fee = 'fee';

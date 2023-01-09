@@ -11,13 +11,14 @@ import { ILoanInstallment } from "../../Modules/loans/loanInstallmentEntity";
 import PropertySectionNav from "../Properties/Partials/PropertySectionNav.vue";
 import { ElTag } from "element-plus";
 import { AtBackgroundIconCard } from "atmosphere-ui";
-import { IClient } from "@/Modules/clients/clientEntity";
+import { IClientSaved } from "@/Modules/clients/clientEntity";
 import EmptyAddTool from "../Properties/Partials/EmptyAddTool.vue";
 import ContractCard from "../Properties/Partials/ContractCard.vue";
 import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
+import { clientInteractions } from "@/Modules/clients/clientInteractions";
 
 export interface Props {
-  clients: IClient;
+  clients: IClientSaved;
   currentTab: string;
   outstanding: number;
   deposits: number;
@@ -37,11 +38,6 @@ const tabs = {
 type IPaymentMetaData = ILoanInstallment & {
   installment_id?: number;
 };
-
-const generatePropertyPayment = () => {
-  router.post(`/clients/${props.clients.id}/generate-payment`);
-};
-
 const paymentConcept = computed(() => {
   return (
     selectedPayment.value &&
@@ -126,9 +122,7 @@ const refresh = () => {
               title="Depositos"
               :value="formatMoney(deposits)"
             />
-            <button v-if="deposits">
-              Renbolsar Deposito
-            </button>
+            <button v-if="deposits">Renbolsar Deposito</button>
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
               title="Balance de Pendiente"
@@ -137,7 +131,7 @@ const refresh = () => {
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
               title="Dias de mora"
-              :value="lateDays"
+              :value="daysLate"
             />
           </section>
 
@@ -154,7 +148,17 @@ const refresh = () => {
               v-if="currentTab == 'transactions'"
               class="px-4 py-2 space-y-4 rounded-md shadow-md bg-base-lvl-3"
             >
-              <InvoiceCard v-for="invoice in props.clients.invoices" :invoice="invoice" />
+              <InvoiceCard v-for="invoice in props.clients.invoices" :invoice="invoice">
+                <template #header-actions>
+                  <button
+                    v-if="invoice.status !== 'paid'"
+                    class="mr-2"
+                    @click="clientInteractions.generateOwnerDistribution(clients.id, invoice.id)"
+                  >
+                    Re-generar
+                  </button>
+                </template>
+              </InvoiceCard>
             </article>
           </section>
         </article>
@@ -170,7 +174,10 @@ const refresh = () => {
 
             <div class="mt-4 space-y-2">
               <section class="flex space-x-4" v-if="clients.is_owner">
-                <AppButton class="w-full" @click="generatePropertyPayment()">
+                <AppButton
+                  class="w-full"
+                  @click="clientInteractions.generateOwnerDistribution(clients.id)"
+                >
                   Generar de propiedades
                 </AppButton>
               </section>

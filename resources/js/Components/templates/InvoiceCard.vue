@@ -1,7 +1,10 @@
 <script setup>
 import { formatDate, formatMoney } from "@/utils";
 import { ElDropdown, ElIcon } from "element-plus";
+
 import InvoicePaymentOptions from "./InvoicePaymentOptions.vue";
+
+import { getStatus, getStatusIcon } from "@/Modules/invoicing/constants";
 
 defineProps({
   invoice: {
@@ -26,26 +29,15 @@ defineProps({
       <p class="text-body-1/80">{{ invoice.description }}</p>
     </header>
     <section class="font-bold text-right">
-      <p class="flex text-green-500">
-        {{ formatMoney(invoice.total) }}
-        <ElDropdown v-if="actions" @command="$emit('action', $event)">
-          <button class="px-5 rounded-md hover:bg-base-lvl-2">
-            <i class="fa fa-ellipsis-h" />
-          </button>
-          <template #dropdown>
-            <ElDropdownMenu>
-              <ElDropdownItem
-                :command="actionName"
-                v-for="(action, actionName) in actions"
-              >
-                {{ action.label }}
-              </ElDropdownItem>
-            </ElDropdownMenu>
-          </template>
-        </ElDropdown>
+      <p class="flex">
+        <slot name="header-actions" />
+        <span class="text-green-500">
+          {{ formatMoney(invoice.total) }}
+        </span>
       </p>
       <span>
-        {{ invoice.status }}
+        <i :class="getStatusIcon(invoice.status)" />
+        {{ getStatus(invoice.status) }}
       </span>
       <InvoicePaymentOptions :invoice="invoice" />
     </section>

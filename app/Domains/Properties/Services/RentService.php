@@ -64,6 +64,28 @@ class RentService {
       self::createInvoice($formData, $rent, false);
     }
 
+
+    public static function createDepositRefund($rent, $formData) {
+      $formData = [
+        "date" => $rent->deposit_due,
+        "due_date" => $rent->deposit_due,
+        "concept" => "Factura Devolucion",
+        'category_type' => PropertyInvoiceTypes::DepositRefund,
+        "description" => "Devolución de deposition {$rent->client->display_name}",
+        "total" => $rent->deposit,
+        "invoice_account_id" => $formData['account_id'], // liability to client here general
+        "items" => [[
+          "name" => "Depositos de $rent->address",
+          "concept" => "Depositos de $rent->address",
+          "quantity" => 1,
+          "account_id" => $rent->property->deposit_account_id,
+          "price" => $formData['amount'],
+          "amount" => $formData['amount'],
+        ]]
+      ];
+      self::createInvoice($formData, $rent, false);
+    }
+
     public static function createInvoice($formData, Rent $rent, $withExtraServices = true) {
       $additionalFees =  $rent->services ?? [];
       $items = [[
