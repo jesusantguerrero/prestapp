@@ -8,6 +8,7 @@ use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Rent;
 use App\Domains\Properties\Services\RentService;
 use Illuminate\Support\Carbon;
+use Insane\Journal\Models\Core\Tax;
 use Insane\Journal\Models\Invoice\Invoice;
 
 class GenerateInvoices {
@@ -114,7 +115,8 @@ class GenerateInvoices {
           return $related->pivot->name;
         })->contains(PropertyInvoiceTypes::OwnerDistribution->name());
         if (!$hasDistribution) {
-          $items[] = [
+
+          $item = [
                 "name" => "$invoice->description $invoice->date",
                 "concept" => "$invoice->description $invoice->date",
                 "quantity" => 1,
@@ -122,6 +124,29 @@ class GenerateInvoices {
                 "price" => $invoice->total,
                 "amount" => $invoice->total,
           ];
+
+          if ($invoice->category_type == PropertyInvoiceTypes::Rent) {
+            $rent = $invoice->invoiceable;
+            $retention = Tax::guessRetention("Commission", $rent->commission, $invoice->toArray(), [
+              "description" => 'Descuento de abogado',
+            ]);
+
+            $retentionTotal = (double) $retention->rate * $invoice->total / 100;
+
+            $item['taxes'] = [
+              [
+                "tax_id" => $retention->id,
+                "name" => $retention->name,
+                "concept" => $retention->description,
+                "rate" => $retention->rate,
+                "type" => $retention->type,
+                "amount" => $retentionTotal,
+                "amount_base" => $invoice->total,
+                "index" => 1,
+              ]
+            ];
+          }
+          $items[] = $item;
           $total += $invoice->total;
         }
       }

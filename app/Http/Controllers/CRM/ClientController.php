@@ -41,7 +41,6 @@ class ClientController extends InertiaController
     );
   }
 
-
   public function generatePayment(Client $client) {
     GenerateInvoices::ownerDistribution($client);
     return redirect("/bills/");

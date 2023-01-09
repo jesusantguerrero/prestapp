@@ -98,5 +98,5 @@ const refresh = () => {
     </template>
   </ElDropdown>
 
-  <a :href="linkToPrint" download target="_blank" ref="invoiceLink" type="hidden"></a>
+  <a :href="linkToPrint" target="_blank" ref="invoiceLink" type="hidden"></a>
 </template>

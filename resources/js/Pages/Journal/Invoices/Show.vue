@@ -1,6 +1,7 @@
 <script setup>
 import { Link, router } from "@inertiajs/vue3";
 import { AtField } from "atmosphere-ui";
+import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
 
 import InvoiceSimple from "./printTemplates/Simple.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
@@ -37,13 +38,13 @@ defineProps({
     <template #header>
       <AccountingSectionNav>
         <template #actions>
-          <AppButton @click="router.visit(getInvoiceTypeUrl(invoice))" variant="inverse">
+          <AppButton @click="router.visit(getInvoiceTypeUrl(invoice))" variant="inverse" v-if="false">
             Editar Factura
           </AppButton>
-          <AppButton @click="router.visit(route('invoices.create', invoice))" variant="inverse">
+          <AppButton @click="router.visit(route('invoices.create', invoice))" variant="inverse" v-if="false">
             Crear otra factura
           </AppButton>
-          <InvoicePaymentOptions :invoice="invoice" />
+          <InvoicePaymentOptions :invoice="invoice" class="py-2" />
         </template>
       </AccountingSectionNav>
     </template>
@@ -52,12 +53,13 @@ defineProps({
         <div class="flex justify-between px-5 py-1 border rounded-md space bg-base-lvl-3">
           <section class="flex space-x-4">
             <AtField label="Estatus">
-                <p class="text-xl">
-                  {{ invoice.status }}
+                <p class="text-md font-bold" :class="getStatusColor(invoice.status)">
+                  <i :class="getStatusIcon(invoice.status)" />
+                  {{ getStatus(invoice.status) }}
                 </p>
             </AtField>
             <AtField label="Cliente">
-                <p class="text-xl font-bold text-primary">
+                <p class="font-bold text-primary text-md">
                   {{ invoice.client.display_name }}
                 </p>
             </AtField>
@@ -65,12 +67,12 @@ defineProps({
 
           <section class="flex space-x-4">
             <AtField label="Monto Adeudado">
-                <p class="text-xl">
+                <p class="text-md">
                   {{ formatMoney(invoice.debt) }}
                 </p>
             </AtField>
             <AtField label="Fecha limite">
-                <p class="text-xl font-bold text-primary">
+                <p class="text-md font-bold text-primary">
                   {{ formatDate(invoice.due_date) }}
                 </p>
             </AtField>
