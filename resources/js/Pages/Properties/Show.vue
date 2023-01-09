@@ -17,6 +17,7 @@ import { ElTag } from "element-plus";
 import { AtBackgroundIconCard } from "atmosphere-ui";
 import ContractCard from "./Partials/ContractCard.vue";
 import EmptyAddTool from "./Partials/EmptyAddTool.vue";
+import { clientInteractions } from "@/Modules/clients/clientInteractions";
 
 export interface Props {
   properties: IProperty;
@@ -65,10 +66,6 @@ const paymentConcept = computed(() => {
     `Pago ${props.properties.id} pago #${selectedPayment.value.installment_id}`
   );
 });
-
-const generatePropertyPayment = () => {
-  router.post(`/clients/${props.properties.owner_id}/generate-payment`);
-};
 
 const refresh = () => {
   router.reload();
@@ -199,7 +196,12 @@ const refresh = () => {
 
             <div class="mt-4 space-y-2">
               <section class="flex space-x-4">
-                <AppButton class="w-full" @click="generatePropertyPayment()">
+                <AppButton
+                  class="w-full"
+                  @click="
+                    clientInteractions.generateOwnerDistribution(properties.owner_id)
+                  "
+                >
                   Generar Pago a Dueño
                 </AppButton>
               </section>

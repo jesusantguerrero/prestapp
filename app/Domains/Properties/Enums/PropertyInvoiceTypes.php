@@ -2,13 +2,15 @@
 
 namespace App\Domains\Properties\Enums;
 
-enum PropertyInvoiceTypes {
-  case Deposit;
-  case Rent;
-  case Charge;
-  case Fee;
-  case UtilityExpense;
-  case OwnerDistribution;
+enum PropertyInvoiceTypes: string {
+  case Deposit = 'deposit';
+  case DepositRefund = 'deposit_refund';
+  case Rent = 'rent';
+  case Charge = 'charge';
+  case Fee = 'fee';
+  case LateFee = 'rent_late_fee';
+  case UtilityExpense = 'utility';
+  case OwnerDistribution = 'owner_distribution';
 
   public function color() {
 

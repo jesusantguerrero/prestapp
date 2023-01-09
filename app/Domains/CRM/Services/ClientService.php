@@ -26,7 +26,7 @@ class ClientService {
         })->count();
     }
 
-    public static function invoices($teamId, $statuses = []) {
+    public static function invoices($teamId, $clientId,  $statuses = []) {
       $query = DB::table('invoices')
         ->selectRaw("
         clients.display_name contact,
@@ -54,11 +54,15 @@ class ClientService {
           $query->whereIn('invoices.status', $statuses);
         }
 
+        if ($clientId) {
+          $query->where('invoices.client_id', $clientId);
+        }
+
         $query
         ->join('clients', 'clients.id', '=', 'invoices.client_id')
         ->join('accounts', 'accounts.id', '=', 'invoices.account_id')
         ->join('categories', 'categories.id', '=', 'accounts.category_id')
-        ->take(5);
+        ->orderByDesc('invoices.date');
 
         return $query;
     }

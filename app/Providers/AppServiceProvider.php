@@ -30,10 +30,5 @@ class AppServiceProvider extends ServiceProvider
       Invoice::resolveRelationUsing('client', function ($clientModel) {
         return $clientModel->belongsTo(Client::class, 'client_id');
       });
-
-      ParallelTesting::setUpTestDatabase(function ($database, $token) {
-        Artisan::call('db:seed');
-        Artisan::call('journal:set-accounts');
-      });
     }
 }

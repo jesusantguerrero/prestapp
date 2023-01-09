@@ -42,10 +42,6 @@ class ClientController extends InertiaController
   }
 
 
-  public function generatePayment(Client $client) {
-    GenerateInvoices::ownerDistribution($client);
-    return redirect("/bills/");
-  }
 
   public function contracts(Client $client) {
     return [
@@ -69,6 +65,12 @@ class ClientController extends InertiaController
         $resourceName => array_merge($resource, $this->$section($client)),
         "currentTab" => $section
     ]);
+  }
+
+  // owners
+  public function generateOwnerDistribution(Client $client, int $invoiceId = null) {
+    GenerateInvoices::ownerDistribution($client, $invoiceId);
+    return redirect("/bills");
   }
 
   // Tenant

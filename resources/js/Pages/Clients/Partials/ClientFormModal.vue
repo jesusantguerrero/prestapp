@@ -2,7 +2,8 @@
 import { reactive, computed } from "vue";
 import { AtButton, AtField, AtInput, AtTextarea, AtSimpleSelect } from "atmosphere-ui";
 import Modal from "@/Components/Modal.vue";
-import { clientInteractor } from "@/Modules/clients/clientInteractor";
+
+import { clientInteractions } from "@/Modules/clients/clientInteractions";
 import { documentTypes, DOCUMENT_TYPES } from "@/Modules/clients/constants";
 import { router } from "@inertiajs/core";
 
@@ -39,7 +40,7 @@ const documentType = computed(() => {
 });
 
 const onSubmit = () => {
-  clientInteractor
+  clientInteractions
     .create(clientForm)
     .then(() => {
       close();

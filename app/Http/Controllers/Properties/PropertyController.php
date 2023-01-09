@@ -88,10 +88,12 @@ class PropertyController extends InertiaController
     public function managementTools(Request $request) {
       $teamId = $request->user()->current_team_id;
       $tab = $request->query('tab', 'rents');
+      $filters = $request->query('filters');
+      $ownerId = $filters ? $filters['owner'] : null;
 
       $invoices = $tab == 'fees'
       ? RentService::invoices($teamId)->get()
-      : ClientService::invoices($teamId)->get();
+      : ClientService::invoices($teamId, $ownerId)->get();
 
       return inertia('Properties/ManagementTools',
       [

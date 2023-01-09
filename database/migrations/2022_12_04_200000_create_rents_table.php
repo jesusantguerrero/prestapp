@@ -53,6 +53,7 @@ return new class extends Migration
             $table->json('generated_invoice_dates')->default('[]');
             $table->json('additional_fees')->default('[]');
 
+            $table->text('notes')->nullable();
             $table->date('move_out_at')->nullable();
             $table->text('move_out_notice')->nullable();
             // state

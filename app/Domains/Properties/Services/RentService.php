@@ -3,6 +3,7 @@
 namespace App\Domains\Properties\Services;
 
 use App\Domains\Accounting\Helpers\InvoiceHelper;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Properties\Models\Rent;
@@ -29,6 +30,21 @@ class RentService {
       }
     }
 
+    public static function allowedUpdate(mixed $rentData) {
+      $validData = [];
+      $cantUpdate = collect([
+        'rent_id',
+        'property_id'
+      ]);
+
+      foreach ($rentData as $key => $value) {
+        if (!$cantUpdate->contains($key)) {
+          $validData[$key] = $value;
+        }
+      }
+      return $validData;
+    }
+
     public static function createDepositTransaction($rent, $rentData) {
       $formData = [
         "date" => $rent->deposit_due,
@@ -43,6 +59,28 @@ class RentService {
           "quantity" => 1,
           "price" => $rent->deposit,
           "amount" => $rent->deposit,
+        ]]
+      ];
+      self::createInvoice($formData, $rent, false);
+    }
+
+
+    public static function createDepositRefund($rent, $formData) {
+      $formData = [
+        "date" => $rent->deposit_due,
+        "due_date" => $rent->deposit_due,
+        "concept" => "Factura Devolucion",
+        'category_type' => PropertyInvoiceTypes::DepositRefund,
+        "description" => "Devolución de deposition {$rent->client->display_name}",
+        "total" => $rent->deposit,
+        "invoice_account_id" => $formData['account_id'], // liability to client here general
+        "items" => [[
+          "name" => "Depositos de $rent->address",
+          "concept" => "Depositos de $rent->address",
+          "quantity" => 1,
+          "account_id" => $rent->property->deposit_account_id,
+          "price" => $formData['amount'],
+          "amount" => $formData['amount'],
         ]]
       ];
       self::createInvoice($formData, $rent, false);
@@ -68,6 +106,7 @@ class RentService {
         'invoiceable_type' => Rent::class,
         'date' => $formData['date'] ?? date('Y-m-d'),
         'type' => Invoice::DOCUMENT_TYPE_INVOICE,
+        'category_type' => $formData['category_type'] ?? PropertyInvoiceTypes::Rent->name(),
         "invoice_account_id" => $rent->property->account_id,
         'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
         'total' =>  $formData['amount'] ?? $rent->amount,

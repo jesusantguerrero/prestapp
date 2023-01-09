@@ -61,7 +61,8 @@ Route::middleware([
     Route::get('/clients/{client}/rents/{rent}/end', [ClientController::class, 'endRent'])->name('tenant.end-rent');;
     Route::put('/clients/{client}/rents/{rent}/end', [ClientController::class, 'endRentAction'])->name('tenant.end-rent-action');
     // Owner
-    Route::post('/clients/{client}/generate-payment', [ClientController::class, 'generatePayment']);
+    Route::post('/clients/{client}/owner-distributions', [ClientController::class, 'generateOwnerDistribution']);
+    Route::put('/clients/{client}/owner-distributions/{invoice}', [ClientController::class, 'generateOwnerDistribution']);
 
     // Loans
     Route::get('loans/overview', LoanController::class);

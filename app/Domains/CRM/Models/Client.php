@@ -7,6 +7,7 @@ use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\Rent;
 use Database\Factories\ClientFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -66,13 +67,20 @@ class Client extends Model {
       return $this->hasMany(Property::class, 'owner_id');
     }
 
-    public function getPropertyInvoices() {
+    public function getPropertyInvoices($invoiceId = null) {
       return Invoice::select('invoices.*')->where([
         'rents.owner_id' => $this->id,
         'invoices.status' => 'paid'
       ])
       ->where('invoiceable_type', Rent::class)
+      ->where(function ($query) use ($invoiceId) {
+          $query->doesntHave('relatedParents');
+          if ($invoiceId) {
+            $query->orWhere('invoice_relations.invoice_id', $invoiceId);
+          }
+        })
       ->join('rents', 'invoiceable_id', 'rents.id')
+      ->leftJoin('invoice_relations', 'related_invoice_id', 'invoices.id')
       ->get();
     }
 
@@ -91,7 +99,7 @@ class Client extends Model {
     }
 
     public function invoices() {
-      return $this->hasMany(Invoice::class);
+      return $this->hasMany(Invoice::class)->latest('date');
     }
 
     public function checkStatus() {

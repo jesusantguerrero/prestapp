@@ -1,5 +1,13 @@
+<script setup>
+defineProps({
+  ticket: {
+    type: Boolean,
+  },
+});
+</script>
+
 <template>
-  <main class="print-container text-body">
+  <main class="print-container text-body" :class="{ 'w-32': ticket }">
     <slot />
   </main>
 </template>

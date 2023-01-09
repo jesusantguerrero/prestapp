@@ -18,6 +18,12 @@ class OwnerDistributionTest extends TestCase
   use WithFaker;
   use RefreshDatabase;
 
+  private User $user;
+  private Client $client;
+  private Client $owner;
+  private Property $property;
+  private mixed $propertyData;
+
   protected function setup(): void {
     parent::setup();
     $user = User::factory()->withPersonalTeam()->create();
