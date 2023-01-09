@@ -1,12 +1,11 @@
 import { format, parseISO } from "date-fns"
 export * from "./formatMoney";
 
-export const formatDate = (stringDate: string|Date) => {
+export const formatDate = (stringDate: string|Date, formatText = 'd MMM, yyyy') => {
   const emptyDate = '-- --- ----'
 
   try {
-    const date = stringDate == 'string' ? parseISO(stringDate) : new Date()
-    return typeof stringDate == 'string' ? format(date, 'd MMM, yyyy') : format(stringDate, 'd MMM, yyyy')
+    return typeof stringDate == 'string' ? format(parseISO(stringDate), formatText) : format(stringDate, formatText);
   } catch (err) {
     return stringDate ?? emptyDate
   }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {  Link, router } from "@inertiajs/vue3";
+import { Link, router } from "@inertiajs/vue3";
 import { computed } from "vue";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
@@ -11,14 +11,17 @@ import { ILoanInstallment } from "../../Modules/loans/loanInstallmentEntity";
 import PropertySectionNav from "../Properties/Partials/PropertySectionNav.vue";
 import { ElTag } from "element-plus";
 import { AtBackgroundIconCard } from "atmosphere-ui";
-import { IClient } from "../../Modules/clients/clientEntity";
+import { IClient } from "@/Modules/clients/clientEntity";
 import EmptyAddTool from "../Properties/Partials/EmptyAddTool.vue";
 import ContractCard from "../Properties/Partials/ContractCard.vue";
-import InvoiceCard from "../Rents/Partials/InvoiceCard.vue";
+import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 
 export interface Props {
   clients: IClient;
   currentTab: string;
+  outstanding: number;
+  deposits: number;
+  daysLate: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -26,11 +29,10 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const tabs = {
-  '': "Detalles",
+  "": "Detalles",
   contracts: "Contratos",
   transactions: "Transacciones",
 };
-
 
 type IPaymentMetaData = ILoanInstallment & {
   installment_id?: number;
@@ -55,16 +57,12 @@ const refresh = () => {
 <template>
   <AppLayout :title="`Clientes / ${clients.fullName}`">
     <template #header>
-      <PropertySectionNav> 
-          <template #actions>
-            <AppButton @click="" variant="inverse">
-              Editar
-            </AppButton>
-            <AppButton @click="" variant="inverse">
-              Nueva Propiedad
-            </AppButton>
-          </template>
-        </PropertySectionNav>
+      <PropertySectionNav>
+        <template #actions>
+          <AppButton @click="" variant="inverse"> Editar </AppButton>
+          <AppButton @click="" variant="inverse"> Nueva Propiedad </AppButton>
+        </template>
+      </PropertySectionNav>
     </template>
 
     <main class="p-5 mt-8">
@@ -81,27 +79,27 @@ const refresh = () => {
         <section class="flex items-center justify-between py-4">
           <article>
             <p class="flex items-center space-x-2">
-              <IconMarker /> 
+              <IconMarker />
               <span>
-                {{ clients.dni }} 
+                {{ clients.dni }}
               </span>
             </p>
             <p class="flex items-center space-x-2 cursor-pointer text-primary group">
-              <IconPersonSafe /> 
+              <IconPersonSafe />
               <span class="group-hover:underline underline-offset-4">
-                {{ clients.account?.name }} 
+                {{ clients.account?.name }}
               </span>
             </p>
-          </article> 
+          </article>
           <article class="flex space-x-5">
-            <section class="text-center ">
-              <div class="flex items-center w-full text-center ">
-                <IconCoins class="mr-2 text-yellow-600"/>
-                <span class="mx-auto font-bold text-success"> {{ clients.properties?.length }} </span>
+            <section class="text-center">
+              <div class="flex items-center w-full text-center">
+                <IconCoins class="mr-2 text-yellow-600" />
+                <span class="mx-auto font-bold text-success">
+                  {{ clients.properties?.length }}
+                </span>
               </div>
-              <p class="text-bold text-body-1">
-                Propiedades
-              </p>
+              <p class="text-bold text-body-1">Propiedades</p>
             </section>
             <ElTag> {{ clients.status }}</ElTag>
           </article>
@@ -119,75 +117,72 @@ const refresh = () => {
           </Link>
         </div>
       </header>
-      
-      <section class="flex w-full space-x-8 rounded-t-none border-t-none ">
+
+      <section class="flex w-full space-x-8 rounded-t-none border-t-none">
         <article class="w-9/12 space-y-4">
           <section class="flex space-x-4">
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
-              title="Balance de Cuenta"
-              :value="formatMoney(0)"
-            />    
+              title="Depositos"
+              :value="formatMoney(deposits)"
+            />
+            <button v-if="deposits">
+              Renbolsar Deposito
+            </button>
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
               title="Balance de Pendiente"
-              :value="formatMoney(0)"
-            />    
+              :value="formatMoney(outstanding)"
+            />
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
               title="Dias de mora"
-              :value="0"
-            /> 
+              :value="lateDays"
+            />
           </section>
 
           <section class="w-full text-gray-600 rounded-md">
-            <template  v-if="currentTab=='contracts'">
+            <template v-if="currentTab == 'contracts'">
               <ContractCard
-                  v-for="lease in props.clients.leases"               
-                  :contract="lease"
-                  :client="props.clients"
+                v-for="lease in props.clients.leases"
+                :contract="lease"
+                :client="props.clients"
               />
             </template>
 
-            <article v-if="currentTab=='transactions'" class="px-4 py-2 space-y-4 rounded-md shadow-md bg-base-lvl-3">
-              <InvoiceCard
-                  v-for="invoice in props.clients.invoices"
-                  :invoice="invoice"
-              />
+            <article
+              v-if="currentTab == 'transactions'"
+              class="px-4 py-2 space-y-4 rounded-md shadow-md bg-base-lvl-3"
+            >
+              <InvoiceCard v-for="invoice in props.clients.invoices" :invoice="invoice" />
             </article>
           </section>
         </article>
 
-        <article class="w-3/12 space-y-2 rounded-md shadow-md ">
+        <article class="w-3/12 space-y-2 rounded-md shadow-md">
           <div class="px-5 py-10 text-gray-600 bg-gray-200 rounded-md">
             <div class="header">
-                <h2 class="text-lg font-bold">  Manejo de Cliente </h2>
-                <small> Private place for you and your internal team to manage this project</small>
+              <h2 class="text-lg font-bold">Manejo de Cliente</h2>
+              <small>
+                Private place for you and your internal team to manage this project</small
+              >
             </div>
 
             <div class="mt-4 space-y-2">
-                <section class="flex space-x-4">
-                  <AppButton class="w-full" @click="generatePropertyPayment()"> 
-                    Generar de propiedades 
-                  </AppButton>
-                </section>
-                <EmptyAddTool>
-                    Notes
-                </EmptyAddTool>
-                <EmptyAddTool>
-                  Imagenes
-                </EmptyAddTool>
-                <EmptyAddTool >
-                    Documentos
-                </EmptyAddTool>
-                <EmptyAddTool>
-                    Configuracion
-                </EmptyAddTool>
+              <section class="flex space-x-4" v-if="clients.is_owner">
+                <AppButton class="w-full" @click="generatePropertyPayment()">
+                  Generar de propiedades
+                </AppButton>
+              </section>
+              <EmptyAddTool> Notes </EmptyAddTool>
+              <EmptyAddTool> Imagenes </EmptyAddTool>
+              <EmptyAddTool> Documentos </EmptyAddTool>
+              <EmptyAddTool> Configuracion </EmptyAddTool>
             </div>
-        </div>
+          </div>
         </article>
       </section>
-<!-- 
+      <!--
       <PaymentFormModal
         v-if="selectedPayment"
         v-model="isPaymentModalOpen"

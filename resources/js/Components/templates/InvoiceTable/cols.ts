@@ -20,11 +20,6 @@ export default [
         width: 100,
     },
     {
-        label: "Client",
-        name: "client_name",
-        width: 300,
-    },
-    {
         label: "Status",
         name: "status",
         width: 200,

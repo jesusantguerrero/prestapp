@@ -3,12 +3,18 @@
     <AtTable :cols="renderedCols" :tableData="tableData" :hide-empty-text="true">
       <template v-slot:item="{ scope }">
         <div class="d-flex">
-          <AtInput name="" v-model="scope.row.concept" class="form-control" rounded v-if="isEditing"/>
+          <AtInput
+            name=""
+            v-model="scope.row.concept"
+            class="form-control"
+            rounded
+            v-if="isEditing"
+          />
           <span v-else> {{ scope.row.concept }}</span>
         </div>
       </template>
 
-      <template v-slot:quantity="{ scope }"  v-if="isEditing">
+      <template v-slot:quantity="{ scope }" v-if="isEditing">
         <AtInput
           name=""
           min="1"
@@ -19,7 +25,7 @@
         />
       </template>
 
-      <template v-slot:discount="{ scope }"  v-if="isEditing">
+      <template v-slot:discount="{ scope }" v-if="isEditing">
         <AtInput
           class="text-right form-control"
           type="number"
@@ -31,37 +37,43 @@
         />
       </template>
 
-      <template v-slot:price="{ scope }"  v-if="isEditing">
+      <template v-slot:price="{ scope }" v-if="isEditing">
         <div class="space-y-2">
-            <AtInput
-                v-model="scope.row.price"
-                v-bind="cleaveOptions.money"
-                number-format
-                rounded
-                class="text-right"
-            />
+          <AtInput
+            v-model="scope.row.price"
+            v-bind="cleaveOptions.money"
+            number-format
+            rounded
+            class="text-right"
+          />
         </div>
       </template>
 
-      <template v-slot:taxes="{ scope }"  v-if="isEditing">
-          <div class="flex items-center w-full mx-auto" v-for="(tax, index) in scope.row.taxes" :key="`tax-${index}`">
-              <AtSimpleSelect
-                  :options="availableTaxes"
-                  v-model="scope.row.taxes[index].tax_id"
-                  v-model:selected="scope.row.taxes[index]"
-                  @update:model-value="setTax(scope.$index, index, $event)"
-                  placeholder="Tax"
-                  option-template="${name} - ${rate}%"
-                  label="name"
-                  key-track="id"
-                  class="w-full"
-              />
-              {{ tax.name }}
-              <button class="h-10 px-2 mt-auto ml-2 transition border focus:outline-none hover:text-gray-900 hover:bg-gray-200"  
-              @click="removeTax(scope.$index, index)">
-                <IconTrash class="w-4 h-4 text-gray-400" /> 
-              </button>
-          </div>
+      <template v-slot:taxes="{ scope }" v-if="isEditing">
+        <div
+          class="flex items-center w-full mx-auto"
+          v-for="(tax, index) in scope.row.taxes"
+          :key="`tax-${index}`"
+        >
+          <AtSimpleSelect
+            :options="availableTaxes"
+            v-model="scope.row.taxes[index].tax_id"
+            v-model:selected="scope.row.taxes[index]"
+            @update:model-value="setTax(scope.$index, index, $event)"
+            placeholder="Tax"
+            option-template="${name} - ${rate}%"
+            label="name"
+            key-track="id"
+            class="w-full"
+          />
+          {{ tax.name }}
+          <button
+            class="h-10 px-2 mt-auto ml-2 transition border focus:outline-none hover:text-gray-900 hover:bg-gray-200"
+            @click="removeTax(scope.$index, index)"
+          >
+            <IconTrash class="w-4 h-4 text-gray-400" />
+          </button>
+        </div>
       </template>
 
       <template v-slot:actions="{ scope }" v-if="isEditing">
@@ -69,18 +81,13 @@
           @click="removeRow(scope.$index, scope.row)"
           class="invoice-grid__remove-row"
         >
-          <i class="fas fa-trash-alt" />
+          <IconTrash class="w-4 h-4 text-gray-400" />
         </button>
       </template>
 
       <!-- table slots -->
       <template v-slot:append v-if="isEditing">
-        <button
-          @click="addRow()"
-          class="invoice-grid__add-row"
-        >
-          Add Row
-        </button>
+        <button @click="addRow()" class="invoice-grid__add-row">Add Row</button>
       </template>
     </AtTable>
   </div>
@@ -88,74 +95,74 @@
 
 <script setup>
 import { AtInput, AtSimpleSelect, AtTable } from "atmosphere-ui";
-import { computed, reactive, toRefs , onMounted } from "vue"
+import { computed, reactive, toRefs, onMounted } from "vue";
 
 import IconTrash from "@/Components/icons/IconTrash.vue";
 
 import cols from "./cols";
 
 const props = defineProps({
-    tableData: {
-      type: Array,
-      default() {
-          return []
-      }
+  tableData: {
+    type: Array,
+    default() {
+      return [];
     },
-    availableTaxes: {
-      type: Array,
-      default() {
-          return []
-      }
+  },
+  availableTaxes: {
+    type: Array,
+    default() {
+      return [];
     },
-    products: {
-        type: Array,
-        default() {
-            return [];
-        }
+  },
+  products: {
+    type: Array,
+    default() {
+      return [];
     },
-    resourceUrl: {
-      type: String,
-      default: "/services?filter[name]=%${query}%&relationships=stock"
+  },
+  resourceUrl: {
+    type: String,
+    default: "/services?filter[name]=%${query}%&relationships=stock",
+  },
+  isEditing: {
+    type: Boolean,
+    default: true,
+  },
+  taxes: {
+    type: Array,
+    default() {
+      return [];
     },
-    isEditing: {
-        type: Boolean,
-        default: true
-    },
-    taxes: {
-        type: Array,
-        default() {
-            return [];
-        }
-    }
-})
+  },
+});
 
-const emit = defineEmits(['taxes-updated'])
+const emit = defineEmits(["taxes-updated"]);
 
 const state = reactive({
-    cleaveOptions: {
-      percent: {
-        numericOnly: true,
-        blocks: [3]
-      },
-      money: {
-        decimal: ".",
-        thousands: ",",
-        precision: 2,
-        masked: false
-      }
+  cleaveOptions: {
+    percent: {
+      numericOnly: true,
+      blocks: [3],
     },
-    services: [],
-    isLoading: false,
-    rowToAdd: {},
-    addMode: false,
-    renderedCols: computed(() => {
-        return props.isEditing ? cols : cols.filter(col => col.name != 'actions')
-    })
-})
+    money: {
+      decimal: ".",
+      thousands: ",",
+      precision: 2,
+      masked: false,
+    },
+  },
+  services: [],
+  isLoading: false,
+  rowToAdd: {},
+  addMode: false,
+  renderedCols: computed(() => {
+    return props.isEditing ? cols : cols.filter((col) => col.name != "actions");
+  }),
+});
 
 const addRow = () => {
-    const itemTaxes = state.rowToAdd.taxes?.length ? state.rowToAdd.taxes : [];
-    if (props.isEditing && (!props.tableData.length || props.tableData.at(-1).concept))
+  const itemTaxes = state.rowToAdd.taxes?.length ? state.rowToAdd.taxes : [];
+  if (props.isEditing && (!props.tableData.length || props.tableData.at(-1).concept))
     props.tableData.push({
       product_name: state.rowToAdd?.name,
       concept: state.rowToAdd?.name,
@@ -164,43 +171,40 @@ const addRow = () => {
       discount: 0,
       price: state.rowToAdd.price?.value || 0,
       amount: 0,
-      taxes: [
-          ...itemTaxes,
-        { id: 'new'}
-      ],
+      taxes: [...itemTaxes, { id: "new" }],
     });
-}
+};
 
 const removeRow = (index, row) => {
-      const isConfirmed = confirm("Do you want to delete this?");
-      if (!isConfirmed) {
-        return;
-      }
-      const deleted = { ...row };
-      state.tableData.splice(index, 1);
-      emit("deleted", deleted);
-}
+  const isConfirmed = confirm("Do you want to delete this?");
+  if (!isConfirmed) {
+    return;
+  }
+  const deleted = { ...row };
+  props.tableData.splice(index, 1);
+  emit("deleted", deleted);
+};
 
 const setTax = (rowIndex, taxIndex, taxName) => {
-   const itemRow = props.tableData[rowIndex];
-   const tax = props.availableTaxes.find(availableTax => taxName == availableTax.name)
-   itemRow.taxes[taxIndex] = tax;
-   emit('taxes-updated', { rowIndex, taxes: itemRow.taxes })
-}
+  const itemRow = props.tableData[rowIndex];
+  const tax = props.availableTaxes.find((availableTax) => taxName == availableTax.name);
+  itemRow.taxes[taxIndex] = tax;
+  emit("taxes-updated", { rowIndex, taxes: itemRow.taxes });
+};
 
 const removeTax = (rowIndex, taxIndex) => {
   const itemRow = props.tableData[rowIndex];
   if (itemRow.taxes.length > 1) {
-    const taxes = itemRow.taxes.filter((_tax, index) => index !== taxIndex)
-    emit('taxes-updated', { rowIndex, taxes })
+    const taxes = itemRow.taxes.filter((_tax, index) => index !== taxIndex);
+    emit("taxes-updated", { rowIndex, taxes });
   }
-}
+};
 
 onMounted(() => {
   addRow();
-})
+});
 
-const { renderedCols, cleaveOptions } = toRefs(state)
+const { renderedCols, cleaveOptions } = toRefs(state);
 </script>
 
 <style lang="scss">

@@ -3,12 +3,14 @@
 namespace App\Domains\CRM\Models;
 
 use App\Domains\Loans\Models\Loan;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\Rent;
 use Database\Factories\ClientFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Invoice\Invoice;
 
@@ -16,19 +18,19 @@ class Client extends Model {
     use HasFactory;
 
     protected $fillable = [
-      'user_id', 
-      'team_id', 
-      'names', 
+      'user_id',
+      'team_id',
+      'names',
       'lastnames',
-      'display_name', 
-      'dni', 
-      'dni_type', 
-      'email', 
-      'cellphone', 
-      'address_details', 
+      'display_name',
+      'dni',
+      'dni_type',
+      'email',
+      'cellphone',
+      'address_details',
       'status'
     ];
-    protected $appends = ['fullName'];
+    protected $appends = ['fullName', 'isOwner'];
 
     const STATUS_INACTIVE = 'INACTIVE';
     const STATUS_ACTIVE = 'ACTIVE';
@@ -78,6 +80,10 @@ class Client extends Model {
       return $this->hasOne(Account::class);
     }
 
+    public function getIsOwnerAttribute() {
+      $this->properties()->count();
+    }
+
     // As tenant
 
     public function rents() {
@@ -96,9 +102,18 @@ class Client extends Model {
         }
     }
 
+    // stats
+    public function outstandingBalance() {
+      return $this->invoices()->sum('debt');
+    }
+
+    public function deposits() {
+      return $this->invoices()->category(PropertyInvoiceTypes::Deposit->name())->sum(DB::raw('total - debt'));
+    }
+
     /**
      * Determine the full name of the client
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Casts\Attribute
      */
 

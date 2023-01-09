@@ -3,13 +3,13 @@ import { Link, router } from "@inertiajs/vue3";
 import { AtField } from "atmosphere-ui";
 
 import InvoiceSimple from "./printTemplates/Simple.vue";
-import AppLayout from "../../../Components/templates/AppLayout.vue";
+import AppLayout from "@/Components/templates/AppLayout.vue";
+import InvoicePaymentOptions from "@/Components/templates/InvoicePaymentOptions.vue";
 import AccountingSectionNav from "../Partials/AccountingSectionNav.vue";
-import AppButton from "../../../Components/shared/AppButton.vue";
+import AppButton from "@/Components/shared/AppButton.vue";
 
 import { formatDate, formatMoney } from "@/utils";
 import { getInvoiceTypeUrl } from "./utils";
-import InvoicePaymentOptions from "../../Rents/Partials/InvoicePaymentOptions.vue";
 
 defineProps({
     invoice: {
@@ -47,7 +47,7 @@ defineProps({
         </template>
       </AccountingSectionNav>
     </template>
-    
+
     <div class="py-10 mx-auto space-y-4 max-w-7xl sm:px-6 lg:px-8">
         <div class="flex justify-between px-5 py-1 border rounded-md space bg-base-lvl-3">
           <section class="flex space-x-4">
@@ -62,7 +62,7 @@ defineProps({
                 </p>
             </AtField>
           </section>
-          
+
           <section class="flex space-x-4">
             <AtField label="Monto Adeudado">
                 <p class="text-xl">

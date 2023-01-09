@@ -1,78 +1,82 @@
 <script setup>
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import { AtBackgroundIconCard, AtButton, AtDashlide } from "atmosphere-ui";
+
 import IncomeSummaryWidget from "./Partials/IncomeSummaryWidget.vue";
 import WelcomeWidget from "./Partials/WelcomeWidget.vue";
+import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
+
 import { formatMoney } from "@/utils/formatMoney";
-import InvoiceCard from "../Rents/Partials/InvoiceCard.vue";
 
 const props = defineProps({
-    revenue: {
-        type: Object,
-        default() {
-            return {
-                previousYear: {
-                    values: []
-                },
-                currentYear: {
-                    values: []
-                }
-            }
-        }
+  revenue: {
+    type: Object,
+    default() {
+      return {
+        previousYear: {
+          values: [],
+        },
+        currentYear: {
+          values: [],
+        },
+      };
     },
-    user: {
-        type: Object,
-        required: true,
-    },
-    activeLoanClients: {
-        type: Number
-    },
-    loanCapital: {
-        type: Number
-    },
-    loanExpectedInterest: {
-        type: Number
-    },
-    loanPaidInterest: {
-        type: Number
-    },
-    bank: {
-        type: Number
-    },
-    dailyBox: {
-        type: Number
-    },
-    cashOnHand: {
-        type: Number
-    },
-    nextInvoices: {
-        type: Array,
-    },
-    debtors: {
-        type: Array,
-    },
+  },
+  user: {
+    type: Object,
+    required: true,
+  },
+  activeLoanClients: {
+    type: Number,
+  },
+  loanCapital: {
+    type: Number,
+  },
+  loanExpectedInterest: {
+    type: Number,
+  },
+  loanPaidInterest: {
+    type: Number,
+  },
+  bank: {
+    type: Number,
+  },
+  dailyBox: {
+    type: Number,
+  },
+  cashOnHand: {
+    type: Number,
+  },
+  nextInvoices: {
+    type: Array,
+  },
+  debtors: {
+    type: Array,
+  },
 });
 
-const welcomeCards = [{
-        label: 'Clientes con Prestamos',
-        value: props.activeLoanClients,
-        icon: 'fa-users'
-    }, {
-
-        label: 'Capital Prestado',
-        icon: 'fa-money',
-        value: formatMoney(props.loanCapital)
-    }, {
-
-        label: 'Interes Esperado',
-        icon: 'fa-wallet',
-        value: formatMoney(props.loanExpectedInterest)
-    }, {
-        label: 'Total Interes pagado',
-        value: formatMoney(props.loanPaidInterest),
-        accent: true,
-    }
-]
+const welcomeCards = [
+  {
+    label: "Clientes con Prestamos",
+    value: props.activeLoanClients,
+    icon: "fa-users",
+  },
+  {
+    label: "Capital Prestado",
+    icon: "fa-money",
+    value: formatMoney(props.loanCapital),
+  },
+  {
+    label: "Interes Esperado",
+    icon: "fa-wallet",
+    value: formatMoney(props.loanExpectedInterest),
+  },
+  {
+    label: "Total Interes pagado",
+    value: formatMoney(props.loanPaidInterest),
+    accent: true,
+  },
+];
 
 const slideOptions = [
   {
@@ -94,53 +98,53 @@ const slideOptions = [
 ];
 
 const comparisonRevenue = {
-    headers: {
-        gapName: "Year",
-        previous: props.revenue.previousYear.total,
-        current: props.revenue.currentYear.total,
+  headers: {
+    gapName: "Year",
+    previous: props.revenue.previousYear.total,
+    current: props.revenue.currentYear.total,
+  },
+  options: {
+    chart: {
+      id: "vuechart-example",
     },
-    options: {
-        chart: {
-            id: "vuechart-example",
-        },
-        stroke: {
-            curve: "smooth",
-        },
-        dropShadow: {
-            enabled: true,
-            top: 3,
-            left: 0,
-            blur: 1,
-            opacity: 0.5,
-        },
-        colors: ["#fa6b88", "#80CDFE"],
+    stroke: {
+      curve: "smooth",
     },
-    series: [
-        {
-            name: "previous year",
-            data: props.revenue.previousYear.values.map(item => item.total),
-        },
-        {
-            name: "current year",
-            data: props.revenue.currentYear.values.map(item => item.total),
-        },
-    ],
+    dropShadow: {
+      enabled: true,
+      top: 3,
+      left: 0,
+      blur: 1,
+      opacity: 0.5,
+    },
+    colors: ["#fa6b88", "#80CDFE"],
+  },
+  series: [
+    {
+      name: "previous year",
+      data: props.revenue.previousYear.values.map((item) => item.total),
+    },
+    {
+      name: "current year",
+      data: props.revenue.currentYear.values.map((item) => item.total),
+    },
+  ],
 };
-
 </script>
 
 <template>
   <AppLayout title="Dashboard">
     <main class="p-5 mx-auto text-gray-500 sm:px-6 lg:px-8">
-        <WelcomeWidget
-            message="Bienvenido a PrestApp"
-            :username="user.name"
-            :cards="welcomeCards"
-        />
+      <WelcomeWidget
+        message="Bienvenido a PrestApp"
+        :username="user.name"
+        :cards="welcomeCards"
+      />
       <section class="flex flex-col mt-8 lg:space-x-4 lg:flex-row">
-        <IncomeSummaryWidget class="order-2 mt-4 lg:w-8/12 lg:mt-0 lg:order-1"
-            :chart="comparisonRevenue"
-            :headerInfo="comparisonRevenue.headers"
+        <IncomeSummaryWidget
+          class="order-2 mt-4 lg:w-8/12 lg:mt-0 lg:order-1"
+          :chart="comparisonRevenue"
+          :headerInfo="comparisonRevenue.headers"
         />
         <article class="order-1 space-y-5 lg:w-5/12 lg:order-2">
           <AtBackgroundIconCard
@@ -180,28 +184,28 @@ const comparisonRevenue = {
 
             <template #debtors>
               <InvoiceCard
-              v-for="invoice in debtors"
-              :invoice="invoice"
-              :actions="{
-                payment: {
-                  label: 'Registrar Pago',
-                },
-                send: {
-                  label: 'Enviar Correo'
-                },
-                download: {
-                  label: 'Descargar PDF'
-                },
-                view: {
-                  label: 'Ver factura'
-                },
-                delete: {
-                  label: 'Eliminar Factura'
-                }
-              }"
-              @action="handleActions($event, invoice)"
-            />
-                {{ debtors }}
+                v-for="invoice in debtors"
+                :invoice="invoice"
+                :actions="{
+                  payment: {
+                    label: 'Registrar Pago',
+                  },
+                  send: {
+                    label: 'Enviar Correo',
+                  },
+                  download: {
+                    label: 'Descargar PDF',
+                  },
+                  view: {
+                    label: 'Ver factura',
+                  },
+                  delete: {
+                    label: 'Eliminar Factura',
+                  },
+                }"
+                @action="handleActions($event, invoice)"
+              />
+              {{ debtors }}
             </template>
 
             <template #pagos>
@@ -214,17 +218,17 @@ const comparisonRevenue = {
                       label: 'Registrar Pago',
                     },
                     send: {
-                      label: 'Enviar Correo'
+                      label: 'Enviar Correo',
                     },
                     download: {
-                      label: 'Descargar PDF'
+                      label: 'Descargar PDF',
                     },
                     view: {
-                      label: 'Ver factura'
+                      label: 'Ver factura',
                     },
                     delete: {
-                      label: 'Eliminar Factura'
-                    }
+                      label: 'Eliminar Factura',
+                    },
                   }"
                   @action="handleActions($event, invoice)"
                 />

@@ -23,6 +23,7 @@ class Rent extends Transactionable implements IPayableDocument {
         'user_id',
         'owner_id',
         'property_id',
+        'unit_id',
         'client_id',
         'deposit',
         'deposit_due',
@@ -48,12 +49,23 @@ class Rent extends Transactionable implements IPayableDocument {
     protected $creditCategory = 'expected_payments_customers';
     protected $creditAccount = 'Customer Demand Deposits';
 
+    protected static function boot() {
+      parent::boot();
+      static::creating(function ($rent) {
+          $rent->next_invoice_date = $rent->next_invoice_date ?? $rent->first_invoice_date;
+      });
+  }
+
     public function client() {
-        return $this->belongsTo(Client::class, 'client_id');
+        return $this->belongsTo(Client::class);
     }
 
     public function property() {
-        return $this->belongsTo(Property::class, 'property_id');
+        return $this->belongsTo(Property::class);
+    }
+
+    public function unit() {
+      return $this->belongsTo(PropertyUnit::class);
     }
 
     public function invoices() {

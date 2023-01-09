@@ -3,6 +3,7 @@
 namespace App\Domains\Properties\Models;
 
 use App\Domains\CRM\Models\Client;
+use Database\Factories\PropertyUnitFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Insane\Journal\Traits\HasResourceAccounts;
@@ -35,7 +36,22 @@ class PropertyUnit extends Model {
       return $this->belongsTo(Client::class, 'owner_id');
     }
 
+    public function property() {
+      return $this->belongsTo(Property::class);
+    }
+
     public function contract() {
       return $this->hasOne(Rent::class)->latestOfMany('created_at');
+    }
+
+
+    /**
+     * Create a new factory instance for the model.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    protected static function newFactory()
+    {
+        return PropertyUnitFactory::new();
     }
 }

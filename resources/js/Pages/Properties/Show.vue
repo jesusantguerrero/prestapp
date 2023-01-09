@@ -9,10 +9,10 @@ import IconMarker from "@/Components/icons/IconMarker.vue";
 import IconCoins from "@/Components/icons/IconCoins.vue";
 import IconPersonSafe from "@/Components/icons/IconPersonSafe.vue";
 
-import { formatMoney, formatDate } from "@/utils";
-import { ILoanInstallment } from "../../Modules/loans/loanInstallmentEntity";
+import { formatMoney } from "@/utils";
+import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
 import PropertySectionNav from "../Properties/Partials/PropertySectionNav.vue";
-import { IProperty } from "../../Modules/properties/propertyEntity";
+import { IProperty } from "@/Modules/properties/propertyEntity";
 import { ElTag } from "element-plus";
 import { AtBackgroundIconCard } from "atmosphere-ui";
 import ContractCard from "./Partials/ContractCard.vue";
@@ -159,6 +159,26 @@ const refresh = () => {
               title="Dias de mora"
               :value="0"
             />
+          </section>
+
+          <section class="space-y-4">
+            <div
+              v-for="unit in properties.units"
+              class="flex w-full rounded-md bg-white px-4 py-2 justify-between"
+            >
+              <h4>
+                {{ unit.name || "Sin nombre" }}
+                <p>
+                  {{ unit.price }}
+                </p>
+              </h4>
+              <div>
+                {{ unit.status }}
+                <p>
+                  {{ unit.price }}
+                </p>
+              </div>
+            </div>
           </section>
 
           <ContractCard

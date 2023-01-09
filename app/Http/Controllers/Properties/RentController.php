@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Properties;
 
 use App\Domains\CRM\Services\ClientService;
+use App\Domains\Properties\Actions\GenerateInvoices;
 use App\Domains\Properties\Models\Rent;
 use App\Domains\Properties\Services\PropertyService;
 use App\Domains\Properties\Services\RentService;
+use App\Http\Controllers\InertiaController;
 use Illuminate\Http\Request;
 use Insane\Journal\Models\Invoice\Invoice;
 
@@ -33,7 +35,6 @@ class RentController extends InertiaController
         $this->includes = ['client', 'property'];
         $this->filters = [];
         $this->resourceName= "loans";
-
     }
 
     public function create(Request $request) {
@@ -58,6 +59,7 @@ class RentController extends InertiaController
         ];
     }
 
+    // Payments
     public function payInvoice(Rent $rent, Invoice $invoice) {
         $postData = $this->getPostData(request());
         if ($invoice->invoiceable_id == $rent->id) {
@@ -71,5 +73,9 @@ class RentController extends InertiaController
             ]));
             $rent->client->checkStatus();
         }
+    }
+
+    public function generateNextInvoice(Rent $rent) {
+      RentService::generateNextInvoice($rent);
     }
 }

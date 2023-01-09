@@ -1,13 +1,14 @@
 <?php
 
 use App\Http\Controllers\BackgroundController;
-use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\LoanController;
-use App\Http\Controllers\LoanProductController;
-use App\Http\Controllers\PropertyController;
-use App\Http\Controllers\RentController;
 use App\Http\Controllers\SettingsController;
+
+use App\Http\Controllers\CRM\ClientController;
+use App\Http\Controllers\Loans\LoanController;
+use App\Http\Controllers\Properties\PropertyController;
+use App\Http\Controllers\Properties\RentController;
+
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -43,9 +44,19 @@ Route::middleware([
 ])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
+     // settings
+     Route::resource('/settings', SettingsController::class);
+     Route::get('/settings/tab/{tabName}', [SettingsController::class, 'index']);
+     Route::get('/settings/{name}', [SettingsController::class, 'section']);
+
+     Route::apiResource('/api/settings', SettingsController::class);
+     Route::apiResource('/api/taxes', TaxController::class);
+
     // CRM
     Route::resource('clients', ClientController::class);
     Route::get('/clients/{client}/{section}', [ClientController::class, 'getSection']);
+
+    // Business
     // Tenant
     Route::get('/clients/{client}/rents/{rent}/end', [ClientController::class, 'endRent'])->name('tenant.end-rent');;
     Route::put('/clients/{client}/rents/{rent}/end', [ClientController::class, 'endRentAction'])->name('tenant.end-rent-action');
@@ -64,15 +75,9 @@ Route::middleware([
 
     // Properties
     Route::get('properties/overview', PropertyController::class);
+    Route::get('properties/management-tools', [PropertyController::class, 'managementTools']);
     Route::resource('properties', PropertyController::class);
     Route::resource('rents', RentController::class);
     Route::post('rents/{rent}/invoices/{invoice}/pay', [RentController::class, 'payInvoice']);
-
-    // settings
-    Route::resource('/settings', SettingsController::class);
-    Route::get('/settings/tab/{tabName}', [SettingsController::class, 'index']);
-    Route::get('/settings/{name}', [SettingsController::class, 'section']);
-
-    Route::apiResource('/api/settings', SettingsController::class);
-    Route::apiResource('/api/taxes', TaxController::class);
+    Route::post('rents/{rent}/generate-next-invoice', [RentController::class, 'generateNextInvoice']);
 });

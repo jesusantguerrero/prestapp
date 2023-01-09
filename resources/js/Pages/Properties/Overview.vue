@@ -3,6 +3,7 @@ import { AtBackgroundIconCard, AtButton, AtTable } from "atmosphere-ui";
 import { router } from "@inertiajs/core";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
+import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import BudgetProgress from "@/Components/BudgetProgress.vue";
 import PropertySectionNav from "./Partials/PropertySectionNav.vue";
@@ -40,6 +41,9 @@ const props = defineProps({
   },
   cashOnHand: {
     type: Object,
+  },
+  nextInvoices: {
+    type: Array,
   },
 });
 
@@ -106,9 +110,9 @@ const comparisonRevenue = {
     <template #header>
       <PropertySectionNav>
         <template #actions>
-          <AppButton variant="inverse" @click="router.visit(route('properties.create'))"
-            >Agregar Propiedad</AppButton
-          >
+          <AppButton variant="inverse" @click="router.visit(route('properties.create'))">
+            Agregar Propiedad
+          </AppButton>
         </template>
       </PropertySectionNav>
     </template>
@@ -171,7 +175,9 @@ const comparisonRevenue = {
               Agregar Contrato
             </AppButton>
           </header>
-          <AtTable :cols="cols" :table-data="[]" />
+          <section class="px-5 space-y-4">
+            <InvoiceCard v-for="invoice in nextInvoices" :invoice="invoice" />
+          </section>
         </article>
 
         <article class="order-1 space-y-5 lg:w-5/12 lg:order-2">
@@ -179,7 +185,7 @@ const comparisonRevenue = {
             class="text-primary bg-base-lvl-3 h-36"
             icon="fas fa-wallet"
             :value="formatMoney(props.cashOnHand.balance | 0)"
-            title="Pagos de alquileres"
+            title="Balance en cuenta de renta"
           >
             <template #action>
               <AtButton

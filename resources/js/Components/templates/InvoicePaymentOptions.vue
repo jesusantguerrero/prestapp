@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { router } from "@inertiajs/vue3";
 import { ref, computed, nextTick } from "vue";
-import { ILoanInstallment } from "../../Modules/loans/loanInstallmentEntity";
+
 import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
 
-const { openModal  } = usePaymentModal() 
+const { openModal } = usePaymentModal();
 
 interface Props {
   invoice: Object;
@@ -12,29 +12,26 @@ interface Props {
 
 const props = defineProps<Props>();
 const actions = {
-        payment: {
-          label: 'Registrar Pago',
-        },
-        send: {
-          label: 'Enviar Correo'
-        },
-        download: {
-          label: 'Descargar PDF'
-        },
-        view: {
-          label: 'Ver factura'
-        },
-        delete: {
-          label: 'Eliminar Factura'
-        }
+  payment: {
+    label: "Registrar Pago",
+  },
+  send: {
+    label: "Enviar Correo",
+  },
+  download: {
+    label: "Descargar PDF",
+  },
+  view: {
+    label: "Ver factura",
+  },
+  delete: {
+    label: "Eliminar Factura",
+  },
 };
 
 const selectedPayment = ref<Object | null>(null);
 const paymentConcept = computed(() => {
-  return (
-    selectedPayment.value &&
-    `Pago ${props.invoice.id} pago`
-  );
+  return selectedPayment.value && `Pago ${props.invoice.id} pago`;
 });
 
 const onPayment = (invoice: Object) => {
@@ -49,40 +46,38 @@ const onPayment = (invoice: Object) => {
   nextTick(() => {
     openModal({
       data: {
-        title: 'Pagar Renta',
+        title: "Pagar Renta",
         payment: selectedPayment.value,
         endpoint: `/invoices/${props.invoice?.id}/payment`,
         due: selectedPayment.value?.amount,
-        defaultConcept: paymentConcept.value
-      }
-    })
-  })
+        defaultConcept: paymentConcept.value,
+      },
+    });
+  });
 };
 
-const linkToPrint = ref('');
+const linkToPrint = ref("");
 const invoiceLink = ref();
 const onDownload = (invoice) => {
-  linkToPrint.value = `/invoices/${invoice.id}/print`
-  console.log(linkToPrint.value, invoice);
+  linkToPrint.value = `/invoices/${invoice.id}/print`;
   nextTick(() => {
-    invoiceLink.value.click()
-    linkToPrint.value = ''
-  })
-}
+    invoiceLink.value.click();
+    linkToPrint.value = "";
+  });
+};
 
 const handleActions = (actionName, invoice) => {
-  switch(actionName) {
-    case 'payment': 
+  switch (actionName) {
+    case "payment":
       onPayment(invoice);
-    break;
-    case 'download': 
+      break;
+    case "download":
       onDownload(invoice);
-    break;
+      break;
   }
-  if (actionName == 'payment') {
+  if (actionName == "payment") {
   }
-}
-
+};
 
 const refresh = () => {
   router.reload();
@@ -91,7 +86,7 @@ const refresh = () => {
 
 <template>
   <ElDropdown v-if="actions" @command="handleActions($event, invoice)">
-    <button class="px-5 rounded-md hover:bg-base-lvl-2">
+    <button class="px-5 py-2 rounded-md hover:bg-base-lvl-2">
       <i class="fa fa-ellipsis-h" />
     </button>
     <template #dropdown>
