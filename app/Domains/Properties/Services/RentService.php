@@ -3,6 +3,7 @@
 namespace App\Domains\Properties\Services;
 
 use App\Domains\Accounting\Helpers\InvoiceHelper;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Properties\Models\Rent;
@@ -27,6 +28,21 @@ class RentService {
         $rent->unit->update(['status' => PropertyUnit::STATUS_RENTED]);
         return self::createDepositTransaction($rent, $rentData);
       }
+    }
+
+    public static function allowedUpdate(mixed $rentData) {
+      $validData = [];
+      $cantUpdate = collect([
+        'rent_id',
+        'property_id'
+      ]);
+
+      foreach ($rentData as $key => $value) {
+        if (!$cantUpdate->contains($key)) {
+          $validData[$key] = $value;
+        }
+      }
+      return $validData;
     }
 
     public static function createDepositTransaction($rent, $rentData) {
@@ -68,6 +84,7 @@ class RentService {
         'invoiceable_type' => Rent::class,
         'date' => $formData['date'] ?? date('Y-m-d'),
         'type' => Invoice::DOCUMENT_TYPE_INVOICE,
+        'category_type' => $formData['category_type'] ?? PropertyInvoiceTypes::Rent->name(),
         "invoice_account_id" => $rent->property->account_id,
         'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
         'total' =>  $formData['amount'] ?? $rent->amount,

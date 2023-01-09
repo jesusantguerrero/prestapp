@@ -75,7 +75,7 @@ class InertiaController extends Controller {
     public function update(Request $request, int $id) {
         $resource = $this->model::findOrFail($id);
         $postData = $request->post();
-        $resource->update($postData);
+        $resource = $this->updateResource($resource, $postData);
         $this->afterSave($postData, $resource);
 
         if ($this->responseType == 'inertia') {
@@ -83,6 +83,10 @@ class InertiaController extends Controller {
         } else {
             return $resource;
         }
+    }
+
+    protected function updateResource($resource, $postData) {
+      return $resource->update($postData);
     }
 
     public function destroy(Request $request, int $id) {

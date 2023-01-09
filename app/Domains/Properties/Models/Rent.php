@@ -39,6 +39,7 @@ class Rent extends Transactionable implements IPayableDocument {
         'start_date',
         'move_out_at',
         'move_out_notice',
+        'notes',
         'generated_invoice_dates',
     ];
 

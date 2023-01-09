@@ -10,7 +10,7 @@ return [
     "payments_inertia_path" => "Journal/Payments",
     "accounts_categories" => [
         [
-            "resource" => "categories",
+            "resource_type" => "categories",
             "display_id" => "assets",
             "number" => 10000,
             "name" => "Assets",
@@ -18,7 +18,7 @@ return [
             "depth" => 0,
             "childs" => [
                 [
-                    "resource" => "categories",
+                    "resource_type" => "categories",
                     "display_id" => "cash_and_bank",
                     "number" => 1100,
                     "name" => "Cash and bank",
@@ -26,7 +26,7 @@ return [
                     "depth" => 1,
                 ],
                 [
-                    "resource" => "categories",
+                    "resource_type" => "categories",
                     "display_id" => "money_in_transit",
                     "number" => 1200,
                     "name" => "Money in Transit",
@@ -34,7 +34,7 @@ return [
                     "depth" => 1,
                 ],
                 [
-                    "resource" => "categories",
+                    "resource_type" => "categories",
                     "display_id" => "expected_payments_customers",
                     "number" => 1300,
                     "name" => "Expected Payments from Customers",
@@ -42,7 +42,7 @@ return [
                     "depth" => 1,
                 ],
                 [
-                  "resource" => "categories",
+                  "resource_type" => "categories",
                   "display_id" => "expected_commissions_owners",
                   "number" => 1400,
                   "name" => "Expected commissions from owners",
@@ -50,7 +50,7 @@ return [
                   "depth" => 1,
                 ],
                 [
-                  "resource" => "categories",
+                  "resource_type" => "categories",
                   "display_id" => "expected_payments_lenders",
                   "number" => 1500,
                   "name" => "Expected payments from lenders",
@@ -58,7 +58,7 @@ return [
                   "depth" => 1,
                 ],
                 [
-                    "resource" => "categories",
+                    "resource_type" => "categories",
                     "display_id" => "inventory",
                     "number" => 1600,
                     "name" => "Inventory",
@@ -68,7 +68,7 @@ return [
             ]
         ],
         [
-            "resource" => "categories",
+            "resource_type" => "categories",
             "name" => "Liabilities & Credit Cards",
             "number" => 20000,
             "display_id" => "liabilities",
@@ -76,7 +76,7 @@ return [
             "depth" => 0,
             "childs" => [
                 [
-                    "resource" => "categories",
+                    "resource_type" => "categories",
                     "display_id" => "expected_payments_vendors",
                     "number" => 2100,
                     "name" => "Expected Payments to Vendors",
@@ -84,14 +84,14 @@ return [
                     "depth" => 1,
                 ],
                 [
-                  "resource" => "categories",
+                  "resource_type" => "categories",
                   "display_id" => "rent",
                   "number" => 2200,
                   "name" => "Last Month's Rent",
                   "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
                 ],
                 [
-                  "resource" => "categories",
+                  "resource_type" => "categories",
                   "display_id" => "customer_prepayments",
                   "number" => 2300,
                   "name" => "Customer Prepayments and Customer Credits",
@@ -99,28 +99,28 @@ return [
                   "depth" => 1,
                 ],
                 [
-                  "resource" => "categories",
+                  "resource_type" => "categories",
                   "display_id" => "security_deposits",
                   "number" => 2400,
                   "name" => "Security deposits",
                   "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
                 ],
                 [
-                  "resource" => "categories",
+                  "resource_type" => "categories",
                   "display_id" => "owner_held_security_deposits",
                   "number" => 2500,
                   "name" => "Owner held security deposits",
                   "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
                 ],
                 [
-                  "resource" => "categories",
+                  "resource_type" => "categories",
                   "display_id" => "owner_held_security_deposits",
                   "number" => 2600,
                   "name" => "Owner held security deposits",
                   "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
                 ],
                 [
-                    "resource" => "categories",
+                    "resource_type" => "categories",
                     "display_id" => "expected_payments_owners",
                     "number" => 2700,
                     "name" => "Expected Payments to Owners",
@@ -128,7 +128,7 @@ return [
                     "depth" => 1,
                 ],
                 [
-                    "resource" => "categories",
+                    "resource_type" => "categories",
                     "display_id" => "sales_taxes",
                     "number" => 2800,
                     "name" => "Sales Taxes",
@@ -136,7 +136,7 @@ return [
                     "depth" => 1,
                 ],
                 [
-                    "resource" => "categories",
+                    "resource_type" => "categories",
                     "display_id" => "owed_commissions",
                     "number" => 2900,
                     "name" => "Due to You and Others Business Owners",
@@ -144,7 +144,7 @@ return [
                     "depth" => 1,
                 ],
                 [
-                    "resource" => "categories",
+                    "resource_type" => "categories",
                     "display_id" => "due_to_business",
                     "number" => 2900,
                     "name" => "Due to You and Others Business Owners",
@@ -154,7 +154,7 @@ return [
               ]
         ],
         [
-          "resource" => "categories",
+          "resource_type" => "categories",
           "name" => "Equity",
           "number" => 30000,
           "display_id" => "equity",
@@ -162,7 +162,7 @@ return [
           "depth" => 0,
           "childs" => [
               [
-                  "resource" => "categories",
+                  "resource_type" => "categories",
                   "display_id" => "business_owner_contribution",
                   "number" => 3100,
                   "name" => "Business Owner Contribution and Drawing",
@@ -170,7 +170,7 @@ return [
                   "depth" => 1
               ],
               [
-                  "resource" => "categories",
+                  "resource_type" => "categories",
                   "display_id" => "retained_earnings",
                   "number" => 3200,
                   "name" => "Retained Earnings: Profit",
@@ -180,7 +180,7 @@ return [
           ]
         ],
         [
-            "resource" => "categories",
+            "resource_type" => "categories",
             "name" => "Income",
             "number" => 40000,
             "display_id" => "income",
@@ -188,7 +188,7 @@ return [
             "depth" => 0,
             "childs" => [
                 [
-                    "resource" => "categories",
+                    "resource_type" => "categories",
                     "display_id" => "sales",
                     "number" => 4100,
                     "name" => "Sales",
@@ -196,7 +196,7 @@ return [
                     "depth" => 1,
                 ],
                 [
-                  "resource" => "categories",
+                  "resource_type" => "categories",
                   "display_id" => "commission",
                   "number" => 4200,
                   "name" => "Commission",
@@ -204,7 +204,7 @@ return [
                   "depth" => 1,
                 ],
                 [
-                  "resource" => "categories",
+                  "resource_type" => "categories",
                   "display_id" => "lending",
                   "number" => 4300,
                   "name" => "Lending",
@@ -212,7 +212,7 @@ return [
                   "depth" => 1,
                 ],
                 [
-                    "resource" => "categories",
+                    "resource_type" => "categories",
                     "display_id" => "discount",
                     "number" => 4400,
                     "name" => "Discounts",
@@ -220,7 +220,7 @@ return [
                     "depth" => 1,
                 ],
                 [
-                    "resource" => "categories",
+                    "resource_type" => "categories",
                     "display_id" => "other_income",
                     "number" => 4500,
                     "name" => "Other Income",
@@ -228,7 +228,7 @@ return [
                     "depth" => 1,
                 ],
                 [
-                    "resource" => "categories",
+                    "resource_type" => "categories",
                     "display_id" => "uncategorized_incomes",
                     "number" => 4600,
                     "name" => "Uncategorized Income",
@@ -238,7 +238,7 @@ return [
             ]
         ],
         [
-            "resource" => "categories",
+            "resource_type" => "categories",
             "name" => "Expense",
             "number" => 50000,
             "display_id" => "expenses",
@@ -246,7 +246,7 @@ return [
             "depth" => 0,
             "childs" => [
                 [
-                    "resource" => "categories",
+                    "resource_type" => "categories",
                     "display_id" => "operating_expense",
                     "number" => 5100,
                     "name" => "Operating Expense",
@@ -254,7 +254,7 @@ return [
                     "depth" => 1,
                 ],
                 [
-                    "resource" => "categories",
+                    "resource_type" => "categories",
                     "display_id" => "cost_goods_sold",
                     "number" => 5200,
                     "name" => "Cost of Goods Sold",
@@ -262,7 +262,7 @@ return [
                     "depth" => 1,
                 ],
                 [
-                    "resource" => "categories",
+                    "resource_type" => "categories",
                     "display_id" => "payment_processing_fee",
                     "number" => 5300,
                     "name" => "Payment Processing Fee",
@@ -270,7 +270,7 @@ return [
                     "depth" => 1,
                 ],
                 [
-                    "resource" => "categories",
+                    "resource_type" => "categories",
                     "display_id" => "payroll_expense",
                     "number" => 5400,
                     "name" => "Payroll Expense",
@@ -278,7 +278,7 @@ return [
                     "depth" => 1,
                 ],
                 [
-                    "resource" => "categories",
+                    "resource_type" => "categories",
                     "display_id" => "uncategorized_expense",
                     "number" => 5500,
                     "name" => "Uncategorized Expense",
@@ -286,7 +286,7 @@ return [
                     "depth" => 1,
                 ],
                 [
-                    "resource" => "categories",
+                    "resource_type" => "categories",
                     "display_id" => "loss_foreign_exchange",
                     "number" => 5600,
                     "name" => "Loss on Foreign Exchange",

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Properties;
 
 use App\Domains\CRM\Services\ClientService;
-use App\Domains\Properties\Actions\GenerateInvoices;
 use App\Domains\Properties\Models\Rent;
 use App\Domains\Properties\Services\PropertyService;
 use App\Domains\Properties\Services\RentService;
@@ -50,6 +49,12 @@ class RentController extends InertiaController
     protected function createResource(Request $request, $postData)
     {
         return RentService::createRent($postData);
+    }
+
+    protected function updateResource($resource, $postData)
+    {
+        $resource->update(RentService::allowedUpdate($postData));
+        return $resource;
     }
 
     protected function getEditProps(Request $request, $id)
