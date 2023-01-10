@@ -87,8 +87,9 @@ trait Querify
 
     private function getRelationships($relationships)
     {
+      $fullRelations = [];
+
         if ($this->includes && count($includes = $this->includes)) {
-            $fullRelations = [];
             foreach ($includes as $relation => $attrs) {
                 if (is_array($attrs)) {
                     $this->modelQuery->leftJoin($relation, $this->model->getTable().".".$attrs['pk'], $relation.".".$attrs['fk']);
@@ -97,12 +98,12 @@ trait Querify
                     $fullRelations[] = $attrs;
                 }
             }
-
-            if ($relationships && count($relationships = explode(',', $relationships))) {
-                $fullRelations = array_unique(array_merge($relationships, $fullRelations));
-            }
-            $this->modelQuery->with($fullRelations);
         }
+
+        if ($relationships && count($relationships = explode(',', $relationships))) {
+            $fullRelations = array_unique(array_merge($relationships, $fullRelations));
+        }
+        $this->modelQuery->with($fullRelations);
     }
 
     private function getFilters($filters)
