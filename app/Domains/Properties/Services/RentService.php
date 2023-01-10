@@ -56,6 +56,7 @@ class RentService {
         "items" => [[
           "name" => "Depositos de $rent->address",
           "concept" => "Depositos de $rent->address",
+          "account_id" => $rent->client_account_id,
           "quantity" => 1,
           "price" => $rent->deposit,
           "amount" => $rent->deposit,
@@ -126,8 +127,7 @@ class RentService {
 
     //  payments / invoices
     public static function invoices($teamId, $statuses = []) {
-      $query = DB::table('invoices')
-        ->selectRaw('clients.names contact, clients.id contact_id, invoices.debt, invoices.due_date, invoices.id id, invoices.concept')
+      $query = Invoice::selectRaw('clients.names contact, clients.id contact_id, invoices.debt, invoices.due_date, invoices.id id, invoices.concept')
         ->where([
           'invoices.team_id' => $teamId,
           'invoices.type' => 'INVOICE',

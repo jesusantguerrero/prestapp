@@ -7,9 +7,9 @@ import AppSectionHeader from "@/Components/AppSectionHeader.vue";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import InvoiceTable from "@/Components/templates/InvoiceTable";
+import PropertySectionNav from "./Partials/PropertySectionNav.vue";
 
 import { formatMoney, formatDate } from "@/utils";
-import PropertySectionNav from "./Partials/PropertySectionNav.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 
 const props = defineProps({
