@@ -113,16 +113,9 @@ return [
                   "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
                 ],
                 [
-                  "resource_type" => "categories",
-                  "display_id" => "owner_held_security_deposits",
-                  "number" => 2600,
-                  "name" => "Owner held security deposits",
-                  "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
-                ],
-                [
                     "resource_type" => "categories",
                     "display_id" => "expected_payments_owners",
-                    "number" => 2700,
+                    "number" => 2600,
                     "name" => "Expected Payments to Owners",
                     "Description" => "Use this to track the balance of what you owe owners (i.e. suppliers, online subscriptions providers) after you accepted their service or receive items for which you have not yet paid. Journal in Wave are already tracked in the Accounts Payable category",
                     "depth" => 1,
@@ -130,7 +123,7 @@ return [
                 [
                     "resource_type" => "categories",
                     "display_id" => "sales_taxes",
-                    "number" => 2800,
+                    "number" => 2700,
                     "name" => "Sales Taxes",
                     "Description" => "Use this to track the sales taxes you have charged to customers during a sale, and sales tax amounts you have remitted to the government. The balance of this category indicates how much you have to remit to the government. This category can also be used to track sales taxes you been charged on purchases, so that you can reduce how much sales taxes you have to remit to the government. If you create a sales tax in Wave, a category here is created for you automatically.",
                     "depth" => 1,
@@ -138,7 +131,7 @@ return [
                 [
                     "resource_type" => "categories",
                     "display_id" => "owed_commissions",
-                    "number" => 2900,
+                    "number" => 2800,
                     "name" => "Due to You and Others Business Owners",
                     "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
                     "depth" => 1,

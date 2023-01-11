@@ -30,14 +30,14 @@ export default [
     {
       name: 'owner',
       label: 'Dueño',
-      class: "text-center",
+      class: "text-left",
       headerClass: "text-center",
       minWidth: 200,
       render(row: IProperty) {
           const ownerName = row.owner.names + ' ' + row.owner.lastnames
           const initials = row.owner.names[0] + row.owner.lastnames[0];
 
-          return h('div', { class: 'flex items-center space-x-2 justify-center' }, [
+          return h('div', { class: 'flex items-center space-x-2' }, [
               h(ElAvatar, { shape: 'circle' }, initials),
               h('span', ownerName)
           ]);

@@ -165,23 +165,33 @@ const comparisonRevenue = {
       </header>
 
       <section class="flex flex-col mt-8 lg:space-x-4 lg:flex-row">
-        <article class="rounded-md bg-base-lvl-3 lg:w-7/12">
-          <header class="flex justify-between px-5 py-2 text-body-1">
-            <h4 class="text-xl font-bold">Proximos pagos</h4>
-            <AppButton
-              variant="inverse"
-              @click="router.visit(route('properties.create'))"
-            >
-              Agregar Contrato
-            </AppButton>
-          </header>
-          <section class="px-5 space-y-4">
-            <InvoiceCard v-for="invoice in nextInvoices" :invoice="invoice" />
-          </section>
-        </article>
+        <section class="lg:w-7/12 space-y-4">
+          <IncomeSummaryWidget
+            class="order-2 mt-4 lg:w-full lg:mt-0 lg:order-1"
+            :style="{ height: '350px' }"
+            :chart="comparisonRevenue"
+            :headerInfo="comparisonRevenue.headers"
+            :sections="['Rent', 'Deposit', 'Property expenses']"
+          />
+
+          <article class="rounded-md bg-base-lvl-3">
+            <header class="flex justify-between px-5 py-2 text-body-1">
+              <h4 class="text-xl font-bold">Proximos pagos</h4>
+              <AppButton
+                variant="inverse"
+                @click="router.visit(route('properties.create'))"
+              >
+                Agregar Contrato
+              </AppButton>
+            </header>
+            <section class="px-5 space-y-4">
+              <InvoiceCard v-for="invoice in nextInvoices" :invoice="invoice" />
+            </section>
+          </article>
+        </section>
 
         <article class="order-1 space-y-5 lg:w-5/12 lg:order-2">
-          <AtBackgroundIconCard
+          <!-- <AtBackgroundIconCard
             class="text-primary bg-base-lvl-3 h-36"
             icon="fas fa-wallet"
             :value="formatMoney(props.cashOnHand.balance | 0)"
@@ -195,7 +205,7 @@ const comparisonRevenue = {
                 Add Transaction
               </AtButton>
             </template>
-          </AtBackgroundIconCard>
+          </AtBackgroundIconCard> -->
 
           <IncomeSummaryWidget
             class="order-2 mt-4 lg:w-full lg:mt-0 lg:order-1"
