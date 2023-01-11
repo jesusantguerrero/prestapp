@@ -36,7 +36,7 @@ interface Props {
   hideSelected: boolean;
   showLabels: boolean;
   endpoint?: string;
-  allowCreate: boolean;
+  allowCreate?: boolean;
   customLabel?: Function;
 }
 

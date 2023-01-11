@@ -1,18 +1,27 @@
 <script setup lang="ts">
 import { useForm } from "@inertiajs/vue3";
 import { AtField, AtInput } from "atmosphere-ui";
-import { watch, ref, computed } from "vue";
+import { watch, ref, computed, reactive } from "vue";
+import { ElNotification } from "element-plus";
 
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import BaseTable from "@/Components/shared/BaseTable.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
-import PropertySectionNav from "../Partials/PropertySectionNav.vue";
+import PropertySectionNav from "./Partials/LoanSectionNav.vue";
 import axios from "axios";
 import AppButton from "@/Components/shared/AppButton.vue";
-import { ElNotification } from "element-plus";
+
+import { formatMoney } from "@/utils";
+import { useSectionFilters } from "@/Modules/_app/useSectionFilters";
+import { router } from "@inertiajs/core";
+import { IClientSaved } from "@/Modules/clients/clientEntity";
+import { ILoan } from "@/Modules/loans/loanEntity";
+import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
 
 const props = defineProps<{
-  category: string;
+  invoices: ILoanInstallment[];
+  loans: ILoan[];
+  clients: IClientSaved[];
 }>();
 
 const formData = useForm({
@@ -21,62 +30,7 @@ const formData = useForm({
   payments: [],
 });
 
-const categories = ref([]);
-watch(
-  () => formData.client,
-  async () => {
-    categories.value = await getDepositBalance(formData.client.id, props.category);
-    formData.account = categories.value.length ? categories.value[0] : null;
-  }
-);
-
-function getDepositBalance(clientId: number, categoryName: string) {
-  return axios
-    .get(`/categories/${categoryName}/clients/${clientId}/balance?exclude_credits=true`)
-    .then(({ data }) => {
-      return data;
-    });
-}
-
-const transactions = ref([]);
-const payments = computed(() => {
-  return transactions.value.reduce((payments, tran) => {
-    console.log(tran);
-    if (tran?.transactionable) {
-      payments.push(
-        ...tran.transactionable.payments.map((payment) => ({
-          ...payment,
-          rent_id: tran.transactionable.invoiceable_id,
-          client: formData.client,
-          balance: formData.account.balance,
-          payment: 0,
-        }))
-      );
-    }
-    return payments;
-  }, []);
-});
-const getTransactions = (clientId: number, categoryId: number) => {
-  return axios
-    .get("/api/transaction-lines", {
-      params: {
-        limit: 10,
-        page: 1,
-        filter: {
-          account_id: categoryId,
-          payee_id: clientId,
-        },
-        relationships: "transaction.transactionable.payments",
-      },
-    })
-    .then(({ data }) => data.data.map((line) => line.transaction));
-};
-watch(
-  () => formData.account,
-  async () => {
-    transactions.value = await getTransactions(formData.client.id, formData.account.id);
-  }
-);
+const filters = useSectionFilters(["client", "loan"], router);
 
 const handleChange = () => {};
 
@@ -127,7 +81,7 @@ const submit = () => {
 </script>
 
 <template>
-  <AppLayout title="Centro de pago">
+  <AppLayout title="Centro de pago de prestamos">
     <template #header>
       <PropertySectionNav />
     </template>
@@ -137,8 +91,8 @@ const submit = () => {
         <header class="flex space-x-4 w-full px-4">
           <AtField label="Cliente" class="w-full">
             <BaseSelect
-              v-model="formData.client"
-              endpoint="/api/clients"
+              v-model="filters.client"
+              :options="clients"
               placeholder="selecciona un cliente"
               label="display_name"
               track-by="id"
@@ -146,13 +100,13 @@ const submit = () => {
           </AtField>
           <AtField label="Categoria" class="w-full">
             <BaseSelect
-              v-model="formData.account"
+              v-model="filters.loan"
               :track-by="id"
-              :options="categories"
+              :options="loans"
               :hide-selected="false"
               :custom-label="
                 (category) => {
-                  return `${category.name} (Balance: $${Math.abs(category.balance)})`;
+                  return `Prestamo ${category.id} (${category.amount}) (debt: $${category.debt})`;
                 }
               "
               placeholder="selecciona una categoria"
@@ -167,22 +121,25 @@ const submit = () => {
                 label: '',
               },
               {
-                name: 'id',
-                label: 'Pago #',
+                name: 'loan_id',
+                label: 'Prestamo #',
               },
               {
                 name: 'client.display_name',
                 label: 'Cliente',
               },
               {
-                name: 'method_name',
-                label: 'Metodo de pago',
+                name: 'amount',
+                label: 'Monto del pagare',
+                render(row) {
+                  return formatMoney(row.amount);
+                },
               },
               {
-                name: 'balance',
+                name: 'amount_paid',
                 label: 'Balance',
                 render(row) {
-                  return Math.abs(row.balance);
+                  return formatMoney(row.amount_paid - row.amount);
                 },
               },
               {
@@ -190,7 +147,7 @@ const submit = () => {
                 label: 'Monto de reembolso',
               },
             ]"
-            :table-data="payments"
+            :table-data="invoices.data"
           >
             <template v-slot:item="{ scope: { row } }">
               <div class="items-center space-x-2 d-flex">

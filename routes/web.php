@@ -8,6 +8,7 @@ use App\Http\Controllers\SettingsController;
 
 use App\Http\Controllers\CRM\ClientController;
 use App\Http\Controllers\Loans\LoanController;
+use App\Http\Controllers\Loans\LoanProductController;
 use App\Http\Controllers\Properties\PropertyController;
 use App\Http\Controllers\Properties\PropertyTransactionController;
 use App\Http\Controllers\Properties\RentController;
@@ -69,6 +70,7 @@ Route::middleware([
     Route::post('/loans/{loan}/installments/{installment}/pay', [LoanController::class, 'payInstallment']);
     Route::post('/loans/{loan}/pay', [LoanController::class, 'pay']);
     Route::get('/loans/{loan}/payments/{paymentDocument}/print', [LoanController::class, 'printPaymentDocument']);
+    Route::get('/payment-center', [LoanController::class, 'paymentCenter']);
 
     Route::resource('/loan-products', LoanProductController::class);
 
