@@ -26,7 +26,7 @@ class ClientService {
         })->count();
     }
 
-    public static function invoices($teamId, $clientId,  $statuses = []) {
+    public static function invoices($teamId, $clientId = null,  $statuses = []) {
       $query = DB::table('invoices')
         ->selectRaw("
         clients.display_name contact,

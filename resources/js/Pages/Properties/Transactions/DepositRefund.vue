@@ -110,8 +110,8 @@ const submit = () => {
   }
   const rentId = relatedPayments[0].rent_id;
   const data = {
-    account_id: formData.client?.id,
-    client_id: formData.account?.id,
+    client_id: formData.client?.id,
+    account_id: formData.account?.id,
     rent_id: rentId,
     payments: relatedPayments,
     total: relatedPayments.reduce(
@@ -120,6 +120,7 @@ const submit = () => {
     ),
   };
   axios.post(`/properties/${rentId}/transactions/refund`, data).then(({ data }) => {
+    // todo: launch payment modal or doit automatically in backend?
     console.log(data);
   });
 };

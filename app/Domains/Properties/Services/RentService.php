@@ -3,12 +3,10 @@
 namespace App\Domains\Properties\Services;
 
 use App\Domains\Accounting\Helpers\InvoiceHelper;
-use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Properties\Models\Rent;
 use Exception;
-use Illuminate\Support\Facades\DB;
 use Insane\Journal\Models\Invoice\Invoice;
 
 class RentService {
@@ -26,7 +24,7 @@ class RentService {
         ]);
         $rent = Rent::create($rentData);
         $rent->unit->update(['status' => PropertyUnit::STATUS_RENTED]);
-        return self::createDepositTransaction($rent, $rentData);
+        return PropertyTransactionService::createDepositTransaction($rent, $rentData);
       }
     }
 
@@ -43,92 +41,6 @@ class RentService {
         }
       }
       return $validData;
-    }
-
-    public static function createDepositTransaction($rent, $rentData) {
-      $formData = [
-        "date" => $rent->deposit_due,
-        "due_date" => $rent->deposit_due,
-        "concept" => "Factura Déposito",
-        "description" => "Déposito de {$rent->client->fullName}",
-        "total" => $rent->deposit,
-        "invoice_account_id" => $rent->property->deposit_account_id,
-        "items" => [[
-          "name" => "Depositos de $rent->address",
-          "concept" => "Depositos de $rent->address",
-          "account_id" => $rent->client_account_id,
-          "quantity" => 1,
-          "price" => $rent->deposit,
-          "amount" => $rent->deposit,
-        ]]
-      ];
-      self::createInvoice($formData, $rent, false);
-    }
-
-
-    public static function createDepositRefund($rent, $formData) {
-      $invoiceData = [
-        "date" => $rent->deposit_due,
-        "due_date" => $rent->deposit_due,
-        "concept" => "Factura reembolso de deposito",
-        'category_type' => PropertyInvoiceTypes::DepositRefund,
-        "description" => "Devolución de deposito {$rent->client->display_name}",
-        "total" => $formData['total'],
-        "invoice_account_id" => $formData['account_id'],
-        "items" => [],
-        "relatedInvoices" => [
-          "name" => PropertyInvoiceTypes::DepositRefund->value,
-          "items" => []
-        ]
-      ]; // liability to client here general
-
-      foreach ($formData['payments'] as $payment) {
-          $invoiceData['items'][] = [
-            "name" => "Depositos de $rent->address",
-            "concept" => "Depositos de $rent->address",
-            "quantity" => 1,
-            "account_id" => $rent->property->deposit_account_id,
-            "price" => $payment['amount'],
-            "amount" => $payment['amount'],
-          ];
-          $invoiceData["relatedInvoices"]['items'][] =[
-            "id" => $payment['id'],
-            "description" => PropertyInvoiceTypes::Deposit
-          ];
-      }
-
-      return self::createInvoice($invoiceData, $rent, false);
-    }
-
-    public static function createInvoice($formData, Rent $rent, $withExtraServices = true) {
-      $additionalFees =  $rent->services ?? [];
-      $items = [[
-        "name" => "Factura de Renta",
-        "concept" => "Factura de {$rent->client->fullName}",
-        "quantity" => 1,
-        "price" => $rent->amount,
-        "amount" => $rent->amount,
-      ]];
-
-      $data = array_merge($formData, [
-        'concept' =>  $formData['concept'] ?? 'Factura de Renta',
-        'description' => $formData['description'] ?? "Mensualidad {$rent->client->fullName}",
-        'user_id' => $rent->user_id,
-        'team_id' => $rent->team_id,
-        'client_id' => $rent->client_id,
-        'invoiceable_id' => $rent->id,
-        'invoiceable_type' => Rent::class,
-        'date' => $formData['date'] ?? date('Y-m-d'),
-        'type' => Invoice::DOCUMENT_TYPE_INVOICE,
-        'category_type' => $formData['category_type'] ?? PropertyInvoiceTypes::Rent->name(),
-        "invoice_account_id" => $rent->property->account_id,
-        'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
-        'total' =>  $formData['amount'] ?? $rent->amount,
-        'items' => array_merge($formData['items'] ?? $items,  $withExtraServices ? $additionalFees : []),
-        "related_invoices" => $formData["related_invoices"] ?? []
-      ]);
-
-      return Invoice::createDocument($data);
     }
 
     public static function endTerm(Rent $rent, $formData) {
@@ -165,7 +77,7 @@ class RentService {
     }
 
     public static function generateNextInvoice($rent) {
-      RentService::createInvoice([
+      PropertyTransactionService::createInvoice([
         'date' => $rent->next_invoice_date
       ], $rent);
         $rent->update([

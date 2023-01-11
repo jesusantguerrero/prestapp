@@ -7,8 +7,8 @@ import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import BudgetProgress from "@/Components/BudgetProgress.vue";
 import PropertySectionNav from "./Partials/PropertySectionNav.vue";
-import IncomeSummaryWidget from "../Dashboard/Partials/IncomeSummaryWidget.vue";
-import WelcomeWidget from "../Dashboard/Partials/WelcomeWidget.vue";
+import IncomeSummaryWidget from "@/Pages/Dashboard/Partials/IncomeSummaryWidget.vue";
+import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
 
 import cols from "./cols";
 import { formatMoney } from "@/utils/formatMoney";

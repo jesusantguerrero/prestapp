@@ -3,16 +3,19 @@
     <template #header>
       <AccountingSectionNav>
         <template #actions>
-          <AppButton @click="isAccountDialogVisible = true" variant="inverse">Crear Cuenta</AppButton>
+          <AppButton @click="isAccountDialogVisible = true" variant="inverse">
+            <IconAdd />
+          </AppButton>
         </template>
       </AccountingSectionNav>
     </template>
-    
+
     <div class="w-full py-10 mx-auto sm:px-6 lg:px-8">
       <div class="w-full px-5 py-5 bg-white rounded-md shadow-md">
         <ElTabs v-model="activeAccountSection">
           <ElTabPane
-            :label="`${category.number} - ${category.name}`"
+            :label="`${category.name} (${category.subcategories.length})`"
+            :title="`${category.name} (${category.number})`"
             :name="category.id"
             v-for="category in mainCategories"
             :key="category.id"
@@ -29,7 +32,7 @@
                   v-slot="{ open }"
                 >
                   <span class="text-lg font-bold">
-                    {{subCategory.number }} - {{ subCategory.name }}
+                    {{ subCategory.number }} - {{ subCategory.name }}
                   </span>
 
                   <i
@@ -83,7 +86,7 @@
 <script setup>
 import { format as formatDate } from "date-fns";
 import AppLayout from "@/Components/templates/AppLayout.vue";
-// import AtTable from "@/Atmosphere/Atoms/Table/CustomTable";
+import IconAdd from "@/Components/icons/IconAdd.vue";
 import cols from "./cols";
 // import FormModal from "./FormModal.vue";
 import {
@@ -129,13 +132,16 @@ const section = computed(() => {
 });
 
 const mainCategories = computed(() => {
-  return props.categories;
+  return props.categories.map((group) => {
+    group.name.replace(/[d]/i);
+    return group;
+  });
 });
 
 const getAccounts = () => {
   accountsCategories.value = props.categories;
   activeAccountSection.value =
-    mainCategories.value && mainCategories.value.length ? mainCategories.value.id : "";
+    mainCategories.value && mainCategories.value.length ? mainCategories.value[0].id : "";
 };
 
 const editAccount = () => {};
