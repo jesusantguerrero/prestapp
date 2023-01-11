@@ -31,7 +31,7 @@ const actions = {
 
 const selectedPayment = ref<Object | null>(null);
 const paymentConcept = computed(() => {
-  return selectedPayment.value && `Pago ${props.invoice.id} pago`;
+  return selectedPayment.value && `Pago ${props.invoice.concept}`;
 });
 
 const onPayment = (invoice: Object) => {

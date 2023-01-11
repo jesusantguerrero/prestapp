@@ -42,8 +42,8 @@ class PropertyController extends InertiaController
       $propertyTotals = PropertyService::totalByStatusFor($teamId);
 
       $invoices = $tab == 'rents'
-      ? RentService::invoices($teamId)->get()
-      : ClientService::invoices($teamId)->get();
+      ? RentService::invoices($teamId)->unpaid()->get()
+      : ClientService::invoices($teamId)->unpaid()->get();
 
       return inertia('Properties/Overview',
       [
@@ -75,7 +75,6 @@ class PropertyController extends InertiaController
     {
         return PropertyService::createProperty($postData, $request->get('units'));
     }
-
 
     public function getEditProps(Request $request, $id) {
       $teamId = $request->user()->current_team_id;

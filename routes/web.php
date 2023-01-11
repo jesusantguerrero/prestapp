@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\ClientApiController;
+use App\Http\Controllers\Api\TransactionLineApiController;
 use App\Http\Controllers\BackgroundController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SettingsController;
@@ -7,6 +9,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\CRM\ClientController;
 use App\Http\Controllers\Loans\LoanController;
 use App\Http\Controllers\Properties\PropertyController;
+use App\Http\Controllers\Properties\PropertyTransactionController;
 use App\Http\Controllers\Properties\RentController;
 
 use Illuminate\Foundation\Application;
@@ -81,4 +84,20 @@ Route::middleware([
     Route::resource('rents', RentController::class);
     Route::post('rents/{rent}/invoices/{invoice}/pay', [RentController::class, 'payInvoice']);
     Route::post('rents/{rent}/generate-next-invoice', [RentController::class, 'generateNextInvoice']);
+
+    // property transactions
+    Route::get('/properties/transactions/{category}', PropertyTransactionController::class);
+    Route::post('/properties/{rent}/transactions/{type}', [PropertyTransactionController::class, 'store']);
+});
+
+
+
+Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->group(function () {
+
+  //  accounts and transactions
+Route::resource('clients', ClientApiController::class);
+Route::resource('transaction-lines', TransactionLineApiController::class);
+  // Route::patch('/accounts', [AccountApiController::class,  'bulkUpdate']);
+  // Route::resource('categories', CategoryApiController::class);
+  // Route::patch('/categories', [CategoryApiController::class,  'bulkUpdate']);
 });

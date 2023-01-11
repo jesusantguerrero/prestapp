@@ -7,9 +7,9 @@ import AppSectionHeader from "@/Components/AppSectionHeader.vue";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import InvoiceTable from "@/Components/templates/InvoiceTable";
+import PropertySectionNav from "./Partials/PropertySectionNav.vue";
 
 import { formatMoney, formatDate } from "@/utils";
-import PropertySectionNav from "./Partials/PropertySectionNav.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 
 const props = defineProps({
@@ -42,15 +42,13 @@ const props = defineProps({
   },
 });
 
+const sectionName = computed(() => {
+  return `${props.type.toLowerCase()}s`;
+});
+
 const filters = reactive({
   owner: null,
   property: null,
-});
-
-const state = reactive({
-  sectionName: computed(() => {
-    return `${props.type.toLowerCase()}s`;
-  }),
 });
 
 watch(
@@ -65,7 +63,7 @@ watch(
     );
 
     router.get(
-      "/properties/management-tools",
+      location.pathname,
       {
         filters: selectedFilters,
       },
@@ -81,27 +79,16 @@ watch(
     <template #header>
       <PropertySectionNav>
         <template #actions>
-          <!-- <p>Total: {{ invoices.length }}</p> -->
-          <!-- <AtButton
-            @click="router.visit(`/${state.sectionName}/create`)"
-            variant="inverse"
-            >Imprimir
-          </AtButton> -->
-          <!-- <BaseSelect :options="properties" v-model="filters.property" /> -->
           <BaseSelect
             :options="owners"
             placeholder="Filtrar por dueño"
             v-model="filters.owner"
           />
 
-          <AppButton
-            @click="router.visit(`/${state.sectionName}/create`)"
-            variant="inverse"
+          <AppButton @click="router.visit(`/${sectionName}/create`)" variant="inverse"
             >Ingreso</AppButton
           >
-          <AppButton
-            @click="router.visit(`/${state.sectionName}/create`)"
-            variant="inverse"
+          <AppButton @click="router.visit(`/${sectionName}/create`)" variant="inverse"
             >Egreso</AppButton
           >
         </template>
