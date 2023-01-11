@@ -1,5 +1,6 @@
 <script setup>
 import ChartComparison from "./ChartComparison.vue";
+import { formatMoney } from "@/utils";
 
 defineProps({
   chart: Object,
@@ -36,8 +37,8 @@ defineProps({
       </header>
       <section class="mt-4 space-y-2">
         <div v-for="section in sections" class="p-2 bg-gray-100 rounded-md">
-          <h4 class="text-xs">{{ section }}</h4>
-          <p class="font-bold">42,845.00</p>
+          <h4 class="text-xs">{{ section.display_id }}</h4>
+          <p class="font-bold">{{ formatMoney(section.total) }}</p>
         </div>
       </section>
     </article>

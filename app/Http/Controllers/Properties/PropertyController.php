@@ -9,6 +9,7 @@ use App\Domains\Properties\Services\PropertyService;
 use App\Domains\Properties\Services\RentService;
 use App\Http\Controllers\InertiaController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Insane\Journal\Helpers\ReportHelper;
 
 class PropertyController extends InertiaController
@@ -37,28 +38,26 @@ class PropertyController extends InertiaController
     public function __invoke(Request $request) {
       $reportHelper = new ReportHelper();
       $teamId = $request->user()->current_team_id;
-      $tab = $request->query('tab', 'rents');
 
       $propertyTotals = PropertyService::totalByStatusFor($teamId);
 
-      $invoices = $tab == 'rents'
-      ? RentService::invoices($teamId)->unpaid()->get()
-      : ClientService::invoices($teamId)->unpaid()->get();
-
+      $invoices = RentService::invoices($teamId);
+      
       return inertia('Properties/Overview',
       [
           "revenue" => $reportHelper->revenueReport($teamId),
-          "propertiesTotal" => $propertyTotals->sum(),
-          "propertiesAvailable" => $propertyTotals->get(Property::STATUS_AVAILABLE),
-          "propertiesRented" => $propertyTotals->get(Property::STATUS_RENTED),
-          "activeLoanClients" => ClientService::clientsWithActiveLoans($teamId),
-          "loanCapital" => LoanService::disposedCapitalFor($teamId),
-          "loanExpectedInterest" => LoanService::expectedInterestFor($teamId),
-          "loanPaidInterest" => LoanService::paidInterestFor($teamId),
-          'bank' => $reportHelper->smallBoxRevenue('bank', $teamId),
-          'dailyBox' => $reportHelper->smallBoxRevenue('daily_box', $teamId),
-          'cashOnHand' => $reportHelper->smallBoxRevenue('cash_on_hand', $teamId),
-          'nextInvoices' => $invoices,
+          "stats" => [
+            "total" => $propertyTotals->sum(),
+            "available" => $propertyTotals->get(Property::STATUS_AVAILABLE),
+            "rented" => $propertyTotals->get(Property::STATUS_RENTED),
+          ],
+          "totals" => $invoices->select(DB::raw("sum(total) total, sum(total-debt) paid, sum(debt) outstanding, sum(
+            CASE
+            WHEN invoices.debt > 0 THEN 1
+            ELSE 0
+          END) outstandingInvoices"))->first(),
+          'accounts' => $reportHelper->getAccountTransactionsByPeriod($teamId, ['rent', 'security_deposits', 'operating_expense']),
+          'nextInvoices' => $invoices->unpaid()->take(4)->get(),
       ]);
     }
 
