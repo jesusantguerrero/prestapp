@@ -1,19 +1,21 @@
 <script setup lang="ts">
-import AppLayout from "@/Components/templates/AppLayout.vue";
+import { watch, computed } from "vue";
+import { useForm, router } from "@inertiajs/vue3";
 import { AtButton, AtField, AtFieldCheck, AtInput, AtSelect } from "atmosphere-ui";
 import { addMonths, format as formatDate } from "date-fns";
-import { ILoan } from "@/Modules/loans/loanEntity";
-import { router } from "@inertiajs/core";
-import { IProperty } from "@/Modules/properties/propertyEntity";
-import { IClient } from "@/Modules/clients/clientEntity";
-import { useForm } from "@inertiajs/vue3";
+
+import AppLayout from "@/Components/templates/AppLayout.vue";
 import FormTemplate from "./Partials/FormTemplate.vue";
 import PropertySectionNav from "../Properties/Partials/PropertySectionNav.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
+import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import ServiceBlock from "./Partials/ServiceBlock.vue";
-import { watch } from "vue";
 import FormSection from "./Partials/FormSection.vue";
 import TaxTypeSelector from "../Settings/TaxTypeSelector.vue";
+
+import { ILoan } from "@/Modules/loans/loanEntity";
+import { IProperty, IUnit } from "@/Modules/properties/propertyEntity";
+import { IClient } from "@/Modules/clients/clientEntity";
 
 defineProps<{
   loanData: ILoan[];
@@ -103,6 +105,10 @@ const addAdditionalFee = () => {
     total: "",
   });
 };
+
+const availableUnits = computed(() => {
+  return rentForm.property.units.filter((unit: IUnit) => unit.status !== "RENTED");
+});
 </script>
 
 <template>
@@ -150,13 +156,12 @@ const addAdditionalFee = () => {
               />
             </AtField>
             <AtField class="w-6/12" v-if="rentForm.property" label="Unidad">
-              <AtSelect
-                v-model="rentForm.unit_id"
-                v-model:selected="rentForm.unit"
-                :options="rentForm.property.units"
-                placeholder="Selecciona una propiedad"
-                label="address"
-                key-track="id"
+              <BaseSelect
+                v-model="rentForm.unit"
+                :options="availableUnits"
+                placeholder="Unidad #1"
+                label="name"
+                track-by="id"
               />
             </AtField>
           </section>

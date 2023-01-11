@@ -160,4 +160,6 @@ class LoanController extends InertiaController
         "user" => $user
       ]);
     }
+
+    // Payment Center
 }

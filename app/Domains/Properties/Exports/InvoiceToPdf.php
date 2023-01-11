@@ -1,11 +1,10 @@
-<?php 
+<?php
 
 namespace App\Domains\Properties\Exports;
 
 use Insane\Journal\Models\Invoice\Invoice;
 use Illuminate\Support\Str;
 use PhpOffice\PhpWord\TemplateProcessor;
-use PhpOffice\PhpWord\IOFactory;
 
 class InvoiceToPdf {
   private $processor = null;
@@ -18,14 +17,12 @@ class InvoiceToPdf {
       return [
         "itemDescription" => $line->concept,
         "itemPrice" => $line->price ?? 0,
-        "itemComission" => $line->discount ?? 0,
+        "itemCommission" => $line->discount ?? 0,
         "itemSubtotal" => $line->amount,
         "itemTotal" => $line->amount,
       ];
     });
     $doc->cloneRowAndSetValues('itemDescription', $items);
-    // $filename = Str::slug("$invoice->concept", "_");
-    // $doc->saveAs(public_path("$filename.docx"));
     $this->processor = $doc;
   }
 

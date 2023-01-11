@@ -80,7 +80,7 @@ const multiselectListeners = {
   },
 };
 
-const localOptions = ref([]);
+const localOptions = ref(props.options ?? []);
 const isLoading = ref(false);
 
 const handleSearch = debounce((query) => {
