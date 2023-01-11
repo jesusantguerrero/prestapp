@@ -3,6 +3,7 @@
 namespace App\Domains\Properties\Services;
 
 use App\Domains\Accounting\Helpers\InvoiceHelper;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Properties\Models\Rent;
