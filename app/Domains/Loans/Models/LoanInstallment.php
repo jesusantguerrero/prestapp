@@ -2,6 +2,7 @@
 
 namespace App\Domains\Loans\Models;
 
+use App\Domains\CRM\Models\Client;
 use Illuminate\Database\Eloquent\Model;
 use Insane\Journal\Models\Core\Transaction;
 use Insane\Journal\Traits\IPayableDocument;
@@ -16,10 +17,13 @@ class LoanInstallment extends Model implements IPayableDocument {
     const STATUS_PARTIALLY_PAID = 'PARTIALLY_PAID';
     const STATUS_GRACE = 'GRACE';
 
+    protected $appends = ['clientName'];
+
     protected $fillable = [
         'team_id',
         'user_id',
         'loan_id',
+        'client_id',
         'installment_number',
         'due_date',
         'days',
@@ -38,11 +42,27 @@ class LoanInstallment extends Model implements IPayableDocument {
      */
     public function scopeLate($query)
     {
-        return $query->where('payment_status', self::STATUS_LATE);
+        return $query->where('loan_installments.payment_status', self::STATUS_LATE);
+    }
+    public function scopeByTeam($query, $teamId)
+    {
+        return $query->where('loan_installments.team_id', $teamId);
+    }
+    public function scopeByClient($query, $clientId)
+    {
+        return $query->where('loan_installments.client_id', $clientId);
     }
 
     public function loan() {
         return $this->belongsTo(Loan::class);
+    }
+
+    public function client() {
+        return $this->belongsTo(Client::class);
+    }
+
+    public function getClientNameAttribute() {
+      return $this->client?->display_name;
     }
 
     public function getStatusField(): string {

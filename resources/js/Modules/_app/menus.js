@@ -37,15 +37,21 @@ const menus = {
       },
       {
         label: 'Clientes',
-        url: '/clients'
+        url: '/loans/clients'
+      },
+      {
+        label: 'Centro de pago',
+        url: '/payment-center'
       },
       {
         label: 'Carteras',
-        url: '/wallets'
+        url: '/wallets',
+        hidden: true
       },
       {
         label: 'Tipos Prestamos',
-        url: '/loan-products'
+        url: '/loan-products',
+        hidden: true
       }
     ],
     [MODULES.PROPERTY]: [{

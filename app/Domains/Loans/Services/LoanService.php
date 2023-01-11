@@ -25,6 +25,7 @@ class LoanService {
             $loan->installments()->create([
                 "team_id" => $loan->team_id,
                 "user_id" => $loan->user_id,
+                "client_id" => $loan->client_id,
                 "due_date" => $item["due_date"],
                 "installment_number" => $item["installment_number"],
                 "initial_balance" => $item["initial_balance"],
@@ -50,5 +51,10 @@ class LoanService {
 
     public static function paidInterestFor(int $teamId) {
         return LoanInstallment::where('team_id', $teamId)->sum('interest_paid');
+    }
+
+    public static function invoices(int $teamId, int $clientId = null) {
+        return LoanInstallment::byTeam($teamId);
+        // ->byClient($clientId);
     }
 }

@@ -7,4 +7,10 @@ export interface IProperty {
     address: string;
     // payment details
     price: number
+    units: IUnit[]
+}
+
+export interface IUnit {
+  property_id: number;
+  status: string
 }

@@ -41,6 +41,7 @@ class Rent extends Transactionable implements IPayableDocument {
         'move_out_notice',
         'notes',
         'generated_invoice_dates',
+        'status'
     ];
 
     protected $casts = [

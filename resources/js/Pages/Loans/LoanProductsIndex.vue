@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Link, router } from "@inertiajs/vue3";
+import { Link } from "@inertiajs/vue3";
 import { computed, ref } from "vue";
 
 // @ts-ignore: its my template

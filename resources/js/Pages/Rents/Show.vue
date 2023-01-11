@@ -24,9 +24,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const tabs = {
   summary: "Detalles",
-  documents: "Tabla de Amortización",
   transactions: "Pagos",
-  details: "Details",
 };
 
 const clientName = computed(

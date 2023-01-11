@@ -21,7 +21,7 @@ defineProps({
   <article class="flex justify-between text-sm text-body-1">
     <header>
       <h4 class="flex flex-col font-bold">
-        {{ invoice.concept }} de {{ invoice.contact }}
+        {{ invoice.concept }}
         <span class="font-bold text-primary">
           {{ formatDate(invoice.due_date) }}
         </span>
@@ -29,17 +29,18 @@ defineProps({
       <p class="text-body-1/80">{{ invoice.description }}</p>
     </header>
     <section class="font-bold text-right">
-      <p class="flex">
+      <p class="flex space-x-2 justify-end items-center">
         <slot name="header-actions" />
         <span class="text-green-500">
           {{ formatMoney(invoice.total) }}
         </span>
       </p>
-      <span>
-        <i :class="getStatusIcon(invoice.status)" />
-        {{ getStatus(invoice.status) }}
-      </span>
-      <InvoicePaymentOptions :invoice="invoice" />
+      <div class="flex">
+        <span>
+          <i :class="getStatusIcon(invoice.status)" /> {{ getStatus(invoice.status) }}
+        </span>
+        <InvoicePaymentOptions :invoice="invoice" />
+      </div>
     </section>
   </article>
 </template>

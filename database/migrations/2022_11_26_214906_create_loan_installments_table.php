@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('team_id');
             $table->foreignId('user_id');
             $table->foreignId('loan_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('client_id');
 
             $table->integer('installment_number');
             $table->date('due_date');

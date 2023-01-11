@@ -5,8 +5,8 @@ import AppButton from "../../../Components/shared/AppButton.vue";
 
 defineProps({
   contract: {
-    type: Object
-  }
+    type: Object,
+  },
 });
 </script>
 
@@ -15,30 +15,26 @@ defineProps({
     <header class="flex justify-between">
       <h4 class="font-bold text-body">
         <Link :href="`/rents/${contract.id}`">
-          Contrato {{ contract.status}}: {{ contract.client?.fullName }}
+          Contrato {{ contract.status }}: {{ contract.client?.fullName }}
         </Link>
       </h4>
       <section class="space-x-2">
         <AppButton variant="inverse">Editar terminos</AppButton>
-        <AppButton variant="inverse" @click="router.visit(`/clients/${contract.client_id}/rents/${contract.id}/end`)">Terminar Contrato</AppButton>
+        <AppButton
+          variant="inverse"
+          v-if="contract.status !== 'CANCELLED'"
+          @click="router.visit(`/clients/${contract.client_id}/rents/${contract.id}/end`)"
+        >
+          Terminar Contrato
+        </AppButton>
       </section>
     </header>
     <article>
-      <p>
-        Fecha de inicio {{ formatDate(contract.date) }}
-      </p>
-      <p>
-        Proximo Pago: {{ formatDate(contract?.next_invoice_date) }}
-      </p>
-      <p>
-        Renta recolectada: {{ formatMoney(contract?.paid) }}
-      </p>
-      <p>
-        Comision recolectada: {{ formatMoney(contract?.commission_paid) }}
-      </p>
-      <p>
-        Total: {{ contract?.total }}
-      </p>
+      <p>Fecha de inicio {{ formatDate(contract.date) }}</p>
+      <p>Proximo Pago: {{ formatDate(contract?.next_invoice_date) }}</p>
+      <p>Renta recolectada: {{ formatMoney(contract?.paid) }}</p>
+      <p>Comision recolectada: {{ formatMoney(contract?.commission_paid) }}</p>
+      <p>Total: {{ contract?.total }}</p>
     </article>
   </section>
 </template>

@@ -115,25 +115,22 @@ class GenerateInvoices {
       $items = [];
       $total = 0;
       $taxTotal = 0;
-
-      // dd($invoices->pluck('id'), $existingInvoice?->id);
       foreach ($invoices as $invoice) {
+         $type = $invoice->category_type == PropertyInvoiceTypes::DepositRefund->value ? -1 : 1;
           $item = [
             "name" => "$invoice->description $invoice->date",
             "concept" => "$invoice->description $invoice->date",
             "quantity" => 1,
             "account_id" => $invoice->invoice_account_id,
-            "price" => $invoice->total,
-            "amount" => $invoice->total,
+            "price" => $type * $invoice->total,
+            "amount" => $type * $invoice->total,
           ];
-
 
           if ($invoice->category_type == PropertyInvoiceTypes::Rent->value) {
             $rent = $invoice->invoiceable;
             $retention = Tax::guessRetention("Commission", $rent->commission, $invoice->toArray(), [
               "description" => 'Descuento de abogado',
             ]);
-
 
             $retentionTotal = (double) $retention->rate * $invoice->total / 100;
 
@@ -145,7 +142,7 @@ class GenerateInvoices {
                 "rate" => $retention->rate,
                 "type" => $retention->type,
                 "label" => $retention->label,
-                "description" => $retention->concept,
+                "description" => $retention->description,
                 "amount" => $retentionTotal,
                 "amount_base" => $invoice->total,
                 "index" => 1,
@@ -189,11 +186,15 @@ class GenerateInvoices {
           ]
       ];
 
-        $existingInvoice ?  $existingInvoice->updateDocument($documentData) : Invoice::createDocument();
+      if (isset($existingInvoice)) {
+        $existingInvoice->updateDocument($documentData);
+      } else {
+        Invoice::createDocument($documentData);
+      }
 
-        $client->update([
-          'generated_distribution_dates' => array_merge($client->generated_distribution_dates, [$today])
-        ]);
+      $client->update([
+        'generated_distribution_dates' => array_merge($client->generated_distribution_dates, [$today])
+      ]);
       }
     }
 }

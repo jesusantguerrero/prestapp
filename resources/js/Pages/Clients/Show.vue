@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { Link, router } from "@inertiajs/vue3";
 import { computed } from "vue";
+import { Link, router } from "@inertiajs/vue3";
+import { ElTag } from "element-plus";
+import { AtBackgroundIconCard } from "atmosphere-ui";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
-import AppSectionHeader from "../../Components/AppSectionHeader.vue";
+import AppSectionHeader from "@/Components/AppSectionHeader.vue";
+import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.vue";
+import EmptyAddTool from "@/Pages/Properties/Partials/EmptyAddTool.vue";
+import ContractCard from "@/Pages/Properties/Partials/ContractCard.vue";
+import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 
 import { formatMoney } from "@/utils";
-import { ILoanInstallment } from "../../Modules/loans/loanInstallmentEntity";
-import PropertySectionNav from "../Properties/Partials/PropertySectionNav.vue";
-import { ElTag } from "element-plus";
-import { AtBackgroundIconCard } from "atmosphere-ui";
+import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
 import { IClientSaved } from "@/Modules/clients/clientEntity";
-import EmptyAddTool from "../Properties/Partials/EmptyAddTool.vue";
-import ContractCard from "../Properties/Partials/ContractCard.vue";
-import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 import { clientInteractions } from "@/Modules/clients/clientInteractions";
 
 export interface Props {
@@ -121,13 +121,22 @@ const refresh = () => {
               class="w-full bg-white border h-28 text-body-1"
               title="Depositos"
               :value="formatMoney(deposits)"
-            />
-            <button v-if="deposits">Renbolsar Deposito</button>
+            >
+              <template #action v-if="deposits">
+                <AtButton class="rounded-md bg-base-lvl-3">
+                  Reembolsar Deposito
+                </AtButton>
+              </template>
+            </AtBackgroundIconCard>
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
               title="Balance de Pendiente"
               :value="formatMoney(outstanding)"
-            />
+            >
+              <template #action v-if="Number(outstanding)">
+                <AtButton class="rounded-md bg-base-lvl-3"> Recibir Pago </AtButton>
+              </template>
+            </AtBackgroundIconCard>
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
               title="Dias de mora"
@@ -136,7 +145,7 @@ const refresh = () => {
           </section>
 
           <section class="w-full text-gray-600 rounded-md">
-            <template v-if="currentTab == 'contracts'">
+            <template v-if="currentTab == 'contracts' && props.clients.leases.length">
               <ContractCard
                 v-for="lease in props.clients.leases"
                 :contract="lease"
@@ -153,7 +162,9 @@ const refresh = () => {
                   <button
                     v-if="invoice.status !== 'paid'"
                     class="mr-2"
-                    @click="clientInteractions.generateOwnerDistribution(clients.id, invoice.id)"
+                    @click="
+                      clientInteractions.generateOwnerDistribution(clients.id, invoice.id)
+                    "
                   >
                     Re-generar
                   </button>

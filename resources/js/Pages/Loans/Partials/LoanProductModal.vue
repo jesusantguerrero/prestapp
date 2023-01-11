@@ -7,7 +7,6 @@ import Modal from "@/Components/Modal.vue";
 import FormSection from "@/Pages/Rents/Partials/FormSection.vue";
 import TaxTypeSelector from "@/Pages/Settings/TaxTypeSelector.vue";
 
-import { clientInteractions } from@/Modules/clients/clientInteractionsions";
 import { loanFrequencies } from "@/Modules/loans/constants";
 import AppButton from "@/Components/shared/AppButton.vue";
 import { useForm } from "@inertiajs/vue3";

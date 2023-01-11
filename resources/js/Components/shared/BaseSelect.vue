@@ -36,7 +36,7 @@ interface Props {
   hideSelected: boolean;
   showLabels: boolean;
   endpoint?: string;
-  allowCreate: boolean;
+  allowCreate?: boolean;
   customLabel?: Function;
 }
 
@@ -80,7 +80,7 @@ const multiselectListeners = {
   },
 };
 
-const localOptions = ref([]);
+const localOptions = ref(props.options ?? []);
 const isLoading = ref(false);
 
 const handleSearch = debounce((query) => {

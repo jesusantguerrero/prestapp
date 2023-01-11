@@ -3,7 +3,6 @@
 namespace App\Domains\Properties\Services;
 
 use App\Domains\Accounting\Helpers\InvoiceHelper;
-use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Properties\Models\Rent;
@@ -12,6 +11,7 @@ use Insane\Journal\Models\Invoice\Invoice;
 
 class RentService {
     public static function createRent(mixed $rentData, mixed $schedule = null) {
+      $rentData['unit_id'] = $rentData['unit_id'] ?? $rentData['unit']['id'];
       $unit = PropertyUnit::find($rentData['unit_id']);
       if (!$unit || $unit->status !== PropertyUnit::STATUS_AVAILABLE) {
         throw new Exception('This unit is not available at the time');
@@ -46,8 +46,12 @@ class RentService {
 
     public static function endTerm(Rent $rent, $formData) {
       if ($rent->status !== Rent::STATUS_CANCELLED) {
-        $rent->update(array_merge($formData, ["status" => Rent::STATUS_CANCELLED]));
-        $rent->property->update(['status' => Property::STATUS_AVAILABLE]);
+        $rent->update(array_merge(
+          $formData,
+          ["status" => Rent::STATUS_CANCELLED
+        ]));
+        $rent->unit->update(['status' => Property::STATUS_AVAILABLE]);
+        return;
       }
       throw new Exception('Rent is already cancelled');
     }

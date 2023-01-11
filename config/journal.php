@@ -307,8 +307,24 @@ return [
             "display_id" => "daily_box",
             "number" => 1102,
             "name" => "Daily Box",
-            "index" => 1,
+            "index" => 2,
             "balance_type" => "DEBIT"
+        ],
+        [
+          "category_id" => "cash_and_bank",
+          "display_id" => "real_state",
+          "number" => 1103,
+          "name" => "Real State",
+          "index" => 3,
+          "balance_type" => "DEBIT"
+        ],
+        [
+          "category_id" => "loans_business",
+          "display_id" => "loan_business",
+          "number" => 1104,
+          "name" => "Real State",
+          "index" => 4,
+          "balance_type" => "DEBIT"
         ],
         [
             "category_id" => "expected_payments_customers",

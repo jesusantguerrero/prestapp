@@ -10,6 +10,7 @@ use App\Http\Controllers\InertiaController;
 use App\Models\Setting;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Insane\Journal\Helpers\ReportHelper;
 use Insane\Journal\Models\Core\PaymentDocument;
 
@@ -158,6 +159,33 @@ class LoanController extends InertiaController
         "company" => Setting::getBySection($teamId, 'business'),
         "receipt" => $receipt,
         "user" => $user
+      ]);
+    }
+
+    // Payment Center
+    public function paymentCenter(Request $request) {
+      $teamId = $request->user()->current_team_id;
+      $tab = $request->query('tab', 'rents');
+      $filters = $request->query('filters');
+      $clientId = $filters ? $filters['client'] : null;
+
+      $qInvoice = LoanService::invoices($teamId, $clientId);
+      $invoices = LoanService::invoices($teamId, $clientId)->paginate();
+
+      return inertia('Loans/PaymentCenter',
+      [
+          'invoices' => $invoices,
+          'outstanding' => $qInvoice->sum(DB::raw('amount - amount_paid')),
+          'paid' => $qInvoice->sum('amount_paid'),
+          'clients' => $qInvoice
+          ->groupBy('loan_installments.client_id')
+          ->select(DB::raw('client_id id, clients.display_name'))
+          ->join('clients', 'clients.id', 'loan_installments.client_id')
+          ->get(),
+          'loans' => $qInvoice->groupBy('loan_id')
+          ->select(DB::raw('loan_id id, loans.amount amount, sum(loans.amount - loans.amount_paid) debt'))
+          ->join('loans', 'loans.id', 'loan_installments.loan_id')
+          ->get()
       ]);
     }
 }

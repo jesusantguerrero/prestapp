@@ -67,15 +67,17 @@ defineProps<Props>();
               <td>{{ line.concept }}</td>
               <td class="text-right">{{ formatMoney(line.amount) }}</td>
             </tr>
-            <template v-if="invoice.discounts.length">
-              <tr class="font-bold">
-                <td class="pt-2 font-semibold">Descuentos</td>
-                <td class="pt-2"></td>
-              </tr>
-              <tr v-for="line in invoice.discounts">
-                <td>{{ line.concept }}</td>
-                <td class="text-right">{{ formatMoney(line.amount) }}</td>
-              </tr>
+            <template v-if="Object.keys(invoice.lineGroups).length">
+              <template v-for="(group, groupName) in invoice.lineGroups">
+                <tr class="font-bold">
+                  <td class="pt-2 font-semibold">{{ groupName }}</td>
+                  <td class="pt-2"></td>
+                </tr>
+                <tr v-for="groupLine in group">
+                  <td>{{ groupLine.concept }}</td>
+                  <td class="text-right">{{ formatMoney(groupLine.amount) }}</td>
+                </tr>
+              </template>
             </template>
             <tr class="font-bold">
               <td class="pt-4">Total a pagar</td>
@@ -200,13 +202,17 @@ defineProps<Props>();
   text-align: center;
 }
 @media print {
+  .print-container,
+  body {
+    width: unset;
+    display: block;
+  }
   .pos-ticket {
-    width: 100%;
+    padding: 2mm;
+    margin: 0 auto;
+    width: 79mm;
     border: none;
     overflow: hidden;
-    border-bottom: 2px dashed #ddd;
-    border-left: 1px dashed #ddd;
-    border-right: 1px dashed #ddd;
     -webkit-print-color-adjust: exact;
   }
   .fecha-recibo {
@@ -225,6 +231,7 @@ defineProps<Props>();
   p.text-placeholder {
     border-bottom: 2px solid #aaa !important;
   }
+
   @page {
     marks: cross;
     margin-top: 0 !important;
