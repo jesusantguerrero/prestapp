@@ -41,8 +41,6 @@ class RentController extends InertiaController
 
       return inertia($this->templates['create'], [
         'rents' => null,
-        'properties' => PropertyService::ofTeam($teamId),
-        'clients' => ClientService::ofTeam($teamId),
       ]);
     }
 

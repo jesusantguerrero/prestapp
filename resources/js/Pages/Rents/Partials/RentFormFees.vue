@@ -15,19 +15,10 @@ const { modelValue } = toRefs(props);
 
 const { formData } = useReactiveForm(
   {
-    date: new Date(),
-    deposit: 0,
-    deposit_due: new Date(),
-    is_deposit_received: false,
-    deposit_reference: "",
-    payment_account_id: null,
-    payment_method: "",
-    amount: 0,
-    first_invoice_date: addMonths(new Date(), 1),
-    next_invoice_date: addMonths(new Date(), 1),
-    commission: 10,
-    commission_type: "",
-    frequency: "MONTHLY",
+    late_fee: 10,
+    late_fee_type: "",
+    grace_days: 0,
+    additional_fees: [],
   },
   modelValue,
   emit
