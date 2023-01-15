@@ -83,6 +83,14 @@ class PropertyController extends InertiaController
       ];
     }
 
+    // Units
+    public function addUnit(Property $property) {
+      $postData = request()->only(['name', 'price', 'description']);  
+      PropertyService::addUnit($property,  $postData);
+    }
+
+    // Tools
+
     public function managementTools(Request $request) {
       $teamId = $request->user()->current_team_id;
       $tab = $request->query('tab', 'rents');

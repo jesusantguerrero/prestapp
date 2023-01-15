@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ClientApiController;
+use App\Http\Controllers\Api\PropertyApiController;
 use App\Http\Controllers\Api\TransactionLineApiController;
 use App\Http\Controllers\BackgroundController;
 use App\Http\Controllers\DashboardController;
@@ -27,6 +28,16 @@ use Inertia\Inertia;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->group(function () {
+  //  accounts and transactions
+Route::resource('clients', ClientApiController::class);
+Route::resource('properties', PropertyApiController::class);
+Route::resource('transaction-lines', TransactionLineApiController::class);
+  // Route::patch('/accounts', [AccountApiController::class,  'bulkUpdate']);
+  // Route::resource('categories', CategoryApiController::class);
+  // Route::patch('/categories', [CategoryApiController::class,  'bulkUpdate']);
+});
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -78,6 +89,8 @@ Route::middleware([
     Route::get('properties/overview', PropertyController::class);
     Route::get('properties/management-tools', [PropertyController::class, 'managementTools']);
     Route::resource('properties', PropertyController::class);
+    Route::post('properties/{property}/units', [PropertyController::class, 'addUnit']);
+
     Route::resource('rents', RentController::class);
     // Owner
     Route::post('/clients/{client}/owner-distributions', [ClientController::class, 'generateOwnerDistribution']);
@@ -96,14 +109,3 @@ Route::middleware([
     Route::post('/properties/{rent}/transactions/{type}', [PropertyTransactionController::class, 'store']);
 });
 
-
-
-Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->group(function () {
-
-  //  accounts and transactions
-Route::resource('clients', ClientApiController::class);
-Route::resource('transaction-lines', TransactionLineApiController::class);
-  // Route::patch('/accounts', [AccountApiController::class,  'bulkUpdate']);
-  // Route::resource('categories', CategoryApiController::class);
-  // Route::patch('/categories', [CategoryApiController::class,  'bulkUpdate']);
-});
