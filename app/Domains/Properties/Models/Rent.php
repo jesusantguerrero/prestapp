@@ -3,6 +3,7 @@
 namespace App\Domains\Properties\Models;
 
 use App\Domains\CRM\Models\Client;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use Insane\Journal\Models\Core\Transaction;
 use Insane\Journal\Models\Invoice\Invoice;
 use Insane\Journal\Traits\HasPaymentDocuments;
@@ -71,7 +72,19 @@ class Rent extends Transactionable implements IPayableDocument {
     }
 
     public function invoices() {
-        return $this->morphMany(Invoice::class, 'invoiceable');
+      return $this->morphMany(Invoice::class, 'invoiceable');
+    }
+
+    public function rentInvoices() {
+      return $this->morphMany(Invoice::class, 'invoiceable')
+      ->where('invoiceable_type', Rent::class)
+      ->where('category_type', PropertyInvoiceTypes::Rent);
+    }
+
+    public function depositInvoices() {
+      return $this->morphMany(Invoice::class, 'invoiceable')
+      ->where('invoiceable_type', Rent::class)
+      ->where('category_type', PropertyInvoiceTypes::Deposit);
     }
 
     /**

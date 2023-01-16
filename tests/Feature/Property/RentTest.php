@@ -61,21 +61,21 @@ class RentTest extends TestCase
       "payment_account_id" => null,
       "payment_method" => "",
       "amount" => 5000,
-      "first_invoice_date" => $firstInvoiceDate,
-      "next_invoice_date" => $firstInvoiceDate,
+      "first_invoice_date" => $firstInvoiceDate->format('Y-m-d'),
+      "next_invoice_date" => $firstInvoiceDate->format('Y-m-d'),
       "commission" => 10,
       "commission_type" => "PERCENTAGE",
       "late_fee" => 10,
       "late_fee_type" => "PERCENTAGE",
-      "grace_days" => 0,
+      "grace_days" => 5,
       "frequency" => "MONTHLY",
       "additional_fees" => [],
     ];
   }
 
-  private function createRent() {
+  private function createRent($data = []) {
     $this->actingAs($this->user);
-    $this->post('/rents', $this->rentData);
+    $this->post('/rents', array_merge($this->rentData, $data));
 
     return Rent::latest()->first();
   }
@@ -103,23 +103,39 @@ class RentTest extends TestCase
     $this->assertCount(1, Rent::all());
   }
 
-  // public function testItShouldCreatePropertyWithMultipleUnits() {
-  //   $this->actingAs($this->user);
+  public function testItShouldCreateDepositTransaction() {
+    $this->seed();
+    $this->actingAs($this->user);
 
-  //   $units = PropertyUnit::factory()->count(3)
-  //   ->priced([6000, 7000, 6000])->make()->toArray();
+    $response = $this->post('/rents', array_merge($this->rentData, [
+      'deposit' => 12000,
+      'amount' => 6000,
+      'date' => '2023-01-15',
+      'deposit_due' => '2023-01-15',
+      'first_invoice_date' => '2023-01-30',
+    ]));
+    $response->assertStatus(302);
+    $rent = Rent::first();
+    $this->assertCount(1, $rent->depositInvoices);
+    $this->assertEquals(12000, $rent->depositInvoices[0]->total);
+  }
 
-  //   $response = $this->post('/properties', array_merge(
-  //     $this->propertyData,
-  //     [
-  //       "units" => $units,
-  //     ]
-  //   ));
-  //   $response->assertStatus(302);
+  public function testItShouldCreateRentWithProratedAmount() {
+    $this->seed();
+    $this->actingAs($this->user);
 
-  //   $this->assertCount(1, Property::all());
-  //   $this->assertCount(3, PropertyUnit::all());
-  // }
+    $response = $this->post('/rents', array_merge($this->rentData, [
+      'deposit' => 12000,
+      'amount' => 6000,
+      'date' => '2023-01-15',
+      'deposit_due' => '2023-01-15',
+      'first_invoice_date' => '2023-01-30',
+    ]));
+    $response->assertStatus(302);
+    $rent = Rent::first();
+    $this->assertCount(1, $rent->rentInvoices);
+    $this->assertEquals(3000, $rent->rentInvoices[0]->total);
+  }
 
   public function testItShouldUpdateRent() {
     $this->actingAs($this->user);
