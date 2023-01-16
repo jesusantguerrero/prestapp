@@ -2,6 +2,7 @@
 
 namespace App\Domains\Properties\Services;
 
+use App\Domains\Accounting\Helpers\InvoiceHelper;
 use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Rent;
 use Illuminate\Support\Carbon;
@@ -70,7 +71,7 @@ class PropertyTransactionService {
 
     public static function getProRatedAmount(Rent $rent) {
       $amountPerDay = $rent->amount / 30;
-      $daysUsed = Carbon::createFromFormat('Y-m-d', $rent->first_invoice_data)->diffInDays(Carbon::createFromFormat('Y-m-d', $rent->date));
+      $daysUsed = Carbon::createFromFormat('Y-m-d', $rent->first_invoice_date)->diffInDays(Carbon::createFromFormat('Y-m-d', $rent->date));
       return $amountPerDay * abs($daysUsed);
     }
 
@@ -85,8 +86,14 @@ class PropertyTransactionService {
       ]];
 
       self::createInvoice([
+        "date" => $rent->first_invoice_date,
         "items" => $items
       ], $rent);
+
+      $rent->update([
+        'next_invoice_date' => InvoiceHelper::getNextDate($rent->first_invoice_date),
+        'generated_invoice_dates' => [$rent->first_invoice_date]
+      ]);
     }
 
     public static function createInvoice($formData, Rent $rent, $withExtraServices = true) {
