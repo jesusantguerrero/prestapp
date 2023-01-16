@@ -41,7 +41,12 @@ const { formData } = useReactiveForm(
   <section>
     <FormSection title="Datos de deposito">
       <AtField label="Deposito" class="w-full">
-        <AtInput :number-format="true" v-model="formData.deposit" rounded>
+        <AtInput
+          :number-format="true"
+          :model-value="formData.deposit"
+          @update:modelValue="formData.deposit = $event"
+          rounded
+        >
           <template #suffix>
             <button
               class="w-32 px-2 transition"
@@ -87,7 +92,10 @@ const { formData } = useReactiveForm(
       <AtField label="Comisión" class="w-full">
         <AtInput v-model="formData.commission">
           <template #suffix>
-            <TaxTypeSelector v-model="formData.commission_type" />
+            <TaxTypeSelector
+              :model-value="formData.commission_type"
+              @update:modelValue="formData.commission_type = $event"
+            />
           </template>
         </AtInput>
       </AtField>

@@ -33,7 +33,7 @@ interface Props {
   trackBy: string;
   label: string;
   placeholder?: string;
-  hideSelected: boolean;
+  hideSelected?: boolean;
   showLabels?: boolean;
   endpoint?: string;
   allowCreate?: boolean;
@@ -44,7 +44,7 @@ const props = withDefaults(defineProps<Props>(), {
   trackBy: "value",
   label: "label",
   placeholder: "Type and select option…",
-  hideSelected: true,
+  hideSelected: false,
   showLabels: false,
 });
 

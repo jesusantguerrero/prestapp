@@ -2,31 +2,32 @@ import { cloneDeep } from "lodash";
 import { Ref, reactive, watch } from "vue";
 
 export const useReactiveForm = (formData: Record<string, any>, modelValue: Ref, emit: (name: string, data: any) => {}) => {
-
-  const form = reactive(cloneDeep(formData));
+  const form = reactive(formData);
 
   watch(
     () => modelValue.value,
     (data) => {
-      console.log(data)
       Object.keys(form).map((field) => {
-        if (data[field]) {
-          form[field] = data[field];
+        if (data[field] && data[field] !== form[field]) {
+          form[field] = data[field] || form[field];
+          console.log("applied")
         }
+        console.log("back but not applied")
       });
     },
     { immediate: true, deep: true }
   );
   
   watch(
-    () => form,
-    (data) => {
+    () => { return {...form}},
+    () => {
+      console.log("here are we?")
       emit("update:modelValue", {
         ...modelValue.value, 
-        ...cloneDeep(data),
+        ...form,
       });
     }, {
-      deep: true,
+      deep: true
     }
   );
 

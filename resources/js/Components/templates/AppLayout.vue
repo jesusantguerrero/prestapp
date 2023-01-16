@@ -82,10 +82,7 @@ watch(
   <div>
     <Head :title="title" />
     <Banner />
-    <AtShell
-      :is-expanded="isExpanded"
-      :nav-class="[!$slots.header && `${panelShadow} border-b`]"
-    >
+    <AtShell :is-expanded="isExpanded" :nav-class="[!$slots.header && `border-b`]">
       <template #navigation>
         <!-- Primary Navigation Menu -->
         <div
@@ -327,7 +324,6 @@ watch(
         <AtSide
           class="border-none shadow-none text-bold bg-base-lvl-3"
           title="Prestapp"
-          :class="panelShadow"
           v-model:isExpanded="isExpanded"
           :menu="currentMenu"
           :header-menu="headerMenu"
@@ -354,7 +350,7 @@ watch(
         <!-- Page Heading -->
         <header
           v-if="$slots.header"
-          :class="[isExpanded ? 'lg:pr-56' : 'lg:pr-20', panelShadow]"
+          :class="[isExpanded ? 'lg:pr-56' : 'lg:pr-20']"
           class="fixed z-30 w-full border-b bg-base-lvl-3 base-deep-1"
         >
           <slot name="header" />
