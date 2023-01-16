@@ -25,7 +25,8 @@ class RentService {
         ]);
         $rent = Rent::create($rentData);
         $rent->unit->update(['status' => PropertyUnit::STATUS_RENTED]);
-        return PropertyTransactionService::createDepositTransaction($rent, $rentData);
+        PropertyTransactionService::createDepositTransaction($rent, $rentData);
+        return PropertyTransactionService::generateFirstInvoice($rent);
       }
     }
 
