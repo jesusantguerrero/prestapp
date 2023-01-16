@@ -11,89 +11,10 @@ use Insane\Journal\Models\Core\Tax;
 use Insane\Journal\Models\Invoice\Invoice;
 
 class PropertyTransactionService {
-    public static function createDepositTransaction($rent, $rentData) {
-      $formData = [
-        "date" => $rent->deposit_due,
-        "due_date" => $rent->deposit_due,
-        "concept" => "Factura Déposito",
-        "description" => "Déposito de {$rent->client->fullName}",
-        "total" => $rent->deposit,
-        'category_type' => PropertyInvoiceTypes::Deposit,
-        "invoice_account_id" => $rent->property->deposit_account_id,
-        "items" => [[
-          "name" => "Depositos de {$rent->client->fullName}",
-          "concept" => "Depositos de {$rent->client->fullName}",
-          "account_id" => $rent->client_account_id,
-          "quantity" => 1,
-          "price" => $rent->deposit,
-          "amount" => $rent->deposit,
-        ]]
-      ];
-      self::createInvoice($formData, $rent, false);
-    }
-
-    public static function createDepositRefund($rent, $formData) {
-      //todo:  validate not to return more than owed
-      $refundAccountId = Account::guessAccount($rent, ['General Prepayments', 'customer_prepayments']);
-      $invoiceData = [
-        "date" => $formData['date'] ?? date('Y-m-d'),
-        "due_date" => $formData['date'] ?? date('Y-m-d'),
-        "concept" => "Factura reembolso de deposito",
-        'category_type' => PropertyInvoiceTypes::DepositRefund,
-        "description" => "Devolución de deposito {$rent->client->display_name}",
-        "total" => $formData['total'],
-        "invoice_account_id" => $formData['account_id'],
-        "account_id" => $refundAccountId,
-        "items" => [],
-        "relatedInvoices" => [
-          "name" => PropertyInvoiceTypes::DepositRefund,
-          "items" => []
-        ]
-      ];
-
-      foreach ($formData['payments'] as $payment) {
-          $invoiceData['items'][] = [
-            "name" => "Rembolso de depositos de {$rent->client->display_name}",
-            "concept" => "Rembolso de depositos de {$rent->client->display_name}",
-            "quantity" => 1,
-            "account_id" => $refundAccountId,
-            "price" => $payment['amount'],
-            "amount" => $payment['amount'],
-          ];
-          $invoiceData["relatedInvoices"]['items'][] =[
-            "id" => $payment['id'],
-            "description" => PropertyInvoiceTypes::Deposit
-          ];
-      }
-
-      return self::createInvoice($invoiceData, $rent, false);
-    }
-
     public static function getProRatedAmount(Rent $rent) {
       $amountPerDay = $rent->amount / 30;
       $daysUsed = Carbon::createFromFormat('Y-m-d', $rent->first_invoice_date)->diffInDays(Carbon::createFromFormat('Y-m-d', $rent->date));
       return $amountPerDay * abs($daysUsed);
-    }
-
-    public static function generateFirstInvoice(Rent $rent) {
-      $proRatedAmount = self::getProRatedAmount($rent);
-      $items = [[
-        "name" => "Factura de Renta",
-        "concept" => "Factura de {$rent->client->fullName}",
-        "quantity" => 1,
-        "price" => $proRatedAmount,
-        "amount" => $proRatedAmount,
-      ]];
-
-      self::createInvoice([
-        "date" => $rent->first_invoice_date,
-        "items" => $items
-      ], $rent);
-
-      $rent->update([
-        'next_invoice_date' => InvoiceHelper::getNextDate($rent->first_invoice_date),
-        'generated_invoice_dates' => [$rent->first_invoice_date]
-      ]);
     }
 
     public static function createInvoice($formData, Rent $rent, $withExtraServices = true) {
@@ -125,6 +46,109 @@ class PropertyTransactionService {
       ]);
 
       return Invoice::createDocument($data);
+    }
+
+    public static function createDepositTransaction($rent, $rentData) {
+      $formData = [
+        "date" => $rent->deposit_due,
+        "due_date" => $rent->deposit_due,
+        "concept" => "Factura Déposito",
+        "description" => "Déposito de {$rent->client->fullName}",
+        "total" => $rent->deposit,
+        'category_type' => PropertyInvoiceTypes::Deposit,
+        "invoice_account_id" => $rent->property->deposit_account_id,
+        "items" => [[
+          "name" => "Depositos de {$rent->client->fullName}",
+          "concept" => "Depositos de {$rent->client->fullName}",
+          "account_id" => $rent->client_account_id,
+          "quantity" => 1,
+          "price" => $rent->deposit,
+          "amount" => $rent->deposit,
+        ]]
+      ];
+      self::createInvoice($formData, $rent, false);
+    }
+
+    public static function generateFirstInvoice(Rent $rent) {
+      $proRatedAmount = self::getProRatedAmount($rent);
+      $items = [[
+        "name" => "Factura de Renta",
+        "concept" => "Factura de {$rent->client->fullName}",
+        "quantity" => 1,
+        "price" => $proRatedAmount,
+        "amount" => $proRatedAmount,
+      ]];
+
+      self::createInvoice([
+        "date" => $rent->first_invoice_date,
+        "items" => $items
+      ], $rent);
+
+      $rent->update([
+        'next_invoice_date' => InvoiceHelper::getNextDate($rent->first_invoice_date),
+        'generated_invoice_dates' => [$rent->first_invoice_date]
+      ]);
+    }
+
+    public static function createDepositRefund($rent, $formData) {
+      //todo:  validate not to return more than owed
+      $refundAccountId = Account::guessAccount($rent, ['General Prepayments', 'customer_prepayments']);
+      $invoiceData = [
+        "date" => $formData['date'] ?? date('Y-m-d'),
+        "due_date" => $formData['date'] ?? date('Y-m-d'),
+        "concept" => $formData['concept'],
+        'category_type' => PropertyInvoiceTypes::DepositRefund,
+        "description" => $formData['details'],
+        "total" => $formData['total'],
+        "invoice_account_id" => $formData['account_id'],
+        "account_id" => $refundAccountId,
+        "items" => [],
+        "relatedInvoices" => [
+          "name" => PropertyInvoiceTypes::DepositRefund,
+          "items" => []
+        ]
+      ];
+
+      foreach ($formData['payments'] as $payment) {
+          $invoiceData['items'][] = [
+            "name" => "Rembolso de depositos de {$rent->client->display_name}",
+            "concept" => "Rembolso de depositos de {$rent->client->display_name}",
+            "quantity" => 1,
+            "account_id" => $refundAccountId,
+            "price" => $payment['amount'],
+            "amount" => $payment['amount'],
+          ];
+          $invoiceData["relatedInvoices"]['items'][] =[
+            "id" => $payment['id'],
+            "description" => PropertyInvoiceTypes::Deposit
+          ];
+      }
+
+      return self::createInvoice($invoiceData, $rent, false);
+    }
+
+    public static function createExpense(Rent $rent, $formData) {
+      $items = [[
+        "name" => $formData['concept'],
+        "concept" => $formData['details'],
+        "quantity" => 1,
+        "account_id" => $formData['account_id'],
+        "price" => $formData['amount'],
+        "amount" => $formData['amount'],
+      ]];
+
+      self::createInvoice([
+        "date" => $formData['date'] ?? date('Y-m-d'),
+        "due_date" => $formData['date'] ?? date('Y-m-d'),
+        "concept" => "Factura reembolso de deposito",
+        'category_type' => PropertyInvoiceTypes::UtilityExpense,
+        'type' => Invoice::DOCUMENT_TYPE_BILL,
+        "description" => "Devolución de deposito {$rent->client->display_name}",
+        "total" => $formData['amount'],
+        "invoice_account_id" => $formData['account_id'],
+        "account_id" => Account::guessAccount($rent, [$rent->property->name, 'expected_payments_vendors']),
+        "items" => $items
+      ], $rent);
     }
 
     public static function createLateFees($invoices) {

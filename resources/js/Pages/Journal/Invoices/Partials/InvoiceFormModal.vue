@@ -50,7 +50,7 @@ function generatePaymentData() {
     amount: props.due,
     payment_method_id: paymentMethods[0].id,
     paymentMethod: paymentMethods[0],
-    payment_date: new Date(),
+    date: new Date(),
     amount: 0,
   };
 }
@@ -100,7 +100,7 @@ const rentsUrl = computed(() => {
   return `/api/rents?filter[client_id]=${formData.value.client?.id}`;
 });
 
-function addPayment() {
+function onSubmit() {
   if (!formData.value.amount) {
     notify({
       type: "error",
@@ -109,26 +109,23 @@ function addPayment() {
     return;
   }
 
-  const formData = {
-    resource_id: props.resourceId,
-    payment_date: formatDate(formData.value.payment_date || new Date(), "yyyy-MM-dd"),
+  const data = {
+    date: formatDate(formData.value.date || new Date(), "yyyy-MM-dd"),
     amount: formData.value.amount,
     concept: formData.value.concept,
-    payment_method_id: formData.value.payment_method,
     account_id: formData.value.account_id,
-    reference: formData.value.reference,
-    notes: formData.value.notes,
-    documents: formData.value.documents?.filter((doc) => doc.payment),
+    client_id: formData.value.client.id,
+    rent_id: formData.value.rent.id,
+    details: formData.value.notes,
   };
 
   axios
-    .post(props.endpoint, formData)
+    .post(`properties/${data.rent_id}/transactions/expense`, data)
     .then(() => {
       resetForm(true);
       emit("saved");
     })
     .catch((err) => {
-      console.log(err);
       notify({
         type: "error",
         message: err.response ? err.response.data.status.message : "Ha ocurrido un error",
@@ -140,6 +137,7 @@ function deletePayment() {
   axios
     .delete(`${props.endpoint}/${formData.id}`)
     .then(() => {
+      emit("update:modelValue", false);
       emit("saved");
       resetForm(true);
     })
@@ -201,12 +199,7 @@ function emitChange(value) {
         </AtField>
         <section class="flex">
           <AtField label="Fecha limite" class="w-3/12">
-            <ElDatePicker
-              v-model="formData.payment_date"
-              size="large"
-              class="w-full"
-              rounded
-            />
+            <ElDatePicker v-model="formData.date" size="large" class="w-full" rounded />
           </AtField>
           <AtField class="w-9/12 text-left" label="Monto Recibido">
             <AtInput
@@ -262,7 +255,9 @@ function emitChange(value) {
         >
           Delete
         </AppButton>
-        <AppButton v-else @click="addPayment()"> Efectuar pago </AppButton>
+        <AppButton variant="inverse" v-else @click="onSubmit()">
+          Efectuar pago
+        </AppButton>
       </div>
     </template>
   </ElDialog>

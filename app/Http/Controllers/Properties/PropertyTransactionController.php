@@ -24,6 +24,15 @@ class PropertyTransactionController extends Controller
 
     public function store(Rent $rent, $transactionType) {
       $postData = request()->post();
+      return $this->$transactionType($rent, $postData);
+    }
+    
+    public function expense($rent, $postData) {
+      $invoice = PropertyTransactionService::createExpense($rent, $postData);
+      return response()->json($invoice);
+    }
+    
+    public function refund($rent, $postData) {
       $invoice = PropertyTransactionService::createDepositRefund($rent, $postData);
       return response()->json($invoice);
     }
