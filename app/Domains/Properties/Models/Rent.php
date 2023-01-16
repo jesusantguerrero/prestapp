@@ -26,6 +26,8 @@ class Rent extends Transactionable implements IPayableDocument {
         'property_id',
         'unit_id',
         'client_id',
+        'client_name',
+        'address',
         'deposit',
         'deposit_due',
         'date',
@@ -55,7 +57,9 @@ class Rent extends Transactionable implements IPayableDocument {
     protected static function boot() {
       parent::boot();
       static::creating(function ($rent) {
-          $rent->next_invoice_date = $rent->next_invoice_date ?? $rent->first_invoice_date;
+        $rent->next_invoice_date = $rent->next_invoice_date ?? $rent->first_invoice_date;
+        $rent->client_name = $rent->client->fullName;
+        $rent->address = $rent->property->address;
       });
   }
 

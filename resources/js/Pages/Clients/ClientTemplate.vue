@@ -163,16 +163,6 @@ const refresh = () => {
           </div>
         </article>
       </section>
-      <!--
-      <PaymentFormModal
-        v-if="selectedPayment"
-        v-model="isPaymentModalOpen"
-        :payment="selectedPayment"
-        :endpoint="`/loans/${properties.id}/installments/${selectedPayment.installment_id}/pay`"
-        :due="selectedPayment.amount"
-        :default-concept="paymentConcept"
-        @saved="refresh()"
-      /> -->
     </main>
   </AppLayout>
 </template>

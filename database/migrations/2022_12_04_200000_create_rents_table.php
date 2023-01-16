@@ -27,7 +27,9 @@ return new class extends Migration
             $table->foreignId('client_account_id')->nullable();
             $table->foreignId('commission_account_id')->nullable();
             $table->foreignId('late_fee_account_id')->nullable();
-
+            
+            $table->string('client_name')->nullable();
+            $table->text('address')->nullable();
             // terms
             $table->date('deposit_due');
             $table->decimal('deposit', 11, 2)->default(0.00);

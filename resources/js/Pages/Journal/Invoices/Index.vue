@@ -3,14 +3,15 @@ import { reactive, computed, watch, ref } from "vue";
 import { AtButton, AtTable } from "atmosphere-ui";
 import { router } from "@inertiajs/vue3";
 
-import AppSectionHeader from "../../../Components/AppSectionHeader.vue";
+import AppSectionHeader from "@/Components/AppSectionHeader.vue";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import InvoiceTable from "@/Components/templates/InvoiceTable";
+import AppButton from "@/Components/shared/AppButton.vue";
+import AccountingSectionNav from "../Partials/AccountingSectionNav.vue";
+import InvoiceFormModal from "./Partials/InvoiceFormModal.vue";
 
 import { formatMoney, formatDate } from "@/utils";
-import AccountingSectionNav from "../Partials/AccountingSectionNav.vue";
-import AppButton from "../../../Components/shared/AppButton.vue";
 import { Link } from "@inertiajs/vue3";
 
 const props = defineProps({
@@ -52,6 +53,8 @@ watch(
   },
   { deep: true }
 );
+
+const isInvoiceModalOpen = ref(false);
 </script>
 
 <template>
@@ -82,11 +85,9 @@ watch(
             variant="inverse"
             >Ingreso</AppButton
           >
-          <AppButton
-            @click="router.visit(`/${state.sectionName}/create`)"
-            variant="inverse"
-            >Egreso</AppButton
-          >
+          <AppButton @click="isInvoiceModalOpen = !isInvoiceModalOpen" variant="inverse">
+            Egreso
+          </AppButton>
         </template>
       </AccountingSectionNav>
     </template>
@@ -94,6 +95,7 @@ watch(
     <div class="py-10 mx-auto sm:px-6 lg:px-8">
       <InvoiceTable :invoice-data="invoices.data" class="mt-10 bg-base-lvl-3" />
     </div>
+    <InvoiceFormModal v-if="isInvoiceModalOpen" v-model="isInvoiceModalOpen" />
   </AppLayout>
 </template>
 

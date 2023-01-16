@@ -89,8 +89,10 @@ const handleSearch = debounce((query) => {
     return;
   }
   isLoading.value = true;
+  const params = props.endpoint?.includes("?") ? `q=${query}` : "?q=${query}";
+
   axios
-    .get(`${props.endpoint}?q=${query}`)
+    .get(`${props.endpoint}${params}`)
     .then(({ data }) => {
       localOptions.value = data;
     })

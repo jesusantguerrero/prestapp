@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\ClientApiController;
 use App\Http\Controllers\Api\PropertyApiController;
+use App\Http\Controllers\Api\RentApiController;
 use App\Http\Controllers\Api\TransactionLineApiController;
 use App\Http\Controllers\BackgroundController;
 use App\Http\Controllers\DashboardController;
@@ -33,6 +34,7 @@ Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->group(function 
   //  accounts and transactions
 Route::resource('clients', ClientApiController::class);
 Route::resource('properties', PropertyApiController::class);
+Route::resource('rents', RentApiController::class);
 Route::resource('transaction-lines', TransactionLineApiController::class);
   // Route::patch('/accounts', [AccountApiController::class,  'bulkUpdate']);
   // Route::resource('categories', CategoryApiController::class);

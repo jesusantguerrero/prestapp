@@ -13,7 +13,7 @@ import {
   usePaymentModal,
   modalState as paymentModalState,
 } from "@/Modules/transactions/usePaymentModal";
-import PaymentFormModal from "../Pages/Loans/Partials/PaymentFormModal.vue";
+import PaymentFormModal from "@/Pages/Loans/Partials/PaymentFormModal.vue";
 
 const { isOpen } = usePaymentModal();
 </script>
