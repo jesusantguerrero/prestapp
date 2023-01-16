@@ -1,6 +1,6 @@
 <template>
   <account-modal
-    v-model:is-open="isVisible"
+    is-open="isVisible"
     :buttons="buttons"
     title="Add an account"
     @update:is-open="$emit('update:is-open', $event)"

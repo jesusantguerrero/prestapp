@@ -1,22 +1,24 @@
 <script setup lang="ts">
-import { Link, router } from "@inertiajs/vue3";
+import { router } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
+import { AtBackgroundIconCard } from "atmosphere-ui";
 
+import Modal from "@/Components/Modal.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import AppSectionHeader from "../../Components/AppSectionHeader.vue";
 import IconMarker from "@/Components/icons/IconMarker.vue";
 import IconCoins from "@/Components/icons/IconCoins.vue";
 import IconPersonSafe from "@/Components/icons/IconPersonSafe.vue";
+import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.vue";
+import ContractCard from "./Partials/ContractCard.vue";
+import EmptyAddTool from "./Partials/EmptyAddTool.vue";
+import UnitForm from "./Partials/UnitForm.vue";
 
 import { formatMoney } from "@/utils";
 import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
-import PropertySectionNav from "../Properties/Partials/PropertySectionNav.vue";
 import { IProperty } from "@/Modules/properties/propertyEntity";
 import { ElTag } from "element-plus";
-import { AtBackgroundIconCard } from "atmosphere-ui";
-import ContractCard from "./Partials/ContractCard.vue";
-import EmptyAddTool from "./Partials/EmptyAddTool.vue";
 import { clientInteractions } from "@/Modules/clients/clientInteractions";
 
 export interface Props {
@@ -59,7 +61,6 @@ const onPayment = (installment: ILoanInstallment) => {
 
   isPaymentModalOpen.value = true;
 };
-
 const paymentConcept = computed(() => {
   return (
     selectedPayment.value &&
@@ -69,6 +70,11 @@ const paymentConcept = computed(() => {
 
 const refresh = () => {
   router.reload();
+};
+
+const isUnitFormOpen = ref(false);
+const addUnit = () => {
+  isUnitFormOpen.value = true;
 };
 </script>
 
@@ -158,22 +164,21 @@ const refresh = () => {
             />
           </section>
 
-          <section class="space-y-4">
+          <section class="space-y-4 shadow-md bg-base-lvl-3">
             <div
               v-for="unit in properties.units"
-              class="flex w-full rounded-md bg-white px-4 py-2 justify-between"
+              class="flex w-full rounded-md px-4 py-2 justify-between"
             >
               <h4>
+                <IMdiHome />
                 {{ unit.name || "Sin nombre" }}
                 <p>
-                  {{ unit.price }}
+                  {{ formatMoney(unit.price) }}
                 </p>
               </h4>
               <div>
                 {{ unit.status }}
-                <p>
-                  {{ unit.price }}
-                </p>
+                <p></p>
               </div>
             </div>
           </section>
@@ -208,7 +213,7 @@ const refresh = () => {
               <EmptyAddTool> Notes </EmptyAddTool>
               <EmptyAddTool> Imagenes </EmptyAddTool>
               <EmptyAddTool> Documentos </EmptyAddTool>
-              <EmptyAddTool> Configuracion </EmptyAddTool>
+              <EmptyAddTool @click="addUnit()"> Agregar unidad </EmptyAddTool>
             </div>
           </div>
         </article>
@@ -223,6 +228,10 @@ const refresh = () => {
         :default-concept="paymentConcept"
         @saved="refresh()"
       />
+
+      <Modal v-if="isUnitFormOpen" :show="isUnitFormOpen" @close="isUnitFormOpen = false">
+        <UnitForm @close="isUnitFormOpen = false" :property="properties" />
+      </Modal>
     </main>
   </AppLayout>
 </template>

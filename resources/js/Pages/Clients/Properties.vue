@@ -1,0 +1,1 @@
+<template>Hi properties</template>

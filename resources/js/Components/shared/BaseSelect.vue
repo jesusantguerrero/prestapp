@@ -26,15 +26,15 @@ import { ref, computed } from "vue";
 type SelectOption = Object | any[] | string | number;
 
 interface Props {
-  id: string | number;
+  id?: string | number;
   modelValue: SelectOption;
-  options: any[];
-  disabled: boolean;
+  options?: any[];
+  disabled?: boolean;
   trackBy: string;
   label: string;
   placeholder?: string;
-  hideSelected: boolean;
-  showLabels: boolean;
+  hideSelected?: boolean;
+  showLabels?: boolean;
   endpoint?: string;
   allowCreate?: boolean;
   customLabel?: Function;
@@ -44,7 +44,7 @@ const props = withDefaults(defineProps<Props>(), {
   trackBy: "value",
   label: "label",
   placeholder: "Type and select option…",
-  hideSelected: true,
+  hideSelected: false,
   showLabels: false,
 });
 
@@ -89,8 +89,10 @@ const handleSearch = debounce((query) => {
     return;
   }
   isLoading.value = true;
+  const params = props.endpoint?.includes("?") ? `q=${query}` : "?q=${query}";
+
   axios
-    .get(`${props.endpoint}?q=${query}`)
+    .get(`${props.endpoint}${params}`)
     .then(({ data }) => {
       localOptions.value = data;
     })
@@ -102,4 +104,33 @@ const handleSearch = debounce((query) => {
 
 <style lang="scss">
 @import "vue-multiselect/dist/vue-multiselect.css";
+</style>
+
+<style lang="scss">
+.multiselect__option--highlight {
+  @apply bg-primary;
+}
+
+.multiselect__tags,
+.multiselect__single,
+.multiselect__input {
+  @apply bg-base-lvl-2;
+}
+
+.multiselect__content-wrapper {
+  &::-webkit-scrollbar-thumb {
+    background-color: transparentize($color: #000000, $amount: 0.8);
+    border-radius: 4px;
+
+    &:hover {
+      background-color: transparentize($color: #000000, $amount: 0.8);
+    }
+  }
+
+  &::-webkit-scrollbar {
+    background-color: transparent;
+    width: 8px;
+    height: 10px;
+  }
+}
 </style>

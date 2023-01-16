@@ -24,7 +24,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["modelValue:update"]);
+const emit = defineEmits(["update:modelValue"]);
 
 const state = reactive({
   types: [

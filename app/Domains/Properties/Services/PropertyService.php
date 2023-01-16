@@ -14,6 +14,10 @@ class PropertyService {
       }
     }
 
+    public static function addUnit(Property $property, mixed $unitData) {
+      $property->units()->create($unitData);
+    }
+
     public static function ofTeam($teamId, $status= Property::STATUS_AVAILABLE) {
       return Property::where([
         'team_id' =>  $teamId,

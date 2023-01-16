@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\ClientApiController;
+use App\Http\Controllers\Api\PropertyApiController;
+use App\Http\Controllers\Api\RentApiController;
 use App\Http\Controllers\Api\TransactionLineApiController;
 use App\Http\Controllers\BackgroundController;
 use App\Http\Controllers\DashboardController;
@@ -27,6 +29,17 @@ use Inertia\Inertia;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->group(function () {
+  //  accounts and transactions
+Route::resource('clients', ClientApiController::class);
+Route::resource('properties', PropertyApiController::class);
+Route::resource('rents', RentApiController::class);
+Route::resource('transaction-lines', TransactionLineApiController::class);
+  // Route::patch('/accounts', [AccountApiController::class,  'bulkUpdate']);
+  // Route::resource('categories', CategoryApiController::class);
+  // Route::patch('/categories', [CategoryApiController::class,  'bulkUpdate']);
+});
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -78,32 +91,25 @@ Route::middleware([
     Route::get('properties/overview', PropertyController::class);
     Route::get('properties/management-tools', [PropertyController::class, 'managementTools']);
     Route::resource('properties', PropertyController::class);
+    Route::post('properties/{property}/units', [PropertyController::class, 'addUnit']);
+    
+    // rents
     Route::resource('rents', RentController::class);
+    // property transactions
+    Route::get('/properties/transactions/{category}', PropertyTransactionController::class);
+    Route::post('/properties/{rent}/transactions/{type}', [PropertyTransactionController::class, 'store']);
+    Route::post('rents/{rent}/invoices/{invoice}/pay', [RentController::class, 'payInvoice']);
+    Route::post('rents/{rent}/generate-next-invoice', [RentController::class, 'generateNextInvoice']);
+    Route::post('/rents/{rent}/transactions/{invoice}', [ClientController::class, 'generateOwnerDistribution']);
+    
     // Owner
     Route::post('/clients/{client}/owner-distributions', [ClientController::class, 'generateOwnerDistribution']);
     Route::put('/clients/{client}/owner-distributions/{invoice}', [ClientController::class, 'generateOwnerDistribution']);
 
-    // rents
-    Route::post('rents/{rent}/invoices/{invoice}/pay', [RentController::class, 'payInvoice']);
-    Route::post('rents/{rent}/generate-next-invoice', [RentController::class, 'generateNextInvoice']);
     // Tenant
     Route::get('/clients/{client}/rents/{rent}/end', [TenantRentController::class, 'endRent'])->name('tenant.end-rent');;
     Route::put('/clients/{client}/rents/{rent}/end', [TenantRentController::class, 'endRentAction'])->name('tenant.end-rent-action');
 
-
-    // property transactions
-    Route::get('/properties/transactions/{category}', PropertyTransactionController::class);
-    Route::post('/properties/{rent}/transactions/{type}', [PropertyTransactionController::class, 'store']);
+    
 });
 
-
-
-Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->group(function () {
-
-  //  accounts and transactions
-Route::resource('clients', ClientApiController::class);
-Route::resource('transaction-lines', TransactionLineApiController::class);
-  // Route::patch('/accounts', [AccountApiController::class,  'bulkUpdate']);
-  // Route::resource('categories', CategoryApiController::class);
-  // Route::patch('/categories', [CategoryApiController::class,  'bulkUpdate']);
-});

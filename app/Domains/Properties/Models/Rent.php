@@ -3,6 +3,7 @@
 namespace App\Domains\Properties\Models;
 
 use App\Domains\CRM\Models\Client;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use Insane\Journal\Models\Core\Transaction;
 use Insane\Journal\Models\Invoice\Invoice;
 use Insane\Journal\Traits\HasPaymentDocuments;
@@ -25,6 +26,8 @@ class Rent extends Transactionable implements IPayableDocument {
         'property_id',
         'unit_id',
         'client_id',
+        'client_name',
+        'address',
         'deposit',
         'deposit_due',
         'date',
@@ -54,7 +57,9 @@ class Rent extends Transactionable implements IPayableDocument {
     protected static function boot() {
       parent::boot();
       static::creating(function ($rent) {
-          $rent->next_invoice_date = $rent->next_invoice_date ?? $rent->first_invoice_date;
+        $rent->next_invoice_date = $rent->next_invoice_date ?? $rent->first_invoice_date;
+        $rent->client_name = $rent->client->fullName;
+        $rent->address = $rent->property->address;
       });
   }
 
@@ -71,7 +76,25 @@ class Rent extends Transactionable implements IPayableDocument {
     }
 
     public function invoices() {
-        return $this->morphMany(Invoice::class, 'invoiceable');
+      return $this->morphMany(Invoice::class, 'invoiceable');
+    }
+
+    public function rentInvoices() {
+      return $this->morphMany(Invoice::class, 'invoiceable')
+      ->where('invoiceable_type', Rent::class)
+      ->where('category_type', PropertyInvoiceTypes::Rent);
+    }
+
+    public function depositInvoices() {
+      return $this->morphMany(Invoice::class, 'invoiceable')
+      ->where('invoiceable_type', Rent::class)
+      ->where('category_type', PropertyInvoiceTypes::Deposit);
+    }
+
+    public function rentExpenses() {
+      return $this->morphMany(Invoice::class, 'invoiceable')
+      ->where('invoiceable_type', Rent::class)
+      ->where('category_type', PropertyInvoiceTypes::UtilityExpense);
     }
 
     /**

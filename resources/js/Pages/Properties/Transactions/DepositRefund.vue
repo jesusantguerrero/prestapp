@@ -71,6 +71,7 @@ const getTransactions = (clientId: number, categoryId: number) => {
     })
     .then(({ data }) => data.data.map((line) => line.transaction));
 };
+
 watch(
   () => formData.account,
   async () => {

@@ -1,0 +1,1 @@
+<template>Hi loan</template>

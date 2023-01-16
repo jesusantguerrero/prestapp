@@ -30,17 +30,17 @@ const props = defineProps({
       };
     },
   },
-  propertiesTotal: {
-    type: Number,
-  },
-  propertiesAvailable: {
-    type: Number,
-  },
-  propertiesRented: {
-    type: Number,
+  stats: {
+    type: Object,
   },
   cashOnHand: {
     type: Object,
+  },
+  totals: {
+    type: Object,
+  },
+  accounts: {
+    type: Array,
   },
   nextInvoices: {
     type: Array,
@@ -50,18 +50,13 @@ const props = defineProps({
 const propertyStats = [
   {
     label: "Total propiedades",
-    value: props.propertiesTotal || 0,
+    value: props.stats.total || 0,
     icon: "fa-users",
   },
   {
     label: "Alquiladas/Libres",
     icon: "fa-money",
-    value: `${props.propertiesRented || 0} / ${props.propertiesAvailable || 0}`,
-  },
-  {
-    label: "Comision esperada/mes",
-    icon: "fa-wallet",
-    value: formatMoney(props.expectedCommission),
+    value: `${props.stats.rented || 0} / ${props.stats.available || 0}`,
   },
   {
     label: "Comisiones pagadas/mes",
@@ -121,13 +116,13 @@ const comparisonRevenue = {
       <header class="flex space-x-4">
         <WelcomeWidget
           message="Estadisticas de propiedades"
-          class="text-body-1 w-8/12"
+          class="text-body-1 w-7/12 shadow-md"
           :cards="propertyStats"
         />
 
         <WelcomeWidget
           message="Rent Payments"
-          class="text-body-1 w-4/12"
+          class="text-body-1 w-5/12 shadow-md"
           :cards="propertyStats"
           action-label="Ver estado de rentas"
           action-link="/rents"
@@ -135,15 +130,17 @@ const comparisonRevenue = {
           <template #content>
             <section class="py-4">
               <BudgetProgress
-                :goal="13_540"
-                :current="12_140"
+                :goal="totals.total"
+                :current="totals.paid"
                 class="h-2.5 text-white rounded-md"
                 :progress-class="['bg-primary', 'bg-primary/5']"
                 :show-labels="false"
               >
                 <template v-slot:before="{ progress }">
                   <header class="mb-1 font-bold flex justify-between">
-                    <span> {{ formatMoney(12_140) }} of {{ formatMoney(13_540) }} </span>
+                    <span>
+                      {{ formatMoney(totals.paid) }} of {{ formatMoney(totals.total) }}
+                    </span>
                     <span class="text-primary">{{ progress }}% </span>
                   </header>
                 </template>
@@ -151,10 +148,15 @@ const comparisonRevenue = {
                 <template v-slot:after="{ progress }">
                   <div class="justify-between w-full flex mt-1">
                     <p>
-                      <span class="text-error font-bold">
-                        {{ 1 }}
+                      <span
+                        class="font-bold"
+                        :class="[
+                          totals.outstandingInvoices ? 'text-success' : 'text-error',
+                        ]"
+                      >
+                        {{ totals.outstandingInvoices }}
                       </span>
-                      pagos de renta atrasados
+                      Pagos de renta atrasados
                     </p>
                   </div>
                 </template>
@@ -171,10 +173,10 @@ const comparisonRevenue = {
             :style="{ height: '350px' }"
             :chart="comparisonRevenue"
             :headerInfo="comparisonRevenue.headers"
-            :sections="['Rent', 'Deposit', 'Property expenses']"
+            :sections="accounts"
           />
 
-          <article class="rounded-md bg-base-lvl-3">
+          <article class="rounded-md bg-base-lvl-3 shadow-md">
             <header class="flex justify-between px-5 py-2 text-body-1">
               <h4 class="text-xl font-bold">Proximos pagos</h4>
               <AppButton
@@ -206,9 +208,15 @@ const comparisonRevenue = {
               </AtButton>
             </template>
           </AtBackgroundIconCard> -->
+          <WelcomeWidget
+            message="Distribucion a propierarios"
+            class="text-body-1 w-full shadow-md"
+            :cards="propertyStats"
+          />
 
           <IncomeSummaryWidget
             class="order-2 mt-4 lg:w-full lg:mt-0 lg:order-1"
+            :style="{ height: '230px' }"
             :chart="comparisonRevenue"
             :headerInfo="comparisonRevenue.headers"
           />

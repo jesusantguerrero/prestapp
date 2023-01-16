@@ -18,7 +18,6 @@ export default defineConfig({
             },
         }),
         Icons({
-          // experimental
           autoInstall: true,
         })
     ],
