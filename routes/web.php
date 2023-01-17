@@ -70,6 +70,7 @@ Route::middleware([
      Route::apiResource('/api/taxes', TaxController::class);
 
     // CRM
+    Route::get('/contacts/{type}', [ClientController::class, 'byTypes']);
     Route::resource('clients', ClientController::class);
     Route::get('/clients/{client}/{section}', [ClientController::class, 'getSection']);
 
@@ -92,7 +93,7 @@ Route::middleware([
     Route::get('properties/management-tools', [PropertyController::class, 'managementTools']);
     Route::resource('properties', PropertyController::class);
     Route::post('properties/{property}/units', [PropertyController::class, 'addUnit']);
-    
+
     // rents
     Route::resource('rents', RentController::class);
     // property transactions
@@ -101,7 +102,7 @@ Route::middleware([
     Route::post('rents/{rent}/invoices/{invoice}/pay', [RentController::class, 'payInvoice']);
     Route::post('rents/{rent}/generate-next-invoice', [RentController::class, 'generateNextInvoice']);
     Route::post('/rents/{rent}/transactions/{invoice}', [ClientController::class, 'generateOwnerDistribution']);
-    
+
     // Owner
     Route::post('/clients/{client}/owner-distributions', [ClientController::class, 'generateOwnerDistribution']);
     Route::put('/clients/{client}/owner-distributions/{invoice}', [ClientController::class, 'generateOwnerDistribution']);
@@ -110,6 +111,6 @@ Route::middleware([
     Route::get('/clients/{client}/rents/{rent}/end', [TenantRentController::class, 'endRent'])->name('tenant.end-rent');;
     Route::put('/clients/{client}/rents/{rent}/end', [TenantRentController::class, 'endRentAction'])->name('tenant.end-rent-action');
 
-    
+
 });
 

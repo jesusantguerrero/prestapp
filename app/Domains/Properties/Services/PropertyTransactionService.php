@@ -36,9 +36,10 @@ class PropertyTransactionService {
         'invoiceable_id' => $rent->id,
         'invoiceable_type' => Rent::class,
         'date' => $formData['date'] ?? date('Y-m-d'),
-        'type' => Invoice::DOCUMENT_TYPE_INVOICE,
+        'type' => $formData['type'] ?? Invoice::DOCUMENT_TYPE_INVOICE,
         'category_type' => $formData['category_type'] ?? PropertyInvoiceTypes::Rent,
         "invoice_account_id" => $formData["invoice_account_id"] ??$rent->property->account_id,
+        "account_id" => $formData["account_id"] ??$rent->property->client_account_id,
         'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
         'total' =>  $formData['amount'] ?? $rent->amount,
         'items' => array_merge($formData['items'] ?? $items,  $withExtraServices ? $additionalFees : []),
@@ -48,7 +49,7 @@ class PropertyTransactionService {
       return Invoice::createDocument($data);
     }
 
-    public static function createDepositTransaction($rent, $rentData) {
+    public static function createDepositTransaction($rent) {
       $formData = [
         "date" => $rent->deposit_due,
         "due_date" => $rent->deposit_due,
@@ -57,10 +58,11 @@ class PropertyTransactionService {
         "total" => $rent->deposit,
         'category_type' => PropertyInvoiceTypes::Deposit,
         "invoice_account_id" => $rent->property->deposit_account_id,
+        "account_id" => $rent->client_account_id,
         "items" => [[
           "name" => "Depositos de {$rent->client->fullName}",
           "concept" => "Depositos de {$rent->client->fullName}",
-          "account_id" => $rent->client_account_id,
+          "account_id" => $rent->property->deposit_account_id,
           "quantity" => 1,
           "price" => $rent->deposit,
           "amount" => $rent->deposit,
@@ -96,7 +98,7 @@ class PropertyTransactionService {
       $invoiceData = [
         "date" => $formData['date'] ?? date('Y-m-d'),
         "due_date" => $formData['date'] ?? date('Y-m-d'),
-        "concept" => $formData['concept'],
+        "concept" => "Factura reembolso de deposito",
         'category_type' => PropertyInvoiceTypes::DepositRefund,
         "description" => $formData['details'],
         "total" => $formData['total'],
@@ -128,6 +130,7 @@ class PropertyTransactionService {
     }
 
     public static function createExpense(Rent $rent, $formData) {
+      $vendorAccountId = Account::guessAccount($rent, [$rent->property->name, 'expected_payments_vendors']);
       $items = [[
         "name" => $formData['concept'],
         "concept" => $formData['details'],
@@ -140,15 +143,27 @@ class PropertyTransactionService {
       self::createInvoice([
         "date" => $formData['date'] ?? date('Y-m-d'),
         "due_date" => $formData['date'] ?? date('Y-m-d'),
-        "concept" => "Factura reembolso de deposito",
+        "concept" => $formData['concept'],
         'category_type' => PropertyInvoiceTypes::UtilityExpense,
         'type' => Invoice::DOCUMENT_TYPE_BILL,
         "description" => "Devolución de deposito {$rent->client->display_name}",
         "total" => $formData['amount'],
-        "invoice_account_id" => $formData['account_id'],
-        "account_id" => Account::guessAccount($rent, [$rent->property->name, 'expected_payments_vendors']),
+        "invoice_account_id" => $vendorAccountId,
+        "account_id" => $formData['account_id'],
         "items" => $items
       ], $rent);
+    }
+
+    public static function getInvoiceLineType(string $invoiceType) {
+      $type = 1;
+      switch ($invoiceType) {
+        case PropertyInvoiceTypes::UtilityExpense->value:
+        case PropertyInvoiceTypes::DepositRefund->value:
+          $type = -1;
+          break;
+      }
+
+      return $type;
     }
 
     public static function createLateFees($invoices) {
@@ -190,16 +205,17 @@ class PropertyTransactionService {
         $invoices = $client->getPropertyInvoices($existingInvoice->id);
       }
 
+
       $items = [];
       $total = 0;
       $taxTotal = 0;
       foreach ($invoices as $invoice) {
-         $type = $invoice->category_type == PropertyInvoiceTypes::DepositRefund->value ? -1 : 1;
+          $type = self::getInvoiceLineType($invoice->category_type);
           $item = [
             "name" => "$invoice->description $invoice->date",
             "concept" => "$invoice->description $invoice->date",
             "quantity" => 1,
-            "account_id" => $invoice->invoice_account_id,
+            "account_id" => $invoice->type == Invoice::DOCUMENT_TYPE_BILL ? $$invoice->account_id : $invoice->invoice_account_id,
             "price" => $type * $invoice->total,
             "amount" => $type * $invoice->total,
           ];

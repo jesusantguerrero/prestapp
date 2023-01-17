@@ -206,9 +206,11 @@ import {
 } from "atmosphere-ui";
 import { computed, reactive, toRefs, watch, inject, toRaw } from "vue";
 
+import AppButton from "@/Components/shared/AppButton.vue";
 import InvoiceTotals from "./InvoiceTotals.vue";
 import InvoiceGrid from "./InvoiceGrid.vue";
-import AppButton from "../../../../Components/shared/AppButton.vue";
+
+import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
 
 const props = defineProps({
   type: {
@@ -324,9 +326,18 @@ const reload = () => {
   }, 2000);
 };
 
+const { openModal } = usePaymentModal();
 const editPayment = (payment) => {
-  state.selectedPayment = payment;
-  state.isPaymentDialogVisible = true;
+  openModal({
+    data: {
+      title: `Pagar ${invoice.concept}`,
+      payment: payment,
+      endpoint: `/invoices/${payment.payable_id}/payment/${payment.id}`,
+      due: payment.amount,
+      account_id: payment.account_id,
+      defaultConcept: payment.concept,
+    },
+  });
 };
 
 const setRequestData = (data) => {

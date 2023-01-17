@@ -125,7 +125,7 @@ class Rent extends Transactionable implements IPayableDocument {
     }
 
     public function getTransactionDirection(): string {
-        return Transaction::DIRECTION_CREDIT;
+      return Transaction::DIRECTION_CREDIT;
     }
 
     public function getAccountId() {

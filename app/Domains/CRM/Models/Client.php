@@ -98,6 +98,10 @@ class Client extends Model {
       return $this->hasMany(Rent::class);
     }
 
+    public function rent() {
+      return $this->hasOne(Rent::class)->latest('date');
+    }
+
     public function invoices() {
       return $this->hasMany(Invoice::class)->latest('date');
     }

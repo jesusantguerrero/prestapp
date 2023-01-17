@@ -57,7 +57,7 @@ const onSubmit = () => {
     .transform((data) => ({
       ...data,
     }))
-    [method](`/properties${param}`, formData, {
+    [method](`/properties${param}`, {
       onsuccess() {
         route.visit(route("properties"));
       },

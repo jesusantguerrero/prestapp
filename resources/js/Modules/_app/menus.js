@@ -37,7 +37,7 @@ const menus = {
       },
       {
         label: 'Clientes',
-        url: '/loans/clients'
+        url: '/clients?filter[is_lender]=true'
       },
       {
         label: 'Centro de pago',
@@ -64,11 +64,16 @@ const menus = {
     },
     {
         label: 'Contratos',
-        url: '/rents/'
+        url: '/rents/',
+        hidden: true,
     },
     {
-        label: 'Clientes',
-        url: '/clients/'
+        label: 'Inquilinos',
+        url: '/contacts/tenant'
+    },
+    {
+      label: 'Dueños',
+      url: '/contacts/owner'
     },
     {
       label: 'Herramientas de agente',

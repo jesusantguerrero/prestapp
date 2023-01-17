@@ -11,7 +11,7 @@ class InvoiceToTicket {
   private $processor = null;
   public function getLines($invoice) {
     return $invoice->lines->filter(function($line) {
-      return !Str::contains($line->concept, ['Déposito', 'Devolución']);
+      return !Str::contains($line->concept, ['Déposito', 'Devolución']) && $line->amount > 0;
     });
   }
 

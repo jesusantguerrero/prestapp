@@ -95,9 +95,9 @@ const refresh = () => {
                   {{ clients.properties?.length }}
                 </span>
               </div>
-              <p class="text-bold text-body-1">Propiedades</p>
+              <p class="text-bold text-body-1" v-if="clients.is_owner">Propiedades</p>
             </section>
-            <ElTag> {{ clients.status }}</ElTag>
+            <ElTag> {{ clients?.rent?.status || clients.status }}</ElTag>
           </article>
         </section>
         <div class="flex space-x-2">

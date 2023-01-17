@@ -5,6 +5,7 @@ namespace App\Http\Controllers\CRM;
 use App\Domains\CRM\Models\Client;
 use App\Domains\Properties\Actions\GenerateInvoices;
 use App\Domains\Properties\Models\Rent;
+use App\Domains\Properties\Services\PropertyTransactionService;
 use App\Domains\Properties\Services\RentService;
 use App\Http\Controllers\InertiaController;
 use Illuminate\Http\Request;
@@ -26,6 +27,20 @@ class ClientController extends InertiaController
       $this->resourceName= "clients";
   }
 
+  protected function byTypes(Request $request, $type) {
+    $resourceName = $this->resourceName ?? $this->model->getTable();
+    $resources = $this->parser($this->getModelQuery($request));
+
+    return inertia($this->templates['index'],
+    array_merge([
+        $resourceName => $this->parser($this->getModelQuery($request,null, function ($builder) use ($type) {
+          $builder->where("is_$type", true);
+        } )),
+        "serverSearchOptions" => $this->getServerParams()
+    ], $this->getIndexProps($request, $resources)));
+}
+
+
   public function show(Request $request, int $id) {
     $client = Client::where('id', $id)->first();
 
@@ -40,7 +55,6 @@ class ClientController extends InertiaController
       ])
     );
   }
-
 
 
   public function contracts(Client $client) {
@@ -69,7 +83,7 @@ class ClientController extends InertiaController
 
   // owners
   public function generateOwnerDistribution(Client $client, int $invoiceId = null) {
-    GenerateInvoices::ownerDistribution($client, $invoiceId);
+    PropertyTransactionService::createOwnerDistribution($client, $invoiceId);
     return redirect("/bills");
   }
 

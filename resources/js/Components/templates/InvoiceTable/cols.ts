@@ -2,17 +2,17 @@ import { formatDate } from "@/utils";
 
 export default [
     {
-        label: "Date",
-        name: "date",
-        width: 200,
-        render(row) {
-            return format(row.date);
-        },
-    },
-    {
         label: "Concept",
         name: "concept",
         width: 300,
+    },
+    {
+      label: "Date",
+      name: "date",
+      width: 200,
+      render(row) {
+          return format(row.date);
+      },
     },
     {
         label: "Categoria / Propiedad",
@@ -20,14 +20,14 @@ export default [
         width: 100,
     },
     {
+      label: "Total / Deuda",
+      name: "total",
+      type: 'money'
+    },
+    {
         label: "Status",
         name: "status",
         width: 200,
-    },
-    {
-        label: "Total / Deuda",
-        name: "total",
-        type: 'money'
     },
     {
         label: "",
