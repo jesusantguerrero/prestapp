@@ -14,6 +14,7 @@ use Insane\Journal\Helpers\ReportHelper;
 
 class PropertyController extends InertiaController
 {
+  
   public function __construct(Property $property)
   {
       $this->model = $property;

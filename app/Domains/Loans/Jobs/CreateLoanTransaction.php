@@ -17,6 +17,7 @@ class CreateLoanTransaction implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $loan;
+    protected $formData;
 
     /**
      * Create a new job instance.
@@ -47,7 +48,7 @@ class CreateLoanTransaction implements ShouldQueue
         $this->formData["direction"] = Transaction::DIRECTION_CREDIT;
         $this->formData["total"] =  $this->formData["total"] ?? $this->loan->total;
         $this->formData["account_id"] = $this->formData['account_id'] ?? $this->loan->source_account_id;
-        $this->formData["category_id"] = $this->loan->account_id;
+        $this->formData["counter_account_id"] = $this->formData['counter_account_id'] ?? $this->loan->client_account_id;
         $this->formData["status"] = "verified";
 
         if ($transaction = $this->loan->transaction) {

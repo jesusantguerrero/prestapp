@@ -11,5 +11,5 @@ export const generateInstallments = ({ interest_rate, amount, repayment_count, f
 
     });
 
-    return loanTable.payments;
+    return loanTable;
 }

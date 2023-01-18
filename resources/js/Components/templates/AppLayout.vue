@@ -102,7 +102,10 @@ watch(
 
           <div class="flex justify-end h-16">
             <div class="hidden sm:flex sm:items-center sm:ml-6">
-              <AppButton>Agregar Nuevo</AppButton>
+              <AppButton class="flex px-1 items-center">
+                <IMdiPlus class="mr-2" />
+                Nuevo
+              </AppButton>
               <!-- Settings Dropdown -->
               <div class="relative ml-3">
                 <Dropdown align="right" width="48">

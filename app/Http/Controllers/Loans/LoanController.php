@@ -75,14 +75,17 @@ class LoanController extends InertiaController
         ]);
     }
 
-    protected function getEditProps(Request $request, $id)
+    protected function getEditProps(Request $request, $loan)
     {
-        $teamId = $request->user()->current_team_id;
-
-        return [
-            'loans' => Loan::where('id', $id)->with(['client', 'installments', 'paymentDocuments'])->first(),
-            'clients' => ClientService::ofTeam($teamId),
-        ];
+      return [
+        'loans' => array_merge(
+        $loan->toArray(),
+        [
+          'client' => $loan->client,
+          'installments' => $loan->installments,
+          'paymentDocuments' => $loan->paymentDocuments
+        ]),
+      ];
     }
 
     public function update(Request $request, int $id) {
@@ -162,10 +165,32 @@ class LoanController extends InertiaController
       ]);
     }
 
+    // tabs
+    public function getSection(Loan $loan, string $section) {
+      $resourceName = $this->resourceName ?? $this->model->getTable();
+      $resource = $loan->toArray();
+      $sectionName = ucfirst($section);
+
+      return inertia("Loans/$sectionName",
+      [
+          $resourceName => array_merge($resource, $this->$section($loan)),
+          "currentTab" => $section,
+
+      ]);
+    }
+
+
+    public function installments(Loan $loan) {
+      return [
+        "installments" => $loan->installments,
+        "client" => $loan->client,
+      ];
+    }
+
+
     // Payment Center
     public function paymentCenter(Request $request) {
       $teamId = $request->user()->current_team_id;
-      $tab = $request->query('tab', 'rents');
       $filters = $request->query('filters');
       $clientId = $filters ? $filters['client'] : null;
 

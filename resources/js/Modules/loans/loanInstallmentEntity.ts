@@ -40,13 +40,18 @@ export interface LoanTableParams {
 }
 
 export class LoanTable {
+    payment: number;
     payments: ILoanInstallment[] = [];
+    totalDebt: number = 0;
+    totalInterest: number = 0;
+    totalCapital: number = 0;
+    // params
     startDate: string;
     frequency: FrequencyType;
     capital: number;
     interestMonthlyRate: number;
     count: number;
-    payment: number;
+
     nextDateCalculator: (dateString: string, frequency: FrequencyType) => string;
 
     constructor({startDate, capital, interestMonthlyRate, count, frequency }: LoanTableParams, nextDateCalculator = getNextDate) {
@@ -71,7 +76,7 @@ export class LoanTable {
     }
 
     getMonthlyPayment() {
-        return this.payment.toFixed(2);
+      return this.payment.toFixed(2);
     }
 
     private generateAmortizationTable() {
@@ -80,6 +85,7 @@ export class LoanTable {
         let balance  = this.capital;
         let dueDate = this.startDate;
         const interestRate = this.getFrequencyRate()
+
         for (let index = 0; index < this.count; index++) {
             interest = MathHelper.mulWithRounding(balance, interestRate);
             monthlyPrincipal = MathHelper.subWithRounding(this.payment, interest);
@@ -104,6 +110,9 @@ export class LoanTable {
                 final_balance: finalBalance
             });
 
+            this.totalCapital += monthlyPrincipal
+            this.totalDebt += this.payment;
+            this.totalInterest += interest;
             balance = finalBalance;
             dueDate = this.nextDateCalculator(dueDate, this.frequency);
         }
@@ -126,7 +135,5 @@ export class LoanTable {
         }
         return this.interestMonthlyRate / intervals[this.frequency];
     }
-
-
 }
 

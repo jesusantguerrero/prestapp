@@ -8,9 +8,12 @@ use Insane\Journal\Traits\HasPaymentDocuments;
 use Insane\Journal\Traits\HasResourceAccounts;
 use Insane\Journal\Traits\IPayableDocument;
 use Insane\Journal\Traits\Transactionable;
+use Laravel\Scout\Searchable;
+
 class Loan extends Transactionable implements IPayableDocument {
     use HasPaymentDocuments;
     use HasResourceAccounts;
+    use Searchable;
 
     const STATUS_DRAFT = 'DRAFT';
     const STATUS_APPROVED ='APPROVED';

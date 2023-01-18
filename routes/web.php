@@ -13,8 +13,10 @@ use App\Http\Controllers\Loans\LoanController;
 use App\Http\Controllers\Loans\LoanProductController;
 use App\Http\Controllers\Properties\PropertyController;
 use App\Http\Controllers\Properties\PropertyTransactionController;
+use App\Http\Controllers\Properties\PropertyUnitController;
 use App\Http\Controllers\Properties\RentController;
 use App\Http\Controllers\Properties\TenantRentController;
+use App\Http\Controllers\SearchController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -69,8 +71,10 @@ Route::middleware([
      Route::apiResource('/api/settings', SettingsController::class);
      Route::apiResource('/api/taxes', TaxController::class);
 
-    // CRM
+    Route::get('/search', [SearchController::class, 'index']);
+     // CRM
     Route::get('/contacts/{type}', [ClientController::class, 'byTypes']);
+    Route::get('/contacts/{client}/{type}', [ClientController::class, 'showByType']);
     Route::resource('clients', ClientController::class);
     Route::get('/clients/{client}/{section}', [ClientController::class, 'getSection']);
 
@@ -80,6 +84,7 @@ Route::middleware([
     // Loans
     Route::get('loans/overview', LoanController::class);
     Route::resource('loans', LoanController::class);
+    Route::get('/loans/{loan}/{section}', [LoanController::class, 'getSection']);
     Route::post('/loans/:loanId/installments/:installment/mark-as-paid', [LoanController::class, 'markAsPaid']);
     Route::post('/loans/{loan}/installments/{installment}/pay', [LoanController::class, 'payInstallment']);
     Route::post('/loans/{loan}/pay', [LoanController::class, 'pay']);
@@ -93,6 +98,7 @@ Route::middleware([
     Route::get('properties/management-tools', [PropertyController::class, 'managementTools']);
     Route::resource('properties', PropertyController::class);
     Route::post('properties/{property}/units', [PropertyController::class, 'addUnit']);
+    Route::get('units', [PropertyUnitController::class, 'index']);
 
     // rents
     Route::resource('rents', RentController::class);

@@ -20,6 +20,8 @@ return new class extends Migration
             $table->foreignId('user_id');
             $table->foreignId('client_id')->constrained()->cascadeOnDelete();
             // accounts
+            $table->foreignId('category_id')->nullable();
+            $table->foreignId('source_account_id')->nullable();
             $table->foreignId('account_id')->nullable();
             $table->foreignId('client_account_id')->nullable();
             $table->foreignId('fees_account_id')->nullable();
@@ -35,9 +37,16 @@ return new class extends Migration
             $table->decimal('amount_due', 11, 2)->default(0.00);
             $table->decimal('total', 11, 2)->default(0.00);
             $table->decimal('interest_rate', 11, 2)->default(0.00);
+            // Advanced options
             // Penalty config
+            $table->integer('grace_days')->default(0);
             $table->decimal('late_fee', 11, 2)->default(0.00);
             $table->enum('late_fee_type', ['PERCENTAGE', 'FIXED'])->default('PERCENTAGE');
+            $table->integer('installments_paid')->default(0);
+
+            $table->decimal('closing_fees', 11, 2)->default(0.00);
+            $table->enum('closing_fee_type', ['PERCENTAGE', 'FIXED'])->default('FIXED');
+            $table->enum('source_type', ['SMALL_BOX', 'BANK', 'UNREGISTERED'])->default('UNREGISTERED');
             // state
             $table->enum('payment_status', [
                 Loan::STATUS_DRAFT,

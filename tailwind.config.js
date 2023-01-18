@@ -20,6 +20,9 @@ module.exports = {
             colors: {
                 ...themes.blueLight
             },
+            gridTemplateRows: {
+              'section-footer': '1fr 100px',
+            }
         },
     },
 

@@ -9,8 +9,11 @@ use Insane\Journal\Models\Invoice\Invoice;
 use Insane\Journal\Traits\HasPaymentDocuments;
 use Insane\Journal\Traits\IPayableDocument;
 use Insane\Journal\Traits\Transactionable;
+use Laravel\Scout\Searchable;
+
 class Rent extends Transactionable implements IPayableDocument {
     use HasPaymentDocuments;
+    use Searchable;
 
     const STATUS_ACTIVE = 'ACTIVE';
     const STATUS_LATE =  'LATE';

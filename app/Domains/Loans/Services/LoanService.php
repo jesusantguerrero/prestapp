@@ -11,7 +11,10 @@ class LoanService {
     public static function createLoan(mixed $loanData, mixed $installments) {
         $loan = Loan::create($loanData);
         self::createInstallments($loan, $installments);
-        CreateLoanTransaction::dispatch($loan);
+
+        if ($loan->account_id || $loan->closing_fees) {
+          CreateLoanTransaction::dispatch($loan);
+        }
     }
 
     public static function updateLoan(mixed $loanData, Loan $loan) {
@@ -20,7 +23,10 @@ class LoanService {
     }
 
     public static function createInstallments(Loan $loan, mixed $installments) {
-        LoanInstallment::query()->where('loan_id', $loan->id)->unpaid()->delete();
+        LoanInstallment::where([
+            'loan_id' => $loan->id,
+            'payment_status' => LoanInstallment::STATUS_PENDING
+        ])->delete();
         foreach ($installments as $item) {
             $loan->installments()->create([
                 "team_id" => $loan->team_id,

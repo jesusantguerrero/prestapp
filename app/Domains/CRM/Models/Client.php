@@ -7,16 +7,17 @@ use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\Rent;
 use Database\Factories\ClientFactory;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Invoice\Invoice;
+use Laravel\Scout\Searchable;
 
 class Client extends Model {
     use HasFactory;
+    use Searchable;
 
     protected $fillable = [
       'user_id',

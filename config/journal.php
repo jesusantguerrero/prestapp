@@ -322,7 +322,7 @@ return [
           "category_id" => "loans_business",
           "display_id" => "loan_business",
           "number" => 1104,
-          "name" => "Real State",
+          "name" => "Loan Account",
           "index" => 4,
           "balance_type" => "DEBIT"
         ],

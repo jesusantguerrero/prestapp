@@ -4,17 +4,15 @@ import { computed } from "vue";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
-import AppSectionHeader from "../../Components/AppSectionHeader.vue";
+import AppSectionHeader from "../../../Components/AppSectionHeader.vue";
 
 import { formatMoney } from "@/utils";
-import { ILoanInstallment } from "../../Modules/loans/loanInstallmentEntity";
-import PropertySectionNav from "../Properties/Partials/PropertySectionNav.vue";
+import { ILoanInstallment } from "../../../Modules/loans/loanInstallmentEntity";
+import PropertySectionNav from "../../Properties/Partials/PropertySectionNav.vue";
 import { ElTag } from "element-plus";
 import { AtBackgroundIconCard } from "atmosphere-ui";
-import { IClient } from "../../Modules/clients/clientEntity";
-import EmptyAddTool from "../Properties/Partials/EmptyAddTool.vue";
-import ContractCard from "../Properties/Partials/ContractCard.vue";
-import InvoiceCard from "../../Components/templates/InvoiceCard.vue";
+import { IClient } from "../../../Modules/clients/clientEntity";
+import EmptyAddTool from "../../Properties/Partials/EmptyAddTool.vue";
 import { clientInteractions } from "@/Modules/clients/clientInteractions";
 
 export interface Props {

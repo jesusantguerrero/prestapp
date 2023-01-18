@@ -4,7 +4,7 @@ import { AtBackgroundIconCard, AtButton, AtDashlide } from "atmosphere-ui";
 
 import IncomeSummaryWidget from "@/Pages/Dashboard/Partials/IncomeSummaryWidget.vue";
 import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
-import InvoiceCard from "../Rents/Partials/InvoiceCard.vue";
+import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 import LoanSectionNav from "./Partials/LoanSectionNav.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 
@@ -146,7 +146,7 @@ const comparisonRevenue = {
       </LoanSectionNav>
     </template>
 
-    <main class="md:mt-16 mx-auto text-gray-500 sm:px-6 lg:px-8">
+    <main class="mx-auto text-gray-500 md:mt-16 sm:px-6 lg:px-8">
       <WelcomeWidget
         message="Bienvenido a PrestApp"
         :username="user.name"
