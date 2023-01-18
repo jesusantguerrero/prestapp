@@ -7,6 +7,7 @@ import LoanTemplate from "./Partials/LoanTemplate.vue";
 export interface Props {
   loans: ILoanWithInstallments;
   currentTab: string;
+  stats: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -17,7 +18,7 @@ const clientName = computed(() => props.loans.client?.fullName);
 </script>
 
 <template>
-  <LoanTemplate :loans="loans" :current-tab="currentTab">
+  <LoanTemplate :loans="loans" :current-tab="currentTab" :stats="stats">
     <sections>
       <span> Cliente: {{ clientName }} </span>
       <p>

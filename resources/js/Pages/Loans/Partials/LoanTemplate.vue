@@ -10,7 +10,6 @@ import AppSectionHeader from "@/Components/AppSectionHeader.vue";
 // @ts-ignore: its my template
 import LoanSectionNav from "./LoanSectionNav.vue";
 // @ts-ignore
-import PaymentFormModal from "./PaymentFormModal.vue";
 
 import { formatMoney } from "@/utils/formatMoney";
 import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
@@ -19,6 +18,7 @@ import { ILoanWithInstallments } from "@/Modules/loans/loanEntity";
 export interface Props {
   loans: ILoanWithInstallments;
   currentTab: string;
+  stats: Object;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -31,7 +31,6 @@ const tabs = {
   "": "Detalles",
   installments: "Tabla de Amortización",
   transactions: "Pagos",
-  details: "Details",
 };
 
 // payment related things
@@ -40,19 +39,6 @@ type IPaymentMetaData = ILoanInstallment & {
   documents: any[];
 };
 
-const isPaymentModalOpen = ref(false);
-const selectedPayment = ref<IPaymentMetaData | null>(null);
-const onPayment = (installment: ILoanInstallment) => {
-  selectedPayment.value = {
-    ...installment,
-    // @ts-ignore solve backend sending decimals as strings
-    amount: parseFloat(installment.amount_due) || installment.amount,
-    id: undefined,
-    installment_id: installment.id,
-  };
-
-  isPaymentModalOpen.value = true;
-};
 const onMultiplePayment = () => {
   selectedPayment.value = {
     // @ts-ignore solve backend sending decimals as strings
@@ -89,10 +75,6 @@ const paymentUrl = computed(() => {
     : `${baseUrl}/installments/${selectedPayment.value?.installment_id}/pay`;
   return url;
 });
-
-const refresh = () => {
-  router.reload();
-};
 </script>
 
 <template>
@@ -125,7 +107,7 @@ const refresh = () => {
             class="px-2 py-1 transition rounded-md cursor-pointer bg-gray-50 hover:bg-gray-200"
             v-for="(tabLabel, tab) in tabs"
             :key="tab"
-            :class="{ 'bg-gray-300': tab == currentTab }"
+            :class="{ 'bg-primary/10 text-primary font-bold': tab == currentTab }"
             :href="`/loans/${loans.id}/${tab}`"
             replace
           >
@@ -139,35 +121,37 @@ const refresh = () => {
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
               title="Capital pendiente"
-              :value="formatMoney(deposits)"
+              :value="formatMoney(stats.outstandingPrincipal)"
             />
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
               title="Interes pendiente"
-              :value="formatMoney(deposits)"
+              :value="formatMoney(stats.outstandingInterest)"
             />
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
               title="Mora pendiente"
-              :value="formatMoney(deposits)"
+              :value="formatMoney(stats.outstandingFee)"
             />
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
               title="Monto pendiente"
-              :value="formatMoney(deposits)"
+              :value="formatMoney(stats.outstandingTotal)"
             />
           </section>
 
           <slot />
         </article>
 
-        <article class="w-3/12 p-4 space-y-2 border rounded-md shadow-md bg-base-lvl-3">
-          <AppButton class="w-full" @click="onMultiplePayment()">
-            Agregar Pago
-          </AppButton>
-          <AppButton class="w-full" @click="onMultiplePayment()">
-            Recibo Multiple
-          </AppButton>
+        <article
+          class="w-3/12 p-4 space-y-2 overflow-hidden border rounded-md shadow-md bg-base-lvl-3"
+        >
+          <section class="grid xl:grid-cols-2 md:gap-2">
+            <AppButton @click="onMultiplePayment()"> Agregar Pago </AppButton>
+            <AppButton @click="onMultiplePayment()"> Recibo Multiple </AppButton>
+            <AppButton variant="secondary"> Acuerdo de pago </AppButton>
+            <AppButton variant="secondary"> Saldar prestamo </AppButton>
+          </section>
 
           <section class="py-4 mt-8 space-y-2">
             <div v-for="payment in loans.payment_documents" class="text-sm">
@@ -190,17 +174,6 @@ const refresh = () => {
           </section>
         </article>
       </section>
-
-      <PaymentFormModal
-        v-if="selectedPayment"
-        v-model="isPaymentModalOpen"
-        :payment="selectedPayment"
-        :endpoint="paymentUrl"
-        :due="selectedPayment.amount"
-        :default-concept="paymentConcept"
-        @saved="refresh()"
-        @closed="selectedPayment = null"
-      />
     </main>
   </AppLayout>
 </template>

@@ -10,6 +10,7 @@ import LoanTemplate from "./Partials/LoanTemplate.vue";
 export interface Props {
   loans: ILoanWithInstallments;
   currentTab: string;
+  stats: Object;
 }
 
 defineProps<Props>();
@@ -35,8 +36,8 @@ const onPayment = (installment: ILoanInstallment) => {
 </script>
 
 <template>
-  <LoanTemplate :loans="loans" :current-tab="currentTab">
-    <section class="mt-8 overflow-hidden bg-white rounded-md shadow-md">
+  <LoanTemplate :loans="loans" :current-tab="currentTab" :stats="stats">
+    <section class="mt-12 px-4 overflow-hidden bg-white rounded-md shadow-md">
       <InstallmentTable
         class="mt-0"
         :installments="loans.installments"

@@ -65,7 +65,6 @@ class LoanController extends InertiaController
         return LoanService::createLoan($postData, $request->get('installments'));
     }
 
-
     public function create(Request $request) {
         $teamId = $request->user()->current_team_id;
 
@@ -77,6 +76,13 @@ class LoanController extends InertiaController
 
     protected function getEditProps(Request $request, $loan)
     {
+      $stats = $loan->installments()->selectRaw("
+        sum(principal - principal_paid) as outstandingPrincipal,
+        sum(interest - interest_paid) as outstandingInterest,
+        sum(late_fee - late_fee_paid) as outstandingFees,
+        sum(late_fee - late_fee_paid) as outstandingFees,
+        sum(amount_due) as outstandingTotal
+      ")->first();
       return [
         'loans' => array_merge(
         $loan->toArray(),
@@ -85,6 +91,7 @@ class LoanController extends InertiaController
           'installments' => $loan->installments,
           'paymentDocuments' => $loan->paymentDocuments
         ]),
+        "stats" => LoanService::getStats($loan)
       ];
     }
 
@@ -104,7 +111,8 @@ class LoanController extends InertiaController
     // payable document related
     public function pay(Loan $loan, Request $request) {
       $postData = $this->getPostData($request);
-
+      Loan::calculateTotal($loan);
+      $loan->save();
       $loan->createPayment(array_merge($postData, [
           "client_id" => $loan->client_id,
           "documents" => array_map(function ($document) {
@@ -119,6 +127,8 @@ class LoanController extends InertiaController
 
     public function payInstallment(Loan $loan, LoanInstallment $installment, Request $request) {
         $postData = $this->getPostData($request);
+        Loan::calculateTotal($loan);
+        $loan->save();
         if ($installment->loan_id == $loan->id) {
             $loan->createPayment(array_merge($postData, [
                 "client_id" => $loan->client_id,
@@ -175,7 +185,7 @@ class LoanController extends InertiaController
       [
           $resourceName => array_merge($resource, $this->$section($loan)),
           "currentTab" => $section,
-
+          "stats" => LoanService::getStats($loan)
       ]);
     }
 
