@@ -1,6 +1,8 @@
 <script setup lang="ts">
+// @ts-ignore
 import { Link, router } from "@inertiajs/vue3";
-import { ref, computed } from "vue";
+import { computed } from "vue";
+// @ts-ignore
 import { AtBackgroundIconCard } from "atmosphere-ui";
 // @ts-ignore
 import AppLayout from "@/Components/templates/AppLayout.vue";
@@ -12,7 +14,6 @@ import LoanSectionNav from "./LoanSectionNav.vue";
 // @ts-ignore
 
 import { formatMoney } from "@/utils/formatMoney";
-import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
 import { ILoanWithInstallments } from "@/Modules/loans/loanEntity";
 
 export interface Props {
@@ -31,12 +32,6 @@ const tabs = {
   "": "Detalles",
   installments: "Tabla de Amortización",
   transactions: "Pagos",
-};
-
-// payment related things
-type IPaymentMetaData = ILoanInstallment & {
-  installment_id?: number;
-  documents: any[];
 };
 
 const onMultiplePayment = () => {
@@ -61,20 +56,10 @@ const onMultiplePayment = () => {
 
   isPaymentModalOpen.value = true;
 };
-const paymentConcept = computed(() => {
-  return (
-    selectedPayment.value &&
-    `Pago ${props.loans.id} pago #${selectedPayment.value.installment_id}`
-  );
-});
 
-const paymentUrl = computed(() => {
-  const baseUrl = `/loans/${props.loans?.id}`;
-  const url = selectedPayment.value?.documents?.length
-    ? `${baseUrl}/pay`
-    : `${baseUrl}/installments/${selectedPayment.value?.installment_id}/pay`;
-  return url;
-});
+const onUpdateStatus = () => {
+  router.post(`/loans/${props.loans.id}/update-status`);
+};
 </script>
 
 <template>
@@ -91,18 +76,27 @@ const paymentUrl = computed(() => {
 
     <main class="mt-16">
       <AppSectionHeader
-        name="Prestamos"
+        name="Prestamo a"
         class="px-5 border-2 border-white rounded-md rounded-b-none shadow-md"
         :resource="loans"
         :title="clientName"
         hide-action
         @create="router.visit('/loans/create')"
       />
-      <div
-        class="w-full px-5 pt-10 pb-2 mb-5 space-y-5 text-gray-600 bg-white border-gray-200 shadow-md rounded-b-md"
+      <section
+        class="w-full px-6 pb-2 mb-5 space-y-5 text-gray-600 bg-white border-gray-200 shadow-md rounded-b-md"
       >
-        <div>Prestamo #{{ loans.id }} para {{ clientName }}</div>
-        <div class="flex space-x-2">
+        <header class="flex justify-between">
+          <h4>
+            Prestamo #{{ loans.id }} a
+            <Link :href="`/contacts/${loans.client_id}/lender`">{{ clientName }}</Link>
+          </h4>
+          <section>
+            {{ loans.payment_status }}
+            <AppButton @click="onUpdateStatus"> Actualizar Calculos </AppButton>
+          </section>
+        </header>
+        <footer class="flex space-x-2">
           <Link
             class="px-2 py-1 transition rounded-md cursor-pointer bg-gray-50 hover:bg-gray-200"
             v-for="(tabLabel, tab) in tabs"
@@ -113,8 +107,8 @@ const paymentUrl = computed(() => {
           >
             {{ tabLabel }}
           </Link>
-        </div>
-      </div>
+        </footer>
+      </section>
       <section class="flex w-full space-x-8 rounded-t-none border-t-none">
         <article class="w-9/12 space-y-2 overflow-auto">
           <section class="flex space-x-4">

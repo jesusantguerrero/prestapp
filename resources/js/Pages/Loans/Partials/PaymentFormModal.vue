@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { AtButton, AtField, AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { format as formatDate } from "date-fns";
 import { ElDatePicker, ElDialog } from "element-plus";
@@ -96,11 +96,18 @@ const documentTotal = computed(() => {
   }, 0);
 });
 
-function addPayment() {
+const isLoading = ref(false);
+function onSubmit() {
+  if (isLoading.value) {
+    return;
+  }
+
   if (!paymentForm.id) {
     createPayment();
     return;
   }
+
+  isLoading.value = true;
 
   const formData = {
     payment_date: formatDate(paymentForm.value.payment_date || new Date(), "yyyy-MM-dd"),
@@ -125,6 +132,9 @@ function addPayment() {
         type: "error",
         message: err.response ? err.response.data.status.message : "Ha ocurrido un error",
       });
+    })
+    .finally(() => {
+      isLoading.value = false;
     });
 }
 
@@ -137,6 +147,7 @@ function createPayment() {
     return;
   }
 
+  isLoading.value = true;
   const formData = {
     resource_id: props.resourceId,
     payment_date: formatDate(paymentForm.value.payment_date || new Date(), "yyyy-MM-dd"),
@@ -161,6 +172,9 @@ function createPayment() {
         type: "error",
         message: err.response ? err.response.data.status.message : "Ha ocurrido un error",
       });
+    })
+    .finally(() => {
+      isLoading.value = false;
     });
 }
 
@@ -303,7 +317,9 @@ function emitChange(value) {
         >
           Delete
         </AppButton>
-        <AppButton v-else @click="addPayment()"> Efectuar pago </AppButton>
+        <AppButton v-else @click="onSubmit()" :disabled="isLoading" :loading="isLoading">
+          Efectuar pago
+        </AppButton>
       </div>
     </template>
   </ElDialog>

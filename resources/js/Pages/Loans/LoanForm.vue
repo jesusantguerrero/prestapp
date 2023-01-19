@@ -19,6 +19,7 @@ import { loanFrequencies, loanSourceTypes } from "@/Modules/loans/constants";
 import { formatDate, formatMoney } from "@/utils";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import FormSection from "../Rents/Partials/FormSection.vue";
+import LoanSummary from "./Partials/LoanSummary.vue";
 
 interface Props {
   loans: ILoan;
@@ -27,22 +28,24 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const clientOptions = props.clients.map((client) => ({
-  label: client.names + " " + client.lastnames,
-  id: client.id,
-}));
-
 const loanForm = reactive<Record<string, any>>({
   id: null,
+  client_id: null,
+  client: undefined,
   amount: 0,
   repayment_count: 0,
   interest_rate: 0,
   frequency: "MONTHLY",
   disbursement_date: new Date(),
   first_installment_date: addMonths(new Date(), 1),
+  // advanced
   grace_days: 0,
-  client_id: 1,
-  client: undefined,
+  late_fee: 0,
+  installments_paid: 0,
+  closing_fees: 0,
+  category_id: null,
+  source_type: null,
+  source_account_id: null,
 });
 
 watch(
@@ -90,9 +93,12 @@ const hasInstallments = computed(() => {
 const onSubmit = () => {
   const formData = {
     ...loanForm,
+    date: formatDate(loanForm.disbursement_date, "yyyy-MM-dd"),
     disbursement_date: formatDate(loanForm.disbursement_date, "yyyy-MM-dd"),
     first_installment_date: formatDate(loanForm.first_installment_date, "y-M-d"),
     client_id: loanForm.client.id,
+    source_type: loanForm.sourceType.id,
+    source_account_id: loanForm.sourceAccount.id,
   };
 
   saveLoan(formData, installments.value.payments)
@@ -207,23 +213,25 @@ const goToList = () => {
             <AtField label="Cartera de prestamo" class="w-full">
               <BaseSelect
                 endpoint="/api/wallets"
-                v-model="loanForm.wallet"
+                v-model="loanForm.category"
                 placeholder="Selecciona una cartera"
               />
             </AtField>
             <AtField label="Origen de prestamo" class="w-full">
               <BaseSelect
                 :options="loanSourceTypes"
-                v-model="loanForm.transaction_source_type"
+                v-model="loanForm.sourceType"
                 track-by="id"
                 placeholder="Selecciona una cartera"
               />
             </AtField>
             <AtField label="Cuenta origen" class="w-full">
               <BaseSelect
-                :options="loanSourceTypes"
-                v-model="loanForm.transactionSource"
+                :endpoint="`/loan-accounts`"
+                v-model="loanForm.sourceAccount"
                 placeholder="Selecciona una cuenta"
+                label="name"
+                track-by="id"
               />
             </AtField>
           </section>
@@ -231,34 +239,16 @@ const goToList = () => {
       </section>
 
       <article
-        class="w-4/12 rounded-md bg-white shadow-md relative grid gap-4 grid-rows-[1fr_50px]"
+        class="w-4/12 rounded-md bg-white shadow-md relative overflow-hidden grid gap-4 grid-cols-1 grid-rows-[1fr_50px]"
       >
         <section class="text-body-1 w-full overflow-hidden px-4">
           <header class="py-4 font-bold">Resumen de prestamo</header>
-          <div
-            class="rounded-md flex justify-between bg-primary/5 border-primary/20 font-bold border px-4 relative"
-          >
-            <div
-              class="h-8 w-8 rounded-full items-center flex justify-center cursor-pointer hover:bg-primary hover:text-white transition-colors text-primary bg-[#F6FBFE] border border-primary/20 absolute top-6 -left-4"
-            >
-              <IconCoins />
-            </div>
-            <AtField label="Monto Cuotas">
-              <span class="text-primary">
-                {{ formatMoney(installments?.payment) }}
-              </span>
-            </AtField>
-            <AtField label="Interes a pagar">
-              <span class="text-error">
-                {{ formatMoney(installments?.totalInterest) }}
-              </span>
-            </AtField>
-            <AtField label="Total a pagar">
-              <span class="text-secondary">
-                {{ formatMoney(installments?.totalDebt) }}
-              </span>
-            </AtField>
-          </div>
+          <LoanSummary
+            :payment="installments?.payment"
+            :total-interest="installments?.totalInterest"
+            :total-debt="installments?.totalDebt"
+          />
+
           <section v-if="hasInstallments" class="mt-4">
             <h4 class="text-xl font-bold">Tabla de amortización</h4>
             <InstallmentTable :installments="installments?.payments" />

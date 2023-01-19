@@ -9,12 +9,11 @@ use App\Domains\Loans\Models\LoanInstallment;
 class LoanService {
 
     public static function createLoan(mixed $loanData, mixed $installments) {
-        $loan = Loan::create($loanData);
+        $loan = Loan::create(array_merge($loanData, [
+          'status' => Loan::STATUS_DISPOSED,
+        ]));
         self::createInstallments($loan, $installments);
-
-        if ($loan->account_id || $loan->closing_fees) {
-          CreateLoanTransaction::dispatch($loan);
-        }
+        CreateLoanTransaction::dispatch($loan);
     }
 
     public static function updateLoan(mixed $loanData, Loan $loan) {

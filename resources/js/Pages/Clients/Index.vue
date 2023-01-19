@@ -4,12 +4,14 @@ import { IClient } from "@/Modules/clients/clientEntity.ts";
 import { IPaginatedData } from "@/utils/constants";
 import { computed, ref } from "vue";
 import ClientsTable from "./Partials/ClientsTable.vue";
+import { router } from "@inertiajs/vue3";
 
 // @ts-ignore: its my template
 import LoanSectionNav from "@/Pages/Loans/Partials/LoanSectionNav.vue";
 // @ts-ignore: its my template
 import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
+import ClientFormModal from "./Partials/ClientFormModal.vue";
 
 const props = defineProps<{
   clients: IClient[] | IPaginatedData<IClient>;
@@ -38,10 +40,10 @@ const sectionTitle = computed(() => {
     <template #header>
       <LoanSectionNav v-if="type == 'lender'">
         <template #actions>
-          <AppButton variant="inverse" @click="router.visit('/loans/create')">
+          <AppButton variant="inverse-secondary" @click="router.visit('/loans/create')">
             Nuevo prestamo
           </AppButton>
-          <AppButton variant="success" @click="isModalOpen = true">
+          <AppButton variant="secondary" @click="isModalOpen = true">
             Nuevo cliente
           </AppButton>
         </template>
@@ -70,6 +72,7 @@ const sectionTitle = computed(() => {
     </template>
     <main class="mt-16 bg-white rounded-md">
       <ClientsTable :clients="listData" />
+      <ClientFormModal v-model:show="isModalOpen" :type="type" />
     </main>
   </AppLayout>
 </template>

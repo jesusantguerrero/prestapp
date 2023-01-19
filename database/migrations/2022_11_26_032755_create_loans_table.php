@@ -28,7 +28,9 @@ return new class extends Migration
             $table->foreignId('late_fee_account_id')->nullable();
 
             // terms
+            $table->date('date');
             $table->date('first_installment_date');
+            $table->date('disbursement_date');
             $table->integer('repayment_count');
             $table->enum('frequency', ['WEEKLY', 'BIWEEKLY', 'MONTHLY']);
 

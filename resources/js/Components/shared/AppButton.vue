@@ -19,6 +19,8 @@ const variants: Record<string, string> = {
   success: "bg-success text-white",
   error: "bg-error/80 text-white",
   inverse: "border-primary bg-primary/10 text-primary hover:bg-primary hover:text-white",
+  "inverse-secondary":
+    "border-secondary bg-secondary/10 text-secondary hover:bg-secondary hover:text-white",
 };
 
 const props = defineProps({

@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Core\Transaction;
 
 class CreateLoanTransaction implements ShouldQueue
@@ -65,12 +66,22 @@ class CreateLoanTransaction implements ShouldQueue
         $items = [];
 
         $items[] = [
+          "index" => 1,
+          "account_id" => $this->loan->client_account_id,
+          "category_id" => null,
+          "type" => 1,
+          "concept" => $this->formData['concept'],
+          "amount" => $this->loan->total,
+          "anchor" => false,
+        ];
+
+        $items[] = [
             "index" => 0,
             "account_id" => $this->loan->source_account_id,
             "category_id" => null,
             "type" => -1,
             "concept" => $this->formData['concept'],
-            "amount" => $this->loan->amount,
+            "amount" => $this->loan->amount - ($this->loan->closing_fees ?? 0),
             "anchor" => true,
         ];
 
@@ -84,15 +95,17 @@ class CreateLoanTransaction implements ShouldQueue
             "anchor" => false,
         ];
 
-        $items[] = [
-          "index" => 1,
-          "account_id" => $this->loan->client_account_id,
-          "category_id" => null,
-          "type" => 1,
-          "concept" => $this->formData['concept'],
-          "amount" => $this->loan->total,
-          "anchor" => false,
-        ];
+        if ($this->loan->closing_fees) {
+          $items[] = [
+            "index" => 1,
+            "account_id" => Account::guessAccount($this->loan, ['other_income']),
+            "category_id" => null,
+            "type" => -1,
+            "concept" => "Comisión cierre " . $this->formData['concept'],
+            "amount" => $this->loan->closing_fees,
+            "anchor" => false,
+          ];
+        }
 
         return $items;
     }

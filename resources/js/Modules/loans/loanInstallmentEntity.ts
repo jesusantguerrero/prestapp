@@ -31,6 +31,16 @@ export interface ILoanInstallment {
     payment_status?: LoanInstallmentStatus;
 }
 
+export interface ILoanInstallmentSaved extends ILoanInstallment{
+  loan_id: number;
+}
+
+// payment related things
+export type IPaymentMetaData = ILoanInstallment & {
+  installment_id?: number;
+  documents: any[];
+};
+
 export interface LoanTableParams {
     startDate: string;
     frequency: FrequencyType;
@@ -38,6 +48,7 @@ export interface LoanTableParams {
     interestMonthlyRate: number;
     count: number;
 }
+
 
 export class LoanTable {
     payment: number;

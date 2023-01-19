@@ -30,7 +30,10 @@ class Client extends Model {
       'email',
       'cellphone',
       'address_details',
-      'status'
+      'status',
+      'is_lender',
+      'is_owner',
+      'is_tenant',
     ];
     protected $appends = ['fullName', 'isOwner'];
 

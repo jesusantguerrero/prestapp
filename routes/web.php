@@ -9,8 +9,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SettingsController;
 
 use App\Http\Controllers\CRM\ClientController;
-use App\Http\Controllers\Loans\LoanController;
-use App\Http\Controllers\Loans\LoanProductController;
 use App\Http\Controllers\Properties\PropertyController;
 use App\Http\Controllers\Properties\PropertyTransactionController;
 use App\Http\Controllers\Properties\PropertyUnitController;
@@ -80,18 +78,8 @@ Route::middleware([
 
     // Business
 
-
     // Loans
-    Route::get('loans/overview', LoanController::class);
-    Route::resource('loans', LoanController::class);
-    Route::get('/loans/{loan}/{section}', [LoanController::class, 'getSection']);
-    Route::post('/loans/:loanId/installments/:installment/mark-as-paid', [LoanController::class, 'markAsPaid']);
-    Route::post('/loans/{loan}/installments/{installment}/pay', [LoanController::class, 'payInstallment']);
-    Route::post('/loans/{loan}/pay', [LoanController::class, 'pay']);
-    Route::get('/loans/{loan}/payments/{paymentDocument}/print', [LoanController::class, 'printPaymentDocument']);
-    Route::get('/payment-center', [LoanController::class, 'paymentCenter']);
 
-    Route::resource('/loan-products', LoanProductController::class);
 
     // Properties
     Route::get('properties/overview', PropertyController::class);
@@ -120,3 +108,5 @@ Route::middleware([
 
 });
 
+// Loans
+Route::group([],  app_path('/Domains/Loans/routes.php'));

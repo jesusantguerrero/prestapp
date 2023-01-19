@@ -1,16 +1,20 @@
+import { IClient } from './clientEntity';
 // @ts-ignore: unexported from inertia
 import { router } from "@inertiajs/vue3";
-import { IClient } from "./clientEntity";
 
 class ClientInteractions {
     isGeneratingDistribution = false
-    create(clientData: IClient) {
+    create(clientData: IClient, type: string = 'lender') {
+        const formData = {
+            ...clientData,
+            [`is_${type}`]: true,
+        }
         return new Promise((resolve, reject) => {
-            return router.post('/clients', clientData, {
-                onSuccess(data) {
+            return router.post('/clients', formData, {
+                onSuccess(data: IClient) {
                     resolve(data)
                 },
-                onError(reason) {
+                onError(reason: String) {
                     reject(reason)
                 }
             });

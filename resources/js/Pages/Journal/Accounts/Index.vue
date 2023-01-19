@@ -1,3 +1,79 @@
+<script setup>
+import { format as formatDate } from "date-fns";
+import AppLayout from "@/Components/templates/AppLayout.vue";
+import IconAdd from "@/Components/icons/IconAdd.vue";
+import cols from "./cols";
+// import FormModal from "./FormModal.vue";
+import {
+  ElTabs,
+  ElTabPane,
+  ElDropdown,
+  ElDropdownItem,
+  ElDropdownMenu,
+} from "element-plus";
+import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
+import { AtButton } from "atmosphere-ui";
+import { onMounted, ref, computed } from "vue";
+
+import AtTable from "@/Components/AtTable.vue";
+import AppButton from "@/Components/shared/AppButton.vue";
+
+import AccountingSectionNav from "../Partials/AccountingSectionNav.vue";
+
+const props = defineProps({
+  accounts: {
+    type: Array,
+  },
+  categories: {
+    type: Array,
+  },
+});
+
+const isAccountDialogVisible = ref(false);
+const selectedAccount = ref(null);
+const searchText = ref("");
+const activeName = ref([]);
+const activeAccountSection = ref("");
+const accountsCategories = ref([]);
+
+onMounted(() => {
+  getAccounts();
+});
+
+const formatDateFilter = (date) => {
+  return formatDate(date, "YYYY-MM-DD");
+};
+
+const section = computed(() => {
+  return "accounts";
+});
+
+const mainCategories = computed(() => {
+  return props.categories.map((group) => {
+    group.name.replace(/[d]/i);
+    return group;
+  });
+});
+
+const getAccounts = () => {
+  accountsCategories.value = props.categories;
+  activeAccountSection.value =
+    mainCategories.value && mainCategories.value.length ? mainCategories.value[0].id : "";
+};
+
+const editAccount = () => {};
+
+const rowClick = (command, service) => {
+  switch (command) {
+    case "edit":
+      editAccount(service);
+      break;
+    default:
+      break;
+  }
+};
+</script>
+
 <template>
   <AppLayout title="Cuentas">
     <template #header>
@@ -82,80 +158,6 @@
     </div>
   </AppLayout>
 </template>
-
-<script setup>
-import { format as formatDate } from "date-fns";
-import AppLayout from "@/Components/templates/AppLayout.vue";
-import IconAdd from "@/Components/icons/IconAdd.vue";
-import cols from "./cols";
-// import FormModal from "./FormModal.vue";
-import {
-  ElTabs,
-  ElTabPane,
-  ElDropdown,
-  ElDropdownItem,
-  ElDropdownMenu,
-} from "element-plus";
-import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
-import { AtButton } from "atmosphere-ui";
-import { onMounted, ref, computed } from "vue";
-import AtTable from "../../../Components/AtTable.vue";
-import AccountingSectionNav from "../Partials/AccountingSectionNav.vue";
-import AppButton from "../../../Components/shared/AppButton.vue";
-
-const props = defineProps({
-  accounts: {
-    type: Array,
-  },
-  categories: {
-    type: Array,
-  },
-});
-
-const isAccountDialogVisible = ref(false);
-const selectedAccount = ref(null);
-const searchText = ref("");
-const activeName = ref([]);
-const activeAccountSection = ref("");
-const accountsCategories = ref([]);
-
-onMounted(() => {
-  getAccounts();
-});
-
-const formatDateFilter = (date) => {
-  return formatDate(date, "YYYY-MM-DD");
-};
-
-const section = computed(() => {
-  return "accounts";
-});
-
-const mainCategories = computed(() => {
-  return props.categories.map((group) => {
-    group.name.replace(/[d]/i);
-    return group;
-  });
-});
-
-const getAccounts = () => {
-  accountsCategories.value = props.categories;
-  activeAccountSection.value =
-    mainCategories.value && mainCategories.value.length ? mainCategories.value[0].id : "";
-};
-
-const editAccount = () => {};
-
-const rowClick = (command, service) => {
-  switch (command) {
-    case "edit":
-      editAccount(service);
-      break;
-    default:
-      break;
-  }
-};
-</script>
 
 <style lang="scss" scoped>
 .body-section {

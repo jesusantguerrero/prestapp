@@ -6,12 +6,14 @@ use App\Domains\CRM\Services\ClientService;
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
 use App\Domains\Loans\Services\LoanService;
+use App\Domains\Loans\Services\LoanTransactionsService;
 use App\Http\Controllers\InertiaController;
 use App\Models\Setting;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Insane\Journal\Helpers\ReportHelper;
+use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Core\PaymentDocument;
 
 class LoanController extends InertiaController
@@ -108,40 +110,16 @@ class LoanController extends InertiaController
       return true;
     }
 
+    public function updateStatus(Loan $loan) {
+      if (request()->user()->current_team_id == $loan->team_id) {
+        $loan->updateStatus();
+      }
+    }
+
     // payable document related
     public function pay(Loan $loan, Request $request) {
       $postData = $this->getPostData($request);
-      Loan::calculateTotal($loan);
-      $loan->save();
-      $loan->createPayment(array_merge($postData, [
-          "client_id" => $loan->client_id,
-          "documents" => array_map(function ($document) {
-            $document['payable_id'] = $document['id'];
-            $document['payable_type'] = LoanInstallment::class;
-            $document['amount'] = $document['payment'];
-            return $document;
-          }, $postData['documents'])
-      ]));
-      $loan->client->checkStatus();
-    }
-
-    public function payInstallment(Loan $loan, LoanInstallment $installment, Request $request) {
-        $postData = $this->getPostData($request);
-        Loan::calculateTotal($loan);
-        $loan->save();
-        if ($installment->loan_id == $loan->id) {
-            $loan->createPayment(array_merge($postData, [
-                "client_id" => $loan->client_id,
-                "documents" => [[
-                    "payable_id" => $installment->id,
-                    "payable_type" => LoanInstallment::class,
-                    "amount" => $postData['amount'],
-                    "amount_due" =>$installment->total - $postData['amount'],
-                    "amount_paid" => $postData['amount']
-                ]]
-            ]));
-            $loan->client->checkStatus();
-        }
+      LoanTransactionsService::pay($loan, $postData);
     }
 
     public function markAsPaid(Loan $loan, LoanInstallment $installment) {
@@ -195,6 +173,11 @@ class LoanController extends InertiaController
         "installments" => $loan->installments,
         "client" => $loan->client,
       ];
+    }
+
+
+    public function loanSourceAccounts() {
+      return Account::getByCategories(request()->user()->current_team_id, ['cash_and_bank']);
     }
 
 
