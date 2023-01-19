@@ -9,7 +9,9 @@ use App\Domains\Loans\Models\LoanInstallment;
 class LoanService {
 
     public static function createLoan(mixed $loanData, mixed $installments) {
-        $loan = Loan::create($loanData);
+        $loan = Loan::create(array_merge($loanData, [
+          'status' => Loan::STATUS_DISPOSED,
+        ]));
         self::createInstallments($loan, $installments);
         CreateLoanTransaction::dispatch($loan);
     }
@@ -20,7 +22,10 @@ class LoanService {
     }
 
     public static function createInstallments(Loan $loan, mixed $installments) {
-        LoanInstallment::query()->where('loan_id', $loan->id)->unpaid()->delete();
+        LoanInstallment::where([
+            'loan_id' => $loan->id,
+            'payment_status' => LoanInstallment::STATUS_PENDING
+        ])->delete();
         foreach ($installments as $item) {
             $loan->installments()->create([
                 "team_id" => $loan->team_id,
@@ -56,5 +61,10 @@ class LoanService {
     public static function invoices(int $teamId, int $clientId = null) {
         return LoanInstallment::byTeam($teamId);
         // ->byClient($clientId);
+    }
+
+    public static function getStats(Loan $loan) {
+      return $loan->installments()->selectRaw("sum(principal - principal_paid) as outstandingPrincipal, sum(interest - interest_paid) as outstandingInterest,sum(late_fee - late_fee_paid) as outstandingFees,sum(late_fee - late_fee_paid) as outstandingFees,sum(amount_due) as outstandingTotal
+      ")->first();
     }
 }

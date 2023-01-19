@@ -4,11 +4,11 @@ import { useForm } from "@inertiajs/vue3";
 import { AtButton, AtField } from "atmosphere-ui";
 import { Action, ElDatePicker, ElMessageBox } from "element-plus";
 
-import AppButton from "../../Components/shared/AppButton.vue";
-import InvoiceCard from "../../Components/templates/InvoiceCard.vue";
-import ClientTemplate from "./ClientTemplate.vue";
+import AppButton from "../../../Components/shared/AppButton.vue";
+import InvoiceCard from "../../../Components/templates/InvoiceCard.vue";
+import ClientTemplate from "../Partials/ClientTemplate.vue";
 
-import { IClient } from "../../Modules/clients/clientEntity";
+import { IClient } from "../../../Modules/clients/clientEntity";
 
 export interface Props {
   clients: IClient;

@@ -8,9 +8,12 @@ use Insane\Journal\Traits\HasPaymentDocuments;
 use Insane\Journal\Traits\HasResourceAccounts;
 use Insane\Journal\Traits\IPayableDocument;
 use Insane\Journal\Traits\Transactionable;
+use Laravel\Scout\Searchable;
+
 class Loan extends Transactionable implements IPayableDocument {
     use HasPaymentDocuments;
     use HasResourceAccounts;
+    use Searchable;
 
     const STATUS_DRAFT = 'DRAFT';
     const STATUS_APPROVED ='APPROVED';
@@ -34,10 +37,19 @@ class Loan extends Transactionable implements IPayableDocument {
         'team_id',
         'user_id',
         'client_id',
+        'date',
+        'disbursement_date',
         'first_installment_date',
         'repayment_count',
         'amount',
         'interest_rate',
+        'grace_days',
+        'late_fee',
+        'installments_paid',
+        'closing_fees',
+        'category_id',
+        'source_type',
+        'source_account_id'
     ];
 
     // protected
@@ -47,9 +59,11 @@ class Loan extends Transactionable implements IPayableDocument {
     protected static function boot() {
       parent::boot();
       static::saving(function ($loan) {
+          static::saving($loan);
           $loan->setResourceAccount('client_account_id', 'expected_payments_lenders', $loan->client);
           $loan->setResourceAccount('fees_account_id', 'due_to_business');
           $loan->late_fee_account_id = $loan->fees_account_id;
+          Loan::calculateTotal($loan);
       });
     }
 
@@ -122,6 +136,7 @@ class Loan extends Transactionable implements IPayableDocument {
 
     public static function checkStatus($payable) {
       $debt = $payable->total - $payable->amount_paid;
+
       if ($debt == 0) {
           $status = self::STATUS_PAID;
       } elseif ($debt > 0 && $debt < $payable->amount) {
@@ -134,6 +149,13 @@ class Loan extends Transactionable implements IPayableDocument {
           $status = $payable->payment_status;
       }
       return $status;
+    }
+
+    public function updateStatus() {
+      Loan::checkPayments($this);
+      $this->save();
+      Loan::calculateTotal($this);
+      Loan::checkStatus($this);
     }
 
     public function getConceptLine(): string {

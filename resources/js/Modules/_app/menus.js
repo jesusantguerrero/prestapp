@@ -29,7 +29,8 @@ const menus = {
     [MODULES.LOAN]: [
       {
         label: 'Resumen de Prestamos',
-        url: '/loans/overview'
+        url: '/loans/overview',
+        hidden: true,
       },
       {
         label: 'Prestamos',
@@ -37,7 +38,7 @@ const menus = {
       },
       {
         label: 'Clientes',
-        url: '/loans/clients'
+        url: '/contacts/lender'
       },
       {
         label: 'Centro de pago',
@@ -60,15 +61,20 @@ const menus = {
     },
     {
         label: 'Propiedades',
-        url: '/properties/'
+        url: '/units/'
     },
     {
         label: 'Contratos',
-        url: '/rents/'
+        url: '/rents/',
+        hidden: true,
     },
     {
-        label: 'Clientes',
-        url: '/clients/'
+        label: 'Inquilinos',
+        url: '/contacts/tenant?relationships=rent,rent.property'
+    },
+    {
+      label: 'Dueños',
+      url: '/contacts/owner'
     },
     {
       label: 'Herramientas de agente',

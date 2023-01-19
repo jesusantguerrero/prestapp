@@ -121,7 +121,7 @@ const comparisonRevenue = {
         />
 
         <WelcomeWidget
-          message="Rent Payments"
+          message="Pagos de renta"
           class="text-body-1 w-5/12 shadow-md"
           :cards="propertyStats"
           action-label="Ver estado de rentas"
@@ -130,8 +130,8 @@ const comparisonRevenue = {
           <template #content>
             <section class="py-4">
               <BudgetProgress
-                :goal="totals.total"
-                :current="totals.paid"
+                :goal="totals?.total"
+                :current="totals?.paid"
                 class="h-2.5 text-white rounded-md"
                 :progress-class="['bg-primary', 'bg-primary/5']"
                 :show-labels="false"
@@ -139,7 +139,7 @@ const comparisonRevenue = {
                 <template v-slot:before="{ progress }">
                   <header class="mb-1 font-bold flex justify-between">
                     <span>
-                      {{ formatMoney(totals.paid) }} of {{ formatMoney(totals.total) }}
+                      {{ formatMoney(totals?.paid) }} of {{ formatMoney(totals?.total) }}
                     </span>
                     <span class="text-primary">{{ progress }}% </span>
                   </header>
@@ -151,10 +151,10 @@ const comparisonRevenue = {
                       <span
                         class="font-bold"
                         :class="[
-                          totals.outstandingInvoices ? 'text-success' : 'text-error',
+                          totals?.outstandingInvoices ? 'text-success' : 'text-error',
                         ]"
                       >
-                        {{ totals.outstandingInvoices }}
+                        {{ totals?.outstandingInvoices }}
                       </span>
                       Pagos de renta atrasados
                     </p>
@@ -193,21 +193,6 @@ const comparisonRevenue = {
         </section>
 
         <article class="order-1 space-y-5 lg:w-5/12 lg:order-2">
-          <!-- <AtBackgroundIconCard
-            class="text-primary bg-base-lvl-3 h-36"
-            icon="fas fa-wallet"
-            :value="formatMoney(props.cashOnHand.balance | 0)"
-            title="Balance en cuenta de renta"
-          >
-            <template #action>
-              <AtButton
-                class="rounded-md bg-base-lvl-3"
-                @click="isTransferModalOpen = true"
-              >
-                Add Transaction
-              </AtButton>
-            </template>
-          </AtBackgroundIconCard> -->
           <WelcomeWidget
             message="Distribucion a propierarios"
             class="text-body-1 w-full shadow-md"
@@ -220,6 +205,22 @@ const comparisonRevenue = {
             :chart="comparisonRevenue"
             :headerInfo="comparisonRevenue.headers"
           />
+
+          <WelcomeWidget
+            message="Unidades recientes"
+            class="text-body-1 w-full shadow-md"
+            :cards="propertyStats"
+          >
+            <template #content>
+              <div class="rounded-md h-44 w-full bg-base-lvl-2 p-4 mb-4">
+                <h4 class="font-bold">DOP 5000</h4>
+                <p class="mt-4"><IconMarker /> <span>Address</span></p>
+                <p class="space-x-4 mt-2">
+                  <span>3 Dormitorios</span><span>1 Baño</span><span>300 mts</span>
+                </p>
+              </div>
+            </template>
+          </WelcomeWidget>
         </article>
       </section>
     </main>

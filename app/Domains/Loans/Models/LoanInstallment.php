@@ -94,6 +94,11 @@ class LoanInstallment extends Model implements IPayableDocument {
       }
     }
 
+    public function updateStatus() {
+      LoanInstallment::calculateTotal($this);
+      LoanInstallment::checkStatus($this);
+    }
+
     public static function checkStatus($payable) {
         $today = date('Y-m-d');
         $debt = $payable->amount - $payable->amount_paid;

@@ -9,12 +9,12 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SettingsController;
 
 use App\Http\Controllers\CRM\ClientController;
-use App\Http\Controllers\Loans\LoanController;
-use App\Http\Controllers\Loans\LoanProductController;
 use App\Http\Controllers\Properties\PropertyController;
 use App\Http\Controllers\Properties\PropertyTransactionController;
+use App\Http\Controllers\Properties\PropertyUnitController;
 use App\Http\Controllers\Properties\RentController;
 use App\Http\Controllers\Properties\TenantRentController;
+use App\Http\Controllers\SearchController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -69,30 +69,25 @@ Route::middleware([
      Route::apiResource('/api/settings', SettingsController::class);
      Route::apiResource('/api/taxes', TaxController::class);
 
-    // CRM
+    Route::get('/search', [SearchController::class, 'index']);
+     // CRM
+    Route::get('/contacts/{type}', [ClientController::class, 'byTypes']);
+    Route::get('/contacts/{client}/{type}', [ClientController::class, 'showByType']);
     Route::resource('clients', ClientController::class);
     Route::get('/clients/{client}/{section}', [ClientController::class, 'getSection']);
 
     // Business
 
-
     // Loans
-    Route::get('loans/overview', LoanController::class);
-    Route::resource('loans', LoanController::class);
-    Route::post('/loans/:loanId/installments/:installment/mark-as-paid', [LoanController::class, 'markAsPaid']);
-    Route::post('/loans/{loan}/installments/{installment}/pay', [LoanController::class, 'payInstallment']);
-    Route::post('/loans/{loan}/pay', [LoanController::class, 'pay']);
-    Route::get('/loans/{loan}/payments/{paymentDocument}/print', [LoanController::class, 'printPaymentDocument']);
-    Route::get('/payment-center', [LoanController::class, 'paymentCenter']);
 
-    Route::resource('/loan-products', LoanProductController::class);
 
     // Properties
     Route::get('properties/overview', PropertyController::class);
     Route::get('properties/management-tools', [PropertyController::class, 'managementTools']);
     Route::resource('properties', PropertyController::class);
     Route::post('properties/{property}/units', [PropertyController::class, 'addUnit']);
-    
+    Route::get('units', [PropertyUnitController::class, 'index']);
+
     // rents
     Route::resource('rents', RentController::class);
     // property transactions
@@ -101,7 +96,7 @@ Route::middleware([
     Route::post('rents/{rent}/invoices/{invoice}/pay', [RentController::class, 'payInvoice']);
     Route::post('rents/{rent}/generate-next-invoice', [RentController::class, 'generateNextInvoice']);
     Route::post('/rents/{rent}/transactions/{invoice}', [ClientController::class, 'generateOwnerDistribution']);
-    
+
     // Owner
     Route::post('/clients/{client}/owner-distributions', [ClientController::class, 'generateOwnerDistribution']);
     Route::put('/clients/{client}/owner-distributions/{invoice}', [ClientController::class, 'generateOwnerDistribution']);
@@ -110,6 +105,8 @@ Route::middleware([
     Route::get('/clients/{client}/rents/{rent}/end', [TenantRentController::class, 'endRent'])->name('tenant.end-rent');;
     Route::put('/clients/{client}/rents/{rent}/end', [TenantRentController::class, 'endRentAction'])->name('tenant.end-rent-action');
 
-    
+
 });
 
+// Loans
+Route::group([],  app_path('/Domains/Loans/routes.php'));

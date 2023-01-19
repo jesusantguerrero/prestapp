@@ -27,9 +27,9 @@
         class="text-green-500 total-labels payment-label"
         v-for="payment in payments"
         :key="payment.id"
-        @click.prevent="$emit('edit-payment', payment)"
+        @click.stop="$emit('edit-payment', payment)"
       >
-        <span class="label"> Paid in {{ payment.payment_date }} </span>
+        <span class="label"> Pagado en {{ formatDate(payment.payment_date) }} </span>
         <span class="value">- {{ formatMoney(payment.amount) }}</span>
       </i>
     </div>
@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-import { formatMoney } from "@/utils";
+import { formatMoney, formatDate } from "@/utils";
 import { computed, reactive, watch, toRefs } from "vue";
 import ExactMath from "exact-math";
 
@@ -76,6 +76,8 @@ const props = defineProps({
     default: false,
   },
 });
+
+defineEmits(["edit-payment"]);
 
 const getRowTaxes = (row, taxFields) => {
   const taxes = {};

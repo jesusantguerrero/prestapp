@@ -41,6 +41,9 @@ return new class extends Migration
             $table->text('address_details')->nullable();
             //
             $table->boolean('is_company')->default(false);
+            $table->boolean('is_tenant')->default(false);
+            $table->boolean('is_lender')->default(false);
+            $table->boolean('is_owner')->default(false);
             $table->enum('type', ['PROSPECT', 'CONTACT', 'CUSTOMER'])->default('PROSPECT');
 
             $table->integer('owner_distribution_date')->nullable();

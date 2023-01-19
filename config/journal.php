@@ -16,6 +16,7 @@ return [
             "name" => "Assets",
             "Description" => "",
             "depth" => 0,
+            "type" => 1,
             "childs" => [
                 [
                     "resource_type" => "categories",
@@ -74,6 +75,7 @@ return [
             "display_id" => "liabilities",
             "Description" => "",
             "depth" => 0,
+            "type" => -1,
             "childs" => [
                 [
                     "resource_type" => "categories",
@@ -153,6 +155,7 @@ return [
           "display_id" => "equity",
           "description" => "",
           "depth" => 0,
+          "type" => -1,
           "childs" => [
               [
                   "resource_type" => "categories",
@@ -179,6 +182,7 @@ return [
             "display_id" => "income",
             "Description" => "",
             "depth" => 0,
+            "type" => -1,
             "childs" => [
                 [
                     "resource_type" => "categories",
@@ -237,6 +241,7 @@ return [
             "display_id" => "expenses",
             "Description" => "",
             "depth" => 0,
+            "type" => 1,
             "childs" => [
                 [
                     "resource_type" => "categories",
@@ -322,7 +327,7 @@ return [
           "category_id" => "loans_business",
           "display_id" => "loan_business",
           "number" => 1104,
-          "name" => "Real State",
+          "name" => "Loan Account",
           "index" => 4,
           "balance_type" => "DEBIT"
         ],

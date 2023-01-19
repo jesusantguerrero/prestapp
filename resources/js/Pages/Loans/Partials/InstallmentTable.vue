@@ -1,50 +1,75 @@
 <script setup lang="ts">
-import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
 import AppButton from "@/Components/shared/AppButton.vue";
-import { formatMoney } from "@/utils/formatMoney";
-import { formatDate } from "@/utils";
+// @ts-ignore
+import BaseTable from "@/Components/shared/BaseTable.vue";
+// @ts-ignore
+import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
+import {
+  ILoanInstallment,
+  ILoanInstallmentSaved,
+} from "@/Modules/loans/loanInstallmentEntity";
+import cols from "./installmentCols";
+import { router } from "@inertiajs/core";
 
 interface Props {
   installments: ILoanInstallment[];
-  loanId: number;
+  loanId?: number;
 }
-defineProps<Props>();
+
+const props = defineProps<Props>();
 
 const emit = defineEmits(["pay"]);
 
+const { openModal } = usePaymentModal();
+
 const handlePayment = (installment: ILoanInstallment) => {
+  const payment = {
+    ...installment,
+    // @ts-ignore solve backend sending decimals as strings
+    amount: parseFloat(installment.amount_due) || installment.amount,
+    id: undefined,
+    installment_id: installment.id,
+  };
+
+  const defaultConcept = `Pago prestamo ${installment.loan_id} (${installment.installment_number}/${props.installments.length})`;
+
+  openModal({
+    data: {
+      title: `Pagar prestamo`,
+      endpoint: `/loans/${installment.loan_id}/installments/${installment.id}/pay`,
+      due: payment.amount,
+      account_id: payment.account_id,
+      payment,
+      defaultConcept,
+    },
+  });
   emit("pay", installment);
 };
 
-const tdHeaderClass = "bg-blue-400 p-2 text-white";
+const onUpdateRepayment = (repayment: ILoanInstallmentSaved) => {
+  router.post(`/loans/${repayment.loan_id}/installments/${repayment.id}/update-status`);
+};
 </script>
 
 <template>
-  <table class="table w-full mt-4">
-    <thead class="bg-blue-400 py-4 text-xl text-white">
-      <td :class="tdHeaderClass">Fecha</td>
-      <td :class="tdHeaderClass">Monto a Pagar</td>
-      <td :class="tdHeaderClass">Abono a Capital</td>
-      <td :class="tdHeaderClass">Interés</td>
-      <td :class="tdHeaderClass">Balance deudor</td>
-      <td :class="tdHeaderClass">Estado</td>
-      <td :class="tdHeaderClass">Acciones</td>
-    </thead>
-    <tr v-for="installment in installments">
-      <td class="p-2">{{ formatDate(installment.due_date) }}</td>
-      <td class="p-2 text-right">{{ formatMoney(installment.amount) }}</td>
-      <td class="p-2 text-right">{{ formatMoney(installment.principal) }}</td>
-      <td class="p-2 text-right">{{ formatMoney(installment.interest) }}</td>
-      <td class="p-2 text-right">{{ formatMoney(installment.final_balance) }}</td>
-      <td class="p-2 text-right">{{ installment.payment_status }}</td>
-      <td class="p-2">
+  <BaseTable :cols="cols" :table-data="installments">
+    <template v-slot:actions="{ scope: { row } }">
+      <div class="flex space-x-2 justify-end">
         <AppButton
-          @click="handlePayment(installment)"
-          v-if="installment.payment_status !== 'PAID'"
+          @click="handlePayment(row)"
+          variant="secondary"
+          v-if="row?.payment_status !== 'PAID' || loanId"
         >
           Pagar
         </AppButton>
-      </td>
-    </tr>
-  </table>
+        <AppButton
+          @click="onUpdateRepayment(row)"
+          v-if="row?.payment_status !== 'PAID' || loanId"
+          variant="inverse-secondary"
+        >
+          Recalcular
+        </AppButton>
+      </div>
+    </template>
+  </BaseTable>
 </template>

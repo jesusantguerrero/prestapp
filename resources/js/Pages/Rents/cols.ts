@@ -54,7 +54,6 @@ export default [
         name: 'status',
         label: 'Estado',
         render(row) {
-            console.log(getLoanStatusColor(row.status) );
             return h(ElTag, { type: getLoanStatusColor(row.status) }, getLoanStatus(row.status))
         }
     },

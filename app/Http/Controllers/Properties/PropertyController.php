@@ -14,6 +14,7 @@ use Insane\Journal\Helpers\ReportHelper;
 
 class PropertyController extends InertiaController
 {
+  
   public function __construct(Property $property)
   {
       $this->model = $property;
@@ -42,7 +43,7 @@ class PropertyController extends InertiaController
       $propertyTotals = PropertyService::totalByStatusFor($teamId);
 
       $invoices = RentService::invoices($teamId);
-      
+
       return inertia('Properties/Overview',
       [
           "revenue" => $reportHelper->revenueReport($teamId),
@@ -75,7 +76,7 @@ class PropertyController extends InertiaController
         return PropertyService::createProperty($postData, $request->get('units'));
     }
 
-    public function getEditProps(Request $request, $id) {
+    public function getEditProps(Request $request, $resource) {
       $teamId = $request->user()->current_team_id;
 
       return [
@@ -85,7 +86,7 @@ class PropertyController extends InertiaController
 
     // Units
     public function addUnit(Property $property) {
-      $postData = request()->only(['name', 'price', 'description']);  
+      $postData = request()->only(['name', 'price', 'description']);
       PropertyService::addUnit($property,  $postData);
     }
 

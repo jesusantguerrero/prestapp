@@ -20,6 +20,12 @@ export const LOAN_FREQUENCY = {
     SEMIMONTHLY: 'SEMIMONTHLY'
 }
 
+export const LOAN_SOURCE_TYPE = {
+  SMALL_BOX: 'SMALL_BOX',
+  BANK: 'BANK',
+  UNREGISTERED: 'UNREGISTERED',
+}
+
 export const loanFrequencies = [{
     name: LOAN_FREQUENCY.WEEKLY,
     label: 'Semanal'
@@ -35,6 +41,19 @@ export const loanFrequencies = [{
     name: LOAN_FREQUENCY.MONTHLY,
     label: 'Mensual'
 }];
+
+export const loanSourceTypes = [{
+  id: LOAN_SOURCE_TYPE.SMALL_BOX,
+  label: 'Caja Chica'
+}, {
+  id: LOAN_SOURCE_TYPE.BANK,
+  label: 'Banco'
+},
+{
+  id: LOAN_SOURCE_TYPE.UNREGISTERED,
+  label: 'Sin registrar'
+}];
+
 
 export const LOAN_STATUS = {
     LATE: 'En mora',

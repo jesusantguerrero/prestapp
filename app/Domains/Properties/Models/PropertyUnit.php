@@ -7,10 +7,12 @@ use Database\Factories\PropertyUnitFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Insane\Journal\Traits\HasResourceAccounts;
+use Laravel\Scout\Searchable;
 
 class PropertyUnit extends Model {
     use HasFactory;
     use HasResourceAccounts;
+    use Searchable;
 
     const STATUS_BUILDING = 'BUILDING';
     const STATUS_AVAILABLE =  'AVAILABLE';
@@ -41,9 +43,8 @@ class PropertyUnit extends Model {
     }
 
     public function contract() {
-      return $this->hasOne(Rent::class)->latestOfMany('created_at');
+      return $this->hasOne(Rent::class, 'unit_id')->latestOfMany('created_at');
     }
-
 
     /**
      * Create a new factory instance for the model.

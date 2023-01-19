@@ -6,12 +6,14 @@ use App\Domains\CRM\Services\ClientService;
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
 use App\Domains\Loans\Services\LoanService;
+use App\Domains\Loans\Services\LoanTransactionsService;
 use App\Http\Controllers\InertiaController;
 use App\Models\Setting;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Insane\Journal\Helpers\ReportHelper;
+use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Core\PaymentDocument;
 
 class LoanController extends InertiaController
@@ -65,7 +67,6 @@ class LoanController extends InertiaController
         return LoanService::createLoan($postData, $request->get('installments'));
     }
 
-
     public function create(Request $request) {
         $teamId = $request->user()->current_team_id;
 
@@ -75,14 +76,25 @@ class LoanController extends InertiaController
         ]);
     }
 
-    protected function getEditProps(Request $request, $id)
+    protected function getEditProps(Request $request, $loan)
     {
-        $teamId = $request->user()->current_team_id;
-
-        return [
-            'loans' => Loan::where('id', $id)->with(['client', 'installments', 'paymentDocuments'])->first(),
-            'clients' => ClientService::ofTeam($teamId),
-        ];
+      $stats = $loan->installments()->selectRaw("
+        sum(principal - principal_paid) as outstandingPrincipal,
+        sum(interest - interest_paid) as outstandingInterest,
+        sum(late_fee - late_fee_paid) as outstandingFees,
+        sum(late_fee - late_fee_paid) as outstandingFees,
+        sum(amount_due) as outstandingTotal
+      ")->first();
+      return [
+        'loans' => array_merge(
+        $loan->toArray(),
+        [
+          'client' => $loan->client,
+          'installments' => $loan->installments,
+          'paymentDocuments' => $loan->paymentDocuments
+        ]),
+        "stats" => LoanService::getStats($loan)
+      ];
     }
 
     public function update(Request $request, int $id) {
@@ -98,37 +110,16 @@ class LoanController extends InertiaController
       return true;
     }
 
+    public function updateStatus(Loan $loan) {
+      if (request()->user()->current_team_id == $loan->team_id) {
+        $loan->updateStatus();
+      }
+    }
+
     // payable document related
     public function pay(Loan $loan, Request $request) {
       $postData = $this->getPostData($request);
-
-      $loan->createPayment(array_merge($postData, [
-          "client_id" => $loan->client_id,
-          "documents" => array_map(function ($document) {
-            $document['payable_id'] = $document['id'];
-            $document['payable_type'] = LoanInstallment::class;
-            $document['amount'] = $document['payment'];
-            return $document;
-          }, $postData['documents'])
-      ]));
-      $loan->client->checkStatus();
-    }
-
-    public function payInstallment(Loan $loan, LoanInstallment $installment, Request $request) {
-        $postData = $this->getPostData($request);
-        if ($installment->loan_id == $loan->id) {
-            $loan->createPayment(array_merge($postData, [
-                "client_id" => $loan->client_id,
-                "documents" => [[
-                    "payable_id" => $installment->id,
-                    "payable_type" => LoanInstallment::class,
-                    "amount" => $postData['amount'],
-                    "amount_due" =>$installment->total - $postData['amount'],
-                    "amount_paid" => $postData['amount']
-                ]]
-            ]));
-            $loan->client->checkStatus();
-        }
+      LoanTransactionsService::pay($loan, $postData);
     }
 
     public function markAsPaid(Loan $loan, LoanInstallment $installment) {
@@ -162,10 +153,37 @@ class LoanController extends InertiaController
       ]);
     }
 
+    // tabs
+    public function getSection(Loan $loan, string $section) {
+      $resourceName = $this->resourceName ?? $this->model->getTable();
+      $resource = $loan->toArray();
+      $sectionName = ucfirst($section);
+
+      return inertia("Loans/$sectionName",
+      [
+          $resourceName => array_merge($resource, $this->$section($loan)),
+          "currentTab" => $section,
+          "stats" => LoanService::getStats($loan)
+      ]);
+    }
+
+
+    public function installments(Loan $loan) {
+      return [
+        "installments" => $loan->installments,
+        "client" => $loan->client,
+      ];
+    }
+
+
+    public function loanSourceAccounts() {
+      return Account::getByCategories(request()->user()->current_team_id, ['cash_and_bank']);
+    }
+
+
     // Payment Center
     public function paymentCenter(Request $request) {
       $teamId = $request->user()->current_team_id;
-      $tab = $request->query('tab', 'rents');
       $filters = $request->query('filters');
       $clientId = $filters ? $filters['client'] : null;
 

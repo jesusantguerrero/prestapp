@@ -7,6 +7,7 @@ import { AtBackgroundIconCard } from "atmosphere-ui";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import AppSectionHeader from "@/Components/AppSectionHeader.vue";
+import LoanSectionNav from "@/Pages/Loans/Partials/LoanSectionNav.vue";
 import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.vue";
 import EmptyAddTool from "@/Pages/Properties/Partials/EmptyAddTool.vue";
 import ContractCard from "@/Pages/Properties/Partials/ContractCard.vue";
@@ -29,11 +30,19 @@ const props = withDefaults(defineProps<Props>(), {
   currentTab: "summary",
 });
 
-const tabs = {
-  "": "Detalles",
-  contracts: "Contratos",
-  transactions: "Transacciones",
-};
+const tabs = computed(() => {
+  return props.clients.is_lender
+    ? {
+        "": "Detalles",
+        loans: "Prestamos",
+        transactions: "Transacciones",
+      }
+    : {
+        "": "Detalles",
+        contracts: "Contratos",
+        transactions: "Transacciones",
+      };
+});
 
 type IPaymentMetaData = ILoanInstallment & {
   installment_id?: number;
@@ -53,12 +62,8 @@ const refresh = () => {
 <template>
   <AppLayout :title="`Clientes / ${clients.fullName}`">
     <template #header>
-      <PropertySectionNav>
-        <template #actions>
-          <AppButton @click="" variant="inverse"> Editar </AppButton>
-          <AppButton @click="" variant="inverse"> Nueva Propiedad </AppButton>
-        </template>
-      </PropertySectionNav>
+      <LoanSectionNav v-if="clients.is_lender" />
+      <PropertySectionNav v-else />
     </template>
 
     <main class="p-5 mt-8">
@@ -95,9 +100,9 @@ const refresh = () => {
                   {{ clients.properties?.length }}
                 </span>
               </div>
-              <p class="text-bold text-body-1">Propiedades</p>
+              <p class="text-bold text-body-1" v-if="clients.is_owner">Propiedades</p>
             </section>
-            <ElTag> {{ clients.status }}</ElTag>
+            <ElTag> {{ clients?.rent?.status || clients.status }}</ElTag>
           </article>
         </section>
         <div class="flex space-x-2">

@@ -17,7 +17,7 @@ export const useAppMenu = t => {
             to: '/loans',
             as: Link,
             isActiveFunction(url, currentPath) {
-               return /loans/.test(currentPath)
+               return /loans|lender/.test(currentPath)
             }
         },
         {
@@ -26,7 +26,7 @@ export const useAppMenu = t => {
             to: '/properties/overview',
             as: Link,
             isActiveFunction(url, currentPath) {
-              return /properties/.test(currentPath)
+              return /properties|units|tenant|owner/.test(currentPath)
             }
 
         },

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { AtButton, AtField, AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { format as formatDate } from "date-fns";
 import { ElDatePicker, ElDialog } from "element-plus";
@@ -51,6 +51,7 @@ function generatePaymentData() {
     payment_method_id: paymentMethods[0].id,
     paymentMethod: paymentMethods[0],
     payment_date: new Date(),
+    ...(props.payment?.id ? props.payment : {}),
   };
 }
 
@@ -77,7 +78,7 @@ watch(
 );
 
 watch(
-  props.payment,
+  () => props.payment,
   (payment) => {
     if (payment) {
       setFormData();
@@ -95,7 +96,49 @@ const documentTotal = computed(() => {
   }, 0);
 });
 
-function addPayment() {
+const isLoading = ref(false);
+function onSubmit() {
+  if (isLoading.value) {
+    return;
+  }
+
+  if (!paymentForm.id) {
+    createPayment();
+    return;
+  }
+
+  isLoading.value = true;
+
+  const formData = {
+    payment_date: formatDate(paymentForm.value.payment_date || new Date(), "yyyy-MM-dd"),
+    amount: paymentForm.value.amount,
+    concept: paymentForm.value.concept,
+    payment_method_id: paymentForm.value.payment_method,
+    account_id: paymentForm.value.account_id,
+    reference: paymentForm.value.reference,
+    notes: paymentForm.value.notes,
+    documents: paymentForm.value.documents?.filter((doc) => doc.payment),
+  };
+
+  axios
+    .post(props.endpoint, formData)
+    .then(() => {
+      resetForm(true);
+      emit("saved");
+    })
+    .catch((err) => {
+      console.log(err);
+      notify({
+        type: "error",
+        message: err.response ? err.response.data.status.message : "Ha ocurrido un error",
+      });
+    })
+    .finally(() => {
+      isLoading.value = false;
+    });
+}
+
+function createPayment() {
   if (!paymentForm.value.amount) {
     notify({
       type: "error",
@@ -104,6 +147,7 @@ function addPayment() {
     return;
   }
 
+  isLoading.value = true;
   const formData = {
     resource_id: props.resourceId,
     payment_date: formatDate(paymentForm.value.payment_date || new Date(), "yyyy-MM-dd"),
@@ -128,12 +172,19 @@ function addPayment() {
         type: "error",
         message: err.response ? err.response.data.status.message : "Ha ocurrido un error",
       });
+    })
+    .finally(() => {
+      isLoading.value = false;
     });
 }
 
 function deletePayment() {
+  const endpoint = props.endpoint
+    ? `${props.endpoint}`
+    : `/invoice/${props.payment.resource_id}/payments/${props.payment?.id}`;
+
   axios
-    .delete(`${props.endpoint}/${paymentForm.id}`)
+    .delete(endpoint)
     .then(() => {
       emit("saved");
       resetForm(true);
@@ -168,7 +219,7 @@ function emitChange(value) {
     :model-value="modelValue"
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <div class="overflow-hidden">
+    <div class="">
       <section class="flex space-x-4">
         <AtField class="w-full text-left" label="Concepto">
           <AtInput
@@ -266,7 +317,9 @@ function emitChange(value) {
         >
           Delete
         </AppButton>
-        <AppButton v-else @click="addPayment()"> Efectuar pago </AppButton>
+        <AppButton v-else @click="onSubmit()" :disabled="isLoading" :loading="isLoading">
+          Efectuar pago
+        </AppButton>
       </div>
     </template>
   </ElDialog>

@@ -198,10 +198,10 @@ function emitChange(value) {
           />
         </AtField>
         <section class="flex">
-          <AtField label="Fecha limite" class="w-3/12">
+          <AtField label="Fecha limite" class="w-6/12">
             <ElDatePicker v-model="formData.date" size="large" class="w-full" rounded />
           </AtField>
-          <AtField class="w-9/12 text-left" label="Monto Recibido">
+          <AtField class="w-6/12 text-left" label="Monto Recibido">
             <AtInput
               class="form-control"
               number-format
@@ -227,7 +227,7 @@ function emitChange(value) {
           v-model="formData.rent"
           :endpoint="rentsUrl"
           placeholder="Selecciona el contrato"
-          label="name"
+          label="date"
           track-by="id"
         />
       </section>

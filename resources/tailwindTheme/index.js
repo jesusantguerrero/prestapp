@@ -53,10 +53,28 @@ module.exports = {
         "body": colors.gray[900],
         "body-1": colors.gray[700]
     },
-    blueLight: {
+    blue: {
         primary: colors.blue[400],
         "secondary": "#162f4d",
         "accent": "#a3cdff",
+        "neutral": "#d1e6ff",
+        "base-deep-1": colors.slate[400],
+        base: "#F3F4F6",
+        "base-lvl-1": colors.slate[100],
+        "base-lvl-2": colors.slate[50],
+        "base-lvl-3": colors.white,
+        info: "#3D68F5",
+        success: "#79E7AE",
+        warning: "#D39E17",
+        error: "#F61909",
+        "body": "#2E384D",
+        "body-1": "#9298AD"
+    },
+    blueLight: {
+        primary: "#47A9F1",
+        "primary-light": "#63D0DD",
+        "secondary": "#0C165B",
+        "accent": "#5F47DD",
         "neutral": "#d1e6ff",
         "base-deep-1": colors.slate[400],
         base: "#F3F4F6",
