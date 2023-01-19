@@ -41,6 +41,7 @@ const handlePayment = (installment: ILoanInstallment) => {
       account_id: payment.account_id,
       payment,
       defaultConcept,
+      accountsEndpoint: "/loan-accounts",
     },
   });
   emit("pay", installment);

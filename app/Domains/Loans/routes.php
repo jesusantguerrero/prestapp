@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Loans\LoanAgreementController;
 use App\Http\Controllers\Loans\LoanController;
 use App\Http\Controllers\Loans\LoanInstallmentController;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,10 @@ Route::middleware([
     Route::controller(LoanInstallmentController::class)->group(function () {
         Route::post('/loans/{loan}/installments/{installment}/pay', 'pay');
         Route::post('/loans/{loan}/installments/{installment}/update-status', 'updateStatus');
+    });
+
+    Route::controller(LoanAgreementController::class)->group(function () {
+        Route::post('/loans/{loan}/agreements', 'store');
     });
 
     Route::get('/payment-center', [LoanController::class, 'paymentCenter']);
