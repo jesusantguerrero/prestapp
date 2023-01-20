@@ -47,21 +47,16 @@ const { appMenu: currentMenu, headerMenu } = useAppMenu();
 //  categories
 const pageProps = usePage().props;
 const { categoryOptions: transformCategoryOptions } = useSelect();
-transformCategoryOptions(pageProps.value.categories, "sub_categories", "categoryOptions");
-transformCategoryOptions(
-  pageProps.value.accounts,
-  "accounts",
-  "accountsOptions",
-  (account) => {
-    return {
-      ...account,
-      name: account.id,
-    };
-  }
-);
+transformCategoryOptions(pageProps.categories, "sub_categories", "categoryOptions");
+transformCategoryOptions(pageProps.accounts, "accounts", "accountsOptions", (account) => {
+  return {
+    ...account,
+    name: account.id,
+  };
+});
 
 watch(
-  () => pageProps.value.errors,
+  () => pageProps.errors,
   (errors) => {
     Object.keys(errors).forEach((error) => {
       ElNotification({

@@ -1,6 +1,7 @@
 <script setup>
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import { AtBackgroundIconCard, AtButton, AtDashlide } from "atmosphere-ui";
+import AppButton from "@/Components/shared/AppButton.vue";
 
 import IncomeSummaryWidget from "./Partials/IncomeSummaryWidget.vue";
 import WelcomeWidget from "./Partials/WelcomeWidget.vue";
@@ -26,17 +27,17 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  activeLoanClients: {
-    type: Number,
+  accounts: {
+    type: Object,
+    default() {
+      return {};
+    },
   },
-  loanCapital: {
-    type: Number,
-  },
-  loanExpectedInterest: {
-    type: Number,
-  },
-  loanPaidInterest: {
-    type: Number,
+  stats: {
+    type: Object,
+    default() {
+      return {};
+    },
   },
   bank: {
     type: Number,
@@ -47,34 +48,24 @@ const props = defineProps({
   cashOnHand: {
     type: Number,
   },
-  nextInvoices: {
-    type: Array,
-  },
-  debtors: {
-    type: Array,
-  },
 });
 
 const welcomeCards = [
   {
-    label: "Clientes con Prestamos",
-    value: props.activeLoanClients,
-    icon: "fa-users",
+    label: "Crear un contacto",
+    icon: "contact",
   },
   {
-    label: "Capital Prestado",
-    icon: "fa-money",
-    value: formatMoney(props.loanCapital),
+    label: "Crear un prestamo",
+    icon: "money",
   },
   {
-    label: "Interes Esperado",
-    icon: "fa-wallet",
-    value: formatMoney(props.loanExpectedInterest),
+    label: "Agregar propiedad",
+    icon: "home",
   },
   {
-    label: "Total Interes pagado",
-    value: formatMoney(props.loanPaidInterest),
-    accent: true,
+    label: "Crear un contrato",
+    icon: "document",
   },
 ];
 
@@ -135,106 +126,103 @@ const comparisonRevenue = {
 <template>
   <AppLayout title="Dashboard">
     <main class="p-5 mx-auto text-gray-500 sm:px-6 lg:px-8">
-      <WelcomeWidget
-        message="Bienvenido a PrestApp"
-        :username="user.name"
-        :cards="welcomeCards"
-      />
+      <section class="w-full flex space-x-4">
+        <WelcomeWidget message="Hola, " :username="user.name" class="w-9/12">
+          <template #content>
+            <section class="grid grid-cols-2 pt-4 divide-x-2">
+              <article class="grid grid-rows-section-footer">
+                <h4 class="font-bold text-lg">Ganancias netas</h4>
+                <h3 class="text-4xl font-bold mt-4">
+                  {{ formatMoney(accounts.income - accounts.expenses) }}
+                </h3>
+                <footer class="flex space-x-4">
+                  <p class="flex text-success items-center" rounded>
+                    <IMdiArrowUpThick />
+                    <span class="font-bold">
+                      {{ formatMoney(accounts.income) }} Recibido
+                    </span>
+                  </p>
+                  <p class="flex text-error/70 items-center" rounded>
+                    <IMdiArrowDownThick />
+                    <span class="font-bold">
+                      {{ formatMoney(accounts.expenses) }} Gastado
+                    </span>
+                  </p>
+                </footer>
+              </article>
+              <article class="grid grid-rows-section-footer pl-6">
+                <h4 class="font-bold text-lg">Balance pendiente</h4>
+                <h3 class="text-4xl font-bold mt-4">
+                  {{ formatMoney(stats.outstanding) }}
+                </h3>
+                <footer class="flex">
+                  <AtButton
+                    class="flex text-error/70 hover:bg-error/10 -ml-6 px-2"
+                    rounded
+                  >
+                    <IMdiFileDocumentAlertOutline class="mr-2" />
+                    <span class="font-bold">
+                      {{ formatMoney(stats.overdue) }} Balance en mora
+                    </span>
+                  </AtButton>
+                  <AtButton
+                    rounded
+                    class="flex items-center text-primary hover:bg-primary/10"
+                  >
+                    <IIcSharpPayment class="mr-2" /> Recibir Pago
+                  </AtButton>
+                </footer>
+              </article>
+            </section>
+          </template>
+        </WelcomeWidget>
+        <WelcomeWidget message="Accesos Rapidos" class="w-3/12">
+          <template #content>
+            <div class="grid grid-cols-2 py-2">
+              <button
+                v-for="card in welcomeCards"
+                class="w-full hover:border-primary border-2 transition-all ease-in group border-transparent py-3 rounded-lg flex flex-col text-center bg-white text-primary justify-center items-center"
+              >
+                <IMdiUserOutline class="text-4xl" v-if="card.icon == 'contact'" />
+                <IMdiMoney class="text-4xl" v-if="card.icon == 'money'" />
+                <IMdiHomeCityOutline class="text-4xl" v-if="card.icon == 'home'" />
+                <IMdiFileDocument class="text-4xl" v-if="card.icon == 'payment'" />
+
+                <p class="text-sm text-body font-bold group-hover:text-primary">
+                  {{ card.label }}
+                </p>
+              </button>
+            </div>
+          </template>
+        </WelcomeWidget>
+      </section>
       <section class="flex flex-col mt-8 lg:space-x-4 lg:flex-row">
         <IncomeSummaryWidget
-          class="order-2 mt-4 lg:w-8/12 lg:mt-0 lg:order-1"
+          class="order-2 mt-4 lg:w-9/12 lg:mt-0 lg:order-1"
           :chart="comparisonRevenue"
           :headerInfo="comparisonRevenue.headers"
+          :style="{ height: '310px' }"
         />
-        <article class="order-1 space-y-5 lg:w-5/12 lg:order-2">
+        <article class="order-1 space-y-2 lg:w-3/12 lg:order-2">
           <AtBackgroundIconCard
-            class="text-white bg-blue-400 h-36"
+            class="text-primary bg-primary/10 border-primary/20 border-2 h-32 cursor-pointer"
             icon="fas fa-wallet"
             :value="formatMoney(props.cashOnHand.balance | 0)"
-            title="Cartera de Prestamos"
+            title="Cuenta de Prestamos"
+          />
+          <AtBackgroundIconCard
+            class="text-secondary bg-secondary/10 border-secondary/20 border-2 h-32 cursor-pointer"
+            icon="fas fa-wallet"
+            :value="formatMoney(props.cashOnHand.balance | 0)"
+            title="Cuenta Inmobiliaria"
+          />
+          <AppButton
+            variant="secondary"
+            class="w-full"
+            @click="isTransferModalOpen = true"
           >
-            <template #action>
-              <AtButton
-                class="bg-blue-500 rounded-md"
-                @click="isTransferModalOpen = true"
-              >
-                Add Transaction
-              </AtButton>
-            </template>
-          </AtBackgroundIconCard>
-
-          <AtDashlide class="h-full rounded-md" :slides="slideOptions">
-            <template #caja>
-              <AtBackgroundIconCard
-                class="w-full h-full text-gray-400 rounded-t-none rounded-b-none"
-                icon="fas fa-wallet"
-                :value="formatMoney(props.dailyBox.balance)"
-                title="Caja Chica"
-              />
-            </template>
-
-            <template #ganancias>
-              <AtBackgroundIconCard
-                class="w-full h-full text-blue-400 rounded-t-none rounded-b-none"
-                icon="fas fa-dollar-sign"
-                value="5,000"
-                title="Interes Ganado"
-              />
-            </template>
-
-            <template #debtors>
-              <InvoiceCard
-                v-for="invoice in debtors"
-                :invoice="invoice"
-                :actions="{
-                  payment: {
-                    label: 'Registrar Pago',
-                  },
-                  send: {
-                    label: 'Enviar Correo',
-                  },
-                  download: {
-                    label: 'Descargar PDF',
-                  },
-                  view: {
-                    label: 'Ver factura',
-                  },
-                  delete: {
-                    label: 'Eliminar Factura',
-                  },
-                }"
-                @action="handleActions($event, invoice)"
-              />
-              {{ debtors }}
-            </template>
-
-            <template #pagos>
-              <div class="px-4 py-1 space-y-2">
-                <InvoiceCard
-                  v-for="invoice in nextInvoices"
-                  :invoice="invoice"
-                  :actions="{
-                    payment: {
-                      label: 'Registrar Pago',
-                    },
-                    send: {
-                      label: 'Enviar Correo',
-                    },
-                    download: {
-                      label: 'Descargar PDF',
-                    },
-                    view: {
-                      label: 'Ver factura',
-                    },
-                    delete: {
-                      label: 'Eliminar Factura',
-                    },
-                  }"
-                  @action="handleActions($event, invoice)"
-                />
-              </div>
-            </template>
-          </AtDashlide>
+            Agregar fondos
+          </AppButton>
         </article>
       </section>
     </main>

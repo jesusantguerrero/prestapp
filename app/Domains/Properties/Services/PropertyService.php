@@ -8,9 +8,13 @@ use Illuminate\Support\Facades\DB;
 class PropertyService {
 
     public static function createProperty(mixed $propertyData, mixed $units = []) {
-      $rent = Property::create($propertyData);
+      $property = Property::create($propertyData);
       foreach ($units as $unit) {
-        $rent->units()->create($unit);
+        $property->units()->create(array_merge([
+          'team_id' => $property->team_id,
+          'user_id' => $property->user_id,
+          'owner_id' => $property->owner_id,
+        ], $unit));
       }
     }
 

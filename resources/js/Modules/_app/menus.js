@@ -30,7 +30,6 @@ const menus = {
       {
         label: 'Resumen de Prestamos',
         url: '/loans/overview',
-        hidden: true,
       },
       {
         label: 'Prestamos',
