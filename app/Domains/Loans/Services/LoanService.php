@@ -29,8 +29,7 @@ class LoanService {
       ]);
       LoanInstallment::where([
         'loan_id' => $loan->id,
-      ])->whereNot('payment_status', LoanInstallment::STATUS_PENDING)
-      ->delete();
+      ])->unpaid()->delete();
     }
 
     public static function createInstallments(Loan $loan, mixed $installments) {

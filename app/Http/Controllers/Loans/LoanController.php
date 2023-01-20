@@ -168,6 +168,20 @@ class LoanController extends InertiaController
       ];
     }
 
+    public function agreements(Loan $loan) {
+      return [
+        "agreements" => $loan->agreements,
+        "client" => $loan->client,
+      ];
+    }
+
+    public function payments(Loan $loan) {
+      return [
+        "payment_documents" => $loan->paymentDocuments,
+        "client" => $loan->client,
+      ];
+    }
+
 
     public function loanSourceAccounts() {
       return Account::getByCategories(request()->user()->current_team_id, ['cash_and_bank']);
