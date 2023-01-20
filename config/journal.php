@@ -14,6 +14,7 @@ return [
             "display_id" => "assets",
             "number" => 10000,
             "name" => "Assets",
+            "alias" => "Activos",
             "Description" => "",
             "depth" => 0,
             "type" => 1,
@@ -74,6 +75,7 @@ return [
             "number" => 20000,
             "display_id" => "liabilities",
             "Description" => "",
+            "alias" => "Pasivos",
             "depth" => 0,
             "type" => -1,
             "childs" => [
@@ -154,6 +156,7 @@ return [
           "number" => 30000,
           "display_id" => "equity",
           "description" => "",
+          "alias" => "Capital",
           "depth" => 0,
           "type" => -1,
           "childs" => [
@@ -181,6 +184,7 @@ return [
             "number" => 40000,
             "display_id" => "income",
             "Description" => "",
+            "alias" => "Ingresos",
             "depth" => 0,
             "type" => -1,
             "childs" => [
@@ -240,6 +244,7 @@ return [
             "number" => 50000,
             "display_id" => "expenses",
             "Description" => "",
+            "alias" => "Gastos",
             "depth" => 0,
             "type" => 1,
             "childs" => [

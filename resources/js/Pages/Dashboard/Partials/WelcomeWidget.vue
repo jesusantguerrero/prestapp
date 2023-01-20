@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// @ts-ignore: srouter should be exported by inertia
 import { router } from "@inertiajs/vue3";
+// @ts-ignore: my lib
 import { AtBackgroundIconCard, AtButton } from "atmosphere-ui";
 interface ICard {
   label: string;
@@ -14,9 +14,13 @@ interface Props {
   cards: ICard[];
   actionLabel?: string;
   actionLink?: string;
+  sectionClass: string;
 }
 
-defineProps<Props>();
+withDefaults(defineProps<Props>(), {
+  sectionClass:
+    "flex py-4 space-x-4 divide-x-2 rounded-md divide-base-lvl-2 bg-base-lvl-3",
+});
 </script>
 
 <template>
@@ -35,9 +39,8 @@ defineProps<Props>();
       </div>
     </section>
     <slot name="content">
-      <section
-        class="flex py-4 space-x-4 divide-x-2 rounded-md divide-base-lvl-2 bg-base-lvl-3"
-      >
+      here
+      <section :class="sectionClass">
         <AtBackgroundIconCard
           v-for="card in cards"
           class="w-full h-24 shadow-none"
