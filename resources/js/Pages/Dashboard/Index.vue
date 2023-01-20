@@ -64,8 +64,8 @@ const welcomeCards = [
     icon: "home",
   },
   {
-    label: "Recibir un pago",
-    icon: "payment",
+    label: "Crear un contrato",
+    icon: "document",
   },
 ];
 
@@ -155,7 +155,7 @@ const comparisonRevenue = {
                 <h3 class="text-4xl font-bold mt-4">
                   {{ formatMoney(stats.outstanding) }}
                 </h3>
-                <footer>
+                <footer class="flex">
                   <AtButton
                     class="flex text-error/70 hover:bg-error/10 -ml-6 px-2"
                     rounded
@@ -164,6 +164,12 @@ const comparisonRevenue = {
                     <span class="font-bold">
                       {{ formatMoney(stats.overdue) }} Balance en mora
                     </span>
+                  </AtButton>
+                  <AtButton
+                    rounded
+                    class="flex items-center text-primary hover:bg-primary/10"
+                  >
+                    <IIcSharpPayment class="mr-2" /> Recibir Pago
                   </AtButton>
                 </footer>
               </article>
@@ -180,7 +186,7 @@ const comparisonRevenue = {
                 <IMdiUserOutline class="text-4xl" v-if="card.icon == 'contact'" />
                 <IMdiMoney class="text-4xl" v-if="card.icon == 'money'" />
                 <IMdiHomeCityOutline class="text-4xl" v-if="card.icon == 'home'" />
-                <IIcSharpPayment class="text-4xl" v-if="card.icon == 'payment'" />
+                <IMdiFileDocument class="text-4xl" v-if="card.icon == 'payment'" />
 
                 <p class="text-sm text-body font-bold group-hover:text-primary">
                   {{ card.label }}
