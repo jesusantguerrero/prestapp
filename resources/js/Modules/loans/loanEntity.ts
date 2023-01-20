@@ -19,5 +19,22 @@ export interface ILoan {
 
 
 export type ILoanWithInstallments = ILoan & {
-    installments: ILoanInstallment[]
+  installments: ILoanInstallment[]
+}
+
+export interface IPayment {
+  id: number;
+  amount: number;
+  payment_date: Date;
+}
+
+export interface IInvoice {
+
+}
+export interface ILoanWithPayments extends ILoan {
+  payment_documents: IPayment[]
+}
+
+export interface ILoanWithAgreements extends ILoan {
+  agreements: IInvoice[]
 }

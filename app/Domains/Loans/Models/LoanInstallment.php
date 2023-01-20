@@ -44,6 +44,10 @@ class LoanInstallment extends Model implements IPayableDocument {
     {
         return $query->where('loan_installments.payment_status', self::STATUS_LATE);
     }
+    public function scopeUnpaid($query)
+    {
+        return $query->whereNotIn('loan_installments.payment_status', [self::STATUS_PAID, self::STATUS_PARTIALLY_PAID]);
+    }
     public function scopeByTeam($query, $teamId)
     {
         return $query->where('loan_installments.team_id', $teamId);

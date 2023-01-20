@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { AtButton, AtField, AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { format as formatDate } from "date-fns";
-import { ElDatePicker, ElDialog } from "element-plus";
+import { ElDatePicker, ElDialog, ElNotification } from "element-plus";
 import { inject, ref, watch, computed } from "vue";
 
 import AppButton from "@/Components/shared/AppButton.vue";
@@ -9,6 +9,7 @@ import PaymentGrid from "./PaymentGrid.vue";
 
 import { MathHelper } from "@/Modules/loans/mathHelper";
 import { paymentMethods } from "@/Modules/loans/constants";
+import BaseSelect from "@/Components/shared/BaseSelect.vue";
 
 const defaultPaymentForm = {
   amount: 0,
@@ -30,6 +31,10 @@ const props = defineProps({
   endpoint: {
     type: String,
     required: true,
+  },
+  accountsEndpoint: {
+    type: String,
+    default: "/api/accounts",
   },
 });
 
@@ -128,7 +133,7 @@ function onSubmit() {
     })
     .catch((err) => {
       console.log(err);
-      notify({
+      ElNotification({
         type: "error",
         message: err.response ? err.response.data.status.message : "Ha ocurrido un error",
       });
@@ -140,7 +145,7 @@ function onSubmit() {
 
 function createPayment() {
   if (!paymentForm.value.amount) {
-    notify({
+    ElNotification({
       type: "error",
       message: "should specify an amount",
     });
@@ -157,7 +162,7 @@ function createPayment() {
     account_id: paymentForm.value.account_id,
     reference: paymentForm.value.reference,
     notes: paymentForm.value.notes,
-    documents: paymentForm.value.documents?.filter((doc) => doc.payment),
+    documents: paymentForm.value.documents?.filter((doc: any) => doc.payment),
   };
 
   axios
@@ -257,14 +262,13 @@ function emitChange(value) {
 
       <section class="flex space-x-4">
         <AtField class="w-5/12 mb-5 text-left" label="Cuenta de Pago">
-          <AtSimpleSelect
-            v-model="paymentForm.account_id"
-            v-model:selected="paymentForm.paymentAccount"
-            :options="categories"
-            placeholder="Pick an account"
-            class="w-full"
+          <BaseSelect
+            :endpoint="accountsEndpoint"
+            v-model="paymentForm.paymentAccount"
+            placeholder="Selecciona una cuenta"
             label="name"
-            key-track="id"
+            track-by="id"
+            @update:modelValue="paymentForm.account_id = $event?.id"
           />
         </AtField>
         <AtField class="w-3/12 mb-5 text-left" label="Metodo de Pago">

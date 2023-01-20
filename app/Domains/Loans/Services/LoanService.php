@@ -21,6 +21,17 @@ class LoanService {
       CreateLoanTransaction::dispatch($loan);
     }
 
+    public static function cancel(Loan $loan, $reason, $date) {
+      $loan->update([
+        'cancel_reason' => $reason,
+        'cancelled_at' => $date,
+        'status' => Loan::STATUS_CANCELLED,
+      ]);
+      LoanInstallment::where([
+        'loan_id' => $loan->id,
+      ])->unpaid()->delete();
+    }
+
     public static function createInstallments(Loan $loan, mixed $installments) {
         LoanInstallment::where([
             'loan_id' => $loan->id,

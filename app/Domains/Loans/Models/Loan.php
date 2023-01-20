@@ -3,7 +3,9 @@
 namespace App\Domains\Loans\Models;
 
 use App\Domains\CRM\Models\Client;
+use App\Domains\Loans\Enums\LoanInvoiceTypes;
 use Insane\Journal\Models\Core\Transaction;
+use Insane\Journal\Models\Invoice\Invoice;
 use Insane\Journal\Traits\HasPaymentDocuments;
 use Insane\Journal\Traits\HasResourceAccounts;
 use Insane\Journal\Traits\IPayableDocument;
@@ -49,7 +51,9 @@ class Loan extends Transactionable implements IPayableDocument {
         'closing_fees',
         'category_id',
         'source_type',
-        'source_account_id'
+        'source_account_id',
+        'cancel_reason',
+        'cancelled_at'
     ];
 
     // protected
@@ -59,11 +63,11 @@ class Loan extends Transactionable implements IPayableDocument {
     protected static function boot() {
       parent::boot();
       static::saving(function ($loan) {
-          static::saving($loan);
           $loan->setResourceAccount('client_account_id', 'expected_payments_lenders', $loan->client);
           $loan->setResourceAccount('fees_account_id', 'due_to_business');
           $loan->late_fee_account_id = $loan->fees_account_id;
-          Loan::calculateTotal($loan);
+          self::calculateTotal($loan);
+          self::checkPayments($loan);
       });
     }
 
@@ -75,6 +79,11 @@ class Loan extends Transactionable implements IPayableDocument {
         return $this->hasMany(LoanInstallment::class);
     }
 
+    public function agreements() {
+      return $this->morphMany(Invoice::class, 'invoiceable')
+      ->where('invoiceable_type', Loan::class)
+      ->where('category_type', LoanInvoiceTypes::PaymentAgreement);
+    }
      /**
      * Scope a query to only include popular users.
      *
@@ -137,14 +146,16 @@ class Loan extends Transactionable implements IPayableDocument {
     public static function checkStatus($payable) {
       $debt = $payable->total - $payable->amount_paid;
 
-      if ($debt == 0) {
+      if ($debt == 0 && !$payable->cancelled_at) {
           $status = self::STATUS_PAID;
       } elseif ($debt > 0 && $debt < $payable->amount) {
           $status = self::STATUS_PARTIALLY_PAID;
       } elseif ($debt && $payable->hasLateInstallments()) {
           $status = self::STATUS_LATE;
-      } elseif ($debt) {
+      } elseif ($debt && !$payable->cancelled_at) {
           $status = self::STATUS_PENDING;
+      } elseif ($payable->cancelled_at) {
+          $status = self::STATUS_CANCELLED;
       } else {
           $status = $payable->payment_status;
       }

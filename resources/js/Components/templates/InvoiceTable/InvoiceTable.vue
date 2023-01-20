@@ -11,6 +11,9 @@ defineProps({
   invoiceData: {
     type: Array,
   },
+  accountsEndpoint: {
+    type: String,
+  },
 });
 </script>
 
@@ -70,17 +73,8 @@ defineProps({
     </template>
 
     <template v-slot:actions="{ scope: { row } }">
-      <div class="flex items-center space-x-2">
-        <AtButton
-          @click="$inertia.visit(`${state.sectionName}/${row.id}/edit`)"
-          class="w-8 h-8 text-gray-400 rounded-full hover:text-green-400"
-        >
-          <i class="fa fa-edit"></i>
-        </AtButton>
-        <AtButton class="w-8 h-8 text-gray-400 rounded-full hover:text-red-400">
-          <i class="fa fa-trash"></i>
-        </AtButton>
-        <InvoicePaymentOptions :invoice="row" />
+      <div class="flex items-center justify-end space-x-2">
+        <InvoicePaymentOptions :invoice="row" :accounts-endpoint="accountsEndpoint" />
       </div>
     </template>
   </AtTable>

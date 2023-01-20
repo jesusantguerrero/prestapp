@@ -49,6 +49,9 @@ return new class extends Migration
             $table->decimal('closing_fees', 11, 2)->default(0.00);
             $table->enum('closing_fee_type', ['PERCENTAGE', 'FIXED'])->default('FIXED');
             $table->enum('source_type', ['SMALL_BOX', 'BANK', 'UNREGISTERED'])->default('UNREGISTERED');
+
+            $table->text('cancel_reason')->nullable();
+            $table->date('cancelled_at')->nullable();
             // state
             $table->enum('payment_status', [
                 Loan::STATUS_DRAFT,

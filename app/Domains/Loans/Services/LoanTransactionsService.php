@@ -2,8 +2,11 @@
 
 namespace App\Domains\Loans\Services;
 
+use App\Domains\Loans\Enums\LoanInvoiceTypes;
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
+use Insane\Journal\Models\Core\Account;
+use Insane\Journal\Models\Invoice\Invoice;
 
 class LoanTransactionsService {
 
@@ -39,5 +42,35 @@ class LoanTransactionsService {
                 "amount_paid" => $postData['amount']
             ]]
         ]));
+    }
+
+    public static function createAgreement(Loan $loan, mixed $formData) {
+      $items = [[
+        "name" => "Acuerdo de pago",
+        "concept" => "Prestamo #{$loan->id} {$loan->client->fullName}",
+        "quantity" => 1,
+        "price" => $formData['amount'] ?? $formData['debt'],
+        "amount" => $formData['amount'] ?? $formData['debt'],
+      ]];
+
+      $data = array_merge($formData, [
+        'concept' =>  'Acuerdo de pago',
+        'description' =>"Acuerdo de prestamo {$loan->id} {$loan->client->fullName}",
+        'user_id' => $loan->user_id,
+        'team_id' => $loan->team_id,
+        'client_id' => $loan->client_id,
+        'invoiceable_id' => $loan->id,
+        'invoiceable_type' => Loan::class,
+        'date' => $formData['date'] ?? date('Y-m-d'),
+        'type' => $formData['type'] ?? Invoice::DOCUMENT_TYPE_INVOICE,
+        'category_type' => $formData['category_type'] ?? LoanInvoiceTypes::PaymentAgreement,
+        "invoice_account_id" => $formData["invoice_account_id"] ?? $loan->client_account_id,
+        "account_id" => $formData["account_id"] ?? Account::guessAccount($loan, ['Acuerdos de pago', 'expected_payments_lenders']),
+        'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
+        'total' =>  $formData['amount'] ?? $formData['debt'],
+        'items' => $items ?? [],
+      ]);
+
+      return Invoice::createDocument($data);
     }
 }

@@ -14,10 +14,15 @@ import LoanSectionNav from "./LoanSectionNav.vue";
 // @ts-ignore
 
 import { formatMoney } from "@/utils/formatMoney";
-import { ILoanWithInstallments } from "@/Modules/loans/loanEntity";
+import { ILoan } from "@/Modules/loans/loanEntity";
+import { useToggle } from "@vueuse/shared";
+import AgreementFormModal from "./AgreementFormModal.vue";
+import { formatDate } from "@/utils";
+
+const [isAgreementModalOpen, toggleAgreementModal] = useToggle();
 
 export interface Props {
-  loans: ILoanWithInstallments;
+  loans: ILoan;
   currentTab: string;
   stats: Object;
 }
@@ -31,7 +36,8 @@ const clientName = computed(() => props.loans.client?.fullName);
 const tabs = {
   "": "Detalles",
   installments: "Tabla de Amortización",
-  transactions: "Pagos",
+  payments: "Pagos",
+  agreements: "Acuerdos de pago",
 };
 
 const onMultiplePayment = () => {
@@ -141,33 +147,36 @@ const onUpdateStatus = () => {
           class="w-3/12 p-4 space-y-2 overflow-hidden border rounded-md shadow-md bg-base-lvl-3"
         >
           <section class="grid xl:grid-cols-2 md:gap-2">
-            <AppButton @click="onMultiplePayment()"> Agregar Pago </AppButton>
             <AppButton @click="onMultiplePayment()"> Recibo Multiple </AppButton>
-            <AppButton variant="secondary"> Acuerdo de pago </AppButton>
+            <AppButton
+              @click="toggleAgreementModal()"
+              variant="secondary"
+              class="flex text-sm items-center"
+            >
+              <IMdiHandshakeOutline class="mr-1" />
+              Acuerdo de pago
+            </AppButton>
             <AppButton variant="secondary"> Saldar prestamo </AppButton>
           </section>
 
           <section class="py-4 mt-8 space-y-2">
-            <div v-for="payment in loans.payment_documents" class="text-sm">
-              Pagado
-              <span class="font-bold text-green-500">
-                {{ formatMoney(payment.amount) }}
-              </span>
-              en
-              <span class="font-bold text-primary">
-                {{ payment.payment_date }}
-              </span>
-              <a
-                :href="`/loans/${loans.id}/payments/${payment.id}/print`"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Recibo
-              </a>
+            <div
+              class="rounded-md bg-base-lvl-2 w-full px-2 py-4 text-body-1"
+              v-if="loans.cancelled_at"
+            >
+              <h4>Cancelado en {{ formatDate(loans.cancelled_at, "dd MMMM yyyy") }}</h4>
+              <header class="font-bold">Razon de cancelacion</header>
+              {{ loans.cancel_reason }}
             </div>
           </section>
         </article>
       </section>
     </main>
+
+    <AgreementFormModal
+      v-model="isAgreementModalOpen"
+      :loan="loans"
+      @update:model-value="toggleAgreementModal(false)"
+    />
   </AppLayout>
 </template>

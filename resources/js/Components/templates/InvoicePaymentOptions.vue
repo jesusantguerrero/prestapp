@@ -8,6 +8,7 @@ const { openModal } = usePaymentModal();
 
 interface Props {
   invoice: Object;
+  accountsEndpoint: string;
 }
 
 const props = defineProps<Props>();
@@ -51,6 +52,7 @@ const onPayment = (invoice: Object) => {
         endpoint: `/invoices/${props.invoice?.id}/payment`,
         due: selectedPayment.value?.amount,
         defaultConcept: paymentConcept.value,
+        accountsEndpoint: props.accountsEndpoint,
       },
     });
   });
