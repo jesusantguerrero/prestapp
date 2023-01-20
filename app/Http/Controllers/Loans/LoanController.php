@@ -78,7 +78,6 @@ class LoanController extends InertiaController
 
     protected function getEditProps(Request $request, $loan)
     {
-      dd($loan->installments->toArray());
       return [
         'loans' => array_merge(
         $loan->toArray(),
