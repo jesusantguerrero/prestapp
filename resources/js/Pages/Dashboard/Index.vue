@@ -27,8 +27,11 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  activeLoanClients: {
-    type: Number,
+  accounts: {
+    type: Object,
+    default() {
+      return {};
+    },
   },
   stats: {
     type: Object,
@@ -44,12 +47,6 @@ const props = defineProps({
   },
   cashOnHand: {
     type: Number,
-  },
-  nextInvoices: {
-    type: Array,
-  },
-  debtors: {
-    type: Array,
   },
 });
 
@@ -135,25 +132,29 @@ const comparisonRevenue = {
             <section class="grid grid-cols-2 pt-4 divide-x-2">
               <article class="grid grid-rows-section-footer">
                 <h4 class="font-bold text-lg">Ganancias netas</h4>
-                <h3 class="text-4xl font-bold mt-4">{{ formatMoney(stats.revenue) }}</h3>
+                <h3 class="text-4xl font-bold mt-4">
+                  {{ formatMoney(accounts.income - accounts.expenses) }}
+                </h3>
                 <footer class="flex space-x-4">
                   <p class="flex text-success items-center" rounded>
                     <IMdiArrowUpThick />
                     <span class="font-bold">
-                      {{ formatMoney(stats.overdueAmount) }} Recibido
+                      {{ formatMoney(accounts.income) }} Recibido
                     </span>
                   </p>
                   <p class="flex text-error/70 items-center" rounded>
                     <IMdiArrowDownThick />
                     <span class="font-bold">
-                      {{ formatMoney(stats.overdueAmount) }} Gastado
+                      {{ formatMoney(accounts.expenses) }} Gastado
                     </span>
                   </p>
                 </footer>
               </article>
               <article class="grid grid-rows-section-footer pl-6">
                 <h4 class="font-bold text-lg">Balance pendiente</h4>
-                <h3 class="text-4xl font-bold mt-4">{{ formatMoney(stats.revenue) }}</h3>
+                <h3 class="text-4xl font-bold mt-4">
+                  {{ formatMoney(stats.outstanding) }}
+                </h3>
                 <footer>
                   <AtButton
                     class="flex text-error/70 hover:bg-error/10 -ml-6 px-2"
@@ -161,7 +162,7 @@ const comparisonRevenue = {
                   >
                     <IMdiFileDocumentAlertOutline class="mr-2" />
                     <span class="font-bold">
-                      {{ formatMoney(stats.overdueAmount) }} Balance en mora
+                      {{ formatMoney(stats.overdue) }} Balance en mora
                     </span>
                   </AtButton>
                 </footer>
