@@ -1,10 +1,13 @@
-<script setup>
+<script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { usePage } from "@inertiajs/vue3";
 
+const pageProps = usePage().props;
 const show = ref(true);
-const style = computed(() => usePage().props.jetstream.flash?.bannerStyle || "success");
-const message = computed(() => usePage().props.jetstream.flash?.banner || "");
+// @ts-ignore jetstream will have a flash
+const style = computed(() => pageProps?.jetstream?.flash?.bannerStyle || "success");
+// @ts-ignore jetstream will have a flash
+const message = computed(() => pageProps?.jetstream?.flash?.banner || "");
 
 watch(message, async () => {
   show.value = true;

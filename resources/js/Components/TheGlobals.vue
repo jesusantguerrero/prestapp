@@ -14,7 +14,7 @@
   />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { router } from "@inertiajs/vue3";
 import PaymentFormModal from "@/Pages/Loans/Partials/PaymentFormModal.vue";
 import TransactionModal from "@/Components/shared/TransactionModal.vue";

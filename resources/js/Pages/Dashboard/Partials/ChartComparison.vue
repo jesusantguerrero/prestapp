@@ -4,16 +4,20 @@
       <h5 class="p-4 text-left card-title">Revenue</h5>
       <div class="card-text">
         <div class="px-10 mb-2 text-gray-500 bg-gray-100 comparison-header">
-          <div class="cursor-pointer comparison-header__item previous-period hover:text-gray-700">
+          <div
+            class="cursor-pointer comparison-header__item previous-period hover:text-gray-700"
+          >
             <h6 class="period-title">Previous Year</h6>
             <span class="period-value"> {{ formatMoney(headerInfo.previous) }}</span>
           </div>
-          <div class="cursor-pointer comparison-header__item current-period hover:text-gray-700">
+          <div
+            class="cursor-pointer comparison-header__item current-period hover:text-gray-700"
+          >
             <h6 class="period-title">Current Year</h6>
             <span class="period-value"> {{ formatMoney(headerInfo.current) }}</span>
           </div>
         </div>
-        <div style="height:240px; background: white; width: 100%">
+        <div style="height: 240px; background: white; width: 100%">
           <apexchart
             ref="apexchart"
             width="100%"
@@ -28,33 +32,33 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import formatMoney from "@/utils/formatMoney";
 
 export default {
   props: {
     type: {
       type: String,
-      default: "bar"
+      default: "bar",
     },
     headerInfo: {
       type: Object,
-      required: true
+      required: true,
     },
     chart: {
       type: Object,
-      required: true
+      required: true,
     },
     icon: {
       type: String,
-      default: "home"
-    }
+      default: "home",
+    },
   },
   setup() {
-      return {
-          formatMoney
-      }
-  }
+    return {
+      formatMoney,
+    };
+  },
 };
 </script>
 
@@ -91,7 +95,7 @@ export default {
 
     &.current-period {
       .period-value::before {
-        background: #60A5FA;
+        background: #60a5fa;
       }
     }
   }

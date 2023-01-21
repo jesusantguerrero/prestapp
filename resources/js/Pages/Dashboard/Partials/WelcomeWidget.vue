@@ -6,15 +6,15 @@ interface ICard {
   label: string;
   value: [string, number];
   accent: boolean;
-  icons: string;
+  icon: string;
 }
 interface Props {
   message: string;
-  username: string;
-  cards: ICard[];
+  username?: string;
+  cards?: ICard[];
   actionLabel?: string;
   actionLink?: string;
-  sectionClass: string;
+  sectionClass?: string;
 }
 
 withDefaults(defineProps<Props>(), {
@@ -32,7 +32,11 @@ withDefaults(defineProps<Props>(), {
         {{ message }} <span class="text-primary">{{ username }}</span>
       </h1>
       <div class="space-x-2" v-if="actionLabel && actionLink">
-        <AtButton class="text-sm text-primary" rounded @click="router.visit(actionLink)">
+        <AtButton
+          class="text-sm text-primary"
+          rounded
+          @click="actionLink && router.visit(actionLink)"
+        >
           <i class="fa fa-home" />
           {{ actionLabel }}
         </AtButton>

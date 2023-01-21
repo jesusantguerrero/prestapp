@@ -1,7 +1,8 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
 import { Head, Link } from "@inertiajs/vue3";
+// @ts-ignore
 import { AtShell, AtSide } from "atmosphere-ui";
 import { ElNotification } from "element-plus";
 

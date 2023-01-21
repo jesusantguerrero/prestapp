@@ -16,7 +16,7 @@ const props = defineProps({
   },
   placeholder: {
     type: String,
-    default: "Search...",
+    default: "Buscar...",
   },
   hasFilters: {
     type: Boolean,

@@ -22,6 +22,7 @@ module.exports = {
             },
             gridTemplateRows: {
               'section-footer': '1fr 100px',
+              'section-footer-card': '1fr 50px',
             }
         },
     },

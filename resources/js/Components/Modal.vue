@@ -1,4 +1,4 @@
-<script setup>
+<script lang="ts" setup>
 import { computed, onMounted, onUnmounted, watch } from "vue";
 
 const props = defineProps({
@@ -22,8 +22,10 @@ watch(
   () => props.show,
   () => {
     if (props.show) {
+      // @ts-ignore
       document.body.style.overflow = "hidden";
     } else {
+      // @ts-ignore
       document.body.style.overflow = null;
     }
   }
@@ -35,7 +37,7 @@ const close = () => {
   }
 };
 
-const closeOnEscape = (e) => {
+const closeOnEscape = (e: KeyboardEvent) => {
   if (e.key === "Escape" && props.show) {
     close();
   }
@@ -45,6 +47,7 @@ onMounted(() => document.addEventListener("keydown", closeOnEscape));
 
 onUnmounted(() => {
   document.removeEventListener("keydown", closeOnEscape);
+  // @ts-ignore
   document.body.style.overflow = null;
 });
 
