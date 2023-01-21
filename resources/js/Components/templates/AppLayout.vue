@@ -10,11 +10,16 @@ import Banner from "@/Components/Banner.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
-
-import { useAppMenu } from "@/Modules/_app";
-import { useSelect } from "@/Modules/shared/useSelects";
 import AppButton from "../shared/AppButton.vue";
 import TheGlobals from "../TheGlobals.vue";
+import AppNotificationBell from "./AppNotificationBell.vue";
+import WatchlistButton from "./WatchlistButton.vue";
+// @ts-ignore
+import AppResourceSearch from "./AppResourceSearch.vue";
+
+import { useServerSearch } from "@/utils/useServerSearch";
+import { useAppMenu } from "@/Modules/_app";
+import { useSelect } from "@/Modules/shared/useSelects";
 
 defineProps({
   title: String,
@@ -97,10 +102,18 @@ watch(
 
           <div class="flex justify-end h-16">
             <div class="hidden sm:flex sm:items-center sm:ml-6">
-              <AppButton class="flex px-1 items-center">
+              <AppResourceSearch class="mr-2" />
+              <AppButton class="flex px-1 items-center mr-4">
                 <IMdiPlus class="mr-2" />
                 Nuevo
               </AppButton>
+
+              <WatchlistButton class="hidden mr-2 md:inline-block" v-if="!isOnboarding" />
+              <WatchlistButton class="hidden mr-2 md:inline-block" v-if="!isOnboarding" />
+              <AppNotificationBell
+                :notifications="pageProps.unreadNotifications"
+                @click="$router.visit('/notifications')"
+              />
               <!-- Settings Dropdown -->
               <div class="relative ml-3">
                 <Dropdown align="right" width="48">

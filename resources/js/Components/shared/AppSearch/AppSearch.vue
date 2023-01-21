@@ -73,7 +73,7 @@ const handleInput = useDebounceFn((searchText) => {
 </script>
 
 <template>
-  <div class="flex rounded-md bg-base-lvl-2 w-full h-12 border border-base-lvl-1">
+  <div class="flex rounded-md bg-base-lvl-2 w-full h-10 border border-base-lvl-1">
     <AtInput
       v-if="!visibleOption"
       class="rounded-md bg-base-lvl-2 w-full h-12"
