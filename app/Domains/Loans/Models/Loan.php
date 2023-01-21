@@ -39,6 +39,8 @@ class Loan extends Transactionable implements IPayableDocument {
         'team_id',
         'user_id',
         'client_id',
+        'client_name',
+        'client_address',
         'date',
         'disbursement_date',
         'first_installment_date',
@@ -68,6 +70,8 @@ class Loan extends Transactionable implements IPayableDocument {
           $loan->late_fee_account_id = $loan->fees_account_id;
           self::calculateTotal($loan);
           self::checkPayments($loan);
+          $loan->client_name = $loan->client->fullName;
+          $loan->client_address = $loan->client->address;
       });
     }
 

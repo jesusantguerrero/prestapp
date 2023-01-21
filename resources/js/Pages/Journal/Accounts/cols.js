@@ -6,7 +6,7 @@ export default name => {
         width: 200,
         type: "custom",
         render(row) {
-          return `${row.number} - ${row.name}`
+          return `${row.number} - ${row.alias || row.name}`
         }
       },
       {

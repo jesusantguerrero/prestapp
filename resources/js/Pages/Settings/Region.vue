@@ -51,10 +51,10 @@
 <script>
 import { ElSwitch } from "element-plus"
 import { reactive, toRefs } from 'vue'
+import { AtTextarea } from "atmosphere-ui";
 
 import AppLayout from '../../Layouts/AppLayout.vue'
 import AtInput from '@/Atmosphere/Atoms/Input.vue'
-import CustomText from '@/Atmosphere/Atoms/CustomText.vue'
 import AtButton from '@/Atmosphere/Atoms/Button.vue'
 import SimpleSelect from '@/Atmosphere/Molecules/SimpleSelect.vue'
 

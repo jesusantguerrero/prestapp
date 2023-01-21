@@ -46,7 +46,7 @@ const props = defineProps({
   dailyBox: {
     type: Number,
   },
-  cashOnHand: {
+  realState: {
     type: Number,
   },
 });
@@ -189,7 +189,7 @@ const { openTransactionModal } = useTransactionModal();
                 <IMdiUserOutline class="text-4xl" v-if="card.icon == 'contact'" />
                 <IMdiMoney class="text-4xl" v-if="card.icon == 'money'" />
                 <IMdiHomeCityOutline class="text-4xl" v-if="card.icon == 'home'" />
-                <IMdiFileDocument class="text-4xl" v-if="card.icon == 'payment'" />
+                <IMdiFileDocument class="text-4xl" v-if="card.icon == 'document'" />
 
                 <p class="text-sm text-body font-bold group-hover:text-primary">
                   {{ card.label }}
@@ -210,13 +210,13 @@ const { openTransactionModal } = useTransactionModal();
           <AtBackgroundIconCard
             class="text-primary bg-primary/10 border-primary/20 border-2 h-32 cursor-pointer"
             icon="fas fa-wallet"
-            :value="formatMoney(props.cashOnHand.balance | 0)"
+            :value="formatMoney(props.dailyBox?.balance | 0)"
             title="Cuenta de Prestamos"
           />
           <AtBackgroundIconCard
             class="text-secondary bg-secondary/10 border-secondary/20 border-2 h-32 cursor-pointer"
             icon="fas fa-wallet"
-            :value="formatMoney(props.cashOnHand.balance | 0)"
+            :value="formatMoney(props.realState.balance | 0)"
             title="Cuenta Inmobiliaria"
           />
           <AppButton variant="secondary" class="w-full" @click="openTransactionModal()">

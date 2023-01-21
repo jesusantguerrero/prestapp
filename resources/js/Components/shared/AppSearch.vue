@@ -1,9 +1,9 @@
 <template>
-  <div class="form-row app-search">
+  <div class="flex items-center app-search">
     <div :class="containerClasses" class="col-search">
-      <div class="input-group search-container" :class="classes">
+      <div class="input-group search-container" :class="state.classes">
         <div class="input-group-prepend">
-          <label class="input-group-text" :for="id"
+          <label class="input-group-text" :for="state.id"
             ><font-awesome-icon :icon="icon"
           /></label>
         </div>
@@ -12,7 +12,7 @@
           class="form-control"
           :placeholder="placeholder"
           name="main-search"
-          :id="id"
+          :id="state.id"
           :autocomplete="$attrs.autocomplete"
           @focus="focus"
           @blur="blur"
@@ -21,11 +21,11 @@
           @keyup="$emit('keyup', $event)"
           @click="$emit('click', $event)"
           :value="value"
-          @input="$emit('input', $event.target.value)"
+          @input="$emit('input', $event.target?.value)"
         />
 
         <div class="input-group-append" v-if="includeDates && showButton">
-          <label class="input-group-text" :for="`${id}-first-date`"
+          <label class="input-group-text" :for="`${state.id}-first-date`"
             ><font-awesome-icon icon="calendar"
           /></label>
         </div>
@@ -33,26 +33,24 @@
     </div>
 
     <div class="col-md-4 dates-container" v-if="includeDates">
-      <slot name="date" v-bind="{ dates, emitDates }">
+      <slot name="date" v-bind="{ dates: state.dates, emitDates }">
         <div class="d-flex dates-container__group">
-          <el-date-picker
-            v-model="dates.start"
-            :id="`${id}-first-date`"
+          <ElDatePicker
+            v-model="state.dates.start"
+            :id="`${state.id}-first-date`"
             type="date"
             title="seleccione una fecha"
             placeholder="selecciona una fecha"
             @change="emitDates"
-          >
-          </el-date-picker>
-          <el-date-picker
-            v-model="dates.end"
-            :id="`${id}-end-date`"
+          />
+          <ElDatePicker
+            v-model="state.dates.end"
+            :id="`${state.id}-end-date`"
             type="date"
             title="seleccione una fecha"
             placeholder="selecciona una fecha"
             @change="emitDates"
-          >
-          </el-date-picker>
+          />
         </div>
       </slot>
     </div>
@@ -69,71 +67,75 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+// @ts-ignore
 import { v4 as uuid } from "uuid";
 import { lastDayOfYear, format as formatDate } from "date-fns";
+import { reactive } from "vue";
 
-export default {
-  props: {
-    placeholder: {
-      type: String,
-      default: "Type to search",
-    },
-    icon: {
-      type: String,
-      default: "search",
-    },
-    value: {
-      type: String,
-      default: "",
-    },
-    includeDates: Boolean,
-    includeFilters: Boolean,
-    includeSort: Boolean,
-    includeSlots: Boolean,
-    showButton: {
-      type: Boolean,
-      dafault: true,
-    },
+const props = defineProps({
+  placeholder: {
+    type: String,
+    default: "Type to search",
   },
-  data() {
-    return {
-      classes: {},
-      id: `${uuid()}-main-search`,
-      dates: {
-        start: new Date(),
-        end: lastDayOfYear(new Date()),
-      },
-    };
+  icon: {
+    type: String,
+    default: "search",
   },
-  methods: {
-    blur() {
-      this.classes = { focus: false };
-    },
-    focus() {
-      this.classes = { focus: true };
-    },
-    emitDates(dates) {
-      const date = dates || this.dates;
-      this.$emit(
-        "date-changed",
-        formatDate(date.start, "YYYY-MM-DD"),
-        formatDate(date.end, "YYYY-MM-DD")
-      );
-    },
+  value: {
+    type: String,
+    default: "",
   },
-  computed: {
-    containerClasses() {
-      const includedCompoments = [
-        this.includeSort,
-        this.includeDates,
-        this.includeFilters,
-        this.includeSlots,
-      ];
-      const result = includedCompoments.every((value) => !value);
-      return result ? "col-md-8" : "col-md-4";
-    },
+  includeDates: Boolean,
+  includeFilters: Boolean,
+  includeSort: Boolean,
+  includeSlots: Boolean,
+  showButton: {
+    type: Boolean,
+    dafault: true,
   },
+});
+
+const emit = defineEmits(["date-changed"]);
+
+const state = reactive({
+  classes: {},
+  id: `${uuid()}-main-search`,
+  dates: {
+    start: new Date(),
+    end: lastDayOfYear(new Date()),
+  },
+});
+
+const blur = () => {
+  state.classes = { focus: false };
+};
+
+const focus = () => {
+  state.classes = { focus: true };
+};
+
+interface IDateRange {
+  start: Date;
+  end: Date;
+}
+const emitDates = (dates: IDateRange) => {
+  const date = dates || state.dates;
+  emit(
+    "date-changed",
+    formatDate(date.start, "YYYY-MM-DD"),
+    formatDate(date.end, "YYYY-MM-DD")
+  );
+};
+const containerClasses = () => {
+  const includedCompoments = [
+    props.includeSort,
+    props.includeDates,
+    props.includeFilters,
+    props.includeSlots,
+  ];
+  const result = includedCompoments.every((value) => !value);
+  return result ? "col-md-8" : "col-md-4";
 };
 </script>
 
@@ -206,6 +208,7 @@ input[type="search"] {
 .col-search {
   padding-right: 0 !important;
 }
+
 .dates-container {
   padding-left: 0 !important;
   height: 38px;

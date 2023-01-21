@@ -14,7 +14,7 @@ return [
             "display_id" => "assets",
             "number" => 10000,
             "name" => "Assets",
-            "alias" => "Activos",
+            "alias" => "Activo",
             "Description" => "",
             "depth" => 0,
             "type" => 1,
@@ -24,12 +24,14 @@ return [
                     "display_id" => "cash_and_bank",
                     "number" => 1100,
                     "name" => "Cash and bank",
+                    "alias" => "Efectivo y Bancos",
                     "Description" => "Use this to track the balance of cash that is immediately available for use. Examples of this are bank accounts, cash boxes in a register, money boxes, or electronic accounts such as PayPa",
                     "depth" => 1,
                 ],
                 [
                     "resource_type" => "categories",
                     "display_id" => "money_in_transit",
+                    "alias" => "Dinero en transito",
                     "number" => 1200,
                     "name" => "Money in Transit",
                     "Description" => "Use this to track the balance of money that is expected to deposited or withdrawn into or from a Cash and Bank account at a future date, usually within days. Examples of this are credit card sales that have been processed but have not yet been deposited into your bank, or checks (written or received) that have not been deposited into or withdrawn from your bank account yet.",
@@ -38,6 +40,7 @@ return [
                 [
                     "resource_type" => "categories",
                     "display_id" => "expected_payments_customers",
+                    "alias" => "Cuentas por Cobrar Clientes",
                     "number" => 1300,
                     "name" => "Expected Payments from Customers",
                     "Description" => "Use this to track the balance of what customers owe you after you have made a sale. Invoices in Journal are already tracked in the Accounts Receivable category.",
@@ -46,6 +49,7 @@ return [
                 [
                   "resource_type" => "categories",
                   "display_id" => "expected_commissions_owners",
+                  "alias" => "Comisiones por Cobrar Clientes",
                   "number" => 1400,
                   "name" => "Expected commissions from owners",
                   "Description" => "Use this to track the balance of what owners owe you after with every rent collected. Invoices in Journal are already tracked in the Accounts Receivable category.",
@@ -54,6 +58,7 @@ return [
                 [
                   "resource_type" => "categories",
                   "display_id" => "expected_payments_loans",
+                  "alias" => "Cuentas por Cobrar Prestamos",
                   "number" => 1500,
                   "name" => "Expected payments from loans",
                   "Description" => "Use this to track the balance of what lenders owe you after you have made a lend. Invoices in Journal are already tracked in the Accounts Receivable category.",
@@ -62,6 +67,7 @@ return [
                 [
                   "resource_type" => "categories",
                   "display_id" => "expected_interest_loans",
+                  "alias" => "Intereses por Cobrar Prestamos",
                   "number" => 1600,
                   "name" => "Expected interest from loans",
                   "Description" => "Use this to track the balance of what lenders owe you after you have made a lend. Invoices in Journal are already tracked in the Accounts Receivable category.",
@@ -70,6 +76,7 @@ return [
                 [
                     "resource_type" => "categories",
                     "display_id" => "inventory",
+                    "alias" => "Inventario",
                     "number" => 7600,
                     "name" => "Inventory",
                     "Description" => "",
@@ -80,10 +87,10 @@ return [
         [
             "resource_type" => "categories",
             "name" => "Liabilities & Credit Cards",
+            "alias" => "Pasivo",
             "number" => 20000,
             "display_id" => "liabilities",
             "Description" => "",
-            "alias" => "Pasivos",
             "depth" => 0,
             "type" => -1,
             "childs" => [
@@ -92,12 +99,14 @@ return [
                     "display_id" => "expected_payments_vendors",
                     "number" => 2100,
                     "name" => "Expected Payments to Vendors",
+                    "alias" => "Cuentas por pagar a proveedores",
                     "Description" => "Use this to track the balance of what you owe vendors (i.e. suppliers, online subscriptions providers) after you accepted their service or receive items for which you have not yet paid. Journal in Wave are already tracked in the Accounts Payable category",
                     "depth" => 1,
                 ],
                 [
                   "resource_type" => "categories",
                   "display_id" => "rent",
+                  "alias" => "Rentas por pagar a dueños",
                   "number" => 2200,
                   "name" => "Last Month's Rent",
                   "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
@@ -105,6 +114,7 @@ return [
                 [
                   "resource_type" => "categories",
                   "display_id" => "customer_prepayments",
+                  "alias" => "Pagos por adelantado y Creditos de clientes",
                   "number" => 2300,
                   "name" => "Customer Prepayments and Customer Credits",
                   "Description" => "",
@@ -113,6 +123,7 @@ return [
                 [
                   "resource_type" => "categories",
                   "display_id" => "security_deposits",
+                  "alias" => "Depositos de seguridad",
                   "number" => 2400,
                   "name" => "Security deposits",
                   "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
@@ -120,6 +131,7 @@ return [
                 [
                   "resource_type" => "categories",
                   "display_id" => "owner_held_security_deposits",
+                  "alias" => "Depositos en mano de dueños",
                   "number" => 2500,
                   "name" => "Owner held security deposits",
                   "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
@@ -127,6 +139,7 @@ return [
                 [
                     "resource_type" => "categories",
                     "display_id" => "expected_payments_owners",
+                    "alias" => "Cuentas por pagar a dueños",
                     "number" => 2600,
                     "name" => "Expected Payments to Owners",
                     "Description" => "Use this to track the balance of what you owe owners (i.e. suppliers, online subscriptions providers) after you accepted their service or receive items for which you have not yet paid. Journal in Wave are already tracked in the Accounts Payable category",
@@ -135,6 +148,7 @@ return [
                 [
                     "resource_type" => "categories",
                     "display_id" => "sales_taxes",
+                    "alias" => "Impuestos y Comisiones por pagar",
                     "number" => 2700,
                     "name" => "Sales Taxes",
                     "Description" => "Use this to track the sales taxes you have charged to customers during a sale, and sales tax amounts you have remitted to the government. The balance of this category indicates how much you have to remit to the government. This category can also be used to track sales taxes you been charged on purchases, so that you can reduce how much sales taxes you have to remit to the government. If you create a sales tax in Wave, a category here is created for you automatically.",
@@ -143,6 +157,7 @@ return [
                 [
                     "resource_type" => "categories",
                     "display_id" => "owed_commissions",
+                    "alias" => "comisiones adeudadas",
                     "number" => 2800,
                     "name" => "Due to You and Others Business Owners",
                     "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
@@ -151,6 +166,7 @@ return [
                 [
                     "resource_type" => "categories",
                     "display_id" => "due_to_business",
+                    "alias" => "Deudas a mi y a otros negocios",
                     "number" => 2900,
                     "name" => "Due to You and Others Business Owners",
                     "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
@@ -171,6 +187,7 @@ return [
               [
                   "resource_type" => "categories",
                   "display_id" => "business_owner_contribution",
+                  "alias" => "Contribucion de dueños",
                   "number" => 3100,
                   "name" => "Business Owner Contribution and Drawing",
                   "Description" => "Use this to track money you or others have invested into the business. For example, when you first start a business you usually invest start-up money into it",
@@ -179,6 +196,7 @@ return [
               [
                   "resource_type" => "categories",
                   "display_id" => "retained_earnings",
+                  "alias" => "Ganancias retenidas",
                   "number" => 3200,
                   "name" => "Retained Earnings: Profit",
                   "Description" => "Use this to track money that you have taken out of the business.",
@@ -198,9 +216,10 @@ return [
             "childs" => [
                 [
                     "resource_type" => "categories",
-                    "display_id" => "sales",
+                    "display_id" => "operating_income",
                     "number" => 4100,
-                    "name" => "Sales",
+                    "name" => "Operating Income",
+                    "alias" => "Ingresos",
                     "Description" => "Use this to track all your sales to customers, whether your customer has made a payment or not. These are the categories used when you create an Invoice in Wave. Any sales taxes charged to customers will not be tracked using a Sales category, but will be tracked using a Sales Taxes on Sales or Purchases category.",
                     "depth" => 1,
                 ],
@@ -209,12 +228,14 @@ return [
                   "display_id" => "commission",
                   "number" => 4200,
                   "name" => "Commission",
+                  "alias" => "Comisiones",
                   "Description" => "Use this to track all your commissions from owners, whether the owner has made a payment or not. These are the categories used when you create an Invoice in Wave. Any sales taxes charged to customers will not be tracked using a Sales category, but will be tracked using a Sales Taxes on Sales or Purchases category.",
                   "depth" => 1,
                 ],
                 [
                   "resource_type" => "categories",
                   "display_id" => "lending",
+                  "alias" => "Prestamos",
                   "number" => 4300,
                   "name" => "Lending",
                   "Description" => "Use this to track all your sales to customers, whether your customer has made a payment or not. These are the categories used when you create an Invoice in Wave. Any sales taxes charged to customers will not be tracked using a Sales category, but will be tracked using a Sales Taxes on Sales or Purchases category.",
@@ -223,6 +244,7 @@ return [
                 [
                     "resource_type" => "categories",
                     "display_id" => "discount",
+                    "alias" => "Descuentos",
                     "number" => 4400,
                     "name" => "Discounts",
                     "Description" => "",
@@ -231,6 +253,7 @@ return [
                 [
                     "resource_type" => "categories",
                     "display_id" => "other_income",
+                    "alias" => "Otros Ingresos",
                     "number" => 4500,
                     "name" => "Other Income",
                     "Description" => "Use this to track all other income that is outside of your regular business operations of selling to your customers. For example, if your main business is as a photographer, but you rented your camera to a friend as a one-off shoot, that could be other income.",
@@ -239,6 +262,7 @@ return [
                 [
                     "resource_type" => "categories",
                     "display_id" => "uncategorized_incomes",
+                    "alias" => "Ingresos sin categoria",
                     "number" => 4600,
                     "name" => "Uncategorized Income",
                     "Description" => "This account is used as the default category for new deposit transactions.",
@@ -259,6 +283,7 @@ return [
                 [
                     "resource_type" => "categories",
                     "display_id" => "operating_expense",
+                    "alias" => "Gastos de operación",
                     "number" => 5100,
                     "name" => "Operating Expense",
                     "Description" => "",
@@ -269,6 +294,7 @@ return [
                     "display_id" => "cost_goods_sold",
                     "number" => 5200,
                     "name" => "Cost of Goods Sold",
+                    "alias" => "Costo de ventas",
                     "Description" => "",
                     "depth" => 1,
                 ],
@@ -277,12 +303,14 @@ return [
                     "display_id" => "payment_processing_fee",
                     "number" => 5300,
                     "name" => "Payment Processing Fee",
+                    "alias" => "Costos de transacciones",
                     "Description" => "",
                     "depth" => 1,
                 ],
                 [
                     "resource_type" => "categories",
                     "display_id" => "payroll_expense",
+                    "alias" => "Gastos de nomina",
                     "number" => 5400,
                     "name" => "Payroll Expense",
                     "Description" => "",
@@ -291,6 +319,7 @@ return [
                 [
                     "resource_type" => "categories",
                     "display_id" => "uncategorized_expense",
+                    "alias" => "Gastos sin categoria",
                     "number" => 5500,
                     "name" => "Uncategorized Expense",
                     "Description" => "",
@@ -299,6 +328,7 @@ return [
                 [
                     "resource_type" => "categories",
                     "display_id" => "loss_foreign_exchange",
+                    "alias" => "Perdidas en cambios de moneda",
                     "number" => 5600,
                     "name" => "Loss on Foreign Exchange",
                     "Description" => "",
@@ -315,6 +345,7 @@ return [
             "category_id" => "cash_and_bank",
             "display_id" => "cash_on_hand",
             "name" => "Cash on Hand",
+            "alias" => "Efectivo en mano",
             "number" => 1101,
             "index" => 0,
             "type" => 1,
@@ -323,6 +354,7 @@ return [
         [
             "category_id" => "cash_and_bank",
             "display_id" => "daily_box",
+            "alias" => "Caja chica",
             "number" => 1102,
             "name" => "Daily Box",
             "index" => 2,
@@ -331,16 +363,18 @@ return [
         [
           "category_id" => "cash_and_bank",
           "display_id" => "real_state",
+          "alias" => "Cuenta de Inmobiliaria",
           "number" => 1103,
           "name" => "Real State",
           "index" => 3,
           "balance_type" => "DEBIT"
         ],
         [
-          "category_id" => "loans_business",
+          "category_id" => "cash_and_bank",
           "display_id" => "loan_business",
           "number" => 1104,
           "name" => "Loan Account",
+          "alias" => "Cuenta de prestamos",
           "index" => 4,
           "balance_type" => "DEBIT"
         ],
@@ -349,6 +383,7 @@ return [
             "display_id" => "accounts_receivable",
             "number" => 1301,
             "name" => "Accounts Receivable",
+            "alias" => "Cuentas por cobrar",
             "index" => 1,
             "balance_type" => "CREDIT"
         ],
@@ -358,6 +393,7 @@ return [
             "display_id" => "accounts_payable",
             "number" => 2301,
             "name" => "Accounts Payable",
+            "alias" => "Cuentas por pagar",
             "index" => 1,
             "balance_type" => "CREDIT"
         ],
@@ -365,6 +401,7 @@ return [
         [
             "category_id" => "inventory",
             "display_id" => "products",
+            "alias" => "Productos",
             "number" => 1601,
             "name" => "Products",
             "index" => 1,
@@ -376,6 +413,7 @@ return [
             "display_id" => "uncategorized_income",
             "number" => 4601,
             "name" => "Uncategorized Income",
+            "alias" => "Ingresos sin categoria",
             "index" => 3,
             "balance_type" => "DEBIT"
         ],
@@ -386,6 +424,7 @@ return [
             "display_id" => "accounting_fees",
             "number" => 5101,
             "name" => "Accounting Fees",
+            "alias" => "Comisiones de contable",
             "index" => 1,
             "balance_type" => "CREDIT"
         ],
@@ -394,6 +433,7 @@ return [
             "display_id" => "advertising",
             "number" => 5102,
             "name" => "Advertising & Promotion",
+            "alias" => "Marquetin y promoción",
             "index" => 2,
             "balance_type" => "CREDIT"
         ],
@@ -402,6 +442,7 @@ return [
             "display_id" => "bank_services_charges",
             "number" => 5103,
             "name" => "Bank Service Charges",
+            "alias" => "Cargos de bancos",
             "index" => 3,
             "balance_type" => "CREDIT"
         ],
@@ -412,6 +453,7 @@ return [
             "display_id" => "owner_investment",
             "number" => 3101,
             "name" => "Owner Investment / Drawings",
+            "alias" => "inversiones de dueños",
             "index" => 1,
             "balance_type" => "CREDIT",
             "type" => -1
@@ -419,6 +461,7 @@ return [
         [
             "category_id" => "retained_earnings",
             "display_id" => "owner_equity",
+            "alias" => "Ganancias de dueños",
             "number" => 3201,
             "name" => "Owner's Equity",
             "index" => 1,

@@ -1,6 +1,6 @@
 import { formatMoney } from './../../utils/formatMoney';
 import { h } from "vue";
-import { ElAvatar, ElTag } from "element-plus"
+import {  ElTag } from "element-plus"
 // @ts-ignore
 import { IProperty } from '@/Modules/properties/propertyEntity';
 // @ts-ignore
@@ -16,7 +16,6 @@ export default [
         class: "text-left",
         headerClass: "text-left",
         render(row: IProperty) {
-
           return h('div', { class: 'justify-center' }, [
               h('div', { class: 'flex items-start space-x-2 text-primary font-bold'}, [
                 h(IconMarker, { class: 'text-primary font-bold mt-1'}),

@@ -9,6 +9,7 @@ use App\Domains\Properties\Models\Rent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Insane\Journal\Helpers\ReportHelper;
+use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Invoice\Invoice;
 
 class DashboardController extends Controller
@@ -62,7 +63,7 @@ class DashboardController extends Controller
           'accounts' => $reportHelper->getChartTransactionsByPeriod($teamId, ['income', 'expenses']),
           'bank' => $reportHelper->smallBoxRevenue('bank', $teamId),
           'dailyBox' => $reportHelper->smallBoxRevenue('daily_box', $teamId),
-          'cashOnHand' => $reportHelper->smallBoxRevenue('cash_on_hand', $teamId),
+          'realState' => Account::where(['team_id' => $teamId, 'display_id' => 'real_state'])->first(),
       ]);
     }
 }
