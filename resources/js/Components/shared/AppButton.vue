@@ -18,6 +18,7 @@ const variants: Record<string, string> = {
   secondary: "bg-secondary text-white",
   success: "bg-success text-white",
   error: "bg-error/80 text-white",
+  neutral: "bg-base-lvl-2 text-body-1 border-transparent",
   inverse: "border-primary bg-primary/10 text-primary hover:bg-primary hover:text-white",
   "inverse-secondary":
     "border-secondary bg-secondary/10 text-secondary hover:bg-secondary hover:text-white",

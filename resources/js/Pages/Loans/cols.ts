@@ -15,7 +15,7 @@ export default [
     class: "text-left",
     headerClass: "text-left",
     render(row: ILoanWithInstallments) {
-      return h('div', { class: 'justify-center' }, [
+      return h('div', { class: 'px-4' }, [
         h('div', { class: 'flex items-start space-x-2 text-primary font-bold'}, [
           h(IconMarkerVue, { class: 'text-primary font-bold mt-1'}),
           h('span', row.client?.fullName)
@@ -68,7 +68,7 @@ export default [
   {
     name: "actions",
     label: "Acciones",
-    class: "text-center",
+    class: "text-center flex my-auto justify-end pr-4",
     headerClass: "text-center",
   },
 ];

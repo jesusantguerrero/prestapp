@@ -13,12 +13,15 @@
       :key="col.name"
       :label="col.label || col.name"
       cell-class-name="px-2 py-4"
+      :header-cell-class-name="col.headerClass"
+      :class-name="col.class"
       :width="col.width"
+      :min-width="col.minWidth"
       :class="[col.headerClass]"
     >
       <template v-slot="scope" v-if="$slots[col.name] || col.render">
         <slot :name="col.name" v-bind:scope="scope">
-          <span v-html="col.render(scope.row)" :class="col.class"> </span>
+          <CustomCell v-if="col.render" :class="col.class" :col="col" :data="scope.row" />
         </slot>
       </template>
     </ElTableColumn>
@@ -27,7 +30,7 @@
 
 <script setup>
 import formatMoney from "@/utils/formatMoney";
-import CustomCell from "../customCell.js";
+import CustomCell from "../customCell";
 
 defineProps({
   cols: {

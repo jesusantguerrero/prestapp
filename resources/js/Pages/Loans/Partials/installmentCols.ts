@@ -1,10 +1,11 @@
 import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
 import { formatMoney , formatDate } from "@/utils";
+import { h } from "vue";
 
 export default [
   {
     name: 'due_date',
-    width: 100,
+    minWidth: 100,
     label: 'Fecha',
     render(row: ILoanInstallment) {
       return formatDate(row.due_date)
@@ -13,7 +14,7 @@ export default [
   {
     name: 'amount',
     label: 'Monto',
-    width: 100,
+    minWidth: 100,
     render(row: ILoanInstallment) {
       return formatMoney(row.amount)
     }
@@ -21,7 +22,7 @@ export default [
   {
     name: 'capital',
     label: 'Capital',
-    width: 100,
+    minWidth: 100,
     render(row: ILoanInstallment) {
       return formatMoney(row.principal)
     }
@@ -29,7 +30,7 @@ export default [
   {
     name: 'interest',
     label: 'Interés',
-    width: 100,
+    minWidth: 100,
     render(row: ILoanInstallment) {
       return formatMoney(row.interest)
     }
@@ -37,16 +38,14 @@ export default [
   {
     name: 'balance',
     label: 'Balance pendiente',
-    width: 200,
+    minWidth: 300,
+    headerClass: 'text-right',
+    class: "text-right",
     render(row: ILoanInstallment) {
-      return formatMoney(row.final_balance)
-    }
-  },
-  {
-    name: 'status',
-    label: 'Estatus',
-    render(row: ILoanInstallment) {
-      return row.status
+      return h('div', {class: 'flex space-x-4 w-full justify-end'}, [
+        h('span', row.payment_status),
+        h('span', { class: 'text-right'}, formatMoney(row.final_balance))
+      ])
     }
   },
   {

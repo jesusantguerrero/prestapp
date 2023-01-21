@@ -160,14 +160,6 @@ class LoanController extends InertiaController
       ]);
     }
 
-
-    public function installments(Loan $loan) {
-      return [
-        "installments" => $loan->installments,
-        "client" => $loan->client,
-      ];
-    }
-
     public function agreements(Loan $loan) {
       return [
         "agreements" => $loan->agreements,

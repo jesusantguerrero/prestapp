@@ -84,15 +84,21 @@ const { state, updateSearch, executeSearch, reset } = useServerSearch(
         :cols="cols"
         class="bg-white rounded-md text-body-1"
       >
-        <template v-slot:actions="{ scope: { row } }" class="flex">
-          <div class="flex justify-center items-center">
+        <template v-slot:actions="{ scope: { row } }">
+          <div class="flex">
             <Link
-              class="relative inline-block px-5 py-2 overflow-hidden font-bold text-white transition border rounded-md focus:outline-none hover:bg-opacity-80 min-w-max bg-secondary"
+              class="relative inline-block px-5 py-2 overflow-hidden font-bold text-body transition rounded-md focus:outline-none hover:bg-opacity-80 min-w-max"
               :href="`/loans/${row.id}`"
             >
-              Edit</Link
+              <IMdiChevronRight />
+            </Link>
+            <AppButton
+              variant="neutral"
+              class="hover:text-error transition hover:border-red-400"
+              @click="deleteLoan(row)"
             >
-            <AppButton variant="secondary" @click="deleteLoan(row)"> Delete </AppButton>
+              <IMdiTrash />
+            </AppButton>
           </div>
         </template>
         <template v-slot:amount_due="{ scope: { row } }">

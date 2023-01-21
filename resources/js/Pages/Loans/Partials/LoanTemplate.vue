@@ -21,21 +21,20 @@ import { formatDate } from "@/utils";
 
 const [isAgreementModalOpen, toggleAgreementModal] = useToggle();
 
-export interface Props {
+interface Props {
   loans: ILoan;
   currentTab: string;
   stats: Object;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  currentTab: "summary",
+  currentTab: "",
 });
 
 const clientName = computed(() => props.loans.client?.fullName);
 
 const tabs = {
   "": "Detalles",
-  installments: "Tabla de Amortización",
   payments: "Pagos",
   agreements: "Acuerdos de pago",
 };
@@ -92,13 +91,38 @@ const onUpdateStatus = () => {
       <section
         class="w-full px-6 pb-2 mb-5 space-y-5 text-gray-600 bg-white border-gray-200 shadow-md rounded-b-md"
       >
-        <header class="flex justify-between">
-          <h4>
-            Prestamo #{{ loans.id }} a
-            <Link :href="`/contacts/${loans.client_id}/lender`">{{ clientName }}</Link>
-          </h4>
-          <section>
-            {{ loans.payment_status }}
+        <header class="flex justify-between space-x-4">
+          <section class="w-full">
+            <p class="w-full flex justify-between">
+              <span> No.: </span>
+              <span class="font-bold"> {{ loans.id }} </span>
+            </p>
+            <p class="w-full flex justify-between">
+              <span> Fecha: </span>
+              <span class="font-bold"> {{ formatDate(loans.date) }} </span>
+            </p>
+            <p class="w-full flex justify-between">
+              <span> Monto Prestado/Total a pagar: </span>
+              <span class="font-bold">
+                {{ formatMoney(loans.amount) }} / {{ formatMoney(loans.total) }}
+              </span>
+            </p>
+          </section>
+          <section class="w-full">
+            <p class="w-full flex justify-between">
+              <span> Interes: </span>
+              <span class="font-bold"> {{ loans.interest_rate }} %</span>
+            </p>
+            <p class="w-full flex justify-between">
+              <span> Dias de gracia: </span>
+              <span class="font-bold"> {{ loans.grace_days }} Dias</span>
+            </p>
+            <p class="w-full flex justify-between">
+              <span> Monto pagado: </span>
+              <span class="font-bold">
+                {{ formatMoney(loans.amount_paid) }}
+              </span>
+            </p>
           </section>
         </header>
         <footer class="flex space-x-2">
@@ -145,20 +169,34 @@ const onUpdateStatus = () => {
         <article
           class="w-3/12 p-4 space-y-2 overflow-hidden border rounded-md shadow-md bg-base-lvl-3"
         >
-          <section class="grid xl:grid-cols-2 md:gap-2">
-            <AppButton @click="onMultiplePayment()" class="flex text-sm items-center">
+          <section class="grid grid-cols-1 gap-2">
+            <AppButton
+              @click="onMultiplePayment()"
+              class="flex text-sm items-center justify-center"
+            >
               <IIcSharpPayment class="mr-2" />
               Recibo Multiple
+            </AppButton>
+            <AppButton variant="primary" class="flex text-sm items-center justify-center">
+              <IIcSharpPayment class="mr-2" />
+              Saldar prestamo
             </AppButton>
             <AppButton
               @click="toggleAgreementModal()"
               variant="secondary"
-              class="flex text-sm items-center"
+              class="flex text-sm items-center justify-center"
             >
               <IMdiHandshakeOutline class="mr-1" />
               Acuerdo de pago
             </AppButton>
-            <AppButton variant="secondary"> Saldar prestamo </AppButton>
+
+            <AppButton
+              variant="secondary"
+              class="flex text-sm justify-center items-center w-full"
+            >
+              <IMdiHandshakeOutline class="mr-1" />
+              Finalizar
+            </AppButton>
           </section>
 
           <section class="py-4 mt-8 space-y-2">
