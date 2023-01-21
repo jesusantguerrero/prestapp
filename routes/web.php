@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\AccountApiController;
+use App\Http\Controllers\Api\CategoryApiController;
 use App\Http\Controllers\Api\ClientApiController;
 use App\Http\Controllers\Api\PropertyApiController;
 use App\Http\Controllers\Api\RentApiController;
@@ -18,6 +20,7 @@ use App\Http\Controllers\SearchController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Insane\Journal\Models\Core\Category;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,6 +71,8 @@ Route::middleware([
 
      Route::apiResource('/api/settings', SettingsController::class);
      Route::apiResource('/api/taxes', TaxController::class);
+     Route::apiResource('/api/accounts', AccountApiController::class);
+     Route::apiResource('/api/categories', CategoryApiController::class);
 
     Route::get('/search', [SearchController::class, 'index']);
      // CRM

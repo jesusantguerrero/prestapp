@@ -5,15 +5,34 @@
     v-model="isOpen"
     @saved="router.reload()"
   />
+
+  <TransactionModal
+    v-model:show="isTransactionModalOpen"
+    v-bind="transactionModalState"
+    @saved="onTransactionSaved"
+    @close="onTransactionSaved"
+  />
 </template>
 
 <script setup>
 import { router } from "@inertiajs/vue3";
+import PaymentFormModal from "@/Pages/Loans/Partials/PaymentFormModal.vue";
+import TransactionModal from "@/Components/shared/TransactionModal.vue";
+
 import {
   usePaymentModal,
   modalState as paymentModalState,
 } from "@/Modules/transactions/usePaymentModal";
-import PaymentFormModal from "@/Pages/Loans/Partials/PaymentFormModal.vue";
+import {
+  useTransactionModal,
+  transactionModalState,
+} from "@/Modules/transactions/useTransactionModal";
 
 const { isOpen } = usePaymentModal();
+
+const { isOpen: isTransactionModalOpen, closeTransactionModal } = useTransactionModal();
+const onTransactionSaved = () => {
+  Inertia.reload();
+  closeTransactionModal();
+};
 </script>

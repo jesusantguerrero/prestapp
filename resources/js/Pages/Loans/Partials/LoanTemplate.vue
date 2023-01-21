@@ -99,7 +99,6 @@ const onUpdateStatus = () => {
           </h4>
           <section>
             {{ loans.payment_status }}
-            <AppButton @click="onUpdateStatus"> Actualizar Calculos </AppButton>
           </section>
         </header>
         <footer class="flex space-x-2">
@@ -147,7 +146,10 @@ const onUpdateStatus = () => {
           class="w-3/12 p-4 space-y-2 overflow-hidden border rounded-md shadow-md bg-base-lvl-3"
         >
           <section class="grid xl:grid-cols-2 md:gap-2">
-            <AppButton @click="onMultiplePayment()"> Recibo Multiple </AppButton>
+            <AppButton @click="onMultiplePayment()" class="flex text-sm items-center">
+              <IIcSharpPayment class="mr-2" />
+              Recibo Multiple
+            </AppButton>
             <AppButton
               @click="toggleAgreementModal()"
               variant="secondary"

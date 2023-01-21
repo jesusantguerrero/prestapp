@@ -4,6 +4,8 @@ namespace App\Domains\Loans\Models;
 
 use App\Domains\CRM\Models\Client;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Insane\Journal\Models\Core\Payment;
 use Insane\Journal\Models\Core\Transaction;
 use Insane\Journal\Traits\IPayableDocument;
 use Insane\Journal\Traits\HasPayments;
@@ -93,6 +95,7 @@ class LoanInstallment extends Model implements IPayableDocument {
 
           $result['amount_paid'] = $totalPaid;
           $result['amount_due'] = $payable->amount - $totalPaid;
+
           LoanInstallment::where(['id' => $payable->id])
           ->update($result);
       }
@@ -125,7 +128,6 @@ class LoanInstallment extends Model implements IPayableDocument {
         return "";
     }
 
-
     // payable implementation
     public function getCounterAccountId(): int {
       return $this->loan->client_account_id;
@@ -133,5 +135,91 @@ class LoanInstallment extends Model implements IPayableDocument {
 
     public function getTransactionDirection(): string {
       return Transaction::DIRECTION_DEBIT;
+    }
+
+    public function createPaymentTransaction(Payment $payment) {
+      $direction = $this->getTransactionDirection() ?? Transaction::DIRECTION_DEBIT;
+      $counterAccountId = $this->getCounterAccountId();
+      
+      return [
+        "team_id" => $payment->team_id,
+        "user_id" => $payment->user_id,
+        "date" => $payment->payment_date,
+        "description" => $payment->concept,
+        "direction" => $direction,
+        "total" => $payment->amount,
+        "account_id" => $payment->account_id,
+        "counter_account_id" => $counterAccountId,
+        "items" => $this->getTransactionItems($payment, $counterAccountId)
+      ];
+
+
+    }
+
+    protected function getTransactionItems($payment)
+    {
+      $paymentSchema = [
+        'fees' => [
+          "total" => 0,
+          "account_id" => $this->loan->fees_account_id
+        ],
+        'late_fee' => [
+          "total" => 0,
+          "account_id" => $this->loan->late_fee_account_id
+        ],
+        'interest' => [
+          "total" => 0,
+          "account_id" => $this->loan->fees_account_id
+        ],
+        'principal' => [
+          "total" => 0,
+          "account_id" => $this->loan->client_account_id
+        ]
+      ];
+
+      $totalPaid = $payment->amount;
+      $balance = $totalPaid;
+      $items = [];
+      $count = 1;
+
+      $items[] = [
+        "index" => 0,
+        "account_id" => $payment->account_id,
+        "category_id" => null,
+        "type" => 1,
+        "concept" => $payment->concept,
+        "amount" => $totalPaid,
+        "anchor" => true,
+      ];
+      // we should ignore this payment to calculate
+      DB::table('payments')->where('id', $payment->id)->update(['amount' => 0]);
+      self::calculateTotal($this);
+      $repayment = LoanInstallment::find($this->id);
+
+      foreach ($paymentSchema as $feeName => $fee) {
+        $feeNamePaid = $feeName ."_paid";
+        if ($repayment->$feeNamePaid < $repayment->$feeName && $balance > 0) {
+            $feeDebt = $repayment->$feeName - $repayment->$feeNamePaid;
+            $toPay = $balance >= $feeDebt ? $feeDebt : $balance;
+            $balance = $balance - $toPay;
+
+            $items[] = [
+                "index" => $count,
+                "account_id" => $fee['account_id'],
+                "category_id" => null,
+                "type" => -1,
+                "concept" => $payment->concept,
+                "amount" => $toPay,
+                "anchor" => true,
+            ];
+            $count++;
+        }
+      }
+
+      // then set the payment again
+      DB::table('payments')->where('id', $payment->id)->update(['amount' => $totalPaid]);
+      self::calculateTotal($this);
+
+      return $items;
     }
 }
