@@ -3,7 +3,7 @@ import { format as formatDate } from "date-fns";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import IconAdd from "@/Components/icons/IconAdd.vue";
 import cols from "./cols";
-// import FormModal from "./FormModal.vue";
+import AccountModal from "@/Components/shared/AccountModal.vue";
 import {
   ElTabs,
   ElTabPane,
@@ -29,7 +29,6 @@ const props = defineProps({
   },
 });
 
-const isAccountDialogVisible = ref(false);
 const selectedAccount = ref(null);
 const searchText = ref("");
 const activeName = ref([]);
@@ -72,6 +71,13 @@ const rowClick = (command, service) => {
       break;
   }
 };
+
+const isAccountModalOpen = ref(false);
+const accountToEdit = ref({});
+const openAccountModal = (account = {}) => {
+  accountToEdit.value = account;
+  isAccountModalOpen.value = true;
+};
 </script>
 
 <template>
@@ -79,7 +85,7 @@ const rowClick = (command, service) => {
     <template #header>
       <AccountingSectionNav>
         <template #actions>
-          <AppButton @click="isAccountDialogVisible = true" variant="inverse">
+          <AppButton @click="isAccountModalOpen = true" variant="inverse">
             <IconAdd />
           </AppButton>
         </template>
@@ -135,8 +141,8 @@ const rowClick = (command, service) => {
                         </div>
                       </div>
                     </template>
-                    <template v-slot:actions="{}">
-                      <button>Edit</button>
+                    <template v-slot:actions="{ scope: { row } }">
+                      <button @click="openAccountModal(row)">Edit</button>
                     </template>
                   </AtTable>
                   <!-- accounts  -->
@@ -148,12 +154,12 @@ const rowClick = (command, service) => {
         </ElTabs>
       </div>
 
-      <FormModal
-        v-model:is-open="isAccountDialogVisible"
-        :payment="selectedAccount"
-        :endpoint="`/accounts`"
-        :categories="categories"
-        @saved=""
+      <AccountModal
+        v-if="isAccountModalOpen"
+        :show="isAccountModalOpen"
+        :max-width="modalMaxWidth"
+        :form-data="accountToEdit"
+        @close="isAccountModalOpen = false"
       />
     </div>
   </AppLayout>

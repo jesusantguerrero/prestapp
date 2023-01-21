@@ -8,6 +8,7 @@ import WelcomeWidget from "./Partials/WelcomeWidget.vue";
 import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 
 import { formatMoney } from "@/utils/formatMoney";
+import { useTransactionModal } from "@/Modules/transactions/useTransactionModal";
 
 const props = defineProps({
   revenue: {
@@ -121,6 +122,8 @@ const comparisonRevenue = {
     },
   ],
 };
+
+const { openTransactionModal } = useTransactionModal();
 </script>
 
 <template>
@@ -216,11 +219,7 @@ const comparisonRevenue = {
             :value="formatMoney(props.cashOnHand.balance | 0)"
             title="Cuenta Inmobiliaria"
           />
-          <AppButton
-            variant="secondary"
-            class="w-full"
-            @click="isTransferModalOpen = true"
-          >
+          <AppButton variant="secondary" class="w-full" @click="openTransactionModal()">
             Agregar fondos
           </AppButton>
         </article>

@@ -58,17 +58,12 @@ const onUpdateRepayment = (repayment: ILoanInstallmentSaved) => {
       <div class="flex space-x-2 justify-end">
         <AppButton
           @click="handlePayment(row)"
-          variant="secondary"
-          v-if="row?.payment_status !== 'PAID' || loanId"
-        >
-          Pagar
-        </AppButton>
-        <AppButton
-          @click="onUpdateRepayment(row)"
-          v-if="row?.payment_status !== 'PAID' || loanId"
           variant="inverse-secondary"
+          class="flex items-center"
+          v-if="row?.payment_status !== 'PAID' || loanId"
         >
-          Recalcular
+          <IIcSharpPayment class="mr-2" />
+          Pagar
         </AppButton>
       </div>
     </template>

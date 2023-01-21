@@ -65,7 +65,7 @@ class LoanTransactionsService {
         'type' => $formData['type'] ?? Invoice::DOCUMENT_TYPE_INVOICE,
         'category_type' => $formData['category_type'] ?? LoanInvoiceTypes::PaymentAgreement,
         "invoice_account_id" => $formData["invoice_account_id"] ?? $loan->client_account_id,
-        "account_id" => $formData["account_id"] ?? Account::guessAccount($loan, ['Acuerdos de pago', 'expected_payments_lenders']),
+        "account_id" => $formData["account_id"] ?? Account::guessAccount($loan, ['Acuerdos de pago', 'expected_payments_loans']),
         'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
         'total' =>  $formData['amount'] ?? $formData['debt'],
         'items' => $items ?? [],

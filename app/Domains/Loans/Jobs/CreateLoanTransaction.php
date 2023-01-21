@@ -63,17 +63,8 @@ class CreateLoanTransaction implements ShouldQueue
 
     protected function getTransactionItems()
     {
+        $fees = $this->loan->total - $this->loan->amount;
         $items = [];
-
-        $items[] = [
-          "index" => 1,
-          "account_id" => $this->loan->client_account_id,
-          "category_id" => null,
-          "type" => 1,
-          "concept" => $this->formData['concept'],
-          "amount" => $this->loan->total,
-          "anchor" => false,
-        ];
 
         $items[] = [
             "index" => 0,
@@ -86,19 +77,39 @@ class CreateLoanTransaction implements ShouldQueue
         ];
 
         $items[] = [
-            "index" => 1,
-            "account_id" => $this->loan->fees_account_id,
+          "index" => 1,
+          "account_id" => $this->loan->client_account_id,
+          "category_id" => null,
+          "type" => 1,
+          "concept" => $this->formData['concept'],
+          "amount" => $this->loan->amount,
+          "anchor" => false,
+        ];
+
+         $items[] = [
+            "index" => 2,
+            "account_id" => Account::guessAccount($this->loan, [$this->loan->client->fullName, 'expected_interest_loans']),
+            "category_id" => null,
+            "type" => 1,
+            "concept" => $this->formData['concept'],
+            "amount" => $fees,
+            "anchor" => false,
+        ];
+
+         $items[] = [
+            "index" => 3,
+            "account_id" => Account::guessAccount($this->loan, ['Loan Interests', 'lending']),
             "category_id" => null,
             "type" => -1,
-            "concept" => $this->formData['concept'],
-            "amount" => $this->loan->total - $this->loan->amount,
+            "concept" => "Interes " . $this->formData['concept'],
+            "amount" => $fees,
             "anchor" => false,
         ];
 
         if ($this->loan->closing_fees) {
           $items[] = [
-            "index" => 1,
-            "account_id" => Account::guessAccount($this->loan, ['other_income']),
+            "index" => 3,
+            "account_id" => Account::guessAccount($this->loan, ['other_income', 'other_income']),
             "category_id" => null,
             "type" => -1,
             "concept" => "Comisión cierre " . $this->formData['concept'],

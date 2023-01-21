@@ -17,13 +17,12 @@ export const useReactiveForm = (formData: Record<string, any>, modelValue: Ref, 
     },
     { immediate: true, deep: true }
   );
-  
+
   watch(
     () => { return {...form}},
     () => {
-      console.log("here are we?")
       emit("update:modelValue", {
-        ...modelValue.value, 
+        ...modelValue.value,
         ...form,
       });
     }, {

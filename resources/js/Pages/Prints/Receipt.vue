@@ -107,7 +107,7 @@ defineProps<Props>();
 }
 
 .recibo-body {
-  width: 735px;
+  width: 210mm;
   height: auto;
   min-height: 350px;
   border: 2px dashed #aaa;
@@ -188,7 +188,7 @@ defineProps<Props>();
 }
 @media print {
   .recibo-body {
-    width: 100%;
+    width: 210mm;
     border: none;
     overflow: hidden;
     border-bottom: 2px dashed #ddd;

@@ -63,8 +63,8 @@ class Loan extends Transactionable implements IPayableDocument {
     protected static function boot() {
       parent::boot();
       static::saving(function ($loan) {
-          $loan->setResourceAccount('client_account_id', 'expected_payments_lenders', $loan->client);
-          $loan->setResourceAccount('fees_account_id', 'due_to_business');
+          $loan->setResourceAccount('client_account_id', 'expected_payments_loans', $loan->client);
+          $loan->setResourceAccount('fees_account_id', 'expected_interest_loans', $loan->client);
           $loan->late_fee_account_id = $loan->fees_account_id;
           self::calculateTotal($loan);
           self::checkPayments($loan);
