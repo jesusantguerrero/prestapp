@@ -96,8 +96,10 @@ const openAccountModal = (account = {}) => {
       <div class="w-full px-5 py-5 bg-white rounded-md shadow-md">
         <ElTabs v-model="activeAccountSection">
           <ElTabPane
-            :label="`${category.name} (${category.subcategories.length})`"
-            :title="`${category.name} (${category.number})`"
+            :label="`${category.alias || category.name} (${
+              category.subcategories.length
+            })`"
+            :title="`${category.alias || category.name} (${category.number})`"
             :name="category.id"
             v-for="category in mainCategories"
             :key="category.id"
@@ -114,7 +116,7 @@ const openAccountModal = (account = {}) => {
                   v-slot="{ open }"
                 >
                   <span class="text-lg font-bold">
-                    {{ subCategory.number }} - {{ subCategory.name }}
+                    {{ subCategory.number }} - {{ subCategory.alias || subCategory.name }}
                   </span>
 
                   <i
@@ -130,14 +132,11 @@ const openAccountModal = (account = {}) => {
                     :empty-text="'No hay cuentas en esta categoria'"
                     hide-headers
                   >
-                    <template v-slot:name="{ scope }">
+                    <template v-slot:name="{ scope: { row } }">
                       <div>
-                        <div class="font-bold">{{ scope.row.name }}</div>
-                        <div
-                          class="italic font-normal"
-                          v-if="scope.row.last_transaction_date"
-                        >
-                          Last transaction on: {{ scope.row.last_transaction_date.date }}
+                        <div class="font-bold">{{ row.alias || row.name }}</div>
+                        <div class="italic font-normal" v-if="row.last_transaction_date">
+                          Last transaction on: {{ row.last_transaction_date.date }}
                         </div>
                       </div>
                     </template>

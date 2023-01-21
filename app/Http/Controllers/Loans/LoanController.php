@@ -21,7 +21,7 @@ class LoanController extends InertiaController
     public function __construct(Loan $loan)
     {
         $this->model = $loan;
-        $this->searchable = ['name'];
+        $this->searchable = ['client_name', 'amount', 'total', 'repayment'];
         $this->templates = [
             "index" => 'Loans/Index',
             "create" => 'Loans/LoanForm',
@@ -158,14 +158,6 @@ class LoanController extends InertiaController
           "currentTab" => $section,
           "stats" => LoanService::getStats($loan)
       ]);
-    }
-
-
-    public function installments(Loan $loan) {
-      return [
-        "installments" => $loan->installments,
-        "client" => $loan->client,
-      ];
     }
 
     public function agreements(Loan $loan) {

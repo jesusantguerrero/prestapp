@@ -38,7 +38,7 @@
           class="h-full align-baseline"
           :style="{ width: col.width, maxWidth: col.maxWidth }"
         >
-          <div class="flex flex-col w-full h-full px-2 py-1 text-left" :class="col.class">
+          <div class="my-auto" :class="col.class">
             <slot
               :name="col.name"
               v-bind:scope="{
@@ -100,7 +100,7 @@
 
 <script setup>
 import formatMoney from "@/utils/formatMoney";
-import CustomCell from "./customCell.js";
+import CustomCell from "./customCell";
 
 defineProps({
   cols: {
@@ -139,7 +139,7 @@ defineProps({
   hideHeaders: {
     type: Boolean,
     default: false,
-  }
+  },
 });
 
 const getHeaderClass = ({ row }) => {

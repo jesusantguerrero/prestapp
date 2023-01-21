@@ -28,12 +28,15 @@ return new class extends Migration
             $table->foreignId('late_fee_account_id')->nullable();
 
             // terms
+            $table->string('client_name')->nullable();
+            $table->string('client_address')->nullable();
             $table->date('date');
             $table->date('first_installment_date');
             $table->date('disbursement_date');
             $table->integer('repayment_count');
             $table->enum('frequency', ['WEEKLY', 'BIWEEKLY', 'MONTHLY']);
 
+            $table->decimal('repayment', 11, 2)->default(0.00);
             $table->decimal('amount', 11, 2)->default(0.00);
             $table->decimal('amount_paid', 11, 2)->default(0.00);
             $table->decimal('amount_due', 11, 2)->default(0.00);

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Core\Category;
 use Insane\Journal\Models\Core\Payment;
+use Insane\Journal\Models\Core\PaymentDocument;
 use Insane\Journal\Models\Core\Transaction;
 use Insane\Journal\Models\Core\TransactionLine;
 use Insane\Journal\Models\Invoice\Invoice;
@@ -44,6 +45,7 @@ class DeleteTransactions extends Command
         Transaction::truncate();
         TransactionLine::truncate();
         Payment::truncate();
+        PaymentDocument::truncate();
         Invoice::truncate();
         InvoiceLine::truncate();
 

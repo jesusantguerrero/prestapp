@@ -11,6 +11,8 @@ export const transactionModalState = reactive({
     automatic: false,
 })
 
+
+type TransactionConfig = Record<string, any>;
 /**
  * useTransactionModal - get controls and state of transaction modal
  * @returns {{ toggleTransactionModal: Function, openTransactionModal: Function, closeTransactionModal: Function, isOpen: Boolean }}
@@ -23,8 +25,8 @@ export const useTransactionModal = () => {
         transactionModalState.mode = 'EXPENSE'
         transactionModalState.recurrence = false
     }
-
-    const openTransactionModal = (config = {}) => {
+    
+    const openTransactionModal = (config: TransactionConfig = {}) => {
         transactionModalState.automatic = config.automatic ?? false
         transactionModalState.transactionData = config.transactionData ?? null
         transactionModalState.recurrence = config.recurrence ?? false
@@ -32,7 +34,7 @@ export const useTransactionModal = () => {
         transactionModalState.isOpen = true
     }
 
-    const toggleTransactionModal = (config) => {
+    const toggleTransactionModal = (config: TransactionConfig) => {
         if (transactionModalState.isOpen)  {
             closeTransactionModal()
         } else {

@@ -1,3 +1,28 @@
+<script lang="ts" setup>
+defineProps({
+  modelValue: {
+    type: String,
+  },
+});
+
+defineEmits(["update:modelValue"]);
+
+const transactionTypes = [
+  {
+    value: "DEPOSIT",
+    label: "Income",
+  },
+  {
+    value: "WITHDRAW",
+    label: "Expense",
+  },
+  {
+    value: "TRANSFER",
+    label: "Transfer",
+  },
+];
+</script>
+
 <template>
   <div class="grid grid-cols-3 overflow-hidden text-lg rounded-lg">
     <div
@@ -16,28 +41,3 @@
     </div>
   </div>
 </template>
-
-<script setup>
-const props = defineProps({
-  modelValue: {
-    type: Object,
-  },
-});
-
-const emit = defineEmits(["update:modelValue"]);
-
-const transactionTypes = [
-  {
-    value: "DEPOSIT",
-    label: "Income",
-  },
-  {
-    value: "WITHDRAW",
-    label: "Expense",
-  },
-  {
-    value: "TRANSFER",
-    label: "Transfer",
-  },
-];
-</script>

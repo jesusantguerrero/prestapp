@@ -1,12 +1,14 @@
-<script setup>
-import ChartComparison from "./ChartComparison.vue";
+<script lang="ts" setup>
 import { formatMoney } from "@/utils";
 
-defineProps({
-  chart: Object,
-  headerInfo: Object,
-  sections: Array,
-});
+interface Props {
+  chart: {
+    series: any[];
+    options: Record<string, any>;
+  };
+  sections?: any[];
+}
+defineProps<Props>();
 </script>
 
 <template>
