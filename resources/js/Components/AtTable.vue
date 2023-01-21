@@ -100,7 +100,7 @@
 
 <script setup>
 import formatMoney from "@/utils/formatMoney";
-import CustomCell from "./customCell.js";
+import CustomCell from "./customCell";
 
 defineProps({
   cols: {
