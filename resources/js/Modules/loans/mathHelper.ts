@@ -28,6 +28,7 @@ export const MathHelper = {
         const result = exactMath.round(amount, -2)
         return result < 0 ? 0 : result;
     },
+    
     loanPayment({ capital, interestRate, installments}) {
        const result = capital * exactMath.div(interestRate, exactMath.sub(1, Math.pow(exactMath.add(1, interestRate), -installments)))
         return this.rounding(result);

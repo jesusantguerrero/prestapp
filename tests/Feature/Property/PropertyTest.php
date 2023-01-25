@@ -37,6 +37,7 @@ class PropertyTest extends TestCase
 
     $this->propertyData = [
       'address' => $this->faker->address(),
+      'owner_id' => $this->owner->id,
       'price' => 2000,
       'units' => [[
         "price" => 5000

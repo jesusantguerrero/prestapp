@@ -64,7 +64,7 @@ class RentController extends InertiaController
 
     // Payments
     public function payInvoice(Rent $rent, Invoice $invoice) {
-        $postData = $this->getPostData(request());
+        $postData = $this->getPostData();
         if ($invoice->invoiceable_id == $rent->id) {
             $rent->createPayment(array_merge($postData, [
                 "client_id" => $rent->client_id,

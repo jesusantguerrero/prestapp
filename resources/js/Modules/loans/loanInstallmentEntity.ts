@@ -83,7 +83,6 @@ export class LoanTable {
             capital: this.capital,
             installments: this.count
         })
-
     }
 
     getMonthlyPayment() {
