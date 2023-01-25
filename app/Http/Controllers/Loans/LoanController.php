@@ -104,11 +104,18 @@ class LoanController extends InertiaController
       return true;
     }
 
+    //  options
     public function updateStatus(Loan $loan) {
       if (request()->user()->current_team_id == $loan->team_id) {
         $loan->updateStatus();
       }
     }
+
+    public function close(Loan $loan) {
+      $postData = $this->getPostData();
+      LoanTransactionsService::close($loan, $postData);
+    }
+
 
     // payable document related
     public function pay(Loan $loan) {

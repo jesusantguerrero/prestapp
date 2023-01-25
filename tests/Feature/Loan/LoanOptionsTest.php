@@ -77,7 +77,16 @@ class LoanOptionsTest extends LoanBase
   }
 
   public function testItShouldCloseLoan() {
-    // #TODO Allow closing a loan
+    $loan = $this->createLoan();
+
+    $response = $this->post("/loans/$loan->id/close", [
+      'date' => date('Y-m-d'),
+      'reason' => 'Misericordia divina',
+    ]);
+
+    $response->assertStatus(200);
+    $this->assertEquals(Loan::STATUS_CANCELLED, $loan->fresh()->payment_status);
+    $this->assertEquals('closed', $loan->fresh()->cancel_type);
   }
 
   public function testItShouldRescheduleLoan(){

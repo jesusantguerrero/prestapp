@@ -55,6 +55,7 @@ return new class extends Migration
             $table->enum('closing_fee_type', ['PERCENTAGE', 'FIXED'])->default('FIXED');
             $table->enum('source_type', ['SMALL_BOX', 'BANK', 'UNREGISTERED'])->default('UNREGISTERED');
 
+            $table->string('cancel_type')->nullable();
             $table->text('cancel_reason')->nullable();
             $table->date('cancelled_at')->nullable();
             $table->json('write_off_amounts')->default('{

@@ -87,4 +87,10 @@ class LoanTransactionsService {
 
       return Invoice::createDocument($data);
     }
+
+    public static function close(Loan $loan, $data) {
+      $debt = $loan->installments()->sum('amount_due');
+
+      LoanService::cancel($loan, $data['reason'] ."::$debt", $data['date'], 'closed');
+    }
 }

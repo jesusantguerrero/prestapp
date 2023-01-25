@@ -17,9 +17,10 @@ Route::middleware([
       Route::get('/loan-accounts/{id}', 'loanSourceAccounts');
       Route::get('/loans/{loan}/{section}', 'getSection');
 
+      Route::post('/loans/{loan}/update-status', 'updateStatus');
       Route::post('/loans/{loan}/pay', 'pay');
       Route::post('/loans/{loan}/payoff', 'payoff');
-      Route::post('/loans/{loan}/update-status', 'updateStatus');
+      Route::post('/loans/{loan}/close', 'close');
       Route::get('/loans/{loan}/payments/{paymentDocument}/print', 'printPaymentDocument');
       Route::post('/loans/:loanId/installments/:installment/mark-as-paid', 'markAsPaid');
     });
