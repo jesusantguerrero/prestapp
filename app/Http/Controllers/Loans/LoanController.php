@@ -181,8 +181,11 @@ class LoanController extends InertiaController
     }
 
 
-    public function loanSourceAccounts() {
-      return Account::getByCategories(request()->user()->current_team_id, ['cash_and_bank']);
+    public function loanSourceAccounts($accountId = null) {
+      if ($accountId) {
+        return Account::find($accountId);
+      }
+      return Account::getByCategories(request()->user()->current_team_id, ['cash_and_bank'], $accountId);
     }
 
 

@@ -3,7 +3,7 @@
     <template #header>
       <SectionNav :sections="tabs" v-model="currentTab" @update:modelValue="handleClick"/>
     </template>
-    
+
     <div class="w-full h-auto py-12 mx-auto sm:px-6 lg:px-8">
         <div class="text-left section_container">
             <div v-for="section in tabs[currentTab].sections" :key="section" class="">
@@ -49,45 +49,45 @@ const currentTab = ref("business");
 
 const tabs = ref({
   business: {
-      label: "Business",
+      label: "Organización",
       sections: [
-          ["Business info", '/settings/business' ],
-          ["Branding",  '/settings/branding'],
-          ["Invoicing", '/settings/invoice'],
+          ["Datos de Compañia", '/settings/business' ],
+          // ["Marca",  '/settings/branding'],
+          ["Facturas", '/settings/invoice'],
+          ["Prestamos", '/settings/loan'],
+          ["Propiedades", '/settings/invoice'],
           '',
           ['Region', '/settings/region'],
-          '',
-          ['Goal', '/settings/goals']
       ]
   },
   payments: {
-      label: "Payments",
+      label: "Pagos",
       sections: [
-          ["Paypal", '/settings/paypal'],
-          ["Payment Page", '/settings/payment'],
+          // ["Paypal", '/settings/paypal'],
+          ["Modal de pago", '/settings/payment'],
       ]
   },
-  integrations: {
-      label: "Integrations",
-      sections: [
-          ["Import Data", 'settings/integrations/import-data'],
-          ["Zen", '/integrations'],
-          ["Gmail", '/integrations'],
-          ["Calendar", '/integrations'],
-      ]
-  },
+  // integrations: {
+  //     label: "Integrations",
+  //     sections: [
+  //         ["Import Data", 'settings/integrations/import-data'],
+  //         ["Zen", '/integrations'],
+  //         ["Gmail", '/integrations'],
+  //         ["Calendar", '/integrations'],
+  //     ]
+  // },
   notifications: {
       label: "Notifications",
       sections: [
-          ["Browser Notifications", {name: 'business'}],
-          ["Email", {name: 'business'}],
+          ["Notificationes en app", {name: 'business'}],
+          ["Correo Electronico", {name: 'business'}],
           '',
-          ["Time Traking Reminders", {name: 'business'}],
-          ['Task Reminders', {name: 'region'}]
+          ["Propiedades", {name: 'business'}],
+          ['Prestamos', {name: 'region'}]
       ]
   },
   account: {
-      label: "Account and Security",
+      label: "Cuenta y Seguridad",
       sections: [
           ["User info", '/user/profile'],
           ["Plan", '/billing/upgrade'],
