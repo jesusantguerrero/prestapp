@@ -83,8 +83,6 @@ Route::middleware([
 
     // Business
 
-    // Loans
-
 
     // Properties
     Route::get('properties/overview', PropertyController::class);

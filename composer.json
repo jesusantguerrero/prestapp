@@ -23,6 +23,7 @@
         "laravel/scout": "^9.8",
         "laravel/tinker": "^2.7",
         "meilisearch/meilisearch-php": "^0.27.0",
+        "phpoffice/phpspreadsheet": "^1.27",
         "phpoffice/phpword": "^1.0",
         "tightenco/ziggy": "^1.0"
     },

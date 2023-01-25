@@ -7,7 +7,7 @@ type LoanInstallmentStatus = 'PENDING' | 'LATE' | 'PAID' | 'PARTIALLY_PAID' | 'G
 
 export interface ILoanInstallment {
     id?: number;
-    installment_number: number;
+    number: number;
     due_date: string;
     paid_at?: string;
     days: number;
@@ -83,7 +83,6 @@ export class LoanTable {
             capital: this.capital,
             installments: this.count
         })
-
     }
 
     getMonthlyPayment() {
@@ -103,7 +102,7 @@ export class LoanTable {
             const finalBalance = MathHelper.subWithRounding(balance,  monthlyPrincipal)
 
             this.payments.push({
-                installment_number: index + 1,
+                number: index + 1,
                 due_date: dueDate,
                 days: 0,
                 amount: this.payment,

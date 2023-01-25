@@ -31,6 +31,20 @@ class LoanTransactionsService {
       self::createPayment($loan, $data);
     }
 
+    public static function payoff(Loan $loan, mixed $paymentData) {
+      $repayments = $loan->installments()->unpaid()->selectRaw('id payable_id, amount_due amount, ? as payable_type', [LoanInstallment::class])->get();
+
+      $paymentData['amount'] = $repayments->sum('amount');
+      $paymentData['concept'] = 'Saldo de prestamo';
+
+      $data = array_merge($paymentData, [
+        "client_id" => $loan->client_id,
+        "documents" => $repayments->toArray()
+      ]);
+
+      self::createPayment($loan, $data);
+    }
+
     public static function payRepayment(Loan $loan, LoanInstallment $installment, mixed $postData) {
       self::createPayment($loan, array_merge($postData, [
             "client_id" => $loan->client_id,

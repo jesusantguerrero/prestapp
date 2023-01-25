@@ -122,10 +122,10 @@ class InertiaController extends Controller {
 
     }
 
-    protected function getPostData(Request $request) {
-        $postData = $request->post();
-        $postData['user_id'] = $request->user()->id;
-        $postData['team_id'] = $request->user()->current_team_id;
+    protected function getPostData() {
+        $postData = request()->post();
+        $postData['user_id'] = request()->user()->id;
+        $postData['team_id'] = request()->user()->current_team_id;
 
         return $postData;
     }

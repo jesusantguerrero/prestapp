@@ -13,6 +13,7 @@
         "@vitejs/plugin-vue": "^4.0.0",
         "autoprefixer": "^10.4.13",
         "axios": "^1.2.3",
+        "jsdom": "^21.1.0",
         "laravel-vite-plugin": "^0.7.3",
         "lodash": "^4.17.21",
         "postcss": "^8.4.21",

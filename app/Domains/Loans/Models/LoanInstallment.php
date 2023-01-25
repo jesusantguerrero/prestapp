@@ -26,7 +26,7 @@ class LoanInstallment extends Model implements IPayableDocument {
         'user_id',
         'loan_id',
         'client_id',
-        'installment_number',
+        'number',
         'due_date',
         'days',
         'amount',
