@@ -21,11 +21,12 @@ class LoanService {
       CreateLoanTransaction::dispatch($loan);
     }
 
-    public static function cancel(Loan $loan, $reason, $date, $type = 'cancel') {
+    public static function cancel(Loan $loan, $data, $type = 'cancel') {
       $loan->update([
-        'cancel_reason' => $reason,
         'cancel_type' => $type,
-        'cancelled_at' => $date,
+        'cancelled_at' => $data['date'],
+        'cancel_reason' => $data['reason'],
+        'cancel_at_debt' => $data['cancel_at_debt'] ?? 0,
         'status' => Loan::STATUS_CANCELLED,
       ]);
       LoanInstallment::where([

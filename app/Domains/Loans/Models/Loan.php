@@ -57,6 +57,7 @@ class Loan extends Transactionable implements IPayableDocument {
         'source_type',
         'source_account_id',
         'cancel_type',
+        'cancel_at_debt',
         'cancel_reason',
         'cancelled_at'
     ];
