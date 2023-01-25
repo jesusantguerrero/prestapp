@@ -15,6 +15,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-       Artisan::call('journal:set-accounts');
+      Artisan::call('journal:set-accounts');
     }
 }

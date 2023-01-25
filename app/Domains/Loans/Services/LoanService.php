@@ -43,7 +43,7 @@ class LoanService {
                 "user_id" => $loan->user_id,
                 "client_id" => $loan->client_id,
                 "due_date" => $item["due_date"],
-                "installment_number" => $item["installment_number"],
+                "number" => $item["number"],
                 "initial_balance" => $item["initial_balance"],
                 "amount" => $item["amount"],
                 "interest" => $item["interest"],

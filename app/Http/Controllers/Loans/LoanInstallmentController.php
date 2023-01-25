@@ -17,7 +17,7 @@ class LoanInstallmentController extends InertiaController
     }
 
     public function pay(Loan $loan, LoanInstallment $installment, Request $request) {
-      $postData = $this->getPostData($request);
+      $postData = $this->getPostData();
       LoanTransactionsService::payRepayment($loan, $installment, $postData);
   }
 }

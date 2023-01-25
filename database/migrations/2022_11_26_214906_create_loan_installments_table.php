@@ -21,9 +21,10 @@ return new class extends Migration
             $table->foreignId('loan_id')->constrained()->cascadeOnDelete();
             $table->foreignId('client_id');
 
-            $table->integer('installment_number');
             $table->date('due_date');
             $table->timestamp('paid_at')->nullable();
+            $table->timestamp('last_paid_at')->nullable();
+            $table->integer('number');
             $table->integer('days')->default(0);
             // Basic
             $table->decimal('amount', 11, 2)->default(0.00);

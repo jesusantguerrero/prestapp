@@ -110,9 +110,14 @@ class LoanController extends InertiaController
     }
 
     // payable document related
-    public function pay(Loan $loan, Request $request) {
-      $postData = $this->getPostData($request);
+    public function pay(Loan $loan) {
+      $postData = $this->getPostData();
       LoanTransactionsService::pay($loan, $postData);
+    }
+
+    public function payoff(Loan $loan) {
+      $postData = $this->getPostData();
+      LoanTransactionsService::payoff($loan, $postData);
     }
 
     public function markAsPaid(Loan $loan, LoanInstallment $installment) {
@@ -136,7 +141,7 @@ class LoanController extends InertiaController
 
       $receipt['description'] = $paymentDocument->payments->reduce(function ($description, $payment) {
 
-        return $description . "Pagaré {$payment->payable->installment_number} ";
+        return $description . "Pagaré {$payment->payable->number} ";
       });
 
       return inertia('Prints/Receipt', [

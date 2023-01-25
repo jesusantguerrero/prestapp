@@ -31,7 +31,7 @@ const handlePayment = (installment: ILoanInstallment) => {
     installment_id: installment.id,
   };
 
-  const defaultConcept = `Pago prestamo ${installment.loan_id} (${installment.installment_number}/${props.installments.length})`;
+  const defaultConcept = `Pago prestamo ${installment.loan_id} (${installment.number}/${props.installments.length})`;
 
   openModal({
     data: {
