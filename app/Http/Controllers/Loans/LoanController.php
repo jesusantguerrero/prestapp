@@ -82,6 +82,7 @@ class LoanController extends InertiaController
         'loans' => array_merge(
         $loan->toArray(),
         [
+          'sourceAccount' => $loan->sourceAccount,
           'client' => $loan->client,
           'installments' => $loan->installments,
           'paymentDocuments' => $loan->paymentDocuments
@@ -103,11 +104,18 @@ class LoanController extends InertiaController
       return true;
     }
 
+    //  options
     public function updateStatus(Loan $loan) {
       if (request()->user()->current_team_id == $loan->team_id) {
         $loan->updateStatus();
       }
     }
+
+    public function close(Loan $loan) {
+      $postData = $this->getPostData();
+      LoanTransactionsService::close($loan, $postData);
+    }
+
 
     // payable document related
     public function pay(Loan $loan) {
@@ -180,8 +188,11 @@ class LoanController extends InertiaController
     }
 
 
-    public function loanSourceAccounts() {
-      return Account::getByCategories(request()->user()->current_team_id, ['cash_and_bank']);
+    public function loanSourceAccounts($accountId = null) {
+      if ($accountId) {
+        return Account::find($accountId);
+      }
+      return Account::getByCategories(request()->user()->current_team_id, ['cash_and_bank'], $accountId);
     }
 
 

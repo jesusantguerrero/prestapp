@@ -4,6 +4,7 @@ namespace App\Domains\Loans\Models;
 
 use App\Domains\CRM\Models\Client;
 use App\Domains\Loans\Enums\LoanInvoiceTypes;
+use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Core\Transaction;
 use Insane\Journal\Models\Invoice\Invoice;
 use Insane\Journal\Traits\HasPaymentDocuments;
@@ -45,6 +46,7 @@ class Loan extends Transactionable implements IPayableDocument {
         'disbursement_date',
         'first_installment_date',
         'repayment_count',
+        'frequency',
         'amount',
         'interest_rate',
         'grace_days',
@@ -54,9 +56,12 @@ class Loan extends Transactionable implements IPayableDocument {
         'category_id',
         'source_type',
         'source_account_id',
+        'cancel_type',
+        'cancel_at_debt',
         'cancel_reason',
         'cancelled_at'
     ];
+
 
     // protected
     protected $creditCategory = 'expected_payments_customers';
@@ -71,7 +76,7 @@ class Loan extends Transactionable implements IPayableDocument {
           self::calculateTotal($loan);
           self::checkPayments($loan);
           $loan->client_name = $loan->client->fullName;
-          $loan->client_address = $loan->client->address;
+          $loan->client_address = $loan->client->address ?? $loan->client->address_details;
       });
     }
 
@@ -80,7 +85,11 @@ class Loan extends Transactionable implements IPayableDocument {
     }
 
     public function installments() {
-        return $this->hasMany(LoanInstallment::class);
+      return $this->hasMany(LoanInstallment::class);
+    }
+
+    public function sourceAccount() {
+      return $this->belongsTo(Account::class, 'source_account_id');
     }
 
     public function agreements() {

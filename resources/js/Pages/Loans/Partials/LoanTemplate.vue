@@ -93,15 +93,15 @@ const onUpdateStatus = () => {
       >
         <header class="flex justify-between space-x-4">
           <section class="w-full">
-            <p class="w-full flex justify-between">
+            <p class="flex justify-between w-full">
               <span> No.: </span>
               <span class="font-bold"> {{ loans.id }} </span>
             </p>
-            <p class="w-full flex justify-between">
+            <p class="flex justify-between w-full">
               <span> Fecha: </span>
               <span class="font-bold"> {{ formatDate(loans.date) }} </span>
             </p>
-            <p class="w-full flex justify-between">
+            <p class="flex justify-between w-full">
               <span> Monto Prestado/Total a pagar: </span>
               <span class="font-bold">
                 {{ formatMoney(loans.amount) }} / {{ formatMoney(loans.total) }}
@@ -109,15 +109,19 @@ const onUpdateStatus = () => {
             </p>
           </section>
           <section class="w-full">
-            <p class="w-full flex justify-between">
+            <p class="flex justify-between w-full">
               <span> Interes: </span>
               <span class="font-bold"> {{ loans.interest_rate }} %</span>
             </p>
-            <p class="w-full flex justify-between">
+            <p class="flex justify-between w-full">
+              <span> Pago/Modo: </span>
+              <span class="font-bold"> {{ loans.payment }}/ {{ loans.frequency }}</span>
+            </p>
+            <p class="flex justify-between w-full">
               <span> Dias de gracia: </span>
               <span class="font-bold"> {{ loans.grace_days }} Dias</span>
             </p>
-            <p class="w-full flex justify-between">
+            <p class="flex justify-between w-full">
               <span> Monto pagado: </span>
               <span class="font-bold">
                 {{ formatMoney(loans.amount_paid) }}
@@ -172,19 +176,19 @@ const onUpdateStatus = () => {
           <section class="grid grid-cols-1 gap-2">
             <AppButton
               @click="onMultiplePayment()"
-              class="flex text-sm items-center justify-center"
+              class="flex items-center justify-center text-sm"
             >
               <IIcSharpPayment class="mr-2" />
               Recibo Multiple
             </AppButton>
-            <AppButton variant="primary" class="flex text-sm items-center justify-center">
+            <AppButton variant="primary" class="flex items-center justify-center text-sm">
               <IIcSharpPayment class="mr-2" />
               Saldar prestamo
             </AppButton>
             <AppButton
               @click="toggleAgreementModal()"
               variant="secondary"
-              class="flex text-sm items-center justify-center"
+              class="flex items-center justify-center text-sm"
             >
               <IMdiHandshakeOutline class="mr-1" />
               Acuerdo de pago
@@ -192,7 +196,7 @@ const onUpdateStatus = () => {
 
             <AppButton
               variant="secondary"
-              class="flex text-sm justify-center items-center w-full"
+              class="flex items-center justify-center w-full text-sm"
             >
               <IMdiHandshakeOutline class="mr-1" />
               Finalizar
@@ -201,7 +205,7 @@ const onUpdateStatus = () => {
 
           <section class="py-4 mt-8 space-y-2">
             <div
-              class="rounded-md bg-base-lvl-2 w-full px-2 py-4 text-body-1"
+              class="w-full px-2 py-4 rounded-md bg-base-lvl-2 text-body-1"
               v-if="loans.cancelled_at"
             >
               <h4>Cancelado en {{ formatDate(loans.cancelled_at, "dd MMMM yyyy") }}</h4>

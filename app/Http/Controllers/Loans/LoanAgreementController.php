@@ -18,7 +18,7 @@ class LoanAgreementController extends Controller
             $postData['debt'] = $loan::query()->sum(DB::raw('total - amount_paid'));
             if ($unpaidRepayments != 0) {
                 DB::transaction(function () use ($postData, $loan) {
-                    LoanService::cancel($loan, $postData['reason'], $postData['date']);
+                    LoanService::cancel($loan, $postData, 'agreement');
                     LoanTransactionsService::createAgreement($loan, $postData);
                 });
             } else {

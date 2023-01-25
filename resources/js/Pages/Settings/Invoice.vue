@@ -3,11 +3,11 @@
     <template #header>
       <div class="flex items-center justify-between px-5 border-4 border-white rounded-md">
         <div class="flex items-center space-x-2">
-            
+
         </div>
         <div class="flex overflow-hidden font-bold text-gray-500 rounded-t-lg max-w-min">
-            <AppButton variant="inverse" @click="save()" class="w-32"> 
-              Save 
+            <AppButton variant="inverse" @click="save()" class="w-32">
+              Save
             </AppButton>
         </div>
     </div>
@@ -69,10 +69,10 @@
             <p class="mb-2 text-sm text-gray-400 md:w-8/12">By default, all Invoices are labelled 'Invoice' followed by a number (e.g., "Invoice 1").
 If your local law, language or occupation requires a different name for your invoices, you can set that here.</p>
                 <AtField class="md:max-w-sm" label="Factura" rounded>
-                    <AtInput  v-model="formData.invoice_label" placeholder="Factura" />
+                    <AtInput  v-model="formData.invoice_label" placeholder="Factura" rounded />
                 </AtField>
                 <AtField class="md:max-w-sm" label="Factura Compra" rounded>
-                    <AtInput  v-model="formData.invoice_label" placeholder="Factura Compra" />
+                    <AtInput  v-model="formData.invoice_label" placeholder="Factura Compra" rounded />
                 </AtField>
         </article>
 

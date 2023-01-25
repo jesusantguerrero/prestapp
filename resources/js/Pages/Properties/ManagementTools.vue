@@ -75,7 +75,7 @@ watch(
 </script>
 
 <template>
-  <AppLayout title="Facturas de Ingresos">
+  <AppLayout title="Centro de pago">
     <template #header>
       <PropertySectionNav>
         <template #actions>
@@ -114,7 +114,7 @@ watch(
           :value="lateDays || 0"
         />
       </section>
-      <InvoiceTable :invoice-data="invoices" class="mt-10 bg-base-lvl-3 rounded-md" />
+      <InvoiceTable :invoice-data="invoices" class="mt-10 rounded-md bg-base-lvl-3" />
     </div>
   </AppLayout>
 </template>

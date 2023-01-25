@@ -13,13 +13,16 @@ Route::middleware([
     Route::get('loans/overview', LoanController::class);
     Route::resource('loans', LoanController::class);
     Route::controller(LoanController::class)->group(function () {
-        Route::get('/loan-accounts', 'loanSourceAccounts');
-        Route::get('/loans/{loan}/{section}', 'getSection');
-        Route::post('/loans/{loan}/pay', 'pay');
-        Route::post('/loans/{loan}/payoff', 'payoff');
-        Route::post('/loans/{loan}/update-status', 'updateStatus');
-        Route::get('/loans/{loan}/payments/{paymentDocument}/print', 'printPaymentDocument');
-        Route::post('/loans/:loanId/installments/:installment/mark-as-paid', 'markAsPaid');
+      Route::get('/loan-accounts', 'loanSourceAccounts');
+      Route::get('/loan-accounts/{id}', 'loanSourceAccounts');
+      Route::get('/loans/{loan}/{section}', 'getSection');
+
+      Route::post('/loans/{loan}/update-status', 'updateStatus');
+      Route::post('/loans/{loan}/pay', 'pay');
+      Route::post('/loans/{loan}/payoff', 'payoff');
+      Route::post('/loans/{loan}/close', 'close');
+      Route::get('/loans/{loan}/payments/{paymentDocument}/print', 'printPaymentDocument');
+      Route::post('/loans/:loanId/installments/:installment/mark-as-paid', 'markAsPaid');
     });
 
     Route::controller(LoanInstallmentController::class)->group(function () {

@@ -20,6 +20,7 @@ import { formatDate, formatMoney } from "@/utils";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import FormSection from "../Rents/Partials/FormSection.vue";
 import LoanSummary from "./Partials/LoanSummary.vue";
+import AccountSelect from "@/Components/shared/Selects/AccountSelect.vue";
 
 interface Props {
   loans: ILoan;
@@ -46,6 +47,7 @@ const loanForm = reactive<Record<string, any>>({
   category_id: null,
   source_type: null,
   source_account_id: null,
+  sourceAccount: null,
 });
 
 watch(
@@ -97,7 +99,7 @@ const onSubmit = () => {
     disbursement_date: formatDate(loanForm.disbursement_date, "yyyy-MM-dd"),
     first_installment_date: formatDate(loanForm.first_installment_date, "y-M-d"),
     client_id: loanForm.client.id,
-    source_type: loanForm.sourceType.id,
+    source_type: loanForm.sourceType?.id,
     source_account_id: loanForm.sourceAccount.id,
   };
 
@@ -130,8 +132,8 @@ const goToList = () => {
       </LoanSectionNav>
     </template>
 
-    <main class="flex w-full mt-16 space-x-4 pb-10">
-      <section class="w-8/12 p-4 text-body-1 bg-white rounded-md shadow-md">
+    <main class="flex w-full pb-10 mt-16 space-x-4">
+      <section class="w-8/12 p-4 bg-white rounded-md shadow-md text-body-1">
         <FormSection title="Datos del cliente">
           <AtField label="Cliente" class="w-full">
             <BaseSelect
@@ -182,7 +184,7 @@ const goToList = () => {
           class="mt-4"
           v-if="showAdvancedOptions"
         >
-          <section class="w-full flex space-x-4">
+          <section class="flex w-full space-x-4">
             <AtField label="Dias de gracia" class="w-full">
               <AtInput v-model="loanForm.grace_days" rounded />
             </AtField>
@@ -190,15 +192,12 @@ const goToList = () => {
               <AtInput v-model="loanForm.late_fee" rounded />
             </AtField>
             <AtField label="Cuotas cobradas" class="w-full">
-              <AtInput v-model="loanForm.grace_days" rounded />
+              <AtInput v-model="loanForm.paid_installments" rounded />
             </AtField>
           </section>
           <section class="flex space-x-4">
             <AtField label="Gastos de cierre" class="w-full">
               <AtInput v-model="loanForm.closing_fees" rounded />
-            </AtField>
-            <AtField label="Cuotas cobradas" class="w-full">
-              <AtInput v-model="loanForm.paid_installments" rounded />
             </AtField>
             <AtField class="w-full" />
           </section>
@@ -210,28 +209,24 @@ const goToList = () => {
           v-if="showAdvancedOptions"
         >
           <section class="flex space-x-4">
-            <AtField label="Cartera de prestamo" class="w-full">
+            <!-- <AtField label="Cartera de prestamo" class="w-full">
               <BaseSelect
                 endpoint="/api/wallets"
                 v-model="loanForm.category"
                 placeholder="Selecciona una cartera"
               />
-            </AtField>
-            <AtField label="Origen de prestamo" class="w-full">
+            </AtField> -->
+            <!-- <AtField label="Origen de prestamo" class="w-full">
               <BaseSelect
                 :options="loanSourceTypes"
                 v-model="loanForm.sourceType"
                 track-by="id"
                 placeholder="Selecciona una cartera"
               />
-            </AtField>
-            <AtField label="Cuenta origen" class="w-full">
-              <BaseSelect
-                :endpoint="`/loan-accounts`"
+            </AtField> -->
+            <AtField label="Cuenta origen" field="sourceAccount" class="w-full">
+              <AccountSelect
                 v-model="loanForm.sourceAccount"
-                placeholder="Selecciona una cuenta"
-                label="name"
-                track-by="id"
               />
             </AtField>
           </section>
@@ -241,7 +236,7 @@ const goToList = () => {
       <article
         class="w-4/12 rounded-md bg-white shadow-md relative overflow-hidden grid gap-4 grid-cols-1 grid-rows-[1fr_50px]"
       >
-        <section class="text-body-1 w-full overflow-hidden px-4">
+        <section class="w-full px-4 overflow-hidden text-body-1">
           <header class="py-4 font-bold">Resumen de prestamo</header>
           <LoanSummary
             :payment="installments?.payment"
@@ -254,9 +249,9 @@ const goToList = () => {
             <InstallmentTable :installments="installments?.payments" />
           </section>
         </section>
-        <footer class="flex w-full justify-between py-1 px-4">
+        <footer class="flex justify-between w-full px-4 py-1">
           <AtButton
-            class="font-bold text-red-400 bg-base-lvl-2 rounded-md"
+            class="font-bold text-red-400 rounded-md bg-base-lvl-2"
             variant="secondary"
             @click="goToList()"
           >
