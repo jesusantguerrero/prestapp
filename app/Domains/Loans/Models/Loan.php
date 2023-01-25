@@ -114,6 +114,7 @@ class Loan extends Transactionable implements IPayableDocument {
         return $this->installments()->late()->count();
     }
 
+    // Transactionable config
     public function getTransactionItems() {
         return [];
     }
@@ -138,7 +139,7 @@ class Loan extends Transactionable implements IPayableDocument {
         return $this->client_account_id;
     }
 
-    // payment things
+    // payable config
     public function getStatusField(): string {
         return 'payment_status';
     }
@@ -179,5 +180,10 @@ class Loan extends Transactionable implements IPayableDocument {
 
     public function getTotalField() {
         return 'total';
+    }
+
+    // Loan info
+    public function getDaysLateAttribute() {
+
     }
 }

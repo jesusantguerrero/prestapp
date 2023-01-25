@@ -27,6 +27,8 @@ return new class extends Migration
             $table->foreignId('fees_account_id')->nullable();
             $table->foreignId('late_fee_account_id')->nullable();
 
+            $table->string('name')->nullable();
+            $table->text('notes')->nullable();
             // terms
             $table->string('client_name')->nullable();
             $table->string('client_address')->nullable();
@@ -55,6 +57,11 @@ return new class extends Migration
 
             $table->text('cancel_reason')->nullable();
             $table->date('cancelled_at')->nullable();
+            $table->json('write_off_amounts')->default('{
+              "fee": 0,
+              "interest": 0,
+              "penalty": 0
+            }');
             // state
             $table->enum('payment_status', [
                 Loan::STATUS_DRAFT,
