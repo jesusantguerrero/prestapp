@@ -82,6 +82,7 @@ class LoanController extends InertiaController
         'loans' => array_merge(
         $loan->toArray(),
         [
+          'sourceAccount' => $loan->sourceAccount,
           'client' => $loan->client,
           'installments' => $loan->installments,
           'paymentDocuments' => $loan->paymentDocuments
