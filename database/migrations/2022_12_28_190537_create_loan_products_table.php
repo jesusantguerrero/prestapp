@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->json('interest_rates')->default('[20]');
             $table->enum('frequency', ['WEEKLY', 'BIWEEKLY', 'MONTHLY']);
-            $table->decimal('late_fee', 11, 2)->default(0.00);
+            $table->decimal('late_fee', 14, 4)->default(0.00);
             $table->enum('late_fee_type', ['PERCENTAGE', 'FIXED'])->default('PERCENTAGE');
             $table->timestamps();
         });

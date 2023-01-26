@@ -38,26 +38,26 @@ return new class extends Migration
             $table->integer('repayment_count');
             $table->enum('frequency', ['WEEKLY', 'BIWEEKLY', 'MONTHLY']);
 
-            $table->decimal('repayment', 11, 2)->default(0.00);
-            $table->decimal('amount', 11, 2)->default(0.00);
-            $table->decimal('amount_paid', 11, 2)->default(0.00);
-            $table->decimal('amount_due', 11, 2)->default(0.00);
-            $table->decimal('total', 11, 2)->default(0.00);
-            $table->decimal('interest_rate', 11, 2)->default(0.00);
+            $table->decimal('repayment', 14, 4)->default(0.00);
+            $table->decimal('amount', 14, 4)->default(0.00);
+            $table->decimal('amount_paid', 14, 4)->default(0.00);
+            $table->decimal('amount_due', 14, 4)->default(0.00);
+            $table->decimal('total', 14, 4)->default(0.00);
+            $table->decimal('interest_rate', 14, 4)->default(0.00);
             // Advanced options
             // Penalty config
             $table->integer('grace_days')->default(0);
-            $table->decimal('late_fee', 11, 2)->default(0.00);
+            $table->decimal('late_fee', 14, 4)->default(0.00);
             $table->enum('late_fee_type', ['PERCENTAGE', 'FIXED'])->default('PERCENTAGE');
             $table->integer('installments_paid')->default(0);
 
-            $table->decimal('closing_fees', 11, 2)->default(0.00);
+            $table->decimal('closing_fees', 14, 4)->default(0.00);
             $table->enum('closing_fee_type', ['PERCENTAGE', 'FIXED'])->default('FIXED');
             $table->enum('source_type', ['SMALL_BOX', 'BANK', 'UNREGISTERED'])->default('UNREGISTERED');
 
             $table->string('cancel_type')->nullable();
             $table->text('cancel_reason')->nullable();
-            $table->decimal('cancel_at_debt', 11, 2)->default(0.00);
+            $table->decimal('cancel_at_debt', 14, 4)->default(0.00);
             $table->date('cancelled_at')->nullable();
             $table->json('write_off_amounts')->default('{
               "fee": 0,

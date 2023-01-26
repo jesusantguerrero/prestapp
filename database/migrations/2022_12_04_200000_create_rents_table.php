@@ -27,28 +27,28 @@ return new class extends Migration
             $table->foreignId('client_account_id')->nullable();
             $table->foreignId('commission_account_id')->nullable();
             $table->foreignId('late_fee_account_id')->nullable();
-            
+
             $table->string('client_name')->nullable();
             $table->string('owner_name')->nullable();
             $table->text('address')->nullable();
             // terms
             $table->date('deposit_due');
-            $table->decimal('deposit', 11, 2)->default(0.00);
+            $table->decimal('deposit', 14, 4)->default(0.00);
 
             $table->date('date');
             $table->date('first_invoice_date');
             $table->date('next_invoice_date')->nullable();
 
-            $table->decimal('amount', 11, 2)->default(0.00);
-            $table->decimal('amount_paid', 11, 2)->default(0.00);
-            $table->decimal('amount_due', 11, 2)->default(0.00);
-            $table->decimal('total', 11, 2)->default(0.00);
+            $table->decimal('amount', 14, 4)->default(0.00);
+            $table->decimal('amount_paid', 14, 4)->default(0.00);
+            $table->decimal('amount_due', 14, 4)->default(0.00);
+            $table->decimal('total', 14, 4)->default(0.00);
 
             // Penalty config
-            $table->decimal('commission', 11, 2)->default(0.00);
+            $table->decimal('commission', 14, 4)->default(0.00);
             $table->enum('commission_type', ['PERCENTAGE', 'FIXED'])->default('PERCENTAGE');
 
-            $table->decimal('late_fee', 11, 2)->default(0.00);
+            $table->decimal('late_fee', 14, 4)->default(0.00);
             $table->enum('late_fee_type', ['PERCENTAGE', 'PERCENTAGE_OUTSTANDING', 'FIXED'])->default('PERCENTAGE');
             $table->integer('grace_days')->default(0);
 

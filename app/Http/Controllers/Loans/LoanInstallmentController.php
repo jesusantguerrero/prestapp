@@ -6,6 +6,7 @@ use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
 use App\Domains\Loans\Services\LoanTransactionsService;
 use App\Http\Controllers\InertiaController;
+use Exception;
 use Illuminate\Http\Request;
 
 class LoanInstallmentController extends InertiaController
@@ -16,8 +17,17 @@ class LoanInstallmentController extends InertiaController
       }
     }
 
-    public function pay(Loan $loan, LoanInstallment $installment, Request $request) {
+    public function pay(Loan $loan, LoanInstallment $installment) {
       $postData = $this->getPostData();
-      LoanTransactionsService::payRepayment($loan, $installment, $postData);
+      try {
+        LoanTransactionsService::payRepayment($loan, $installment, $postData);
+      } catch (Exception $e) {
+        return response([
+          "status" => 404,
+          "error" => [
+            "message" => $e->getMessage()
+          ]
+        ], 404);
+      }
   }
 }

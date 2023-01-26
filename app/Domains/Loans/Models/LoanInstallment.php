@@ -76,28 +76,24 @@ class LoanInstallment extends Model implements IPayableDocument {
     }
 
     public static function calculateTotal($payable) {
-      $result = [];
-
       if ($payable) {
           $totalPaid = $payable->payments()->sum('amount');
           $paymentSchema = ['fees', 'late_fee', 'interest', 'principal'];
           $balance = $totalPaid;
 
           foreach ($paymentSchema as $fee) {
+            $feePaidField = $fee."_paid";
             if ($payable->$fee > 0) {
               $amountToPay = $balance >= $payable->$fee ? $payable->$fee : $balance;
-              $result[$fee."_paid"] = $amountToPay;
+              $payable->$feePaidField = $amountToPay;
               $balance -= $amountToPay;
             } else {
-              $result[$fee."_paid"] = 0;
+              $payable->$feePaidField = 0;
             }
           }
 
-          $result['amount_paid'] = $totalPaid;
-          $result['amount_due'] = $payable->amount - $totalPaid;
-
-          LoanInstallment::where(['id' => $payable->id])
-          ->update($result);
+          $payable->amount_paid = $totalPaid;
+          $payable->amount_due = $payable->amount - $totalPaid;
       }
     }
 
@@ -140,7 +136,7 @@ class LoanInstallment extends Model implements IPayableDocument {
     public function createPaymentTransaction(Payment $payment) {
       $direction = $this->getTransactionDirection() ?? Transaction::DIRECTION_DEBIT;
       $counterAccountId = $this->getCounterAccountId();
-      
+
       return [
         "team_id" => $payment->team_id,
         "user_id" => $payment->user_id,
