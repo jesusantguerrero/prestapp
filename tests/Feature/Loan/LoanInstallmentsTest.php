@@ -56,4 +56,31 @@ class LoanInstallmentsTest extends LoanBase {
     $repayment = $repayment->refresh();
     $response->assertStatus(404);
   }
+
+  public function testItShouldEditRepaymentInterest() {
+    $loan = $this->createLoan();
+    $repayment = $loan->installments->first();
+
+    $response = $this->put("/loans/$loan->id/installments/$repayment->id", [
+      "interest" => 20
+    ]);
+
+    $repayment = $repayment->refresh();
+
+    $response->assertStatus(200);
+    $this->assertEquals(20, 20);
+  }
+
+  public function testItShouldNotEditCapital() {
+    $loan = $this->createLoan();
+    $repayment = $loan->installments->first();
+
+    $response = $this->payRepayment($repayment, $loan, $repayment->amount_due);
+
+    $repayment = $repayment->refresh();
+
+    $response->assertStatus(200);
+    $this->assertEquals(0, $repayment->refresh()->amount_due);
+    $this->assertEquals(LoanInstallment::STATUS_PAID, $repayment->payment_status);
+  }
 }

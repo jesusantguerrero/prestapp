@@ -12,6 +12,7 @@ Route::middleware([
 ])->group(function () {
     Route::get('loans/overview', LoanController::class);
     Route::resource('loans', LoanController::class);
+
     Route::controller(LoanController::class)->group(function () {
       Route::get('/loan-accounts', 'loanSourceAccounts');
       Route::get('/loan-accounts/{id}', 'loanSourceAccounts');
@@ -28,6 +29,7 @@ Route::middleware([
     Route::controller(LoanInstallmentController::class)->group(function () {
         Route::post('/loans/{loan}/installments/{installment}/pay', 'pay');
         Route::post('/loans/{loan}/installments/{installment}/update-status', 'updateStatus');
+        Route::put('/loans/{loan}/installments/{installment}', 'update');
     });
 
     Route::controller(LoanAgreementController::class)->group(function () {
