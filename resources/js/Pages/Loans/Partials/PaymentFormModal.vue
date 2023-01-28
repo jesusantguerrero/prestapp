@@ -10,6 +10,7 @@ import PaymentGrid from "./PaymentGrid.vue";
 import { MathHelper } from "@/Modules/loans/mathHelper";
 import { paymentMethods } from "@/Modules/loans/constants";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
+import AccountSelect from "@/Components/shared/Selects/AccountSelect.vue";
 
 const defaultPaymentForm = {
   amount: 0,
@@ -39,8 +40,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update:modelValue", "saved"]);
-
-const categories = inject("accountsOptions", []);
 
 const paymentForm = ref(generatePaymentData());
 
@@ -262,12 +261,10 @@ function emitChange(value) {
 
       <section class="flex space-x-4">
         <AtField class="w-5/12 mb-5 text-left" label="Cuenta de Pago">
-          <BaseSelect
+          <AccountSelect
             :endpoint="accountsEndpoint"
             v-model="paymentForm.paymentAccount"
             placeholder="Selecciona una cuenta"
-            label="name"
-            track-by="id"
             @update:modelValue="paymentForm.account_id = $event?.id"
           />
         </AtField>

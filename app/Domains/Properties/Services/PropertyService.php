@@ -9,11 +9,12 @@ class PropertyService {
 
     public static function createProperty(mixed $propertyData, mixed $units = []) {
       $property = Property::create($propertyData);
-      foreach ($units as $unit) {
+      foreach ($units as $index => $unit) {
         $property->units()->create(array_merge([
           'team_id' => $property->team_id,
           'user_id' => $property->user_id,
           'owner_id' => $property->owner_id,
+          'index' => $index
         ], $unit));
       }
     }

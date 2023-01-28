@@ -47,7 +47,7 @@ const onPayment = (invoice: Object) => {
   nextTick(() => {
     openModal({
       data: {
-        title: "Pagar Renta",
+        title: `Pagar ${invoice.concept}`,
         payment: selectedPayment.value,
         endpoint: `/invoices/${props.invoice?.id}/payment`,
         due: selectedPayment.value?.amount,

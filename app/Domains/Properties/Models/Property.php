@@ -14,7 +14,7 @@ use Laravel\Scout\Searchable;
 class Property extends Model {
     use HasFactory;
     use HasResourceAccounts;
-    use Searchable;
+    // use Searchable;
 
     const STATUS_BUILDING = 'BUILDING';
     const STATUS_AVAILABLE =  'AVAILABLE';

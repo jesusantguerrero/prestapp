@@ -38,7 +38,7 @@ class PropertyTransactionService {
         'date' => $formData['date'] ?? date('Y-m-d'),
         'type' => $formData['type'] ?? Invoice::DOCUMENT_TYPE_INVOICE,
         'category_type' => $formData['category_type'] ?? PropertyInvoiceTypes::Rent,
-        "invoice_account_id" => $formData["invoice_account_id"] ??$rent->property->account_id,
+        "invoice_account_id" => $formData["invoice_account_id"] ?? $rent->property->account_id,
         "account_id" => $formData["account_id"] ??$rent->property->client_account_id,
         'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
         'total' =>  $formData['amount'] ?? $rent->amount,
@@ -136,6 +136,9 @@ class PropertyTransactionService {
         "concept" => $formData['details'],
         "quantity" => 1,
         "account_id" => $formData['account_id'],
+        "category_id" => Account::guessAccount($rent, ['General Expenses', 'expenses'], [
+          'alias' => 'Gastos Generales'
+        ]),
         "price" => $formData['amount'],
         "amount" => $formData['amount'],
       ]];
@@ -146,10 +149,10 @@ class PropertyTransactionService {
         "concept" => $formData['concept'],
         'category_type' => PropertyInvoiceTypes::UtilityExpense,
         'type' => Invoice::DOCUMENT_TYPE_BILL,
-        "description" => "Devolución de deposito {$rent->client->display_name}",
+        "description" => "{$formData['concept']} {$rent->client->display_name}",
         "total" => $formData['amount'],
         "invoice_account_id" => $vendorAccountId,
-        "account_id" => $formData['account_id'],
+        "account_id" => $formData['account_id'] ?? $rent->property->account_id,
         "items" => $items
       ], $rent);
     }
@@ -205,7 +208,55 @@ class PropertyTransactionService {
         $invoices = $client->getPropertyInvoices($existingInvoice->id);
       }
 
+      $clientProperty = $client->properties()->first();
 
+      [
+        "items" => $items,
+        "total" => $total
+      ] = self::distributionItems($invoices, $clientProperty);
+
+      if (count($items)) {
+        $today = date('Y-m-d');
+        $documentData = [
+          'concept' =>  $formData['concept'] ?? 'Factura de Propiedades',
+          'description' => $formData['description'] ?? "Mensualidad {$client->fullName}",
+          'user_id' => $client->user_id,
+          'team_id' => $client->team_id,
+          'client_id' => $client->id,
+          'invoiceable_id' => $client->id,
+          'invoiceable_type' => Client::class,
+          'invoice_account_id' => $clientProperty->owner_account_id,
+          'date' => $formData['date'] ?? date('Y-m-d'),
+          'type' => Invoice::DOCUMENT_TYPE_BILL,
+          'category_type' => PropertyInvoiceTypes::OwnerDistribution,
+          'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
+          'total' =>  $formData['amount'] ?? $total,
+          'items' => $formData['items'] ?? $items,
+          'related_invoices' => [[
+              "name" => PropertyInvoiceTypes::OwnerDistribution->name(),
+              "items" => $invoices->map(function($invoice) {
+                  return [
+                    "id" => $invoice->id,
+                    "description" => $invoice->category_type
+                  ];
+              })
+            ]
+          ]
+        ];
+
+        if (isset($existingInvoice)) {
+          $existingInvoice->updateDocument($documentData);
+        } else {
+          Invoice::createDocument($documentData);
+        }
+
+        $client->update([
+          'generated_distribution_dates' => array_merge($client->generated_distribution_dates, [$today])
+        ]);
+      }
+    }
+
+    public static function distributionItems($invoices, $property) {
       $items = [];
       $total = 0;
       $taxTotal = 0;
@@ -215,7 +266,8 @@ class PropertyTransactionService {
             "name" => "$invoice->description $invoice->date",
             "concept" => "$invoice->description $invoice->date",
             "quantity" => 1,
-            "account_id" => $invoice->type == Invoice::DOCUMENT_TYPE_BILL ? $$invoice->account_id : $invoice->invoice_account_id,
+            "account_id" => $invoice->type == Invoice::DOCUMENT_TYPE_BILL ? $invoice->invoice_account_id : $invoice->invoice_account_id,
+            "category_id" => $invoice->type == Invoice::DOCUMENT_TYPE_BILL ?  $property->owner_account_id : $property->owner_account_id,
             "price" => $type * $invoice->total,
             "amount" => $type * $invoice->total,
           ];
@@ -245,50 +297,15 @@ class PropertyTransactionService {
 
             $taxTotal += $retentionTotal * $retention->type;
           }
+
           $items[] = $item;
           $total += $invoice->total;
-
       }
 
-      if (count($items)) {
-        $today = date('Y-m-d');
-        $clientProperty = $client->properties()->first();
-        $documentData = [
-          'concept' =>  $formData['concept'] ?? 'Factura de Propiedades',
-          'description' => $formData['description'] ?? "Mensualidad {$client->fullName}",
-          'user_id' => $client->user_id,
-          'team_id' => $client->team_id,
-          'client_id' => $client->id,
-          'invoiceable_id' => $client->id,
-          'invoiceable_type' => Client::class,
-          'invoice_account_id' => $clientProperty->owner_account_id,
-          'date' => $formData['date'] ?? date('Y-m-d'),
-          'type' => Invoice::DOCUMENT_TYPE_BILL,
-          'category_type' => PropertyInvoiceTypes::OwnerDistribution,
-          'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
-          'total' =>  $formData['amount'] ?? $total,
-          'items' => $formData['items'] ?? $items,
-          'related_invoices' => [[
-              "name" => PropertyInvoiceTypes::OwnerDistribution->name(),
-              "items" => $invoices->map(function($invoice) {
-                  return [
-                    "id" => $invoice->id,
-                    "description" => $invoice->category_type
-                  ];
-              })
-            ]
-          ]
+      return [
+        "items" => $items,
+        "total" => $total,
+        "taxTotal" => $taxTotal
       ];
-
-      if (isset($existingInvoice)) {
-        $existingInvoice->updateDocument($documentData);
-      } else {
-        Invoice::createDocument($documentData);
-      }
-
-      $client->update([
-        'generated_distribution_dates' => array_merge($client->generated_distribution_dates, [$today])
-      ]);
-      }
     }
 }

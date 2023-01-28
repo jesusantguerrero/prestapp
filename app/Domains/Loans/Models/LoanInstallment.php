@@ -148,8 +148,6 @@ class LoanInstallment extends Model implements IPayableDocument {
         "counter_account_id" => $counterAccountId,
         "items" => $this->getTransactionItems($payment, $counterAccountId)
       ];
-
-
     }
 
     protected function getTransactionItems($payment)

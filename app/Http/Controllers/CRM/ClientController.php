@@ -13,6 +13,7 @@ use Exception;
 class ClientController extends InertiaController
 {
   use ClientTabs;
+  use ClientTenant;
 
   public function __construct(Client $client)
   {
@@ -30,18 +31,17 @@ class ClientController extends InertiaController
 
   protected function byTypes(Request $request, $type) {
     $resourceName = $this->resourceName ?? $this->model->getTable();
-    $resources = $this->parser($this->getModelQuery($request));
+    $resources = $this->parser($this->getModelQuery($request,null, function ($builder) use ($type) {
+      $builder->where("is_$type", true);
+    }));
 
     return inertia($this->templates['index'],
     array_merge([
-        $resourceName => $this->parser($this->getModelQuery($request,null, function ($builder) use ($type) {
-          $builder->where("is_$type", true);
-        } )),
+        $resourceName => $resources,
         "serverSearchOptions" => $this->getServerParams(),
         "type" => $type,
     ], $this->getIndexProps($request, $resources)));
   }
-
 
   public function show(Request $request, int $id) {
     $client = Client::where('id', $id)->first();
@@ -62,8 +62,12 @@ class ClientController extends InertiaController
     return inertia($this->templates['show'],
       array_merge(
         $this->getEditProps(request(), $client->id), [
-        $this->model->getTable() => $client,
-        "is_owner" => $client->is_owner,
+        $this->model->getTable() => array_merge([
+          ...$client->toArray(),
+          ...[
+            "property_count" => $client->properties()->count(),
+            "unit_count" => $client->units()->count()]
+        ]),
         "outstanding" => $client->outstandingBalance(),
         "deposits" => $client->deposits(),
         "credits" => $client->credits,
@@ -76,31 +80,5 @@ class ClientController extends InertiaController
   public function generateOwnerDistribution(Client $client, int $invoiceId = null) {
     PropertyTransactionService::createOwnerDistribution($client, $invoiceId);
     return redirect("/bills");
-  }
-
-  // Tenant
-  public function endRent(Client $client, Rent $rent) {
-    $resourceName = $this->resourceName ?? $this->model->getTable();
-    $resource = $client->toArray();
-
-    return inertia('Clients/EndRent',
-    [
-        $resourceName => $resource,
-        "rent" => $rent,
-        "property" => $rent->property,
-        "currentTab" => 'contracts',
-        "pendingInvoices" => $client->invoices()->unpaid()->get(),
-        "depositsToReturn" => $client->invoices()->paid()->noRefunded()->invoiceAccount($rent->property->deposit_account_id)->get()
-        // I should get the balance I have in liabilities of the deposit account instead
-    ]);
-  }
-
-  public function endRentAction(Client $client, Rent $rent, Request $request) {
-    try {
-      RentService::endTerm($rent, $request->only(['move_out_at', 'move_out_notice']));
-      return redirect("/clients/$client->id/contracts");
-    } catch (Exception $e) {
-      back()->withErrors(["error" => "The rent is already cancelled"]);
-    }
   }
 }

@@ -1,11 +1,12 @@
-<script setup>
+<script setup lang="ts">
 import { AtButton, AtField, AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { format as formatDate } from "date-fns";
-import { ElDatePicker, ElDialog } from "element-plus";
+import { ElDatePicker, ElDialog, ElNotification } from "element-plus";
 import { inject, ref, watch, computed } from "vue";
 
 import AppButton from "@/Components/shared/AppButton.vue";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
+import AccountSelect from "@/Components/shared/Selects/AccountSelect.vue";
 
 import { MathHelper } from "@/Modules/loans/mathHelper";
 import { paymentMethods } from "@/Modules/loans/constants";
@@ -31,6 +32,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  title: {
+    type: String,
+    default: "Crear factura",
+  },
 });
 
 const emit = defineEmits(["update:modelValue", "saved"]);
@@ -47,11 +52,10 @@ function generatePaymentData() {
   return {
     ...defaultFormData,
     concept: props.defaultConcept,
-    amount: props.due,
+    amount: props.due ?? 0,
     payment_method_id: paymentMethods[0].id,
     paymentMethod: paymentMethods[0],
     date: new Date(),
-    amount: 0,
   };
 }
 
@@ -126,7 +130,7 @@ function onSubmit() {
       emit("saved");
     })
     .catch((err) => {
-      notify({
+      ElNotification({
         type: "error",
         message: err.response ? err.response.data.status.message : "Ha ocurrido un error",
       });
@@ -186,17 +190,13 @@ function emitChange(value) {
       </section>
 
       <section>
-        <AtField class="w-full mb-5 text-left" label="Categoría">
-          <AtSimpleSelect
-            v-model="formData.account_id"
-            v-model:selected="formData.account"
-            :options="categories"
+        <!-- <AtField class="w-full mb-5 text-left" label="Categoría">
+          <AccountSelect
+            v-model="formData.account"
             placeholder="Selecciona una categoria"
             class="w-full"
-            label="name"
-            key-track="id"
           />
-        </AtField>
+        </AtField> -->
         <section class="flex">
           <AtField label="Fecha limite" class="w-6/12">
             <ElDatePicker v-model="formData.date" size="large" class="w-full" rounded />
@@ -255,9 +255,7 @@ function emitChange(value) {
         >
           Delete
         </AppButton>
-        <AppButton variant="inverse" v-else @click="onSubmit()">
-          Efectuar pago
-        </AppButton>
+        <AppButton variant="secondary" v-else @click="onSubmit()"> Guardar </AppButton>
       </div>
     </template>
   </ElDialog>

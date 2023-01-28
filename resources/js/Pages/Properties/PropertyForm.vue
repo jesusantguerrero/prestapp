@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { watch } from "vue";
 import { AtButton, AtField, AtInput, AtSelect, AtTextarea } from "atmosphere-ui";
 import { useForm } from "@inertiajs/vue3";
@@ -8,12 +8,15 @@ import PropertySectionNav from "./Partials/PropertySectionNav.vue";
 import AppButton from "../../Components/shared/AppButton.vue";
 
 import { propertyTypes } from "@/Modules/properties/constants";
+import BaseSelect from "@/Components/shared/BaseSelect.vue";
+import { IClient } from "@/Modules/clients/clientEntity";
 
 const props = defineProps(["properties", "clients"]);
 
 const formData = useForm({
   name: "",
   description: "",
+  owner: null,
   owner_id: "",
   address: "",
   property_type: "",
@@ -36,11 +39,13 @@ watch(
   { immediate: true, deep: true }
 );
 
-function setInitialForm(entry, formData) {
+function setInitialForm(entry: Record<string, any>, formData: Record<string, any>) {
   Object.keys(formData).forEach((field) => {
     formData[field] = entry[field] || formData[field];
     if (field == "owner_id") {
-      formData.owner = props.clients.find((client) => client.id == formData["owner_id"]);
+      formData.owner = props.clients.find(
+        (client: IClient) => client.id == formData["owner_id"]
+      );
     }
   });
 }
@@ -54,9 +59,12 @@ const onSubmit = () => {
   const param = isEditing ? `/${props.properties.id}` : "";
 
   formData
-    .transform((data) => ({
-      ...data,
-    }))
+    .transform((data) => {
+      return {
+        ...data,
+        owner_id: data.owner?.id,
+      };
+    })
     [method](`/properties${param}`, {
       onsuccess() {
         route.visit(route("properties"));
@@ -101,16 +109,16 @@ const addUnit = () => {
               v-model="formData.address"
               class="w-full border-b focus:outline-none"
               placeholder="Dirección"
+              rounded
             />
           </AtField>
           <AtField class="w-4/12" label="Dueño de propiedad">
-            <AtSelect
-              v-model="formData.owner_id"
-              v-model:selected="formData.owner"
-              :options="clients"
+            <BaseSelect
+              v-model="formData.owner"
+              endpoint="/api/clients?filter[is_owner]=1"
               placeholder="Selecciona un dueño"
               label="display_name"
-              key-track="id"
+              track-by="id"
             />
           </AtField>
         </div>

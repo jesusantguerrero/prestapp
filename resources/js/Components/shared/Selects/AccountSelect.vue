@@ -18,10 +18,10 @@ defineEmits(["update:modelValue"]);
     label="alias"
     track-by="id"
   >
-    <template v-slot:singleLable="{ option }">
+    <template v-slot:singleLabel="{ option }">
       <span class="option__title">{{ option.alias ?? option.name }}</span>
-      ></template
-    >
+      <span class="option__small ml-2">({{ formatMoney(option.balance) }}) </span>
+    </template>
     <template v-slot:option="{ option }">
       <div class="option__desc">
         <span class="option__title">{{ option.alias ?? option.name }}</span>

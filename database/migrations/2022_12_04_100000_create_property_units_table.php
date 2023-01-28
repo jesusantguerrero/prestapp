@@ -24,6 +24,7 @@ return new class extends Migration
             // terms
             $table->string('name')->nullable();
             $table->text('description')->nullable();
+            $table->integer('index');
 
             $table->decimal('price', 14, 4)->default(0.00);
             $table->decimal('commission', 14, 4)->default(0.00);

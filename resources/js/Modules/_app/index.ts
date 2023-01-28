@@ -1,8 +1,17 @@
 import { Link } from "@inertiajs/vue3"
 export * from "./menus";
 
-export const useAppMenu = t => {
-    const appMenu =  [
+interface IAppMenuItem {
+  icon: string;
+  name: string;
+  label: string;
+  to: string;
+  as: string | Object;
+  hidden?: boolean;
+  isActiveFunction?: (url: string, currentPath: string) => boolean
+}
+export const useAppMenu = () => {
+    const appMenu: IAppMenuItem[] =  [
         {
             icon: 'fa fa-home',
             name: 'home',
@@ -16,7 +25,7 @@ export const useAppMenu = t => {
             name: 'prestamos',
             to: '/loans',
             as: Link,
-            isActiveFunction(url, currentPath) {
+            isActiveFunction(url: string, currentPath: string) {
                return /loans|lender/.test(currentPath)
             }
         },
@@ -25,7 +34,7 @@ export const useAppMenu = t => {
             label:'Propiedades',
             to: '/properties/overview',
             as: Link,
-            isActiveFunction(url, currentPath) {
+            isActiveFunction(url: string, currentPath: string) {
               return /properties|units|tenant|owner/.test(currentPath)
             }
 
@@ -35,38 +44,20 @@ export const useAppMenu = t => {
             label: 'Contabilidad',
             to: '/invoices?filter[type]=expense|invoice',
             as: Link,
-            isActiveFunction(url, currentPath) {
+            isActiveFunction(url:string, currentPath: string) {
                 return /invoices/.test(currentPath)
              }
         },
-        // {
-        //   icon: 'fas fa-heart',
-        //   label:'Documentos',
-        //   to: '/rents',
-        //   as: Link,
-        //   isActiveFunction(url, currentPath) {
-        //     return /rents/.test(currentPath)
-        //  }
-        // },
-        // {
-        //   icon: 'fas fa-heart',
-        //   label:'Acuerdos de Pago',
-        //   to: '/rents',
-        //   as: Link,
-        //   isActiveFunction(url, currentPath) {
-        //     return /rents/.test(currentPath)
-        //  }
-        // },
         {
           icon: 'fas fa-heart',
           label:'Reportes',
           to: '/statements',
           as: Link,
-          isActiveFunction(url, currentPath) {
+          isActiveFunction(url: string, currentPath: string) {
             return /statements/.test(currentPath)
          }
       },
-    ].filter(item => !item.hidden);
+    ].filter(item => !item?.hidden);
 
     const headerMenu =  [
         {
@@ -94,9 +85,9 @@ export const DEFAULT_TIMEZONE = "UTC";
 
 export const defaultDateFormats = ['dd MMM, yyyy', 'dd.MM.yyyy', 'MM/dd/yyyy', 'yyyy.MM.dd']
 
-export const mapTeamFormServer = (team, prefix="team_") => {
+export const mapTeamFormServer = (team: Record<string, any>, prefix="team_") => {
     const regPrefix = new RegExp(prefix);
-    return team.settings.reduce((acc, setting) => {
+    return team.settings.reduce((acc: Record<string, any>, setting: Record<string, any>) => {
         const fieldName = setting.name.replace(regPrefix, '')
         acc[fieldName] = setting.value;
         return acc;
@@ -105,8 +96,8 @@ export const mapTeamFormServer = (team, prefix="team_") => {
     })
 }
 
-export const parseTeamForm = (team, prefix="team_") => {
-    return Object.keys(team).reduce((acc, fieldName) => {
+export const parseTeamForm = (team: Record<string, any>, prefix="team_") => {
+    return Object.keys(team).reduce((acc: Record<string, any>, fieldName) => {
         acc[prefix+fieldName] = team[fieldName];
         return acc;
     }, {

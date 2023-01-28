@@ -13,7 +13,7 @@ use Laravel\Scout\Searchable;
 
 class Rent extends Transactionable implements IPayableDocument {
     use HasPaymentDocuments;
-    use Searchable;
+    // use Searchable;
 
     const STATUS_ACTIVE = 'ACTIVE';
     const STATUS_LATE =  'LATE';

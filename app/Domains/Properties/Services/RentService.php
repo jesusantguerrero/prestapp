@@ -57,6 +57,10 @@ class RentService {
       throw new Exception('Rent is already cancelled');
     }
 
+    public static function getForEdit(int $id) {
+      return Rent::where('id', $id)->with(['client', 'invoices', 'transaction'])->first();
+    }
+
     //  payments / invoices
     public static function invoices($teamId, $statuses = []) {
       $query = Invoice::selectRaw('clients.names contact, clients.id contact_id, invoices.debt, invoices.due_date, invoices.id id, invoices.concept')

@@ -85,7 +85,7 @@ const { formData } = useReactiveForm(
       </AtField>
     </FormSection>
 
-    <FormSection title="Datos de renta" section-class="flex space-x-4">
+    <FormSection title="Datos de renta" section-class="grid grid-cols-2 gap-2">
       <AtField label="Precio de renta" class="w-full">
         <AtInput :number-format="true" v-model="formData.amount" />
       </AtField>
