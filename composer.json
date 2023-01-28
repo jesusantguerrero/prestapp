@@ -26,6 +26,7 @@
         "phpoffice/phpspreadsheet": "^1.27",
         "phpoffice/phpword": "^1.0",
         "spatie/laravel-activitylog": "^4.7",
+        "spatie/laravel-data": "^2.2",
         "spatie/laravel-permission": "^5.8",
         "tightenco/ziggy": "^1.0"
     },

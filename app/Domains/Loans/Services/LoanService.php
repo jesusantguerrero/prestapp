@@ -2,9 +2,13 @@
 
 namespace App\Domains\Loans\Services;
 
+use App\Domains\Accounting\DTO\ReceiptData;
+use App\Domains\Accounting\Helpers\InvoiceHelper;
 use App\Domains\Loans\Jobs\CreateLoanTransaction;
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
+use App\Models\Setting;
+use Insane\Journal\Models\Core\PaymentDocument;
 
 class LoanService {
 
@@ -79,5 +83,38 @@ class LoanService {
     public static function getStats(Loan $loan) {
       return $loan->installments()->selectRaw("sum(principal - principal_paid) as outstandingPrincipal, sum(interest - interest_paid) as outstandingInterest,sum(late_fee - late_fee_paid) as outstandingFees,sum(late_fee - late_fee_paid) as outstandingFees,sum(amount_due) as outstandingTotal
       ")->first();
+    }
+
+    public static function getReceipt(Loan $loan, PaymentDocument $document) {
+      $documentData = $document->toArray();
+      $documentData['resource_name'] = 'Prestamo';
+      $documentData['client_name'] = $loan->client->display_name;
+      $documentData['total_in_words'] = InvoiceHelper::numberToWords($document->amount);
+
+      $description = $document->payments->reduce(function ($description, $payment) {
+        return $description . "Pagaré {$payment->payable->number} ";
+      });
+
+      $receipt = new ReceiptData(
+        Setting::getBySection($loan->team_id, 'business'),
+        $loan->client,
+        $description,
+        $document->payments->map(function ($payment) {
+          return [
+            "concept" => "Pagaré {$payment->payable->number}",
+            "amount" => $payment->amount
+          ];
+        }),
+        $document->amount,
+        [
+          "Fecha ultima cuota pagada: 0",
+          "Cuotas atrasadas: 0",
+          "Total pagado: 0",
+          "Balance del prestamo: 0"
+        ],
+        "**Verifique su recibo valor no reembolsable**"
+      );
+
+      return $receipt;
     }
 }

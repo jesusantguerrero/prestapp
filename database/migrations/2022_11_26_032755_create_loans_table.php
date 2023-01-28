@@ -64,7 +64,9 @@ return new class extends Migration
               "interest": 0,
               "penalty": 0
             }');
+
             // state
+            $table->date('last_paid_at')->nullable();
             $table->enum('payment_status', [
                 Loan::STATUS_DRAFT,
                 Loan::STATUS_APPROVED,

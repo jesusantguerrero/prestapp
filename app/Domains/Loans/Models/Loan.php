@@ -16,7 +16,7 @@ use Laravel\Scout\Searchable;
 class Loan extends Transactionable implements IPayableDocument {
     use HasPaymentDocuments;
     use HasResourceAccounts;
-    use Searchable;
+    // use Searchable;
 
     const STATUS_DRAFT = 'DRAFT';
     const STATUS_APPROVED ='APPROVED';
@@ -155,6 +155,7 @@ class Loan extends Transactionable implements IPayableDocument {
 
     public static function calculateTotal($payable) {
         $payable->total = $payable->installments()->sum('amount');
+        $payable->amount_due = $payable->total - $payable->amount_paid;
     }
 
     public static function checkStatus($payable) {
@@ -189,6 +190,20 @@ class Loan extends Transactionable implements IPayableDocument {
 
     public function getTotalField() {
         return 'total';
+    }
+
+    public function prePaymentMeta($paymentData): array {
+      return  [[
+        "Fecha ultima cuota pagada" => $this->last_paid_at ?? '',
+      ]];
+    }
+
+    public function postPaymentMeta($paymentDoc): array {
+      return  [[
+        "Cuotas atrasadas" =>  $this->installments()->late()->count(),
+        "Total pagado" => $this->amount_paid,
+        "Balance del prestamo" => $this->amount_due
+      ]];
     }
 
     // Loan info

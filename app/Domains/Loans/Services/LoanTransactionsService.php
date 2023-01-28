@@ -26,7 +26,13 @@ class LoanTransactionsService {
           $document['payable_type'] = LoanInstallment::class;
           $document['amount'] = $document['payment'];
           return $document;
-        }, $paymentData['documents'])
+        }, $paymentData['documents']),
+        "meta_data" => [
+            "Fecha ultima cuota pagada" => $loan->last_paid_at,
+            "Cuotas atrasadas" =>  0,
+            "Total pagado" => 0,
+            "Balance del prestamo" => 0
+        ]
       ]);
 
       self::createPayment($loan, $data);
