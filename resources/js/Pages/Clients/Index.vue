@@ -68,14 +68,24 @@ const sectionTitle = computed(() => {
             Agregar Propiedad
           </AppButton>
           <AppButton
-            variant="inverse"
+            variant="inverse-secondary"
             @click="router.visit(route('properties.create'))"
             v-else
           >
             Agregar Contrato
           </AppButton>
-          <AppButton variant="success" @click="isModalOpen = true">
-            Agregar cliente
+          <AppButton
+            variant="secondary"
+            @click="
+              toggleModal({
+                data: {
+                  type: type,
+                },
+                isOpen: true,
+              })
+            "
+          >
+            Agregar {{ type }}
           </AppButton>
         </template>
       </PropertySectionNav>

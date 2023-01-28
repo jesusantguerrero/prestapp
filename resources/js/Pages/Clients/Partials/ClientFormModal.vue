@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, computed } from "vue";
+// @ts-ignore
 import { AtButton, AtField, AtInput, AtTextarea, AtSimpleSelect } from "atmosphere-ui";
 import Modal from "@/Components/Modal.vue";
 
@@ -8,7 +9,7 @@ import { documentTypes, DOCUMENT_TYPES } from "@/Modules/clients/constants";
 import { router } from "@inertiajs/core";
 import AppButton from "@/Components/shared/AppButton.vue";
 
-defineProps({
+const props = defineProps({
   show: {
     type: Boolean,
   },
@@ -17,6 +18,12 @@ defineProps({
   },
   closeable: {
     type: Boolean,
+  },
+  type: {
+    type: String,
+    default() {
+      return "lender";
+    },
   },
 });
 
@@ -42,7 +49,10 @@ const documentType = computed(() => {
 
 const onSubmit = () => {
   clientInteractions
-    .create(clientForm)
+    .create({
+      ...clientForm,
+      [`is_${props.type}`]: true,
+    })
     .then(() => {
       close();
       router.reload();
@@ -56,7 +66,7 @@ const onSubmit = () => {
 <template>
   <Modal :show="show" :max-width="maxWidth" :closeable="closeable" @close="close()">
     <header class="border-b py-4 px-4 flex items-center justify-between">
-      <h4 class="font-bold text-xl text-primary">Crear Contacto</h4>
+      <h4 class="font-bold text-xl text-primary">Crear Contacto {{ type }}</h4>
       <button class="hover:text-danger" @click="close()">
         <IMdiClose />
       </button>

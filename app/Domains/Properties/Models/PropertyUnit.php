@@ -12,7 +12,7 @@ use Laravel\Scout\Searchable;
 class PropertyUnit extends Model {
     use HasFactory;
     use HasResourceAccounts;
-    use Searchable;
+    // use Searchable;
 
     const STATUS_BUILDING = 'BUILDING';
     const STATUS_AVAILABLE =  'AVAILABLE';
@@ -25,10 +25,18 @@ class PropertyUnit extends Model {
         'owner_id',
         'property_id',
         'name',
+        'index',
         'description',
         'price',
         'status'
     ];
+
+    protected static function boot() {
+      parent::boot();
+      static::saving(function ($property) {
+          $property->name = $property->name ?? 'Unidad ' . $property->index;
+      });
+  }
 
     // protected
     protected $creditCategory = 'expected_payments_vendors';

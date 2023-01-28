@@ -15,8 +15,8 @@ import LoanSectionNav from "./Partials/LoanSectionNav.vue";
 import { ILoan } from "@/Modules/loans/loanEntity";
 import { IClient } from "@/Modules/clients/clientEntity";
 import { saveLoan, generateInstallments } from "../../Modules/loans/features";
-import { loanFrequencies, loanSourceTypes } from "@/Modules/loans/constants";
-import { formatDate, formatMoney } from "@/utils";
+import { loanFrequencies } from "@/Modules/loans/constants";
+import { formatDate } from "@/utils";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import FormSection from "../Rents/Partials/FormSection.vue";
 import LoanSummary from "./Partials/LoanSummary.vue";
@@ -225,9 +225,7 @@ const goToList = () => {
               />
             </AtField> -->
             <AtField label="Cuenta origen" field="sourceAccount" class="w-full">
-              <AccountSelect
-                v-model="loanForm.sourceAccount"
-              />
+              <AccountSelect v-model="loanForm.sourceAccount" />
             </AtField>
           </section>
         </FormSection>

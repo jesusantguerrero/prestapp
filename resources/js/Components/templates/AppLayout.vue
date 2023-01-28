@@ -10,7 +10,6 @@ import ApplicationMark from "@/Components/ApplicationMark.vue";
 import Banner from "@/Components/Banner.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
-import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 import AppButton from "../shared/AppButton.vue";
 import TheGlobals from "../TheGlobals.vue";
 import AppNotificationBell from "./AppNotificationBell.vue";
@@ -18,17 +17,18 @@ import WatchlistButton from "./WatchlistButton.vue";
 // @ts-ignore
 import AppResourceSearch from "./AppResourceSearch.vue";
 
-import { useServerSearch } from "@/utils/useServerSearch";
 import { useAppMenu } from "@/Modules/_app";
 import { useSelect } from "@/Modules/shared/useSelects";
 
 defineProps({
   title: String,
+  showBackButton: Boolean,
+  isOnboarding: Boolean,
 });
 
 const showingNavigationDropdown = ref(false);
 
-const switchToTeam = (team) => {
+const switchToTeam = (team: Record<string, any>) => {
   router.put(
     route("current-team.update"),
     {
@@ -53,13 +53,18 @@ const { appMenu: currentMenu, headerMenu } = useAppMenu();
 //  categories
 const pageProps = usePage().props;
 const { categoryOptions: transformCategoryOptions } = useSelect();
-transformCategoryOptions(pageProps.categories, "sub_categories", "categoryOptions");
-transformCategoryOptions(pageProps.accounts, "accounts", "accountsOptions", (account) => {
-  return {
-    ...account,
-    name: account.id,
-  };
-});
+transformCategoryOptions(pageProps?.categories, "sub_categories", "categoryOptions");
+transformCategoryOptions(
+  pageProps?.accounts,
+  "accounts",
+  "accountsOptions",
+  (account) => {
+    return {
+      ...account,
+      name: account.id,
+    };
+  }
+);
 
 watch(
   () => pageProps.errors,
@@ -213,121 +218,6 @@ watch(
                   />
                 </svg>
               </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Responsive Navigation Menu -->
-        <div
-          :class="{
-            block: showingNavigationDropdown,
-            hidden: !showingNavigationDropdown,
-          }"
-          class="sm:hidden"
-        >
-          <div class="pt-2 pb-3 space-y-1">
-            <ResponsiveNavLink
-              :href="route('dashboard')"
-              :active="route().current('dashboard')"
-            >
-              Dashboard
-            </ResponsiveNavLink>
-          </div>
-
-          <!-- Responsive Settings Options -->
-          <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="flex items-center px-4">
-              <div
-                v-if="$page.props.jetstream.managesProfilePhotos"
-                class="mr-3 shrink-0"
-              >
-                <img
-                  class="object-cover w-10 h-10 rounded-full"
-                  :src="$page.props.user.profile_photo_url"
-                  :alt="$page.props.user.name"
-                />
-              </div>
-
-              <div>
-                <div class="text-base font-medium text-gray-800">
-                  {{ $page.props.user.name }}
-                </div>
-                <div class="text-sm font-medium text-gray-500">
-                  {{ $page.props.user.email }}
-                </div>
-              </div>
-            </div>
-
-            <div class="mt-3 space-y-1">
-              <ResponsiveNavLink
-                :href="route('profile.show')"
-                :active="route().current('profile.show')"
-              >
-                Profile
-              </ResponsiveNavLink>
-
-              <ResponsiveNavLink
-                v-if="$page.props.jetstream.hasApiFeatures"
-                :href="route('api-tokens.index')"
-                :active="route().current('api-tokens.index')"
-              >
-                API Tokens
-              </ResponsiveNavLink>
-
-              <!-- Authentication -->
-              <form method="POST" @submit.prevent="logout">
-                <ResponsiveNavLink as="button"> Log Out </ResponsiveNavLink>
-              </form>
-
-              <!-- Team Management -->
-              <template v-if="$page.props.jetstream.hasTeamFeatures">
-                <div class="border-t border-gray-200" />
-
-                <div class="block px-4 py-2 text-xs text-gray-400">Manage Team</div>
-
-                <!-- Team Settings -->
-                <ResponsiveNavLink
-                  :href="route('teams.show', $page.props.user.current_team)"
-                  :active="route().current('teams.show')"
-                >
-                  Team Settings
-                </ResponsiveNavLink>
-
-                <ResponsiveNavLink
-                  v-if="$page.props.jetstream.canCreateTeams"
-                  :href="route('teams.create')"
-                  :active="route().current('teams.create')"
-                >
-                  Create New Team
-                </ResponsiveNavLink>
-
-                <div class="border-t border-gray-200" />
-
-                <!-- Team Switcher -->
-                <div class="block px-4 py-2 text-xs text-gray-400">Switch Teams</div>
-
-                <template v-for="team in $page.props.user.all_teams" :key="team.id">
-                  <form @submit.prevent="switchToTeam(team)">
-                    <ResponsiveNavLink as="button">
-                      <div class="flex items-center">
-                        <svg
-                          v-if="team.id == $page.props.user.current_team_id"
-                          class="w-5 h-5 mr-2 text-green-400"
-                          fill="none"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <div>{{ team.name }}</div>
-                      </div>
-                    </ResponsiveNavLink>
-                  </form>
-                </template>
-              </template>
             </div>
           </div>
         </div>

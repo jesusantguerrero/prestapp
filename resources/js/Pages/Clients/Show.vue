@@ -24,6 +24,7 @@ export interface Props {
   outstanding: number;
   deposits: number;
   daysLate: number;
+  type: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -57,10 +58,21 @@ const paymentConcept = computed(() => {
 const refresh = () => {
   router.reload();
 };
+
+const typeTitle = computed(() => {
+  const types = [
+    {
+      owner: "Propietarios",
+      tenant: "Inquilinos",
+      lender: "Clientes",
+    },
+  ];
+  return types[props.type] ?? "Clientes";
+});
 </script>
 
 <template>
-  <AppLayout :title="`Clientes / ${clients.fullName}`">
+  <AppLayout :title="`${typeTitle} / ${clients.fullName}`">
     <template #header>
       <LoanSectionNav v-if="clients.is_lender" />
       <PropertySectionNav v-else />
@@ -95,9 +107,9 @@ const refresh = () => {
           <article class="flex space-x-5">
             <section class="text-center">
               <div class="flex items-center w-full text-center">
-                <IconCoins class="mr-2 text-yellow-600" />
+                <IMdiHomeCityOutline class="mr-2 text-secondary" />
                 <span class="mx-auto font-bold text-success">
-                  {{ clients.properties?.length }}
+                  {{ clients.property_count }} / {{ clients.unit_count }}
                 </span>
               </div>
               <p class="text-bold text-body-1" v-if="clients.is_owner">Propiedades</p>

@@ -37,7 +37,7 @@ export const useToggleModal = (modalKey: string) => {
 
     const { isOpen } = toRefs(modalState[modalKey])
 
-    const data = computed(() => modalState[modalKey] ?? null)
+    const data = computed(() => modalState[modalKey].data ?? null)
 
     return {
         toggleModal,

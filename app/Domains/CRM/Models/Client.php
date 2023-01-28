@@ -2,22 +2,23 @@
 
 namespace App\Domains\CRM\Models;
 
-use App\Domains\Loans\Models\Loan;
+use App\Domains\CRM\Models\Traits\BorrowerTrait;
+use App\Domains\CRM\Models\Traits\OwnerTrait;
+use App\Domains\CRM\Models\Traits\TenantTrait;
 use App\Domains\Properties\Enums\PropertyInvoiceTypes;
-use App\Domains\Properties\Models\Property;
-use App\Domains\Properties\Models\Rent;
 use Database\Factories\ClientFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Insane\Journal\Models\Core\Account;
-use Insane\Journal\Models\Invoice\Invoice;
 use Laravel\Scout\Searchable;
 
 class Client extends Model {
     use HasFactory;
-    use Searchable;
+    use OwnerTrait;
+    use TenantTrait;
+    use BorrowerTrait;
+    // use Searchable;
 
     protected $fillable = [
       'user_id',
@@ -35,7 +36,7 @@ class Client extends Model {
       'is_owner',
       'is_tenant',
     ];
-    protected $appends = ['fullName', 'isOwner'];
+    protected $appends = ['fullName'];
 
     const STATUS_INACTIVE = 'INACTIVE';
     const STATUS_ACTIVE = 'ACTIVE';
@@ -54,67 +55,27 @@ class Client extends Model {
         });
     }
 
-    public function loans() {
-        return $this->hasMany(Loan::class);
-    }
-
-    public function hasLateLoans() {
-        return $this->loans()->late()->count();
-    }
-
-    public function hasActiveLoans() {
-        return $this->loans()->active()->count();
-    }
-
-    // As property owner
-    public function properties() {
-      return $this->hasMany(Property::class, 'owner_id');
-    }
-
-    public function getPropertyInvoices($invoiceId = null) {
-      return Invoice::select('invoices.*')->where([
-        'rents.owner_id' => $this->id,
-        'invoices.status' => 'paid'
-      ])
-      ->where('invoiceable_type', Rent::class)
-      ->where(function ($query) use ($invoiceId) {
-          $query->doesntHave('relatedParents');
-          if ($invoiceId) {
-            $query->orWhere('invoice_relations.invoice_id', $invoiceId);
-          }
-        })
-      ->join('rents', 'invoiceable_id', 'rents.id')
-      ->leftJoin('invoice_relations', 'related_invoice_id', 'invoices.id')
-      ->get();
-    }
-
-    public function account() {
-      return $this->hasOne(Account::class);
-    }
-
-    public function getIsOwnerAttribute() {
-      $this->properties()->count();
-    }
-
-    // As tenant
-
-    public function rents() {
-      return $this->hasMany(Rent::class);
-    }
-
-    public function rent() {
-      return $this->hasOne(Rent::class)->latest('date');
-    }
-
-    public function invoices() {
-      return $this->hasMany(Invoice::class)->latest('date');
-    }
-
     public function checkStatus() {
         if($this->hasLateLoans()) {
             $this->updateQuietly([
                 'status' => self::STATUS_LATE
             ]);
+        } else if ( $this->hasActiveLoans()) {
+          $this->updateQuietly([
+              'status' => self::STATUS_ACTIVE
+          ]);
+        } else if ($this->units()->count()) {
+          $this->updateQuietly([
+            'status' => self::STATUS_ACTIVE
+          ]);
+        } else if ($this->rents()->count()) {
+          $this->updateQuietly([
+            'status' => self::STATUS_ACTIVE
+          ]);
+        } else {
+          $this->updateQuietly([
+            'status' => self::STATUS_INACTIVE
+          ]);
         }
     }
 

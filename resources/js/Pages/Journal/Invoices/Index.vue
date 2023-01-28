@@ -96,6 +96,7 @@ const isInvoiceModalOpen = ref(false);
       <InvoiceTable :invoice-data="invoices.data" class="mt-10 bg-base-lvl-3" />
     </div>
     <InvoiceFormModal
+      title="Registar gasto de propiedad"
       v-if="isInvoiceModalOpen"
       v-model="isInvoiceModalOpen"
       @saved="$router.reload()"

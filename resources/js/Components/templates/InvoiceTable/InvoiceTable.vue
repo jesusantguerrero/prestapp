@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AtButton, AtTable } from "atmosphere-ui";
+import { AtTable } from "atmosphere-ui";
 import InvoicePaymentOptions from "@/Components/templates/InvoicePaymentOptions.vue";
 
 import cols from "./cols";

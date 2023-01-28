@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers\Properties;
 
-use App\Domains\CRM\Services\ClientService;
 use App\Domains\Properties\Models\Rent;
-use App\Domains\Properties\Services\PropertyService;
 use App\Domains\Properties\Services\RentService;
 use App\Http\Controllers\InertiaController;
 use Illuminate\Http\Request;
@@ -37,8 +35,6 @@ class RentController extends InertiaController
     }
 
     public function create(Request $request) {
-      $teamId = $request->user()->current_team_id;
-
       return inertia($this->templates['create'], [
         'rents' => null,
       ]);
@@ -55,11 +51,11 @@ class RentController extends InertiaController
         return $resource;
     }
 
-    protected function getEditProps(Request $request, $id)
+    protected function getEditProps(Request $request, $rent)
     {
-        return [
-            'rents' => Rent::where('id', $id)->with(['client', 'invoices', 'transaction'])->first()
-        ];
+      return [
+        'rents' => RentService::getForEdit($rent->id)
+      ];
     }
 
     // Payments

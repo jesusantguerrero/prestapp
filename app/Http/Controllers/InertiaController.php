@@ -34,7 +34,7 @@ class InertiaController extends Controller {
 
         return Inertia::render($this->templates['index'],
         array_merge([
-            $resourceName => $this->parser($this->getModelQuery($request)),
+            $resourceName => $resources,
             "serverSearchOptions" => $this->getServerParams()
         ], $this->getIndexProps($request, $resources)));
     }

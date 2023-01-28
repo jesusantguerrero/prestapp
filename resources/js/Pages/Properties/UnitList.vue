@@ -2,15 +2,12 @@
 // @ts-ignore: its my template
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import { router } from "@inertiajs/core";
-import { ILoan } from "../../Modules/loans/loanEntity";
 import { computed } from "vue";
 import cols from "./unitCols";
-import AtTable from "../../Components/AtTable.vue";
-import AppButton from "../../Components/shared/AppButton.vue";
-import { Link } from "@inertiajs/vue3";
+import AtTable from "@/Components/AtTable.vue";
+import AppButton from "@/Components/shared/AppButton.vue";
 import PropertySectionNav from "./Partials/PropertySectionNav.vue";
 import { IPaginatedData } from "@/utils/constants";
-import BudgetProgress from "@/Components/BudgetProgress.vue";
 import { IProperty } from "@/Modules/properties/propertyEntity";
 
 const props = defineProps<{
@@ -27,9 +24,9 @@ const listData = computed(() => {
     <template #header>
       <PropertySectionNav>
         <template #actions>
-          <AppButton variant="inverse" @click="router.visit(route('properties.create'))"
-            >Agregar Propiedad</AppButton
-          >
+          <AppButton variant="secondary" @click="router.visit(route('properties.create'))"
+            >Agregar Propiedad
+          </AppButton>
         </template>
       </PropertySectionNav>
     </template>

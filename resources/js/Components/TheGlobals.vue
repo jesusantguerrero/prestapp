@@ -13,7 +13,11 @@
     @close="onTransactionSaved"
   />
 
-  <ClientFormModal v-model:show="isContactModalOpen" v-bind="contactData" />
+  <ClientFormModal
+    v-model:show="isContactModalOpen"
+    v-bind="contactData"
+    @saved="onContactSaved"
+  />
 </template>
 
 <script setup lang="ts">
