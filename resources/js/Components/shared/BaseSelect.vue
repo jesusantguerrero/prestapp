@@ -15,7 +15,14 @@
     :customLabel="customLabel"
     :options="localOptions"
     v-on="multiselectListeners"
-  />
+  >
+    <template v-slot:singleLabel="{ option }">
+      <slot name="singleLabel" :option="option" />
+    </template>
+    <template v-slot:option="{ option }">
+      <slot name="option" :option="option" />
+    </template>
+  </multiselect>
 </template>
 
 <script setup lang="ts">

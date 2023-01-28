@@ -1,15 +1,17 @@
 <script setup lang="ts">
+import { router } from "@inertiajs/core";
+
 import AppLayout from "@/Components/templates/AppLayout.vue";
 // @ts-ignore
 import { AtBackgroundIconCard, AtButton } from "atmosphere-ui";
 import AppButton from "@/Components/shared/AppButton.vue";
-
 import IncomeSummaryWidget from "./Partials/IncomeSummaryWidget.vue";
 import WelcomeWidget from "./Partials/WelcomeWidget.vue";
 import SectionFooterCard from "./SectionFooterCard.vue";
 
 import { formatMoney } from "@/utils/formatMoney";
 import { useTransactionModal } from "@/Modules/transactions/useTransactionModal";
+import { useToggleModal } from "@/Modules/_app/useToggleModal";
 
 const props = defineProps({
   revenue: {
@@ -54,22 +56,38 @@ const props = defineProps({
   },
 });
 
+const { openModal } = useToggleModal("contact");
 const welcomeCards = [
   {
     label: "Crear un contacto",
     icon: "contact",
+    action() {
+      openModal({
+        data: { type: "lender " },
+        isOpen: true,
+      });
+    },
   },
   {
     label: "Crear un prestamo",
     icon: "money",
+    action() {
+      router.visit("/loans/create");
+    },
   },
   {
     label: "Agregar propiedad",
     icon: "home",
+    action() {
+      router.visit("/properties/create");
+    },
   },
   {
     label: "Crear un contrato",
     icon: "document",
+    action() {
+      router.visit("/rents/create");
+    },
   },
 ];
 
@@ -179,6 +197,7 @@ const { openTransactionModal } = useTransactionModal();
               <button
                 v-for="card in welcomeCards"
                 class="w-full hover:border-primary border-2 transition-all ease-in group border-transparent py-3 rounded-lg flex flex-col text-center bg-white text-primary justify-center items-center"
+                @click="card.action()"
               >
                 <IMdiUserOutline class="text-4xl" v-if="card.icon == 'contact'" />
                 <IMdiMoney class="text-4xl" v-if="card.icon == 'money'" />
