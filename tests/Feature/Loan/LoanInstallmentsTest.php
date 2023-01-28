@@ -4,6 +4,7 @@ namespace Tests\Feature\Property;
 
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
+use App\Models\User;
 use Insane\Journal\Models\Core\Account;
 use Tests\Feature\Loan\Helpers\LoanBase;
 
@@ -55,6 +56,33 @@ class LoanInstallmentsTest extends LoanBase {
 
     $repayment = $repayment->refresh();
     $response->assertStatus(404);
+  }
+
+  public function testItShouldDeleteAPayment() {
+    $loan = $this->createLoan();
+    $repayment = $loan->installments->first();
+
+    $this->payRepayment($repayment, $loan, $repayment->amount_due);
+    $payment = $loan->refresh()->paymentDocuments->first();
+    $this->delete("/loans/$loan->id/payments/$payment->id");
+
+
+    $this->assertEquals(0, $loan->paymentDocuments()->count());
+    $this->assertGreaterThan(0, $repayment->amount_due);
+  }
+
+  public function testPaymentShouldNotDeletedByOtherUser() {
+    $loan = $this->createLoan();
+    $repayment = $loan->installments->first();
+    $user = User::factory()->withPersonalTeam()->create();
+
+    $this->payRepayment($repayment, $loan, $repayment->amount_due);
+    $payment = $loan->refresh()->paymentDocuments->first();
+    $this->actingAs($user);
+    $response = $this->delete("/loans/$loan->id/payments/$payment->id");
+
+
+    $response->assertForbidden();
   }
 
   public function testItShouldEditRepaymentInterest() {

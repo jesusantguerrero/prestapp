@@ -38,4 +38,11 @@ class LoanInstallmentController
         ], 404);
       }
     }
+
+    public function markAsPaid(Loan $loan, LoanInstallment $installment) {
+      if ($installment->loan_id == $loan->id) {
+        $installment->markAsPaid();
+      }
+    }
+
 }
