@@ -128,11 +128,6 @@ class LoanController extends InertiaController
       LoanTransactionsService::payoff($loan, $postData);
     }
 
-    public function markAsPaid(Loan $loan, LoanInstallment $installment) {
-        if ($installment->loan_id == $loan->id) {
-            $installment->markAsPaid();
-        }
-    }
 
     public function printPaymentDocument(Loan $loan, PaymentDocument $paymentDocument) {
       $receipt = LoanService::getReceipt($loan, $paymentDocument);
@@ -142,6 +137,12 @@ class LoanController extends InertiaController
         "receipt" => $receipt,
         "user" => $paymentDocument->user,
       ]);
+    }
+
+    public function deletePaymentDocument(Loan $loan, PaymentDocument $paymentDocument) {
+      $this->authorize('deletePayment', $loan);
+
+      LoanService::deletePaymentDocument($loan, $paymentDocument);
     }
 
     // tabs

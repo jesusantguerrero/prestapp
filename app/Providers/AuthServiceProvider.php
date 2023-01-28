@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Domains\Loans\Models\Loan;
+use App\Domains\Loans\Policies\LoanPolicy;
 use App\Models\Team;
 use App\Policies\TeamPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -15,6 +17,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Team::class => TeamPolicy::class,
+        Loan::class => LoanPolicy::class
     ];
 
     /**

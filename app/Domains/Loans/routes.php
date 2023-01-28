@@ -22,16 +22,21 @@ Route::middleware([
       Route::post('/loans/{loan}/pay', 'pay');
       Route::post('/loans/{loan}/payoff', 'payoff');
       Route::post('/loans/{loan}/close', 'close');
+
+      // payments
       Route::get('/loans/{loan}/payments/{paymentDocument}/print', 'printPaymentDocument');
-      Route::post('/loans/:loanId/installments/:installment/mark-as-paid', 'markAsPaid');
+      Route::delete('/loans/{loan}/payments/{paymentDocument}', 'deletePaymentDocument');
     });
 
+    // repayments
     Route::controller(LoanInstallmentController::class)->group(function () {
-        Route::post('/loans/{loan}/installments/{installment}/pay', 'pay');
-        Route::post('/loans/{loan}/installments/{installment}/update-status', 'updateStatus');
-        Route::put('/loans/{loan}/installments/{installment}', 'update');
+      Route::post('/loans/{loan}/installments/{installment}/pay', 'pay');
+      Route::post('/loans/{loan}/installments/{installment}/update-status', 'updateStatus');
+      Route::put('/loans/{loan}/installments/{installment}', 'update');
+      Route::post('/loans/{loan}/installments/{installment}/mark-as-paid', 'markAsPaid');
     });
 
+    // agreements
     Route::controller(LoanAgreementController::class)->group(function () {
         Route::post('/loans/{loan}/agreements', 'store');
     });

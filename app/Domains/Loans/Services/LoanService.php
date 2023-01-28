@@ -117,4 +117,8 @@ class LoanService {
 
       return $receipt;
     }
+
+    public static function deletePaymentDocument(Loan $loan, PaymentDocument $document) {
+      $document->delete();
+    }
 }
