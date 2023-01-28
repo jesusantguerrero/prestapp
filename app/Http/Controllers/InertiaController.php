@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Traits\HasEnrichedRequest;
 use App\Http\Traits\Querify;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
@@ -14,6 +15,8 @@ use Inertia\Inertia;
 
 class InertiaController extends Controller {
     use Querify;
+    use HasEnrichedRequest;
+
     protected $model;
     protected $templates;
     protected $searchable = ["id"];
@@ -122,27 +125,11 @@ class InertiaController extends Controller {
 
     }
 
-    protected function getPostData() {
-        $postData = request()->post();
-        $postData['user_id'] = request()->user()->id;
-        $postData['team_id'] = request()->user()->current_team_id;
-
-        return $postData;
-    }
-
     protected function validateDelete(Request $request, $resource) {
         return true;
     }
 
     protected function getValidationRules($postData) {
         return $this->validationRules;
-    }
-
-    protected function getFilterDates($filters = [], $subCount=0) {
-        $dates = isset($filters['date']) ? explode("~", $filters['date']) : [
-            Carbon::now()->subMonths($subCount)->startOfMonth()->format('Y-m-d'),
-            Carbon::now()->endOfMonth()->format('Y-m-d')
-        ];
-        return $dates;
     }
 }

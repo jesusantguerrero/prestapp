@@ -3,7 +3,6 @@
 namespace App\Domains\Loans\Helpers;
 
 use App\Domains\Accounting\Helpers\InvoiceHelper;
-use Brick\Math\RoundingMode;
 
 class RepaymentSchedule {
     public $payment = 0;
@@ -25,7 +24,7 @@ class RepaymentSchedule {
         $this->frequency = $loanTerms["frequency"];
         $this->payment = $this->calculatePayment();
         $this->generateAmortizationTable();
-    } 
+    }
 
     private function calculatePayment() {
       $interestRate = $this->getFrequencyRate();
@@ -53,7 +52,7 @@ class RepaymentSchedule {
           $interest = FormulaHelper::mulWithRounding($balance, $interestRate);
           $monthlyPrincipal = FormulaHelper::subWithRounding($this->payment, $interest);
           $finalBalance = FormulaHelper::subWithRounding($balance, $monthlyPrincipal);
-          
+
           $this->payments[] = (object) [
               "number" => $index + 1,
               "due_date" => $dueDate,

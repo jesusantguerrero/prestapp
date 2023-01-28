@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Insane\Journal\Models\Core\Payment;
+use Insane\Journal\Models\Core\PaymentDocument;
 
 class RecalculatePayment extends Command
 {
@@ -12,7 +13,7 @@ class RecalculatePayment extends Command
      *
      * @var string
      */
-    protected $signature = 'app:recalculate-payment {paymentId}';
+    protected $signature = 'app:recalculate-payment {paymentId} {--D|document}';
 
     /**
      * The console command description.
@@ -29,8 +30,14 @@ class RecalculatePayment extends Command
     public function handle()
     {
         $paymentId = $this->argument('paymentId');
-        $payment = Payment::find($paymentId);
-        $payment->createTransaction();
+        $isDocument = $this->option('document');
+        if (!$isDocument) {
+          $payment = Payment::find($paymentId);
+          $payment->createTransaction();
+        } else {
+          $payment = PaymentDocument::find($paymentId);
+          $payment->update(['notes' => 'updated']);
+        }
 
         return Command::SUCCESS;
     }

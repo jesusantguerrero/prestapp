@@ -166,7 +166,7 @@
 <script lang="ts" setup>
 import { format } from "date-fns";
 import { reactive, toRefs, watch, computed, inject, ref } from "vue";
-import { useForm } from "@inertiajs/inertia-vue3";
+import { useForm } from "@inertiajs/vue3";
 // @ts-ignore
 import { AtField, AtButton, AtFieldCheck, AtInput } from "atmosphere-ui";
 

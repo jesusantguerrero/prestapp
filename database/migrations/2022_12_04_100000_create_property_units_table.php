@@ -25,8 +25,8 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->text('description')->nullable();
 
-            $table->decimal('price', 11, 2)->default(0.00);
-            $table->decimal('commission', 11, 2)->default(0.00);
+            $table->decimal('price', 14, 4)->default(0.00);
+            $table->decimal('commission', 14, 4)->default(0.00);
             $table->enum('commission_type', ['PERCENTAGE', 'FIXED'])->default('PERCENTAGE');
 
             // state

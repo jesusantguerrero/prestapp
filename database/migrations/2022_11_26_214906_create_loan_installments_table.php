@@ -27,25 +27,25 @@ return new class extends Migration
             $table->integer('number');
             $table->integer('days')->default(0);
             // Basic
-            $table->decimal('amount', 11, 2)->default(0.00);
-            $table->decimal('amount_due', 11, 2)->default(0.00);
-            $table->decimal('amount_paid', 11, 2)->default(0.00);
+            $table->decimal('amount', 14, 4)->default(0.00);
+            $table->decimal('amount_due', 14, 4)->default(0.00);
+            $table->decimal('amount_paid', 14, 4)->default(0.00);
 
-            $table->decimal('principal', 11, 2)->default(0.00);
-            $table->decimal('principal_paid', 11, 2)->default(0.00);
+            $table->decimal('principal', 14, 4)->default(0.00);
+            $table->decimal('principal_paid', 14, 4)->default(0.00);
 
-            $table->decimal('interest', 11, 2)->default(0.00);
-            $table->decimal('interest_paid', 11, 2)->default(0.00);
+            $table->decimal('interest', 14, 4)->default(0.00);
+            $table->decimal('interest_paid', 14, 4)->default(0.00);
 
-            $table->decimal('fees', 11, 2)->default(0.00);
-            $table->decimal('fees_paid', 11, 2)->default(0.00);
+            $table->decimal('fees', 14, 4)->default(0.00);
+            $table->decimal('fees_paid', 14, 4)->default(0.00);
 
-            $table->decimal('late_fee', 11, 2)->default(0.00);
-            $table->decimal('late_fee_paid', 11, 2)->default(0.00);
+            $table->decimal('late_fee', 14, 4)->default(0.00);
+            $table->decimal('late_fee_paid', 14, 4)->default(0.00);
 
 
-            $table->decimal('initial_balance', 11, 2)->default(0.00);
-            $table->decimal('final_balance', 11, 2)->default(0.00);
+            $table->decimal('initial_balance', 14, 4)->default(0.00);
+            $table->decimal('final_balance', 14, 4)->default(0.00);
 
             // state
             $table->enum('payment_status', [

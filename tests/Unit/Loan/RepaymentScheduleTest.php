@@ -14,10 +14,10 @@ class RepaymentScheduleTest extends TestCase
         parent::setUp();
         $date = '2022-01-15';
         $this->loanSchedule = new RepaymentSchedule([
-            "startDate" => $date, 
+            "startDate" => $date,
             "frequency" => 'MONTHLY',
-            "capital" => 20000, 
-            "interestMonthlyRate" => 20, 
+            "capital" => 20000,
+            "interestMonthlyRate" => 20,
             "count" => 12
         ]);
     }
@@ -28,7 +28,7 @@ class RepaymentScheduleTest extends TestCase
      */
     public function testItCalculateMonthlyPayment()
     {
-        
+
         $this->assertEquals(4505.30, $this->loanSchedule->payment);
     }
 
@@ -45,14 +45,14 @@ class RepaymentScheduleTest extends TestCase
       $this->assertTrue($lastPayment->final_balance <= 0);
     }
 
-    
+
     public function testItCalculatesMonthlyDates() {
       $firstPayment = $this->loanSchedule->getInstallment(1);
       $this->assertEquals($firstPayment->due_date, '2022-01-15');
 
       $payment2 = $this->loanSchedule->getInstallment(2);
       $this->assertEquals($payment2->due_date, '2022-02-15');
-      
+
       $payment12 = $this->loanSchedule->getInstallment(12);
       $this->assertEquals($payment12->due_date, '2022-12-15');
   }

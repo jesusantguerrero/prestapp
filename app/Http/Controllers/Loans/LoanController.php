@@ -134,28 +134,13 @@ class LoanController extends InertiaController
         }
     }
 
-    public function numberToWords($number) {
-      $formatter = new \NumberFormatter('es', \NumberFormatter::SPELLOUT);
-      return $formatter->format($number) . "\n";
-    }
-
     public function printPaymentDocument(Loan $loan, PaymentDocument $paymentDocument) {
-      $teamId = request()->user()->current_team_id;
-      $user = request()->user();
-      $receipt = $paymentDocument->toArray();
-      $receipt['resource_name'] = 'Prestamo';
-      $receipt['client_name'] = $loan->client->display_name;
-      $receipt['total_in_words'] = $this->numberToWords($paymentDocument->amount);
+      $receipt = LoanService::getReceipt($loan, $paymentDocument);
+      $template = request()->query('type') ?? 'Receipt';
 
-      $receipt['description'] = $paymentDocument->payments->reduce(function ($description, $payment) {
-
-        return $description . "Pagaré {$payment->payable->number} ";
-      });
-
-      return inertia('Prints/Receipt', [
-        "company" => Setting::getBySection($teamId, 'business'),
+      return inertia("Prints/$template", [
         "receipt" => $receipt,
-        "user" => $user
+        "user" => $paymentDocument->user,
       ]);
     }
 

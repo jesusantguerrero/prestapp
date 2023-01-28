@@ -38,13 +38,13 @@ export default [
   {
     name: 'balance',
     label: 'Balance pendiente',
-    minWidth: 300,
+    width: 200,
     headerClass: 'text-right',
     class: "text-right",
     render(row: ILoanInstallment) {
       return h('div', {class: 'flex space-x-4 w-full justify-end'}, [
         h('span', row.payment_status),
-        h('span', { class: 'text-right'}, formatMoney(row.final_balance))
+        h('span', { class: 'text-right font-bold'}, formatMoney(row.final_balance))
       ])
     }
   },

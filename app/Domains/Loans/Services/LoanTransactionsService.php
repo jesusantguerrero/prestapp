@@ -5,6 +5,7 @@ namespace App\Domains\Loans\Services;
 use App\Domains\Loans\Enums\LoanInvoiceTypes;
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
+use Exception;
 use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Invoice\Invoice;
 
@@ -25,7 +26,13 @@ class LoanTransactionsService {
           $document['payable_type'] = LoanInstallment::class;
           $document['amount'] = $document['payment'];
           return $document;
-        }, $paymentData['documents'])
+        }, $paymentData['documents']),
+        "meta_data" => [
+            "Fecha ultima cuota pagada" => $loan->last_paid_at,
+            "Cuotas atrasadas" =>  0,
+            "Total pagado" => 0,
+            "Balance del prestamo" => 0
+        ]
       ]);
 
       self::createPayment($loan, $data);
@@ -46,16 +53,20 @@ class LoanTransactionsService {
     }
 
     public static function payRepayment(Loan $loan, LoanInstallment $installment, mixed $postData) {
-      self::createPayment($loan, array_merge($postData, [
-            "client_id" => $loan->client_id,
-            "documents" => [[
-                "payable_id" => $installment->id,
-                "payable_type" => LoanInstallment::class,
-                "amount" => $postData['amount'],
-                "amount_due" =>$installment->total - $postData['amount'],
-                "amount_paid" => $postData['amount']
-            ]]
+      $amount = (double) $postData['amount'];
+      if ($amount <= $installment->amount_due) {
+        return self::createPayment($loan, array_merge($postData, [
+          "client_id" => $loan->client_id,
+          "documents" => [[
+              "payable_id" => $installment->id,
+              "payable_type" => LoanInstallment::class,
+              "amount" => $amount,
+              "amount_due" =>$installment->total - $amount,
+              "amount_paid" => $postData['amount']
+          ]]
         ]));
+      }
+      throw new Exception(__("El monto que intenta pagar() es mayor a su deuda($installment->amount_due)"));
     }
 
     public static function createAgreement(Loan $loan, mixed $formData) {

@@ -18,7 +18,7 @@ class InvoiceHelper {
       $day = $date->format('d');
       if($day > 28) $day = '28';
       $newDate = "$year-$month-$day";
-    
+
       return Carbon::createFromFormat('Y-m-d', $newDate);
     }
 
@@ -45,5 +45,10 @@ class InvoiceHelper {
 
       ["method" => $method, "interval" => $interval] = $methods[$frequency];
       return $date->$method($interval)->format('Y-m-d');
-  }
+    }
+
+    public static function numberToWords($number) {
+      $formatter = new \NumberFormatter('es', \NumberFormatter::SPELLOUT);
+      return $formatter->format($number) . "\n";
+    }
 }
