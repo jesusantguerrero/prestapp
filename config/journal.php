@@ -49,7 +49,7 @@ return [
                 [
                   "resource_type" => "categories",
                   "display_id" => "expected_commissions_owners",
-                  "alias" => "Comisiones por Cobrar Clientes",
+                  "alias" => "Comisiones por cobrar a propietarios",
                   "number" => 1400,
                   "name" => "Expected commissions from owners",
                   "Description" => "Use this to track the balance of what owners owe you after with every rent collected. Invoices in Journal are already tracked in the Accounts Receivable category.",

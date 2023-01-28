@@ -14,6 +14,7 @@ class ClientController extends InertiaController
 {
   use ClientTabs;
   use ClientTenant;
+  use OwnerTrait;
 
   public function __construct(Client $client)
   {
@@ -76,9 +77,4 @@ class ClientController extends InertiaController
     );
   }
 
-  // owners
-  public function generateOwnerDistribution(Client $client, int $invoiceId = null) {
-    PropertyTransactionService::createOwnerDistribution($client, $invoiceId);
-    return redirect("/bills");
-  }
 }

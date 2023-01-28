@@ -3,69 +3,80 @@
 namespace Tests\Feature\Owners;
 
 use App\Domains\CRM\Models\Client;
-use App\Domains\CRM\Services\ClientService;
 use App\Domains\Properties\Actions\GenerateInvoices;
 use App\Domains\Properties\Models\Property;
+use App\Domains\Properties\Models\Rent;
+use App\Domains\Properties\Services\PropertyTransactionService;
 use App\Domains\Properties\Services\RentService;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Invoice\Invoice;
-use Tests\TestCase;
+use Tests\Feature\Property\Helpers\PropertyBase;
 
-class OwnerDistributionTest extends TestCase
+class OwnerDistributionTest extends PropertyBase
 {
-  use WithFaker;
-  use RefreshDatabase;
 
-  private User $user;
-  private Client $client;
-  private Client $owner;
-  private Property $property;
-  private mixed $propertyData;
-
-  protected function setup(): void {
-    parent::setup();
-    $user = User::factory()->withPersonalTeam()->create();
-    $user->current_team_id = $user->fresh()->ownedTeams()->latest('id')->first()->id;
-    $user->save();
-    $this->user = $user;
-    $this->client = Client::factory()->create([
-      'user_id' => $this->user->id,
-      'team_id' => $this->user->current_team_id,
-    ]);
-    $this->owner = Client::factory()->create([
-      'user_id' => $this->user->id,
-      'team_id' => $this->user->current_team_id,
-    ]);
-
-    $this->property = Property::factory()->create([
-      'user_id' => $this->user->id,
-      'team_id' => $this->user->current_team_id,
-      'owner_id' => $this->owner->id
-    ]);
-  }
-
-    /**
-     * A basic feature test example.
-     *
-     * @return void
-     */
-    public function testItShouldCreateOwnerDistribution()
-    {
+    public function generateInvoices() {
       $this->actingAs($this->user);
 
-      //  RentService::createRent([
-      //   'property_id' => $this->property->id,
-      //   'client_id' => $this->client->id,
-      //   'user_id' => $this->user->id,
-      //   'team_id' => $this->user->current_team_id,
-      //   'deposit' => 2500,
-      //   ]
-      // );
+      $rent = $this->createRent([
+        "price" => 5000,
+        "deposit" => 5000,
+        "interest_rate" => 10
+      ]);
 
-      // GenerateInvoices::ownerDistribution($this->owner);
+      $this->createExpense($rent, [
+        "amount" => 500
+      ]);
 
-      // $this->assertCount(1, Invoice::all());
+      return $rent;
+    }
+
+    public function payInvoices(Rent $rent) {
+      $this->actingAs($this->user);
+      foreach ($rent->invoices as $invoice) {
+        $this->post("/rents/$rent->id/invoices/$invoice->id/pay", [
+          'client_id' => $rent->client_id,
+          'account_id' => Account::findByDisplayId('daily_box', $rent->team_id),
+          'amount' => $invoice->fresh()->debt,
+          'date' => date('Y-m-d'),
+          'details' => 'Payment of ' . $invoice->concept,
+          'concept' => 'Payment of ' . $invoice->concept,
+        ]);
+      }
+    }
+
+    public function testItShouldGenerateDebt()
+    {
+      $rent = $this->generateInvoices();
+      $this->payInvoices($rent);
+
+      PropertyTransactionService::createOwnerDistribution($this->owner);
+
+      $this->assertEquals(3, $rent->fresh()->invoices()->count());
+      $this->assertEquals(10500, $rent->fresh()->invoices()->sum('total'));
+    }
+
+    public function testItShouldCreateOwnerDistribution()
+    {
+      $rent = $this->generateInvoices();
+      $this->payInvoices($rent);
+
+      PropertyTransactionService::createOwnerDistribution($this->owner);
+
+      $this->assertEquals(1, $this->owner->fresh()->invoices()->count());
+      $this->assertEquals('owner_distribution', $this->owner->fresh()->invoices->first()->category_type);
+    }
+
+    public function testItShouldMatchAmounts()
+    {
+      $rent = $this->generateInvoices();
+      $this->payInvoices($rent);
+
+      PropertyTransactionService::createOwnerDistribution($this->owner);
+
+      $this->assertEquals(8700, $this->owner->fresh()->invoices->first()->total);
     }
 }

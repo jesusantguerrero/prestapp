@@ -2,15 +2,8 @@
 
 namespace App\Http\Controllers\Properties;
 
-use App\Domains\CRM\Services\ClientService;
-use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
-use App\Domains\Properties\Services\PropertyService;
-use App\Domains\Properties\Services\RentService;
 use App\Http\Controllers\InertiaController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Insane\Journal\Helpers\ReportHelper;
 
 class PropertyUnitController extends InertiaController
 {

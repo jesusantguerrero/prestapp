@@ -129,21 +129,21 @@ class PropertyTransactionService {
       return self::createInvoice($invoiceData, $rent, false);
     }
 
-    public static function createExpense(Rent $rent, $formData) {
+    public static function createOrUpdateExpense(Rent $rent, $formData, $invoiceId = null) {
       $vendorAccountId = Account::guessAccount($rent, [$rent->property->name, 'expected_payments_vendors']);
+      $expenseAccountId = Account::guessAccount($rent, ['General Expenses', 'expenses'], [
+        'alias' => 'Gastos Generales'
+      ]);
+
       $items = [[
         "name" => $formData['concept'],
         "concept" => $formData['details'],
         "quantity" => 1,
-        "account_id" => $formData['account_id'],
-        "category_id" => Account::guessAccount($rent, ['General Expenses', 'expenses'], [
-          'alias' => 'Gastos Generales'
-        ]),
         "price" => $formData['amount'],
         "amount" => $formData['amount'],
       ]];
 
-      self::createInvoice([
+      $invoiceData = [
         "date" => $formData['date'] ?? date('Y-m-d'),
         "due_date" => $formData['date'] ?? date('Y-m-d'),
         "concept" => $formData['concept'],
@@ -151,10 +151,18 @@ class PropertyTransactionService {
         'type' => Invoice::DOCUMENT_TYPE_BILL,
         "description" => "{$formData['concept']} {$rent->client->display_name}",
         "total" => $formData['amount'],
-        "invoice_account_id" => $vendorAccountId,
-        "account_id" => $formData['account_id'] ?? $rent->property->account_id,
+        "invoice_account_id" => $vendorAccountId, // fallback credit account in case that items doesn't have an account_id and default payment account
+        "account_id" => $expenseAccountId, // debit account
         "items" => $items
-      ], $rent);
+      ];
+
+      if ($invoiceId) {
+        Invoice::find($invoiceId)->updateDocument($invoiceData);
+      } else {
+        self::createInvoice($invoiceData, $rent);
+      }
+
+
     }
 
     public static function getInvoiceLineType(string $invoiceType) {
@@ -225,7 +233,8 @@ class PropertyTransactionService {
           'client_id' => $client->id,
           'invoiceable_id' => $client->id,
           'invoiceable_type' => Client::class,
-          'invoice_account_id' => $clientProperty->owner_account_id,
+          'invoice_account_id' => $clientProperty->account_id, // fallback credit Account in case line items doesn't have one
+          'account_id' => $clientProperty->owner_account_id, // Debit Account
           'date' => $formData['date'] ?? date('Y-m-d'),
           'type' => Invoice::DOCUMENT_TYPE_BILL,
           'category_type' => PropertyInvoiceTypes::OwnerDistribution,
@@ -251,7 +260,7 @@ class PropertyTransactionService {
         }
 
         $client->update([
-          'generated_distribution_dates' => array_merge($client->generated_distribution_dates, [$today])
+          'generated_distribution_dates' => array_merge($client->generated_distribution_dates?? [], [$today])
         ]);
       }
     }
@@ -266,8 +275,8 @@ class PropertyTransactionService {
             "name" => "$invoice->description $invoice->date",
             "concept" => "$invoice->description $invoice->date",
             "quantity" => 1,
+            "category_id" => $property->owner_account_id, // payment account
             "account_id" => $invoice->type == Invoice::DOCUMENT_TYPE_BILL ? $invoice->invoice_account_id : $invoice->invoice_account_id,
-            "category_id" => $invoice->type == Invoice::DOCUMENT_TYPE_BILL ?  $property->owner_account_id : $property->owner_account_id,
             "price" => $type * $invoice->total,
             "amount" => $type * $invoice->total,
           ];

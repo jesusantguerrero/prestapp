@@ -10,6 +10,7 @@ use App\Domains\Properties\Models\Rent;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Insane\Journal\Models\Core\Account;
 use Tests\TestCase;
 
 class PropertyBase extends TestCase
@@ -79,4 +80,16 @@ class PropertyBase extends TestCase
 
     return Rent::latest()->first();
   }
+
+  protected function createExpense($rent, $formData = []) {
+    $this->post("/properties/{$rent->id}/transactions/expense", array_merge($this->rentData, [
+      'client_id' => $rent->client_id,
+      'account_id' => Account::guessAccount($rent, ['Property Expenses', 'expenses']),
+      'amount' => $formData['amount'] ?? 1000,
+      'date' => $formData['date'] ?? '2023-01-30',
+      'details' => 'Fix front door',
+      'concept' => 'fix front door',
+    ]));
+  }
+
 }
