@@ -47,23 +47,22 @@ export default [
     },
   },
   {
-    name: "payment_status",
-    label: "Estado",
-    render(row: ILoanWithInstallments) {
-      return h(
-        // @ts-ignore
-        ElTag,
-        { type: getLoanStatusColor(row.payment_status) },
-        getLoanStatus(row.payment_status)
-      );
-    },
-  },
-  {
     name: "amount_due",
     label: "Por pagar",
-    type: "money",
     class: "text-right",
     headerClass: "text-right",
+    render(row: ILoanWithInstallments) {
+      return h('div', {class: 'space-x-4  flex items-center justify-end'}, [
+        // @ts-ignore
+        h(ElTag,
+          { type: getLoanStatusColor(row.payment_status) },
+          getLoanStatus(row.payment_status)
+        ),
+        h('div',
+          formatMoney(row.amount_due),
+        )
+      ]);
+    },
   },
   {
     name: "actions",

@@ -153,7 +153,7 @@ const { openTransactionModal } = useTransactionModal();
                     >
                       <IMdiFileDocumentAlertOutline class="mr-2" />
                       <span class="font-bold">
-                        {{ formatMoney(stats.overdue) }} Balance en mora
+                        {{ formatMoney(stats.overdue) }} En mora
                       </span>
                     </AtButton>
                     <AtButton

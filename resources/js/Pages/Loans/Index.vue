@@ -101,13 +101,6 @@ const { state, updateSearch, executeSearch, reset } = useServerSearch(
             </AppButton>
           </div>
         </template>
-        <template v-slot:amount_due="{ scope: { row } }">
-          <div class="font-bold">
-            <p class="font-bold text-green-500">
-              {{ formatMoney(row.amount_due) }}
-            </p>
-          </div>
-        </template>
       </AtTable>
     </main>
   </AppLayout>

@@ -79,7 +79,7 @@
 </template>
 
 <script setup>
-import { useForm, usePage } from "@inertiajs/inertia-vue3";
+import { useForm, usePage } from "@inertiajs/vue3";
 import { reactive, toRefs, computed, watch } from "vue";
 import { AtField, AtButton, AtInput } from "atmosphere-ui";
 import Slug from "slug";
