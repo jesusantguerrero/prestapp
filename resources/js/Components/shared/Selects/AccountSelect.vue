@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { formatMoney } from "@/utils";
 import BaseSelect from "../BaseSelect.vue";
 
 const props = defineProps<{
@@ -16,5 +17,16 @@ defineEmits(["update:modelValue"]);
     placeholder="Selecciona una cuenta"
     label="alias"
     track-by="id"
-  />
+  >
+    <template v-slot:singleLable="{ option }">
+      <span class="option__title">{{ option.alias ?? option.name }}</span>
+      ></template
+    >
+    <template v-slot:option="{ option }">
+      <div class="option__desc">
+        <span class="option__title">{{ option.alias ?? option.name }}</span>
+        <span class="option__small ml-2">({{ formatMoney(option.balance) }}) </span>
+      </div>
+    </template>
+  </BaseSelect>
 </template>

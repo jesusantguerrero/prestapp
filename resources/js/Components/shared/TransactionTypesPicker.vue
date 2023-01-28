@@ -10,15 +10,15 @@ defineEmits(["update:modelValue"]);
 const transactionTypes = [
   {
     value: "DEPOSIT",
-    label: "Income",
+    label: "Ingreso",
   },
   {
     value: "WITHDRAW",
-    label: "Expense",
+    label: "Gasto",
   },
   {
     value: "TRANSFER",
-    label: "Transfer",
+    label: "Transferencia",
   },
 ];
 </script>

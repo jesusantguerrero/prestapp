@@ -11,7 +11,7 @@ import LoanSectionNav from "@/Pages/Loans/Partials/LoanSectionNav.vue";
 // @ts-ignore: its my template
 import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
-import ClientFormModal from "./Partials/ClientFormModal.vue";
+import { useToggleModal } from "@/Modules/_app/useToggleModal";
 
 const props = defineProps<{
   clients: IClient[] | IPaginatedData<IClient>;
@@ -22,7 +22,7 @@ const listData = computed(() => {
   return Array.isArray(props.clients) ? props.clients : props.clients.data;
 });
 
-const isModalOpen = ref(false);
+const { toggleModal } = useToggleModal("contact");
 
 const sectionTitle = computed(() => {
   const titles = {
@@ -43,7 +43,17 @@ const sectionTitle = computed(() => {
           <AppButton variant="inverse-secondary" @click="router.visit('/loans/create')">
             Nuevo prestamo
           </AppButton>
-          <AppButton variant="secondary" @click="isModalOpen = true">
+          <AppButton
+            variant="secondary"
+            @click="
+              toggleModal({
+                data: {
+                  type: type,
+                },
+                isOpen: true,
+              })
+            "
+          >
             Nuevo cliente
           </AppButton>
         </template>
@@ -72,7 +82,6 @@ const sectionTitle = computed(() => {
     </template>
     <main class="mt-16 bg-white rounded-md">
       <ClientsTable :clients="listData" />
-      <ClientFormModal v-model:show="isModalOpen" :type="type" />
     </main>
   </AppLayout>
 </template>
