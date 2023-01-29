@@ -140,8 +140,8 @@ class PropertyTransactionService {
         "name" => $formData['concept'],
         "concept" => $formData['details'],
         "quantity" => 1,
-        'category_id' => $expenseAccountId,
-        'account_id' => $vendorAccountId,
+        'category_id' => $vendorAccountId,
+        'account_id' => $expenseAccountId,
         "price" => $formData['amount'],
         "amount" => $formData['amount'],
       ]];

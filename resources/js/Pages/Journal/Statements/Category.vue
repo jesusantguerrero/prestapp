@@ -36,8 +36,13 @@
         </header>
 
         <div class="flex items-center justify-end space-x-2">
-          <AppButton variant="secondary" @click="isSummary = true"> Summary </AppButton>
-          <AppButton variant="secondary" @click="isSummary = false"> Details </AppButton>
+          <section>{{ ledger.assets[0].total }} =</section>
+          <section>
+            <AppButton variant="secondary" @click="isSummary = true"> Summary </AppButton>
+            <AppButton variant="secondary" @click="isSummary = false">
+              Details
+            </AppButton>
+          </section>
         </div>
         <div class="mt-10 items" :class="{ 'divide-y': isSummary }">
           <div v-for="category in mainCategories" :key="category.id" class="py-2">
@@ -46,6 +51,7 @@
               class="w-full px-5 py-2 mt-5 font-bold bg-gray-200"
             >
               {{ category.category.alias ?? category.category.name }}
+              {{ category.category.total }}
             </div>
             <div class="divide-y" v-if="!isSummary">
               <div class="px-5 py-2 font-semibold bg-gray-100">
@@ -100,6 +106,9 @@ const props = defineProps({
   },
   accounts: {
     type: Array,
+  },
+  ledger: {
+    type: Object,
   },
 });
 

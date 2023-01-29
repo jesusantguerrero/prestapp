@@ -4,6 +4,7 @@ namespace Tests\Feature\Property\Helpers;
 
 use App\Domains\Accounting\Helpers\InvoiceHelper;
 use App\Domains\CRM\Models\Client;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Properties\Models\Rent;
@@ -90,6 +91,24 @@ class PropertyBase extends TestCase
       'details' => 'Fix front door',
       'concept' => 'fix front door',
     ]));
+  }
+
+  public function payInvoice(Rent $rent, $invoice, $form = []) {
+    $this->actingAs($this->user);
+
+      $url = $invoice->category_type != PropertyInvoiceTypes::UtilityExpense
+      ? "/rents/$rent->id/invoices/$invoice->id/pay"
+      : "/invoices/$invoice->id/pay";
+
+
+      $this->post($url, [
+        'client_id' => $rent->client_id,
+        'account_id' => $form['account_id'] ?? Account::findByDisplayId('daily_box', $rent->team_id)->id,
+        'amount' => $form['amount'] ?? $invoice->debt,
+        'date' => date('Y-m-d'),
+        'details' => 'Payment of ' . $invoice->concept,
+        'concept' => 'Payment of ' . $invoice->concept,
+      ]);
   }
 
 }
