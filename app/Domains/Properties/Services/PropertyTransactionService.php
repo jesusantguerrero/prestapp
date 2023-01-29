@@ -3,6 +3,7 @@
 namespace App\Domains\Properties\Services;
 
 use App\Domains\Accounting\Helpers\InvoiceHelper;
+use App\Domains\CRM\Models\Client;
 use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Rent;
 use Illuminate\Support\Carbon;
@@ -139,6 +140,8 @@ class PropertyTransactionService {
         "name" => $formData['concept'],
         "concept" => $formData['details'],
         "quantity" => 1,
+        'category_id' => $expenseAccountId,
+        'account_id' => $vendorAccountId,
         "price" => $formData['amount'],
         "amount" => $formData['amount'],
       ]];
@@ -161,8 +164,6 @@ class PropertyTransactionService {
       } else {
         self::createInvoice($invoiceData, $rent);
       }
-
-
     }
 
     public static function getInvoiceLineType(string $invoiceType) {
@@ -233,7 +234,7 @@ class PropertyTransactionService {
           'client_id' => $client->id,
           'invoiceable_id' => $client->id,
           'invoiceable_type' => Client::class,
-          'invoice_account_id' => $clientProperty->account_id, // fallback credit Account in case line items doesn't have one
+          'invoice_account_id' => $clientProperty->owner_account_id, // fallback credit Account in case line items doesn't have one
           'account_id' => $clientProperty->owner_account_id, // Debit Account
           'date' => $formData['date'] ?? date('Y-m-d'),
           'type' => Invoice::DOCUMENT_TYPE_BILL,
@@ -276,15 +277,17 @@ class PropertyTransactionService {
             "concept" => "$invoice->description $invoice->date",
             "quantity" => 1,
             "category_id" => $property->owner_account_id, // payment account
-            "account_id" => $invoice->type == Invoice::DOCUMENT_TYPE_BILL ? $invoice->invoice_account_id : $invoice->invoice_account_id,
+            "account_id" => $invoice->type == Invoice::DOCUMENT_TYPE_BILL ? $invoice->account_id : $invoice->invoice_account_id, // debit account
             "price" => $type * $invoice->total,
             "amount" => $type * $invoice->total,
           ];
 
           if ($invoice->category_type == PropertyInvoiceTypes::Rent->value) {
             $rent = $invoice->invoiceable;
-            $retention = Tax::guessRetention("Commission", $rent->commission, $invoice->toArray(), [
+            $retention = Tax::guessRetention("Cobro de abogado", $rent->commission, $invoice->toArray(), [
               "description" => 'Descuento de abogado',
+              "account_id" => Account::guessAccount($rent, ['real_state_operative', 'cash_and_bank']),
+              "translate_account_id" => Account::guessAccount($rent, ['Comisiones por renta','expected_commissions_owners']),
             ]);
 
             $retentionTotal = (double) $retention->rate * $invoice->total / 100;

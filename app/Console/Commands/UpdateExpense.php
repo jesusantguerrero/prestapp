@@ -14,7 +14,7 @@ class UpdateExpense extends Command
      *
      * @var string
      */
-    protected $signature = 'app:update-expense {invoiceId}';
+    protected $signature = 'app:update-expense {invoiceId} {--D|distribution}';
 
     /**
      * The console command description.
@@ -33,18 +33,23 @@ class UpdateExpense extends Command
         $invoiceId = $this->argument('invoiceId');
         $invoice = Invoice::find($invoiceId);
 
-        PropertyTransactionService::createOrUpdateExpense(
-          $invoice->invoiceable,
-          [
-          'client_id' => $invoice->client_id,
-          'account_id' => $invoice->account_id,
-          'amount' => $invoice->total,
-          'date' => $invoice->due_date,
-          'details' => $invoice->concept,
-          'concept' => $invoice->concept
-        ],
-          $invoice->id
-        );
+        $isDistribution = $this->option('distribution');
+        if ($isDistribution) {
+          PropertyTransactionService::createOwnerDistribution($invoice->client, $invoice->id);
+        } else {
+          PropertyTransactionService::createOrUpdateExpense(
+            $invoice->invoiceable,
+            [
+              'client_id' => $invoice->client_id,
+              'account_id' => $invoice->account_id,
+              'amount' => $invoice->total,
+              'date' => $invoice->due_date,
+              'details' => $invoice->concept,
+              'concept' => $invoice->concept
+            ],
+            $invoice->id
+          );
+        }
 
         return Command::SUCCESS;
     }
