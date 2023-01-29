@@ -66,8 +66,6 @@ class OwnerDistributionTest extends PropertyBase
       $this->assertEquals(PropertyInvoiceTypes::UtilityExpense->value, $invoice->category_type);
     }
 
-
-
     public function testOwnerShouldHavePropertyInvoices()
     {
       $rent = $this->generateInvoices();

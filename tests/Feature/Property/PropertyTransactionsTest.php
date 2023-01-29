@@ -14,23 +14,13 @@ class PropertyTransactionsTest extends PropertyBase
   use WithFaker;
   use RefreshDatabase;
 
-  public function makePropertyExpense($rent) {
-   return $this->post("/properties/{$rent->id}/transactions/expense", array_merge($this->rentData, [
-      'client_id' => $rent->client_id,
-      'account_id' => Account::guessAccount($rent, ['Property Expenses', 'expenses']),
-      'amount' => 1000,
-      'date' => '2023-01-30',
-      'details' => 'Fix front door',
-      'concept' => 'fix front door',
-    ]));
-  }
 
   public function testItShouldCreateAPropertyExpense() {
     $this->seed();
     $this->actingAs($this->user);
     $rent = $this->createRent();
 
-    $response = $this->makePropertyExpense($rent);
+    $response = $this->createExpense($rent);
 
     $response->assertStatus(200);
     $rent = Rent::first();
@@ -45,7 +35,7 @@ class PropertyTransactionsTest extends PropertyBase
     $this->actingAs($this->user);
     $rent = $this->createRent();
 
-    $this->makePropertyExpense($rent);
+    $this->createExpense($rent);
     $expense = $rent->rentExpenses->first();
     $transaction = $expense->transaction;
 
@@ -62,7 +52,7 @@ class PropertyTransactionsTest extends PropertyBase
     $rent = $this->createRent();
     $account = Account::findByDisplayId('daily_box', $rent->team_id);
 
-    $this->makePropertyExpense($rent);
+    $this->createExpense($rent);
     $expense = $rent->rentExpenses->first();
     $this->payInvoice($rent, $expense, [
       'account_id' => $account->id,
