@@ -83,7 +83,7 @@ class PropertyBase extends TestCase
   }
 
   protected function createExpense($rent, $formData = []) {
-    $this->post("/properties/{$rent->id}/transactions/expense", array_merge($this->rentData, [
+    return $this->post("/properties/{$rent->id}/transactions/expense", array_merge($this->rentData, [
       'client_id' => $rent->client_id,
       'account_id' => Account::guessAccount($rent, ['Property Expenses', 'expenses']),
       'amount' => $formData['amount'] ?? 1000,

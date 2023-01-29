@@ -277,7 +277,7 @@ class PropertyTransactionService {
             "concept" => "$invoice->description $invoice->date",
             "quantity" => 1,
             "category_id" => $property->owner_account_id, // payment account
-            "account_id" => $invoice->type == Invoice::DOCUMENT_TYPE_BILL ? $invoice->account_id : $invoice->invoice_account_id, // debit account
+            "account_id" => $invoice->type == Invoice::DOCUMENT_TYPE_BILL ? Account::guessAccount($property, ['real_state_reserve', 'cash_and_bank']) : $invoice->invoice_account_id, // debit account
             "price" => $type * $invoice->total,
             "amount" => $type * $invoice->total,
           ];
