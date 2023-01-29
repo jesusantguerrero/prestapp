@@ -80,7 +80,6 @@ Route::middleware([
     Route::get('/contacts/{client}/{type}', [ClientController::class, 'showByType']);
     Route::resource('clients', ClientController::class);
     Route::get('/clients/{client}/{section}', [ClientController::class, 'getSection']);
-
     // Business
 
 

@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import { Link, router } from "@inertiajs/vue3";
-import { computed } from "vue";
+import { Link } from "@inertiajs/vue3";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
-import AppSectionHeader from "../../../Components/AppSectionHeader.vue";
+import AppSectionHeader from "@/Components/AppSectionHeader.vue";
 
 import { formatMoney } from "@/utils";
-import { ILoanInstallment } from "../../../Modules/loans/loanInstallmentEntity";
 import PropertySectionNav from "../../Properties/Partials/PropertySectionNav.vue";
 import { ElTag } from "element-plus";
 import { AtBackgroundIconCard } from "atmosphere-ui";
-import { IClient } from "../../../Modules/clients/clientEntity";
+import { IClient } from "@/Modules/clients/clientEntity";
 import EmptyAddTool from "../../Properties/Partials/EmptyAddTool.vue";
 import { clientInteractions } from "@/Modules/clients/clientInteractions";
 
@@ -19,6 +17,7 @@ export interface Props {
   clients: IClient;
   currentTab: string;
   hideStatistics: boolean;
+  type: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -32,19 +31,8 @@ const tabs = {
   transactions: "Transacciones",
 };
 
-type IPaymentMetaData = ILoanInstallment & {
-  installment_id?: number;
-};
-
-const paymentConcept = computed(() => {
-  return (
-    selectedPayment.value &&
-    `Pago ${props.properties.id} pago #${selectedPayment.value.installment_id}`
-  );
-});
-
-const refresh = () => {
-  router.reload();
+const getTabUrl = (tab: string = "") => {
+  return `/contacts/${props.clients.id}/${props.type}?section=${tab}`;
 };
 </script>
 
@@ -104,7 +92,7 @@ const refresh = () => {
             v-for="(tabLabel, tab) in tabs"
             :key="tab"
             :class="{ 'bg-gray-300': tab == currentTab }"
-            :href="`/clients/${props.clients.id}/${tab}`"
+            :href="getTabUrl(tab)"
             replace
           >
             {{ tabLabel }}
@@ -153,10 +141,10 @@ const refresh = () => {
                   Generar de propiedades
                 </AppButton>
               </section>
-              <EmptyAddTool> Notes </EmptyAddTool>
+              <EmptyAddTool> Personas de contacto </EmptyAddTool>
               <EmptyAddTool> Imagenes </EmptyAddTool>
-              <EmptyAddTool> Documentos </EmptyAddTool>
-              <EmptyAddTool> Configuracion </EmptyAddTool>
+              <EmptyAddTool> Notas </EmptyAddTool>
+              <EmptyAddTool> Informacion de entrada </EmptyAddTool>
             </div>
           </div>
         </article>

@@ -60,21 +60,23 @@ class ClientController extends InertiaController
   }
 
   public function showByType(Client $client, $type) {
-    return inertia($this->templates['show'],
-      array_merge(
-        $this->getEditProps(request(), $client->id), [
-        $this->model->getTable() => array_merge([
-          ...$client->toArray(),
-          ...[
-            "property_count" => $client->properties()->count(),
-            "unit_count" => $client->units()->count()]
-        ]),
-        "outstanding" => $client->outstandingBalance(),
-        "deposits" => $client->deposits(),
-        "credits" => $client->credits,
-        "type" => $type
-      ])
-    );
+    $section = request()->query('section');
+
+    $resource = array_merge($client->toArray(),[
+      ...($section ? $this->$section($client) : [] ),
+    ], [
+      "property_count" => $client->properties()->count(),
+      "unit_count" => $client->units()->count()
+    ]);
+
+    return inertia($this->templates['show'],[
+      $this->model->getTable() => $resource,
+      "outstanding" => $client->outstandingBalance(),
+      "deposits" => $client->deposits(),
+      "credits" => $client->credits,
+      "type" => $type,
+      "currentTab" => $section
+    ]);
   }
 
 }
