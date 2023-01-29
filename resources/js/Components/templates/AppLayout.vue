@@ -3,9 +3,10 @@ import { ref, computed, watch } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
 import { Head, Link } from "@inertiajs/vue3";
 // @ts-ignore
-import { AtShell, AtSide } from "atmosphere-ui";
+import { AtSide } from "atmosphere-ui";
 import { ElNotification } from "element-plus";
 
+import AppShell from "./AppShell.vue";
 import ApplicationMark from "@/Components/ApplicationMark.vue";
 import Banner from "@/Components/Banner.vue";
 import Dropdown from "@/Components/Dropdown.vue";
@@ -19,6 +20,7 @@ import AppResourceSearch from "./AppResourceSearch.vue";
 
 import { useAppMenu } from "@/Modules/_app";
 import { useSelect } from "@/Modules/shared/useSelects";
+import { useLocalStorage } from "@vueuse/core";
 
 defineProps({
   title: String,
@@ -43,7 +45,9 @@ const switchToTeam = (team: Record<string, any>) => {
 const currentPath = computed(() => {
   return document?.location?.pathname;
 });
-const isExpanded = ref(true);
+
+const isExpanded = useLocalStorage("isMenuExpanded", true);
+
 const logout = () => {
   router.post(route("logout"));
 };
@@ -88,7 +92,7 @@ watch(
   <div>
     <Head :title="title" />
     <Banner />
-    <AtShell :is-expanded="isExpanded" :nav-class="[!$slots.header && `border-b`]">
+    <AppShell :is-expanded="isExpanded" :nav-class="[!$slots.header && `border-b`]">
       <template #navigation>
         <!-- Primary Navigation Menu -->
         <div
@@ -100,7 +104,7 @@ watch(
             </AppButton>
             <h4
               :class="[showBackButton ? 'lg:ml-2' : 'lg:ml-6']"
-              class="text-lg font-bold"
+              class="text-lg font-bold text-secondary"
             >
               {{ title }}
             </h4>
@@ -109,7 +113,7 @@ watch(
           <div class="flex justify-end h-16">
             <div class="hidden sm:flex sm:items-center sm:ml-6">
               <AppResourceSearch class="mr-2" />
-              <AppButton class="flex px-1 items-center mr-4">
+              <AppButton class="flex px-1 items-center mr-4 ml-2">
                 <IMdiPlus class="mr-2" />
                 Nuevo
               </AppButton>
@@ -224,22 +228,23 @@ watch(
       </template>
       <template #aside>
         <AtSide
-          class="border-none shadow-none text-bold bg-base-lvl-3"
+          class="border-none shadow-none text-bold bg-secondary"
           title="Prestapp"
-          v-model:isExpanded="isExpanded"
+          :is-expanded="isExpanded"
+          @update:isExpanded="isExpanded = $event"
           :menu="currentMenu"
           :header-menu="headerMenu"
           :current-path="currentPath"
           brand-container-class="py-2"
-          nav-container-class="px-2 pt-1 space-y-2 border-t"
-          icon-class="text-gray-400 transition hover:text-primary"
-          item-class="px-5 py-[0.80rem] rounded-md font-bold text-gray-400 w-54 hover:text-primary hover:bg-base-lvl-1"
-          item-active-class="text-primary bg-base-lvl-1/70"
+          nav-container-class="px-2 pt-1 space-y-2 border-t border-base-lvl-3/20"
+          icon-class="text-gray-100 transition hover:text-primary hover:bg-base-lvl-3/10"
+          item-class="px-5 py-[0.80rem] rounded-md font-bold text-gray-100 w-54 hover:text-primary hover:bg-base-lvl-3/10"
+          item-active-class="text-primary bg-base-lvl-3/10"
           is-expandable
         >
           <template #brand>
             <!-- Logo -->
-            <h1 class="flex items-center w-full shrink-0 px-7">
+            <h1 class="flex items-center w-full shrink-0 px-7 text-gray-100">
               <Link :href="route('dashboard')" class="flex items-center space-x-2">
                 <ApplicationMark class="block w-auto h-9" />
                 <span class="text-xl font-bold"> Prestapp </span>
@@ -253,7 +258,7 @@ watch(
         <header
           v-if="$slots.header"
           :class="[isExpanded ? 'lg:pr-56' : 'lg:pr-20']"
-          class="fixed z-30 w-full border-b bg-base-lvl-3 base-deep-1"
+          class="fixed z-30 w-full border-b bg-neutral base-deep-1"
         >
           <slot name="header" />
         </header>
@@ -263,7 +268,7 @@ watch(
           <slot />
         </main>
       </template>
-    </AtShell>
+    </AppShell>
     <TheGlobals />
   </div>
 </template>

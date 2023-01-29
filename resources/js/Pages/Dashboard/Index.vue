@@ -137,7 +137,7 @@ const { openTransactionModal } = useTransactionModal();
     <main class="p-5 mx-auto text-gray-500 sm:px-6 lg:px-8">
       <section class="w-full md:flex md:space-x-4">
         <div class="w-full md:w-9/12 flex flex-col justify-between">
-          <WelcomeWidget message="Hola, " :username="user.name">
+          <WelcomeWidget message="Hola, " :username="user.name" class="shadow-sm">
             <template #content>
               <section
                 class="space-y-4 md:grid md:grid-cols-2 grid-rows-1 py-4 md:divide-x-2"
@@ -194,7 +194,7 @@ const { openTransactionModal } = useTransactionModal();
             </template>
           </WelcomeWidget>
           <div
-            class="rounded-md mt-4 bg-base-lvl-3 w-full md:mt-auto h-10 items-center justify-center flex flex-col"
+            class="rounded-md mt-4 shadow-sm bg-base-lvl-3 w-full md:mt-4 h-10 items-center justify-center flex flex-col"
           >
             Facturas a Dueños pendientes
           </div>
