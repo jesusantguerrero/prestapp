@@ -95,10 +95,11 @@ Route::middleware([
     Route::resource('rents', RentController::class);
     // property transactions
     Route::get('/properties/transactions/{category}', PropertyTransactionController::class);
-    Route::post('/properties/{rent}/transactions/{type}', [PropertyTransactionController::class, 'store']);
-    Route::post('rents/{rent}/invoices/{invoice}/pay', [RentController::class, 'payInvoice']);
-    Route::post('rents/{rent}/generate-next-invoice', [RentController::class, 'generateNextInvoice']);
+    Route::post('/rents/{rent}/invoices/{invoice}/pay', [RentController::class, 'payInvoice']);
+    Route::post('/rents/{rent}/generate-next-invoice', [RentController::class, 'generateNextInvoice']);
     Route::post('/rents/{rent}/transactions/{invoice}', [ClientController::class, 'generateOwnerDistribution']);
+    Route::post('/properties/{rent}/transactions/{type}', [PropertyTransactionController::class, 'store']);
+    Route::post('/properties/{rent}/transactions/{type}/{invoiceId}', [PropertyTransactionController::class, 'store']);
 
     // Owner
     Route::post('/clients/{client}/owner-distributions', [ClientController::class, 'generateOwnerDistribution']);
@@ -107,8 +108,6 @@ Route::middleware([
     // Tenant
     Route::get('/clients/{client}/rents/{rent}/end', [TenantRentController::class, 'endRent'])->name('tenant.end-rent');;
     Route::put('/clients/{client}/rents/{rent}/end', [TenantRentController::class, 'endRentAction'])->name('tenant.end-rent-action');
-
-
 });
 
 // Loans

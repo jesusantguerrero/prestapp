@@ -65,8 +65,10 @@ const onSubmit = () => {
 
 <template>
   <Modal :show="show" :max-width="maxWidth" :closeable="closeable" @close="close()">
-    <header class="border-b py-4 px-4 flex items-center justify-between">
-      <h4 class="font-bold text-xl text-primary">Crear Contacto {{ type }}</h4>
+    <header
+      class="border-b bg-secondary/80 text-white py-4 px-4 flex items-center justify-between"
+    >
+      <h4 class="font-bold text-xl">Crear Contacto {{ type }}</h4>
       <button class="hover:text-danger" @click="close()">
         <IMdiClose />
       </button>
@@ -74,7 +76,11 @@ const onSubmit = () => {
     <main class="pb-4 bg-white sm:p-6 sm:pb-4">
       <section class="flex space-x-2">
         <AtField label="Nombres" class="w-full">
-          <AtInput v-model="clientForm.names" rounded />
+          <AtInput
+            v-model="clientForm.names"
+            rounded
+            class="bg-neutral/20 shadow-none border-neutral hover:border-secondary/60"
+          />
         </AtField>
         <AtField label="Apellidos" class="w-full">
           <AtInput v-model="clientForm.lastnames" rounded />
@@ -100,9 +106,9 @@ const onSubmit = () => {
         </AtField>
       </section>
     </main>
-    <footer class="px-6 py-4 space-x-3 text-gray-600 text-right bg-gray-100">
+    <footer class="px-6 py-4 space-x-3 text-gray-600 text-right bg-neutral">
       <AtButton @click="close()" class="text-gray"> Cancelar </AtButton>
-      <AppButton @click="onSubmit()"> Guardar </AppButton>
+      <AppButton variant="secondary" @click="onSubmit()"> Guardar </AppButton>
     </footer>
   </Modal>
 </template>

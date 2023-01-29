@@ -70,6 +70,10 @@ class Rent extends Transactionable implements IPayableDocument {
         return $this->belongsTo(Client::class);
     }
 
+    public function owner() {
+        return $this->belongsTo(Client::class, 'owner_id');
+    }
+
     public function property() {
         return $this->belongsTo(Property::class);
     }

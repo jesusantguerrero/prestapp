@@ -4,12 +4,14 @@ namespace Tests\Feature\Property\Helpers;
 
 use App\Domains\Accounting\Helpers\InvoiceHelper;
 use App\Domains\CRM\Models\Client;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Properties\Models\Rent;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Insane\Journal\Models\Core\Account;
 use Tests\TestCase;
 
 class PropertyBase extends TestCase
@@ -79,4 +81,34 @@ class PropertyBase extends TestCase
 
     return Rent::latest()->first();
   }
+
+  protected function createExpense($rent, $formData = []) {
+    $this->post("/properties/{$rent->id}/transactions/expense", array_merge($this->rentData, [
+      'client_id' => $rent->client_id,
+      'account_id' => Account::guessAccount($rent, ['Property Expenses', 'expenses']),
+      'amount' => $formData['amount'] ?? 1000,
+      'date' => $formData['date'] ?? '2023-01-30',
+      'details' => 'Fix front door',
+      'concept' => 'fix front door',
+    ]));
+  }
+
+  public function payInvoice(Rent $rent, $invoice, $form = []) {
+    $this->actingAs($this->user);
+
+      $url = $invoice->category_type != PropertyInvoiceTypes::UtilityExpense
+      ? "/rents/$rent->id/invoices/$invoice->id/pay"
+      : "/invoices/$invoice->id/pay";
+
+
+      $this->post($url, [
+        'client_id' => $rent->client_id,
+        'account_id' => $form['account_id'] ?? Account::findByDisplayId('daily_box', $rent->team_id)->id,
+        'amount' => $form['amount'] ?? $invoice->debt,
+        'date' => date('Y-m-d'),
+        'details' => 'Payment of ' . $invoice->concept,
+        'concept' => 'Payment of ' . $invoice->concept,
+      ]);
+  }
+
 }

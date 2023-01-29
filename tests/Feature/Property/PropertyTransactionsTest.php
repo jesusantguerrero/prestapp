@@ -14,12 +14,8 @@ class PropertyTransactionsTest extends PropertyBase
   use WithFaker;
   use RefreshDatabase;
 
-  public function testItShouldCreateAPropertyExpense() {
-    $this->seed();
-    $this->actingAs($this->user);
-    $rent = $this->createRent();
-
-    $response = $this->post("/properties/{$rent->id}/transactions/expense", array_merge($this->rentData, [
+  public function makePropertyExpense($rent) {
+   return $this->post("/properties/{$rent->id}/transactions/expense", array_merge($this->rentData, [
       'client_id' => $rent->client_id,
       'account_id' => Account::guessAccount($rent, ['Property Expenses', 'expenses']),
       'amount' => 1000,
@@ -27,11 +23,56 @@ class PropertyTransactionsTest extends PropertyBase
       'details' => 'Fix front door',
       'concept' => 'fix front door',
     ]));
+  }
+
+  public function testItShouldCreateAPropertyExpense() {
+    $this->seed();
+    $this->actingAs($this->user);
+    $rent = $this->createRent();
+
+    $response = $this->makePropertyExpense($rent);
+
     $response->assertStatus(200);
     $rent = Rent::first();
 
     $this->assertCount(1, $rent->rentExpenses);
     $this->assertEquals(1000, $rent->rentExpenses[0]->total);
     $this->assertEquals(Invoice::STATUS_UNPAID, $rent->rentExpenses[0]->status);
+  }
+
+  public function testPropertyExpenseShouldBeAccountingRight() {
+    $this->seed();
+    $this->actingAs($this->user);
+    $rent = $this->createRent();
+
+    $this->makePropertyExpense($rent);
+    $expense = $rent->rentExpenses->first();
+    $transaction = $expense->transaction;
+
+    $this->assertEquals(1000, $transaction->total);
+    $this->assertEquals($expense->account_id, $transaction->lines[0]->account_id);
+    $this->assertEquals(1, $transaction->lines[0]->type);
+    $this->assertEquals($expense->invoice_account_id, $transaction->lines[1]->account_id);
+    $this->assertEquals(-1, $transaction->lines[1]->type);
+  }
+
+  public function testShouldPayPropertyExpense() {
+    $this->seed();
+    $this->actingAs($this->user);
+    $rent = $this->createRent();
+    $account = Account::findByDisplayId('daily_box', $rent->team_id);
+
+    $this->makePropertyExpense($rent);
+    $expense = $rent->rentExpenses->first();
+    $this->payInvoice($rent, $expense, [
+      'account_id' => $account->id,
+    ]);
+    $payment = $rent->rentExpenses->first()->payments->first();
+
+    $this->assertEquals(1000, $payment->amount);
+    $this->assertEquals(1, $payment->transaction->lines[0]->type);
+    $this->assertEquals($expense->invoiceAccount->display_id, $payment->transaction->lines[0]->account->display_id);
+    $this->assertEquals($account->id, $payment->transaction->lines[1]->account_id);
+    $this->assertEquals(-1, $payment->transaction->lines[1]->type);
   }
 }
