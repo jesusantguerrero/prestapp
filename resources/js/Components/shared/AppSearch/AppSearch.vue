@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { AtInput } from "atmosphere-ui";
 import { ref } from "vue";
 import { useDebounceFn } from "@vueuse/shared";
@@ -84,9 +84,13 @@ const handleInput = useDebounceFn((searchText) => {
       @update:modelValue="handleInput"
       @focus="$emit('focus')"
       @blur="$emit('blur')"
+      @keydown.ctrl.enter="$emit('search')"
     >
       <template #prefix>
-        <button class="rounded-l-md px-2 hover:bg-gray-50 md:px-4">
+        <button
+          class="rounded-l-md px-2 hover:bg-gray-50 md:px-4"
+          @click.stop="$emit('search')"
+        >
           <IMdiSearch />
         </button>
       </template>

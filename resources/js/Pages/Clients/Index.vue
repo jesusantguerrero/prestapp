@@ -2,7 +2,7 @@
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import { IClient } from "@/Modules/clients/clientEntity.ts";
 import { IPaginatedData } from "@/utils/constants";
-import { computed, ref } from "vue";
+import { computed, toRefs } from "vue";
 import ClientsTable from "./Partials/ClientsTable.vue";
 import { router } from "@inertiajs/vue3";
 
@@ -12,15 +12,34 @@ import LoanSectionNav from "@/Pages/Loans/Partials/LoanSectionNav.vue";
 import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
+import { useServerSearch } from "@/utils/useServerSearch";
 
-const props = defineProps<{
-  clients: IClient[] | IPaginatedData<IClient>;
-  type?: string;
-}>();
+const props = withDefaults(
+  defineProps<{
+    clients: IClient[] | IPaginatedData<IClient>;
+    type?: string;
+    serverSearchOptions: Object;
+  }>(),
+  {
+    serverSearchOptions: () => ({
+      filters: {},
+      dates: {},
+      sorts: "",
+      limit: 10,
+      relationships: "",
+      search: "",
+      page: 1,
+    }),
+  }
+);
 
 const listData = computed(() => {
   return Array.isArray(props.clients) ? props.clients : props.clients.data;
 });
+
+const paginationTotal = computed(
+  () => !Array.isArray(props.clients) && props.clients.total
+);
 
 const { toggleModal } = useToggleModal("contact");
 
@@ -33,6 +52,23 @@ const sectionTitle = computed(() => {
 
   return titles[props.type] ?? "Clientes";
 });
+
+const { serverSearchOptions } = toRefs(props);
+const {
+  executeSearch,
+  updateSearch,
+  changeSize,
+  paginate,
+  state: searchState,
+} = useServerSearch(
+  serverSearchOptions,
+  (finalUrl: string) => {
+    updateSearch(`/contacts/${props.type}?${finalUrl}`);
+  },
+  {
+    manual: true,
+  }
+);
 </script>
 
 <template>
@@ -91,7 +127,14 @@ const sectionTitle = computed(() => {
       </PropertySectionNav>
     </template>
     <main class="mt-16 bg-white rounded-md">
-      <ClientsTable :clients="listData" />
+      <ClientsTable
+        :clients="listData"
+        :pagination="searchState"
+        :total="paginationTotal"
+        @search="executeSearch"
+        @paginate="paginate"
+        @size-change="changeSize"
+      />
     </main>
   </AppLayout>
 </template>
