@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Link, router } from "@inertiajs/vue3";
 import { AtField } from "atmosphere-ui";
 import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
@@ -11,6 +11,8 @@ import AppButton from "@/Components/shared/AppButton.vue";
 
 import { formatDate, formatMoney } from "@/utils";
 import { getInvoiceTypeUrl } from "./utils";
+import Modal from "@/Components/Modal.vue";
+import { ref } from "vue";
 
 defineProps({
     invoice: {
@@ -30,6 +32,26 @@ defineProps({
         default: 'invoice-simple'
     }
 })
+
+
+const isModalPrintOpen = ref(false);
+const print = () => {
+  const modalInvoice = document.getElementById("invoice-content")
+  const cloned = modalInvoice?.cloneNode(true)
+  let section = document.getElementById("print")
+  isModalPrintOpen.value = true;
+
+  if (!section) {
+     section  = document.createElement("div")
+     section.id = "print"
+     document.body.appendChild(section)
+  }
+
+  section.innerHTML = "";
+  section.appendChild(cloned);
+  window.print();
+  // isModalPrintOpen.value = true;
+}
 </script>
 
 
@@ -43,6 +65,9 @@ defineProps({
           </AppButton>
           <AppButton @click="router.visit(route('invoices.create', invoice))" variant="inverse" v-if="false">
             Crear otra factura
+          </AppButton>
+          <AppButton variant="neutral" @click="print()">
+            <IMdiPrinter />
           </AppButton>
           <InvoicePaymentOptions :invoice="invoice" class="py-2" />
         </template>
@@ -103,7 +128,34 @@ defineProps({
             :type="type"
             :business-data="businessData"
             :invoice-data="invoice"
+            id="invoice-content"
         />
     </div>
+
+    <!-- <Modal :show="isModalPrintOpen">
+      <div class="print-modal-content"> Hola </div>
+    </Modal> -->
   </AppLayout>
 </template>
+
+<style>
+@media screen {
+  #print {
+    display: none;
+   }
+}
+
+@media print {
+ body * {
+  visibility:hidden;
+  }
+  #print, #print * {
+    visibility:visible;
+  }
+  #print {
+    position:absolute;
+    left:0;
+    top:0;
+  }
+}
+</style>

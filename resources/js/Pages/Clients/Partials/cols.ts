@@ -20,7 +20,7 @@ export default [
         minWidth: 200,
         render(row: IClient) {
             const clientName = row.names + ' ' + row.lastnames
-            const initials = row.names[0] + row.lastnames[0];
+            const initials = row.names ? row.names[0] + row.lastnames[0] : '';
             const type = Object.entries(row).reduce((type, [field, value]) => {
               if (field.match(/owner|tenant|lender/) && value == 1) {
                 type = field.replace('is_', '');

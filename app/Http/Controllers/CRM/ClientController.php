@@ -3,12 +3,8 @@
 namespace App\Http\Controllers\CRM;
 
 use App\Domains\CRM\Models\Client;
-use App\Domains\Properties\Models\Rent;
-use App\Domains\Properties\Services\PropertyTransactionService;
-use App\Domains\Properties\Services\RentService;
 use App\Http\Controllers\InertiaController;
 use Illuminate\Http\Request;
-use Exception;
 
 class ClientController extends InertiaController
 {
@@ -19,7 +15,7 @@ class ClientController extends InertiaController
   public function __construct(Client $client)
   {
       $this->model = $client;
-      $this->searchable = ['name'];
+      $this->searchable = ['names', 'lastnames'];
       $this->templates = [
           "index" => 'Clients/Index',
           "show" => 'Clients/Show'
@@ -27,6 +23,8 @@ class ClientController extends InertiaController
       $this->sorts = ['created_at'];
       $this->includes = ['properties', 'account'];
       $this->filters = [];
+      $this->page = 1;
+      $this->limit = 10;
       $this->resourceName= "clients";
   }
 
@@ -60,21 +58,23 @@ class ClientController extends InertiaController
   }
 
   public function showByType(Client $client, $type) {
-    return inertia($this->templates['show'],
-      array_merge(
-        $this->getEditProps(request(), $client->id), [
-        $this->model->getTable() => array_merge([
-          ...$client->toArray(),
-          ...[
-            "property_count" => $client->properties()->count(),
-            "unit_count" => $client->units()->count()]
-        ]),
-        "outstanding" => $client->outstandingBalance(),
-        "deposits" => $client->deposits(),
-        "credits" => $client->credits,
-        "type" => $type
-      ])
-    );
+    $section = request()->query('section');
+
+    $resource = array_merge($client->toArray(),[
+      ...($section ? $this->$section($client) : [] ),
+    ], [
+      "property_count" => $client->properties()->count(),
+      "unit_count" => $client->units()->count()
+    ]);
+
+    return inertia($this->templates['show'],[
+      $this->model->getTable() => $resource,
+      "outstanding" => $client->outstandingBalance(),
+      "deposits" => $client->deposits(),
+      "credits" => $client->credits,
+      "type" => $type,
+      "currentTab" => $section
+    ]);
   }
 
 }

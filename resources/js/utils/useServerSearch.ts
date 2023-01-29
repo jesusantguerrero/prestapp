@@ -81,12 +81,11 @@ export const filterParams = (mainDateField: string, externalFilters: Record<stri
        }
        filters.push(`filter[${mainDateField}]=${dateFilterValue}`);
      } catch (e) {
-      console.log('bad dates');
       return filters.join('&');
      }
     }
 
-    return filters.join("&");
+  return filters.join("&");
 }
 
 export const getGroupParams = (groupValue:string) => {
@@ -94,13 +93,17 @@ export const getGroupParams = (groupValue:string) => {
 }
 
 export const getRelationshipsParams = (relationships: string) => {
-    return relationships && `relationships=${relationships}`
+  return relationships && `relationships=${relationships}`
+}
+export const getPaginationParams = (state: ISearchState) => {
+  return state.page && `page=${state.page}&limit=${state.limit}`
 }
 
 export const parseParams = (state: ISearchState) => {
   let params = [
       filterParams('date', state.filters, state.dates),
-      getRelationshipsParams(state.relationships)
+      getRelationshipsParams(state.relationships),
+      getPaginationParams(state)
   ];
 
   if (state.search) {
@@ -135,7 +138,7 @@ export const useServerSearch = (serverSearchData: Ref<IServerSearchData>, onUrlC
         page: serverSearchData.value.page
     });
 
-   
+
     watch(
         () => state,
         debounce((paramsConfig) => {
@@ -171,10 +174,22 @@ export const useServerSearch = (serverSearchData: Ref<IServerSearchData>, onUrlC
       executeSearch()
     };
 
+    const paginate = (page: number) => {
+      state.page = page;
+      executeSearch();
+    }
+
+    const changeSize = (limit: number) => {
+      state.limit = limit;
+      executeSearch();
+    }
+
     return {
         state,
         executeSearch,
         updateSearch,
+        changeSize,
+        paginate,
         reset,
     }
 }

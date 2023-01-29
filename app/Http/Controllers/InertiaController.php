@@ -25,6 +25,8 @@ class InertiaController extends Controller {
     protected $includes = [];
     protected $appends = [];
     protected $filters = [];
+    protected $page;
+    protected $limit;
     protected $responseType = "inertia";
     protected $resourceName;
 

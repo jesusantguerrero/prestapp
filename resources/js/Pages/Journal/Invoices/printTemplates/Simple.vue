@@ -13,7 +13,6 @@
           <div class="flex justify-between w-full space-y-4 text-right invoice-details">
             <h4 class="w-full px-5 text-2xl font-bold text-left">
               INVOICE {{ invoice.series }}-{{ invoice.number }}
-              {{ invoice.category_type }}
             </h4>
             <div class="w-full">
               <h5 class="text-md">
