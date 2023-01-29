@@ -3,12 +3,8 @@
 namespace App\Http\Controllers\CRM;
 
 use App\Domains\CRM\Models\Client;
-use App\Domains\Properties\Models\Rent;
-use App\Domains\Properties\Services\PropertyTransactionService;
-use App\Domains\Properties\Services\RentService;
 use App\Http\Controllers\InertiaController;
 use Illuminate\Http\Request;
-use Exception;
 
 class ClientController extends InertiaController
 {
@@ -19,7 +15,7 @@ class ClientController extends InertiaController
   public function __construct(Client $client)
   {
       $this->model = $client;
-      $this->searchable = ['name'];
+      $this->searchable = ['names', 'lastnames'];
       $this->templates = [
           "index" => 'Clients/Index',
           "show" => 'Clients/Show'
@@ -27,6 +23,8 @@ class ClientController extends InertiaController
       $this->sorts = ['created_at'];
       $this->includes = ['properties', 'account'];
       $this->filters = [];
+      $this->page = 1;
+      $this->limit = 10;
       $this->resourceName= "clients";
   }
 

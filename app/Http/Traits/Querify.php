@@ -18,8 +18,8 @@ trait Querify
     {
         $this->request = $request;
         $queryParams = $request->query();
-        $limit = $queryParams['limit'] ?? null;
-        $page = $queryParams['page'] ?? null;
+        $limit = $queryParams['limit'] ?? $this->limit;
+        $page = $queryParams['page'] ?? $this->page;
         $search = $queryParams['search'] ?? null;
         $sorts =  $queryParams['sort'] ?? null;
         $relationships = $queryParams['relationships'] ?? null;
@@ -36,6 +36,7 @@ trait Querify
             'limit' => $limit,
             'search' => $search,
             'sorts' => $sorts,
+            'page' => $page,
             'relationships' => $relationships
         ];
 
