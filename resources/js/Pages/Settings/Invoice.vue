@@ -90,11 +90,11 @@ If your local law, language or occupation requires a different name for your inv
   </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ElNotification, ElSwitch } from "element-plus"
 import { reactive, watch } from 'vue'
 import axios from 'axios'
-import { Inertia } from '@inertiajs/inertia'
+import { router } from '@inertiajs/vue3'
 
 // import TaxDefinitionBox from './TaxDefinitionBox.vue'
 import AppLayout from "../../Components/templates/AppLayout.vue"
@@ -187,7 +187,7 @@ const updateSettingsData = () => {
 const save = () => {
     Promise.allSettled([updateTaxes(), updateSettingsData()])
     .then(() => {
-        Inertia.reload({
+        router.reload({
             preserveScroll: true
         })
         ElNotification({

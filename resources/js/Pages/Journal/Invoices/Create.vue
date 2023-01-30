@@ -1,13 +1,5 @@
 <template>
   <div class="py-10 mx-auto max-w-7xl sm:px-6 lg:px-8">
-    <app-header
-      name="invoice"
-      :resource="invoice"
-      extract-title="concept"
-      @saved="saveForm(true)"
-      class="rounded-b-none"
-    />
-
     <invoice-template
       ref="InvoiceTemplateForm"
       :is-editing="true"
@@ -20,7 +12,6 @@
 </template>
 
 <script setup>
-import AppHeader from "@/Components/templates/AppHeader.vue";
 import { provide, ref } from "vue";
 import InvoiceTemplate from "./Partials/InvoiceTemplate.vue";
 
