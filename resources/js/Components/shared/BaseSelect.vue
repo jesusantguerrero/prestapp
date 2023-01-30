@@ -1,44 +1,46 @@
 <template>
-  <multiselect
-    class="base-select"
-    :id="id"
-    :modelValue="modelValue"
-    :disabled="disabled"
-    :trackBy="trackBy"
-    :loading="isLoading"
-    :label="label"
-    :internal-search="!endpoint"
-    :placeholder="placeholder"
-    :hideSelected="hideSelected"
-    :showLabels="showLabels"
-    :allowCreate="allowCreate"
-    :customLabel="customLabel"
-    :options="localOptions"
-    v-on="multiselectListeners"
-  >
-    <template v-slot:singleLabel="{ option }">
-      <slot name="singleLabel" :option="option" />
-    </template>
-    <template v-slot:option="{ option }">
-      <slot name="option" :option="option" />
-    </template>
-  </multiselect>
+  <div>
+    <multiselect
+      class="base-select"
+      :id="id"
+      :modelValue="modelValue"
+      :disabled="disabled"
+      :trackBy="trackBy"
+      :loading="isLoading"
+      :label="label"
+      :internal-search="!endpoint"
+      :placeholder="placeholder"
+      :hideSelected="hideSelected"
+      :showLabels="showLabels"
+      :allowCreate="allowCreate"
+      :customLabel="customLabel"
+      :options="localOptions"
+      v-on="multiselectListeners"
+    >
+      <template v-slot:singleLabel="{ option }">
+        <slot name="singleLabel" :option="option" />
+      </template>
+      <template v-slot:option="{ option }">
+        <slot name="option" :option="option" />
+      </template>
+    </multiselect>
+  </div>
 </template>
 
 <script setup lang="ts">
 import axios from "axios";
 import { debounce } from "lodash";
-import { ref, computed } from "vue";
+import { ref } from "vue";
 
 type SelectOption = Object | any[] | string | number;
 
 interface Props {
-  id?: string | number;
   modelValue: SelectOption;
-  options?: any[];
-  disabled?: boolean;
   trackBy: string;
   label: string;
+  id?: string | number;
+  options?: any[];
+  disabled?: boolean;
   placeholder?: string;
   hideSelected?: boolean;
   showLabels?: boolean;
@@ -101,7 +103,7 @@ const handleSearch = debounce((query) => {
   axios
     .get(`${props.endpoint}${params}`)
     .then(({ data }) => {
-      localOptions.value = data;
+      localOptions.value = Array.isArray(data) ? data : data.data;
     })
     .finally(() => {
       isLoading.value = false;

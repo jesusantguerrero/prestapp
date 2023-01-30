@@ -1,14 +1,117 @@
+<script setup lang="ts">
+import { AtButton } from "atmosphere-ui";
+import { reactive, computed, toRefs, ref, capitalize, watch } from "vue";
+import { router } from "@inertiajs/vue3";
+
+import { formatMoney } from "@/utils";
+import AppLayout from "@/Components/templates/AppLayout.vue";
+import AppButton from "@/Components/shared/AppButton.vue";
+import BaseSelect from "@/Components/shared/BaseSelect.vue";
+import AccountSelect from "@/Components/shared/Selects/AccountSelect.vue";
+
+const props = defineProps({
+  categoryType: {
+    type: String,
+    default: "income",
+  },
+  categories: {
+    type: Array,
+  },
+  accounts: {
+    type: Array,
+  },
+  ledger: {
+    type: Object,
+  },
+});
+
+const sectionTitle = computed(() => {
+  return `${capitalize(props.categoryType)} - Statement`;
+});
+
+const state = reactive({
+  isSummary: true,
+  isTransferModalOpen: false,
+  mainCategories: computed(() => {
+    return props.categories;
+  }),
+  categoriesTotal: computed(() => {
+    return props.categories.reduce((total, category) => {
+      return total + parseFloat(category.total || 0);
+    }, 0);
+  }),
+  transferAccount: null,
+});
+
+const lastParent = ref(null);
+const hasHeader = (category: Record<string, any>) => {
+  const parent = category.category;
+  if (parent && (!lastParent.value || lastParent.value.id !== parent.id)) {
+    lastParent.value = parent;
+    return true;
+  } else {
+    return false;
+  }
+};
+
+const setPayment = (account: Record<string, any>) => {
+  state.isTransferModalOpen = true;
+  state.transferAccount = account;
+};
+
+const { isSummary, mainCategories, categoriesTotal } = toRefs(state);
+
+const filters = reactive({
+  property: null,
+  account: null,
+});
+
+watch(
+  () => filters,
+  () => {
+    const selectedFilters = Object.entries(filters).reduce(
+      (acc, [filterName, filter]) => {
+        acc[filterName] = filter?.id;
+        return acc;
+      },
+      {}
+    );
+
+    router.get(
+      location.pathname,
+      {
+        filters: selectedFilters,
+      },
+      { preserveState: true }
+    );
+  },
+  { deep: true }
+);
+</script>
+
 <template>
   <AppLayout :title="sectionTitle">
     <template #header>
       <div
-        class="flex items-center justify-between mx-5 border-4 border-white rounded-md bg-gray-50"
+        class="flex items-center justify-end py-1 mx-5 rounded-md"
       >
-        <div class="px-5 font-bold text-gray-600"></div>
-
         <div
-          class="flex space-x-2 overflow-hidden font-bold text-gray-500 rounded-t-lg max-w-min"
+          class="flex space-x-2 font-bold text-gray-500 rounded-t-lg max-w-min"
         >
+          <BaseSelect
+            endpoint="/api/properties"
+            v-model="filters.property"
+            label="name"
+            track-by="id"
+            class="md:w-[200px]"
+            placeholder="Propiedad o Dueño"
+          />
+          <AccountSelect
+            endpoint="/api/accounts"
+            v-model="filters.account"
+            class="md:w-[200px]"
+            multiple
+          />
           <AppButton
             variant="inverse"
             @click="$inertia.visit('/statements/income')"
@@ -62,9 +165,11 @@
                   <span class="font-semibold text-blue-500">
                     {{ account.alias ?? account.name }}
                   </span>
-                  <div>
+                  <div class="space-x-4">
+                    <span class="font-bold text-success"> {{ formatMoney(account.income) }}</span>
+                    <span class="font-bold text-error"> {{ formatMoney(account.outcome) }}</span>
                     <span> {{ formatMoney(account.balance) }}</span>
-                    <AtButton @click="setPayment(account)"> Pay </AtButton>
+                    <!-- <AtButton @click="setPayment(account)"> Pay </AtButton> -->
                   </div>
                 </div>
               </div>
@@ -74,7 +179,11 @@
               :class="{ 'border-t': !isSummary }"
             >
               <span class="font-bold"> {{ category.alias ?? category.name }} </span>
-              <span class="font-bold"> {{ formatMoney(category.total) }}</span>
+              <div class="flex space-x-4">
+                <span class="font-bold text-success"> {{ formatMoney(category.income) }}</span>
+                <span class="font-bold text-error"> {{ formatMoney(category.outcome) }}</span>
+                <span class="font-bold"> {{ formatMoney(category.total) }}</span>
+              </div>
             </div>
           </div>
 
@@ -87,66 +196,6 @@
     </div>
   </AppLayout>
 </template>
-
-<script setup>
-import { AtButton } from "atmosphere-ui";
-import { reactive, computed, toRefs, ref, capitalize } from "vue";
-
-import { formatMoney } from "@/utils";
-import AppLayout from "../../../Components/templates/AppLayout.vue";
-import AppButton from "../../../Components/shared/AppButton.vue";
-
-const props = defineProps({
-  categoryType: {
-    type: String,
-    default: "income",
-  },
-  categories: {
-    type: Array,
-  },
-  accounts: {
-    type: Array,
-  },
-  ledger: {
-    type: Object,
-  },
-});
-
-const sectionTitle = computed(() => {
-  return `${capitalize(props.categoryType)} - Statement`;
-});
-
-const state = reactive({
-  isSummary: true,
-  isTransferModalOpen: false,
-  mainCategories: computed(() => {
-    return props.categories;
-  }),
-  categoriesTotal: computed(() => {
-    return props.categories.reduce((total, category) => {
-      return total + parseFloat(category.total || 0);
-    }, 0);
-  }),
-});
-
-const lastParent = ref(null);
-const hasHeader = (category) => {
-  const parent = category.category;
-  if (parent && (!lastParent.value || lastParent.value.id !== parent.id)) {
-    lastParent.value = parent;
-    return true;
-  } else {
-    return false;
-  }
-};
-
-const setPayment = (account) => {
-  state.isTransferModalOpen = true;
-  state.transferAccount = account;
-};
-
-const { isSummary, mainCategories, categoriesTotal } = toRefs(state);
-</script>
 
 <style lang="scss" scoped>
 .body-section {

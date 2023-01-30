@@ -11,7 +11,7 @@ class AccountApiController extends BaseController
   public function __construct()
     {
         $this->model = new Account();
-        $this->searchable = ['name', 'display_id']; // alias coming soon;
+        $this->searchable = ['name', 'display_id', 'alias'];
         $this->validationRules = [];
     }
 
