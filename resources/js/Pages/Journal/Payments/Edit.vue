@@ -26,7 +26,6 @@
 import { provide, ref } from "vue";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
-import JetSectionBorder from "@/Jetstream/SectionBorder.vue";
 import JetButton from "@/Components/Button.vue";
 import AppHeader from "@/Components/templates/AppHeader.vue";
 import InvoiceTemplate from "../Invoices/Partials/InvoiceTemplate.vue";
@@ -36,7 +35,6 @@ export default {
 
   components: {
     AppLayout,
-    JetSectionBorder,
     JetButton,
     AppHeader,
     InvoiceTemplate,
