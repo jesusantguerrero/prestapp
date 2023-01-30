@@ -9,11 +9,11 @@ import AppButton from "@/Components/shared/AppButton.vue";
 import PropertySectionNav from "./Partials/PropertySectionNav.vue";
 import { IPaginatedData } from "@/utils/constants";
 import { IProperty } from "@/Modules/properties/propertyEntity";
-import { useServerSearch } from "@/utils/useServerSearch";
+import { useServerSearch, IServerSearchData } from "@/utils/useServerSearch";
 
 const props = defineProps<{
   units: IProperty[] | IPaginatedData<IProperty>;
-  serverSearchOptions: Object;
+  serverSearchOptions: IServerSearchData;
 }>();
 
 const listData = computed(() => {
