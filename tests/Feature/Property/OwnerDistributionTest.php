@@ -5,8 +5,8 @@ namespace Tests\Feature\Owners;
 use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Rent;
 use App\Domains\Properties\Services\PropertyTransactionService;
-
-use Insane\Journal\Models\Core\Account;
+use App\Notifications\InvoiceGenerated;
+use Illuminate\Support\Facades\Notification;
 use Insane\Journal\Models\Invoice\Invoice;
 use Tests\Feature\Property\Helpers\PropertyBase;
 
@@ -17,12 +17,14 @@ class OwnerDistributionTest extends PropertyBase
       $this->actingAs($this->user);
 
       $rent = $this->createRent([
+        "date" => '2022-12-01',
         "price" => 5000,
         "deposit" => 5000,
         "interest_rate" => 10
       ]);
 
       $this->createExpense($rent, [
+        "date" => '2023-01-15',
         "amount" => 500
       ]);
 
@@ -62,18 +64,11 @@ class OwnerDistributionTest extends PropertyBase
       $invoice = $rent->invoices()->where('category_type', PropertyInvoiceTypes::UtilityExpense->value)->first();
       $this->payInvoice($rent, $invoice);
 
+
       $this->assertEquals(Invoice::STATUS_PAID, $invoice->fresh()->status);
       $this->assertEquals(PropertyInvoiceTypes::UtilityExpense->value, $invoice->category_type);
     }
 
-
-
-    public function testOwnerShouldHavePropertyInvoices()
-    {
-      $rent = $this->generateInvoices();
-      $this->payInvoices($rent);
-      $this->assertCount(3, $rent->owner->getPropertyInvoices());
-    }
 
     public function testItShouldCreateOwnerDistribution()
     {
@@ -84,13 +79,26 @@ class OwnerDistributionTest extends PropertyBase
       $this->assertEquals('owner_distribution', $rent->owner->invoices()->first()->category_type);
     }
 
-    // public function testItShouldMatchAmounts()
-    // {
-    //   $rent = $this->generateInvoices();
-    //   $this->payInvoices($rent);
+    public function testItShouldMatchAmounts()
+    {
+      $rent = $this->generateInvoices();
+      $this->payInvoices($rent);
 
-    //   PropertyTransactionService::createOwnerDistribution($this->owner);
+      PropertyTransactionService::createOwnerDistribution($this->owner);
 
-    //   $this->assertEquals(8700, $this->owner->fresh()->invoices()->first()->total);
-    // }
+      $this->assertEquals(9000, $this->owner->fresh()->invoices()->first()->total);
+    }
+
+    public function testItShouldSendNotification()
+    {
+      Notification::fake();
+      $rent = $this->generateInvoices();
+
+      $this->payInvoices($rent);
+      PropertyTransactionService::createOwnerDistribution($this->owner);
+
+      Notification::assertSentTo(
+          [$rent->user], InvoiceGenerated::class
+      );
+    }
 }

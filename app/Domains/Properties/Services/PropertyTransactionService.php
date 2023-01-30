@@ -6,6 +6,8 @@ use App\Domains\Accounting\Helpers\InvoiceHelper;
 use App\Domains\CRM\Models\Client;
 use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Rent;
+use App\Models\User;
+use App\Notifications\InvoiceGenerated;
 use Illuminate\Support\Carbon;
 use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Core\Tax;
@@ -15,7 +17,7 @@ class PropertyTransactionService {
     public static function getProRatedAmount(Rent $rent) {
       $amountPerDay = $rent->amount / 30;
       $daysUsed = Carbon::createFromFormat('Y-m-d', $rent->first_invoice_date)->diffInDays(Carbon::createFromFormat('Y-m-d', $rent->date));
-      return $amountPerDay * abs($daysUsed);
+      return $daysUsed < 30 ? $amountPerDay * abs($daysUsed) : $rent->amount;
     }
 
     public static function createInvoice($formData, Rent $rent, $withExtraServices = true) {
@@ -74,6 +76,7 @@ class PropertyTransactionService {
 
     public static function generateFirstInvoice(Rent $rent) {
       $proRatedAmount = self::getProRatedAmount($rent);
+      
       $items = [[
         "name" => "Factura de Renta",
         "concept" => "Factura de {$rent->client->fullName}",
@@ -257,12 +260,15 @@ class PropertyTransactionService {
         if (isset($existingInvoice)) {
           $existingInvoice->updateDocument($documentData);
         } else {
-          Invoice::createDocument($documentData);
+          $invoice = Invoice::createDocument($documentData);
         }
+        
+        User::find($invoice->user_id)->notify(new InvoiceGenerated($invoice));
 
         $client->update([
           'generated_distribution_dates' => array_merge($client->generated_distribution_dates?? [], [$today])
         ]);
+        
       }
     }
 
