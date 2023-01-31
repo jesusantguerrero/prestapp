@@ -272,3 +272,30 @@ watch(
     <TheGlobals />
   </div>
 </template>
+
+<style>
+@media screen {
+  #print {
+    display: none;
+  }
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #print,
+  #print * {
+    visibility: visible;
+  }
+  #print {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  .printable {
+    width: 210mm;
+  }
+}
+</style>

@@ -78,7 +78,7 @@ const print = () => {
         <div class="flex justify-between px-5 py-1 border rounded-md space bg-base-lvl-3">
           <section class="flex space-x-4">
             <AtField label="Estatus">
-                <p class="text-md font-bold" :class="getStatusColor(invoice.status)">
+                <p class="font-bold text-md" :class="getStatusColor(invoice.status)">
                   <i :class="getStatusIcon(invoice.status)" />
                   {{ getStatus(invoice.status) }}
                 </p>
@@ -97,7 +97,7 @@ const print = () => {
                 </p>
             </AtField>
             <AtField label="Fecha limite">
-                <p class="text-md font-bold text-primary">
+                <p class="font-bold text-md text-primary">
                   {{ formatDate(invoice.due_date) }}
                 </p>
             </AtField>
@@ -131,31 +131,5 @@ const print = () => {
             id="invoice-content"
         />
     </div>
-
-    <!-- <Modal :show="isModalPrintOpen">
-      <div class="print-modal-content"> Hola </div>
-    </Modal> -->
   </AppLayout>
 </template>
-
-<style>
-@media screen {
-  #print {
-    display: none;
-   }
-}
-
-@media print {
- body * {
-  visibility:hidden;
-  }
-  #print, #print * {
-    visibility:visible;
-  }
-  #print {
-    position:absolute;
-    left:0;
-    top:0;
-  }
-}
-</style>
