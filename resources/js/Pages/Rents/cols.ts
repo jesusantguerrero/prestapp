@@ -21,7 +21,7 @@ export default [
             const clientName = row.client.names + ' ' + row.client.lastnames
             const initials = row.client.names[0] + row.client.lastnames[0];
 
-            return h('div', [
+            return h('div', { class: 'px-4' }, [
               h('div', { class: 'flex items-center space-x-2' }, [
                 h(ElAvatar, { shape: 'circle' }, initials),
                 h('span', clientName)

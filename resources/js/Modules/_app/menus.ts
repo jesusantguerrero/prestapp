@@ -65,7 +65,6 @@ const menus = {
     {
         label: 'Contratos',
         url: '/rents/',
-        hidden: true,
     },
     {
         label: 'Inquilinos',

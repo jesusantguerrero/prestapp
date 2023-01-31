@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { watch } from "vue";
 import { useForm, router } from "@inertiajs/vue3";
-import { addMonths, format as formatDate } from "date-fns";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
 
@@ -16,19 +14,29 @@ defineProps<{
   clients: IClient[];
 }>();
 
+const rentForm = useForm({});
 const onSubmit = (formData: Record<string, any>) => {
-  router.post(route("rents.store"), formData, {
-    onSuccess() {
-      router.visit(`/rents`);
-    },
-  });
+  rentForm
+    .transform(() => ({
+      ...formData,
+    }))
+    .post(route("rents.store"), {
+      onSuccess() {
+        router.visit(`/rents`);
+      },
+    });
 };
 </script>
 
 <template>
   <AppLayout title="Crear contrato">
     <main class="w-full bg-white px-5 py-5 rounded-md text-body-1">
-      <RentFormTemplate :data="rentForm" :current-step="step" @submit="onSubmit" />
+      <RentFormTemplate
+        :data="rentForm"
+        :current-step="step"
+        :is-processing="rentForm.processing"
+        @submit="onSubmit"
+      />
     </main>
   </AppLayout>
 </template>

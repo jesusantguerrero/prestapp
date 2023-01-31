@@ -144,7 +144,9 @@ const { openTransactionModal } = useTransactionModal();
               >
                 <SectionFooterCard
                   title="Ganancias netas"
-                  :value="formatMoney(accounts.income - accounts.expenses)"
+                  :value="
+                    formatMoney(accounts.assets.total - accounts.liabilities?.total)
+                  "
                 >
                   <template #footer>
                     <p
@@ -153,7 +155,7 @@ const { openTransactionModal } = useTransactionModal();
                     >
                       <IMdiArrowUpThick />
                       <span class="font-bold">
-                        {{ formatMoney(accounts.assets) }} Recibido
+                        {{ formatMoney(accounts.assets.income) }} Recibido
                       </span>
                     </p>
                     <p
@@ -162,7 +164,7 @@ const { openTransactionModal } = useTransactionModal();
                     >
                       <IMdiArrowDownThick />
                       <span class="font-bold">
-                        {{ formatMoney(accounts.liabilities) }} Gastado
+                        {{ formatMoney(accounts.assets.outcome) }} Gastado
                       </span>
                     </p>
                   </template>
