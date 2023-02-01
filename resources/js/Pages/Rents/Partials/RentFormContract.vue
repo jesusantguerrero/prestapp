@@ -5,9 +5,11 @@ import FormSection from "./FormSection.vue";
 import TaxTypeSelector from "@/Pages/Settings/TaxTypeSelector.vue";
 
 // @ts-expect-error
-import { AtField, AtInput } from "atmosphere-ui";
+import { AtField, AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { useReactiveForm } from "@/utils/useReactiveForm";
 import { addMonths } from "date-fns";
+import AccountSelect from "@/Components/shared/Selects/AccountSelect.vue";
+import { paymentMethods } from "@/Modules/loans/constants";
 
 const props = defineProps<{
   modelValue: Record<string, any>;
@@ -28,6 +30,7 @@ const { formData } = useReactiveForm(
     amount: 0,
     first_invoice_date: addMonths(new Date(), 1),
     next_invoice_date: addMonths(new Date(), 1),
+    end_date: null,
     commission: 10,
     commission_type: "",
     frequency: "MONTHLY",
@@ -77,11 +80,19 @@ const { formData } = useReactiveForm(
       </AtField>
 
       <AtField label="Cuenta de pago" class="w-full">
-        <AtInput :number-format="true" v-model="formData.payment_account_id" rounded />
+        <AccountSelect v-model="formData.payment_account_id" rounded />
       </AtField>
 
       <AtField label="Metodo de pago" class="w-full">
-        <AtInput v-model="formData.payment_method" rounded />
+        <AtSimpleSelect
+          v-model="formData.payment_method_id"
+          v-model:selected="formData.paymentMethod"
+          :options="paymentMethods"
+          placeholder="Seleccione metodo de pago"
+          class="w-full"
+          label="name"
+          key-track="id"
+        />
       </AtField>
     </FormSection>
 
@@ -104,6 +115,9 @@ const { formData } = useReactiveForm(
       </AtField>
       <AtField label="Fecha de primer pago" class="flex flex-col">
         <ElDatePicker v-model="formData.first_invoice_date" size="large" />
+      </AtField>
+      <AtField label="Finaliza en" class="flex flex-col">
+        <ElDatePicker v-model="formData.end_date" size="large" />
       </AtField>
     </FormSection>
   </section>

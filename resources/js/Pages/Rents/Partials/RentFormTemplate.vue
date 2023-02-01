@@ -10,7 +10,7 @@ import RentFormPersonal from "./RentFormPersonal.vue";
 import RentFormProperty from "./RentFormProperty.vue";
 import RentFormContract from "./RentFormContract.vue";
 import RentFormFees from "./RentFormFees.vue";
-import { formatDate } from "@/utils";
+import { dateToIso, formatDate } from "@/utils";
 
 defineProps<{
   data: Record<string, any>;
@@ -38,6 +38,7 @@ const rentForm = reactive({
   amount: 0,
   first_invoice_date: addMonths(new Date(), 1),
   next_invoice_date: addMonths(new Date(), 1),
+  end_date: null,
   frequency: "MONTHLY",
   commission: 10,
   commission_type: "",
@@ -107,8 +108,9 @@ const onFinished = () => {
     ...rentForm,
     deposit_due: formatDate(rentForm.deposit_due, "y-M-d"),
     date: formatDate(rentForm.date, "yyyy-MM-dd"),
-    first_invoice_date: formatDate(rentForm.first_invoice_date, "y-M-d"),
-    next_invoice_date: formatDate(rentForm.next_invoice_date, "y-M-d"),
+    first_invoice_date: dateToIso(rentForm.first_invoice_date),
+    next_invoice_date: dateToIso(rentForm.next_invoice_date),
+    end_date: dateToIso(rentForm.end_date),
     unit_id: rentForm.unit?.id,
     property_id: rentForm.property?.id,
     client_id: rentForm.client?.id,

@@ -44,6 +44,7 @@ class Rent extends Transactionable implements IPayableDocument {
         'late_fee_type',
         'grace_days',
         'start_date',
+        'end_date',
         'move_out_at',
         'move_out_notice',
         'notes',
@@ -88,7 +89,7 @@ class Rent extends Transactionable implements IPayableDocument {
     }
 
     public function invoices() {
-      return $this->morphMany(Invoice::class, 'invoiceable');
+      return $this->morphMany(Invoice::class, 'invoiceable')->orderBy('due_date', 'desc');
     }
 
     public function rentInvoices() {

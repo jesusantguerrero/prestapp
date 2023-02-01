@@ -125,7 +125,7 @@ defineProps({
   },
 });
 
-const getHeaderClass = ({ row: any }) => {
+const getHeaderClass = (row) => {
   return row.headerClass;
 };
 </script>

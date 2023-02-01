@@ -145,7 +145,7 @@ const { openTransactionModal } = useTransactionModal();
                 <SectionFooterCard
                   title="Ganancias netas"
                   :value="
-                    formatMoney(accounts.assets.total - accounts.liabilities?.total)
+                    formatMoney(accounts.assets.total + accounts.liabilities?.total)
                   "
                 >
                   <template #footer>

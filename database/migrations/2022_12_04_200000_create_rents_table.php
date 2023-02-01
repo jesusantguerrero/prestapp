@@ -36,6 +36,7 @@ return new class extends Migration
             $table->decimal('deposit', 14, 4)->default(0.00);
 
             $table->date('date');
+            $table->date('end_date')->nullable();
             $table->date('first_invoice_date');
             $table->date('next_invoice_date')->nullable();
 
