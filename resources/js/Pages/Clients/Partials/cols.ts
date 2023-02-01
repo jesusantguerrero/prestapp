@@ -28,7 +28,7 @@ export default [
               return type;
             }, "");
 
-            return h('div', { class: 'flex items-center space-x-2' }, [
+            return h('div', { class: 'flex items-center space-x-2 px-4' }, [
                 h(ElAvatar, { shape: 'circle', width: 20, height: 20, maxWidth: 20, maxHeight: 20 }, initials),
                 h('div', { class: 'ml-2 w-full text-left'},  [
                   h(Link, {class: 'font-bold text-primary', href: `/contacts/${row.id}/${type}`}, clientName),

@@ -17,38 +17,40 @@
         :total="total"
       />
     </section>
-    <ElTable
-      class="table-fixed"
-      style="width: 100%"
-      :data="tableData"
-      :header-cell-class-name="getHeaderClass"
-      @sort-change="$emit('sort', $event)"
-      @row-click="$emit('row-click', $event)"
-    >
-      <ElTableColumn
-        v-for="col in cols"
-        :prop="col.name"
-        :key="col.name"
-        :label="col.label || col.name"
-        cell-class-name="px-2 py-4"
-        :header-cell-class-name="col.headerClass"
-        :class-name="col.class"
-        :width="col.width"
-        :min-width="col.minWidth"
-        :class="[col.headerClass]"
+    <section class="px-4">
+      <ElTable
+        class="table-fixed"
+        style="width: 100%"
+        :data="tableData"
+        :header-cell-class-name="getHeaderClass"
+        @sort-change="$emit('sort', $event)"
+        @row-click="$emit('row-click', $event)"
       >
-        <template v-slot="scope" v-if="$slots[col.name] || col.render">
-          <slot :name="col.name" v-bind:scope="scope">
-            <CustomCell
-              v-if="col.render"
-              :class="col.class"
-              :col="col"
-              :data="scope.row"
-            />
-          </slot>
-        </template>
-      </ElTableColumn>
-    </ElTable>
+        <ElTableColumn
+          v-for="col in cols"
+          :prop="col.name"
+          :key="col.name"
+          :label="col.label || col.name"
+          cell-class-name="px-2 py-4"
+          :header-cell-class-name="col.headerClass"
+          :class-name="col.class"
+          :width="col.width"
+          :min-width="col.minWidth"
+          :class="[col.headerClass]"
+        >
+          <template v-slot="scope" v-if="$slots[col.name] || col.render">
+            <slot :name="col.name" v-bind:scope="scope">
+              <CustomCell
+                v-if="col.render"
+                :class="col.class"
+                :col="col"
+                :data="scope.row"
+              />
+            </slot>
+          </template>
+        </ElTableColumn>
+      </ElTable>
+    </section>
     <section class="flex justify-between items-center py-4">
       <div class="w-full"></div>
       <div class="w-full flex justify-end">
@@ -123,7 +125,7 @@ defineProps({
   },
 });
 
-const getHeaderClass = ({ row }) => {
+const getHeaderClass = ({ row: any }) => {
   return row.headerClass;
 };
 </script>

@@ -2,18 +2,17 @@
 
 namespace App\Console\Commands;
 
-use App\Domains\Properties\Actions\GenerateInvoices;
-use App\Domains\Properties\Actions\UpdateLateInvoices;
+use App\Domains\Loans\Actions\UpdateLatePayments;
 use Illuminate\Console\Command;
 
-class GenerateLateFees extends Command
+class GenerateLoanFees extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'background:generate-late-fees';
+    protected $signature = 'background:generate-loan-fees';
 
     /**
      * The console command description.
@@ -29,6 +28,6 @@ class GenerateLateFees extends Command
      */
     public function handle()
     {
-      return GenerateInvoices::chargeLateFees();
+      return UpdateLatePayments::run();
     }
 }
