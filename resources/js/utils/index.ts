@@ -39,3 +39,7 @@ export function composeRangeYears(from: number|string, to: number|string = new D
   return years;
 }
 
+export const dateToIso = (date: Date | null) => {
+  return date ? formatDate(date, "y-M-d") : null;
+};
+

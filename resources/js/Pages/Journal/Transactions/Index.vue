@@ -5,7 +5,7 @@
         class="flex items-center justify-between py-2 mb-10 border-4 border-white rounded-md bg-gray-50"
       >
         <div class="px-5 font-bold text-gray-600">Transactions</div>
-  
+
         <div
           class="flex space-x-2 overflow-hidden font-bold text-gray-500 rounded-t-lg max-w-min"
         >
@@ -17,7 +17,7 @@
           </AppButton>
         </div>
       </div>
-  
+
       <div class="w-full rounded-md bg-base-lvl-3">
         <AtTable
           :cols="cols"
@@ -96,7 +96,7 @@
             </div>
           </template>
           <!-- /Quick Add -->
-  
+
           <!-- Table Data -->
           <template v-slot:name="{ scope }">
             <div>
@@ -106,7 +106,7 @@
               </div>
             </div>
           </template>
-  
+
           <template v-slot:description="{ scope: { row } }">
             <span
               class="font-bold text-blue-400 border-b border-blue-400 border-dashed cursor-pointer"
@@ -114,15 +114,15 @@
               {{ row.description }} #{{ row.number }}
             </span>
           </template>
-  
+
           <template v-slot:account="{ scope: { row } }">
             <div class="font-bold">{{ row }}</div>
           </template>
-  
+
           <template v-slot:category="{ scope: { row } }">
             <div>{{ row.category ? row.category.name : "" }}</div>
           </template>
-  
+
           <template v-slot:total="{ scope: { row } }">
             <div
               class="font-bold"
@@ -134,7 +134,7 @@
               {{ formatMoney(row.total) }}
             </div>
           </template>
-  
+
           <template v-slot:actions="{ scope: { row } }">
             <div class="space-x-2 w-14">
               <button><i class="fa fa-edit"></i></button>
@@ -150,15 +150,15 @@
   </AppLayout>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { formatMoney } from "@/utils";
 import { format } from "date-fns";
 import cols from "./cols";
-import { AtTable } from "atmosphere-ui";
 import { ElNotification } from "element-plus";
 
-import AppLayout from "../../../Components/templates/AppLayout.vue";
-import AppButton from "../../../Components/shared/AppButton.vue";
+import AppLayout from "@/Components/templates/AppLayout.vue";
+import AppButton from "@/Components/shared/AppButton.vue";
+import AtTable from "@/Components/shared/BaseTable.vue";
 
 const props = defineProps({
   transactions: {

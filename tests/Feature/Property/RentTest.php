@@ -7,6 +7,7 @@ use App\Domains\CRM\Models\Client;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Properties\Models\Rent;
+use App\Domains\Properties\Services\RentService;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -171,4 +172,40 @@ class RentTest extends TestCase
     $response->assertStatus(302);
     $this->assertCount(0, Rent::all());
   }
+
+  public function testItShouldCreateRentWithEndDate() {
+    $this->seed();
+    $this->actingAs($this->user);
+
+    $response = $this->post('/rents', array_merge($this->rentData, [
+      'deposit' => 12000,
+      'amount' => 6000,
+      'date' => '2022-01-15',
+      'deposit_due' => '2022-01-15',
+      'first_invoice_date' => '2022-01-30',
+      'end_date' => '2022-02-15'
+    ]));
+    $response->assertStatus(302);
+    $rent = Rent::first();
+    $this->assertNotEmpty($rent->end_date);
+  }
+
+  public function testItGeneratesInvoicesToDate() {
+    $this->seed();
+    $this->actingAs($this->user);
+
+    $this->post('/rents', array_merge($this->rentData, [
+      'deposit' => 12000,
+      'amount' => 6000,
+      'date' => '2022-01-15',
+      'deposit_due' => '2022-01-15',
+      'first_invoice_date' => '2022-01-30',
+      'end_date' => '2022-12-15'
+    ]));
+
+    $rent = Rent::first();
+    RentService::generateUpToDate($rent);
+    $this->assertCount(12, $rent->invoices()->get());
+  }
 }
+

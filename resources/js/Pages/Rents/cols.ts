@@ -18,8 +18,8 @@ export default [
         headerClass: "text-center",
         minWidth: 200,
         render(row: IRent) {
-            const clientName = row.client.names + ' ' + row.client.lastnames
-            const initials = row.client.names[0] + row.client.lastnames[0];
+            const clientName = row.client?.names + ' ' + row.client?.lastnames
+            const initials = row.client?.names[0] + row.client?.lastnames[0];
 
             return h('div', { class: 'px-4' }, [
               h('div', { class: 'flex items-center space-x-2' }, [
@@ -28,7 +28,7 @@ export default [
               ]),
               h('div', { class: 'flex items-center text-primary font-bold'}, [
                 h(IconMarker, { class: 'text-primary font-bold'}),
-                h('span', row.property.short_name)
+                h('span', row.property?.short_name)
               ]),
           ]);
         }
@@ -40,7 +40,7 @@ export default [
             headerClass: "text-center",
             render(row) {
               return h('div', [
-                h('p', `C_${row.id.toString().padStart(6, '0')}`),
+                h('p', `RENT-${row.id?.toString().padStart(6, '0')}`),
                 h('p', row.commission + ' %'),
               ])
             }

@@ -88,12 +88,35 @@ class RentService {
     }
 
     public static function generateNextInvoice($rent) {
-      PropertyTransactionService::createInvoice([
-        'date' => $rent->next_invoice_date
-      ], $rent);
+      if ($rent->end_date) {
+        self::generateUpToDate($rent);
+      } else {
+        PropertyTransactionService::createInvoice([
+          'date' => $rent->next_invoice_date
+        ], $rent);
         $rent->update([
           'next_invoice_date' => InvoiceHelper::getNextDate($rent->next_invoice_date),
           'generated_invoice_dates' => array_merge($rent->generated_invoice_dates, [$rent->next_invoice_date])
         ]);
+      }
+    }
+
+    public static function generateUpToDate($rent) {
+      $dateTarget = $rent->end_date ?? date('Y-m-d');
+      $nextDate = $rent->next_invoice_date;
+      $generatedInvoices = [];
+
+      while ($nextDate < $dateTarget) {
+        PropertyTransactionService::createInvoice([
+          'date' => $nextDate
+        ], $rent);
+        $generatedInvoices[] = $nextDate;
+        $nextDate = InvoiceHelper::getNextDate($nextDate)->format('Y-m-d');
+      }
+
+      $rent->update([
+        'next_invoice_date' => $rent->end_date ? null : $nextDate,
+        'generated_invoice_dates' => array_merge($rent->generated_invoice_dates, $generatedInvoices)
+      ]);
     }
 }
