@@ -4,6 +4,7 @@ namespace App\Domains\Loans\Actions;
 
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
+use App\Notifications\LateFeesGenerated;
 
 class UpdateLatePayments {
 
@@ -16,8 +17,9 @@ class UpdateLatePayments {
         // ->join('loans', 'loans.id', 'loan_id')
         ->get();
 
-        if (count($lateInstallments)) {
-            self::updateLatePayments($lateInstallments);
+        if ($lateCount = count($lateInstallments)) {
+          self::updateLatePayments($lateInstallments);
+          $lateInstallments->first()->loan->user->notify(new LateFeesGenerated($lateCount));
         }
     }
 
