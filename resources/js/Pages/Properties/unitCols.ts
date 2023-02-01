@@ -19,9 +19,9 @@ export default [
           return h('div', { class: 'justify-center' }, [
               h('div', { class: 'flex items-start space-x-2 text-primary font-bold'}, [
                 h(IconMarker, { class: 'text-primary font-bold mt-1'}),
-                h('span', row.property.short_name)
+                h('span', row.property?.short_name)
               ]),
-              h('span',{ class: 'text-body-1 text-sm'}, row.owner.display_name)
+              h('span',{ class: 'text-body-1 text-sm'}, row.owner?.display_name)
           ]);
       }
     },
@@ -31,7 +31,7 @@ export default [
         class: "text-left",
         headerClass: "text-left",
         render(row: IProperty) {
-          return  h('span',{ class: 'text-body-1 text-sm'}, row.property.address)
+          return  h('span',{ class: 'text-body-1 text-sm'}, row.property?.address)
       }
     },
     {

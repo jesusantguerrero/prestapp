@@ -12,7 +12,7 @@ class GenerateInvoices extends Command
      *
      * @var string
      */
-    protected $signature = 'background:generate-invoices';
+    protected $signature = 'background:generate-invoices {--N|next-invoices} {--L|late-fees}';
 
     /**
      * The console command description.
@@ -28,6 +28,17 @@ class GenerateInvoices extends Command
      */
     public function handle()
     {
+      $nextInvoices = $this->option('next-invoices');
+      $lateFees = $this->option('next-invoices');
+
+      if ($nextInvoices) {
+        return GenerateInvoices::forceNextRents();
+      }
+
+      if ($lateFees) {
+        return GenerateInvoices::chargeLateFees();
+      }
+
       return ActionsGenerateInvoices::scheduledRents();
     }
 }

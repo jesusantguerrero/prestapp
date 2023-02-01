@@ -12,6 +12,7 @@ import PropertySectionNav from "../Properties/Partials/PropertySectionNav.vue";
 import { AtButton } from "atmosphere-ui";
 import InvoiceCard from "../../Components/templates/InvoiceCard.vue";
 import PaymentFormModal from "../Loans/Partials/PaymentFormModal.vue";
+import WelcomeWidget from "../Dashboard/Partials/WelcomeWidget.vue";
 
 export interface Props {
   rents: ILoanWithInstallments;
@@ -101,13 +102,16 @@ const generateNextInvoice = () => {
     <template #header>
       <PropertySectionNav>
         <template #actions>
-          <AppButton variant="inverse" @click="router.visit(route('rents.create'))">
+          <AppButton variant="neutral" @click="router.visit(route('rents.create'))">
             Crear Gasto
           </AppButton>
-          <AppButton variant="inverse" @click="router.visit(route('rents.create'))">
+          <AppButton variant="neutral" @click="router.visit(route('rents.create'))">
             Crear Mora
           </AppButton>
-          <AppButton variant="inverse" @click="router.visit(route('rents.create'))">
+          <AppButton
+            variant="inverse-secondary"
+            @click="router.visit(route('rents.create'))"
+          >
             Crear Cargo Extra
           </AppButton>
         </template>
@@ -117,14 +121,14 @@ const generateNextInvoice = () => {
     <main class="p-5 mt-8">
       <AppSectionHeader
         name="Contrato de Alquiler a"
-        class="px-5 bg-white border-2 border-white rounded-md rounded-b-none shadow-md"
+        class="px-5 bg-white border-2 border-white rounded-md rounded-b-none"
         :resource="rents"
         :title="`${clientName}`"
         hide-action
         @create="router.visit('/loans/create')"
       />
       <div
-        class="w-full px-5 pt-10 pb-2 mb-5 space-y-5 text-gray-600 bg-white border-gray-200 shadow-md rounded-b-md"
+        class="w-full px-5 pt-10 pb-2 mb-5 space-y-5 text-gray-600 bg-white rounded-b-md"
       >
         <div>Alquiler #{{ rents.id }} para {{ clientName }}</div>
         <div class="flex space-x-2">
@@ -141,32 +145,54 @@ const generateNextInvoice = () => {
         </div>
       </div>
       <section class="flex w-full space-x-8 rounded-t-none border-t-none">
-        <article class="w-9/12 p-4 space-y-2 border rounded-md shadow-md bg-base-lvl-3">
-          <span> Cliente: {{ clientName }} </span>
-          <p>
-            Mensualidad:
-            {{ rents.amount }}
-          </p>
-          <p>
-            Fecha de Inicio:
-            {{ formatDate(rents.date) }}
-          </p>
-          <p>
-            Proximo pago:
-            {{ formatDate(rents.next_invoice_date) }}
-          </p>
-          <p>
-            Estatus:
-            {{ rents.status }}
-          </p>
-          <AtButton class="hover:bg-base-lvl-1" rounded @click="generarDeposito()">
-            Deposito {{ formatMoney(rents.deposit) }}
-          </AtButton>
+        <article class="w-9/12 space-y-2">
+          <WelcomeWidget message="Detalles de contrato" class="w-full text-body-1">
+            <template #content>
+              <section class="py-4 space-y-2">
+                <p>
+                  Mensualidad:
+                  {{ rents.amount }}
+                </p>
+                <p>
+                  Fecha de Inicio:
+                  {{ formatDate(rents.date) }}
+                </p>
+                <p>
+                  Proximo pago:
+                  {{ formatDate(rents.next_invoice_date) }}
+                </p>
+                <p>
+                  Estatus:
+                  {{ rents.status }}
+                </p>
+                <p class="hover:bg-base-lvl-1 cursor-pointer py-2">
+                  Deposito {{ formatMoney(rents.deposit) }}
+                </p>
+              </section>
+            </template>
+          </WelcomeWidget>
+
+          <WelcomeWidget message="Detalles de propiedad" class="w-full text-body-1">
+            <template #content>
+              <section>
+                <article>
+                  <button>
+                    {{ rents.property.owner.display_name }}
+                  </button>
+                </article>
+                <article>
+                  <button>
+                    {{ rents.property.name }}
+                  </button>
+                </article>
+              </section>
+            </template>
+          </WelcomeWidget>
         </article>
 
-        <article class="w-3/12 p-4 space-y-2 border rounded-md shadow-md bg-base-lvl-3">
+        <article class="w-3/12 p-4 space-y-2 rounded-md bg-base-lvl-3">
           <section class="flex space-x-4">
-            <AppButton class="w-full" @click="generateNextInvoice">
+            <AppButton class="w-full" variant="secondary" @click="generateNextInvoice">
               Generar proximo pago
             </AppButton>
           </section>

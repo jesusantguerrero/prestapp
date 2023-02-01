@@ -31,6 +31,7 @@ class LoanInstallment extends Model implements IPayableDocument {
         'days',
         'amount',
         'principal',
+        'late_fee',
         'interest',
         'initial_balance',
         'final_balance'

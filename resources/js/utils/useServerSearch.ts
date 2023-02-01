@@ -4,7 +4,7 @@ import { reactive, Ref, watch }  from "vue"
 import { composeRangeYears } from ".";
 import { debounce } from 'lodash';
 
-interface IServerSearchData {
+export interface IServerSearchData {
     filters: Record<string, string>
     dates: IDateSpan
     limit?: number

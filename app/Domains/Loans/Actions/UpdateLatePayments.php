@@ -4,14 +4,22 @@ namespace App\Domains\Loans\Actions;
 
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
+use App\Notifications\LateFeesGenerated;
 
 class UpdateLatePayments {
 
     public static function run() {
         $today = date('Y-m-d');
-        $lateInstallments = LoanInstallment::whereRaw('amount_paid < amount')->where('due_date', '<', $today)->get();
-        if (count($lateInstallments)) {
-            self::updateLatePayments($lateInstallments);
+        $lateInstallments = LoanInstallment::whereRaw('loan_installments.amount_paid < loan_installments.amount')
+        ->where('due_date', '<', $today)
+        ->where('loan_installments.late_fee', '=', 0)
+        // ->whereRaw('loans.late_fee > 0')
+        // ->join('loans', 'loans.id', 'loan_id')
+        ->get();
+
+        if ($lateCount = count($lateInstallments)) {
+          self::updateLatePayments($lateInstallments);
+          $lateInstallments->first()->loan->user->notify(new LateFeesGenerated($lateCount));
         }
     }
 
@@ -26,12 +34,12 @@ class UpdateLatePayments {
             }
 
             $payment->update([
-                'late_fee' => $penaltyAmount,
-                'amount' => $payment->amount + $penaltyAmount
+              'late_fee' => $penaltyAmount,
+              'amount' => $payment->amount + $penaltyAmount
             ]);
 
             $payment->loan->update([
-                'payment_status' => Loan::STATUS_LATE
+              'payment_status' => Loan::STATUS_LATE
             ]);
 
             $payment->loan->client->checkStatus();

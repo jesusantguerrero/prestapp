@@ -96,16 +96,16 @@ class PropertyBase extends TestCase
   public function payInvoice(Rent $rent, $invoice, $form = []) {
     $this->actingAs($this->user);
 
-      $url = $invoice->category_type != PropertyInvoiceTypes::UtilityExpense
+      $url = $invoice->category_type !== PropertyInvoiceTypes::UtilityExpense->value
       ? "/rents/$rent->id/invoices/$invoice->id/pay"
-      : "/invoices/$invoice->id/pay";
+      : "/invoices/$invoice->id/payment";
 
-
-      $this->post($url, [
+      return $this->post($url, [
         'client_id' => $rent->client_id,
         'account_id' => $form['account_id'] ?? Account::findByDisplayId('daily_box', $rent->team_id)->id,
         'amount' => $form['amount'] ?? $invoice->debt,
         'date' => date('Y-m-d'),
+        'payment_date' => date('Y-m-d'),
         'details' => 'Payment of ' . $invoice->concept,
         'concept' => 'Payment of ' . $invoice->concept,
       ]);

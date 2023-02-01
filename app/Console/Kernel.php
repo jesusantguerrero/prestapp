@@ -15,7 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('background:generate-invoices')->daily();
+      $schedule->command('background:generate-invoices')->everyMinute();
+      $schedule->command('background:generate-owner-distributions')->everyMinute();
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Domains\Properties\Models;
 
 use App\Domains\CRM\Models\Client;
 use App\Domains\Properties\Enums\PropertyInvoiceTypes;
+use App\Models\User;
 use Insane\Journal\Models\Core\Transaction;
 use Insane\Journal\Models\Invoice\Invoice;
 use Insane\Journal\Traits\HasPaymentDocuments;
@@ -65,6 +66,10 @@ class Rent extends Transactionable implements IPayableDocument {
         $rent->address = $rent->property->address;
       });
   }
+
+    public function user() {
+      return $this->belongsTo(User::class);
+    }
 
     public function client() {
         return $this->belongsTo(Client::class);
@@ -149,25 +154,25 @@ class Rent extends Transactionable implements IPayableDocument {
     }
 
     public static function calculateTotal($payable) {
-        $payable->total = $payable->invoices()->sum('total');
+      $payable->total = $payable->invoices()->sum('total');
     }
 
     public static function checkStatus($payable) {
-            $debt = $payable->total - $payable->amount_paid;
-            if ($debt == 0 && !$payable->move_out_at) {
-                $status = self::STATUS_ACTIVE;
-            } elseif ($debt > 0 && $debt < $payable->amount) {
-                $status = self::STATUS_PARTIALLY_PAID;
-            } elseif ($debt && $payable->hasLateInvoices()) {
-                $status = self::STATUS_LATE;
-            } elseif ($debt) {
-                $status = self::STATUS_ACTIVE;
-            } elseif ($payable->move_out_at) {
-                $status = self::STATUS_CANCELLED;
-            } else {
-                $status = $payable->status;
-            }
-            return $status;
+      $debt = $payable->total - $payable->amount_paid;
+      if ($debt == 0 && !$payable->move_out_at) {
+          $status = self::STATUS_ACTIVE;
+      } elseif ($debt > 0 && $debt < $payable->amount) {
+          $status = self::STATUS_PARTIALLY_PAID;
+      } elseif ($debt && $payable->hasLateInvoices()) {
+          $status = self::STATUS_LATE;
+      } elseif ($debt) {
+          $status = self::STATUS_ACTIVE;
+      } elseif ($payable->move_out_at) {
+          $status = self::STATUS_CANCELLED;
+      } else {
+          $status = $payable->status;
+      }
+      return $status;
     }
 
     public function getConceptLine(): string {
@@ -178,6 +183,6 @@ class Rent extends Transactionable implements IPayableDocument {
       return 'total';
     }
     public function getTotal($formData = []) {
-        return $this->deposit + $this->total;
+      return $this->invoices()->sum('total');
     }
 }

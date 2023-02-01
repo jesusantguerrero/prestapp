@@ -16,6 +16,7 @@ use App\Http\Controllers\Properties\PropertyTransactionController;
 use App\Http\Controllers\Properties\PropertyUnitController;
 use App\Http\Controllers\Properties\RentController;
 use App\Http\Controllers\Properties\TenantRentController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SearchController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -107,7 +108,11 @@ Route::middleware([
     // Tenant
     Route::get('/clients/{client}/rents/{rent}/end', [TenantRentController::class, 'endRent'])->name('tenant.end-rent');;
     Route::put('/clients/{client}/rents/{rent}/end', [TenantRentController::class, 'endRentAction'])->name('tenant.end-rent-action');
-});
+
+    // Reports
+    Route::get('/statements/{category}', [ReportController::class, 'statements'])->name('statements.category');
+    Route::get('/reports/{category}', [ReportController::class, 'category'])->name('report.category');
+  });
 
 // Loans
 Route::group([],  app_path('/Domains/Loans/routes.php'));

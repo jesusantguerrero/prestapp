@@ -4,7 +4,10 @@
     :class="[typeClasses]"
   >
     <component :is="icon" v-if="icon" />
-    <slot />
+    <slot v-if="!processing" />
+    <span v-else>
+      <IEosIconsThreeDotsLoading />
+    </span>
   </AtButton>
 </template>
 
@@ -31,6 +34,9 @@ const props = defineProps({
   },
   icon: {
     type: Object,
+  },
+  processing: {
+    type: Boolean,
   },
 });
 

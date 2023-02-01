@@ -43,7 +43,6 @@ withDefaults(defineProps<Props>(), {
       </div>
     </section>
     <slot name="content">
-      here
       <section :class="sectionClass">
         <AtBackgroundIconCard
           v-for="card in cards"

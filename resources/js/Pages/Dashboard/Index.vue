@@ -136,33 +136,35 @@ const { openTransactionModal } = useTransactionModal();
   <AppLayout title="Dashboard">
     <main class="p-5 mx-auto text-gray-500 sm:px-6 lg:px-8">
       <section class="w-full md:flex md:space-x-4">
-        <div class="w-full md:w-9/12 flex flex-col justify-between">
+        <div class="flex flex-col justify-between w-full md:w-9/12">
           <WelcomeWidget message="Hola, " :username="user.name" class="shadow-sm">
             <template #content>
               <section
-                class="space-y-4 md:grid md:grid-cols-2 grid-rows-1 py-4 md:divide-x-2"
+                class="grid-rows-1 py-4 space-y-4 md:grid md:grid-cols-2 md:divide-x-2"
               >
                 <SectionFooterCard
                   title="Ganancias netas"
-                  :value="formatMoney(accounts.income - accounts.expenses)"
+                  :value="
+                    formatMoney(accounts.assets.total - accounts.liabilities?.total)
+                  "
                 >
                   <template #footer>
                     <p
-                      class="flex text-success items-center text-xs md:text-base"
+                      class="flex items-center text-xs text-success md:text-base"
                       rounded
                     >
                       <IMdiArrowUpThick />
                       <span class="font-bold">
-                        {{ formatMoney(accounts.income) }} Recibido
+                        {{ formatMoney(accounts.assets.income) }} Recibido
                       </span>
                     </p>
                     <p
-                      class="flex text-error/70 items-center text-xs md:text-base"
+                      class="flex items-center text-xs text-error/70 md:text-base"
                       rounded
                     >
                       <IMdiArrowDownThick />
                       <span class="font-bold">
-                        {{ formatMoney(accounts.expenses) }} Gastado
+                        {{ formatMoney(accounts.assets.outcome) }} Gastado
                       </span>
                     </p>
                   </template>
@@ -174,7 +176,7 @@ const { openTransactionModal } = useTransactionModal();
                 >
                   <template #footer class="flex">
                     <AtButton
-                      class="flex text-xs md:text-base text-error/70 hover:bg-error/10 items-center -ml-6 px-2"
+                      class="flex items-center px-2 -ml-6 text-xs md:text-base text-error/70 hover:bg-error/10"
                       rounded
                     >
                       <IMdiFileDocumentAlertOutline class="mr-2" />
@@ -184,7 +186,7 @@ const { openTransactionModal } = useTransactionModal();
                     </AtButton>
                     <AtButton
                       rounded
-                      class="flex md:text-base text-xs items-center text-primary hover:bg-primary/10"
+                      class="flex items-center text-xs md:text-base text-primary hover:bg-primary/10"
                     >
                       <IIcSharpPayment class="mr-2" /> Recibir Pago
                     </AtButton>
@@ -194,7 +196,7 @@ const { openTransactionModal } = useTransactionModal();
             </template>
           </WelcomeWidget>
           <div
-            class="rounded-md mt-4 shadow-sm bg-base-lvl-3 w-full md:mt-4 h-10 items-center justify-center flex flex-col"
+            class="flex flex-col items-center justify-center w-full h-10 mt-4 rounded-md shadow-sm bg-base-lvl-3 md:mt-4"
           >
             Facturas a Dueños pendientes
           </div>
@@ -204,7 +206,7 @@ const { openTransactionModal } = useTransactionModal();
             <div class="grid grid-cols-2 py-2">
               <button
                 v-for="card in welcomeCards"
-                class="w-full hover:border-primary border-2 transition-all ease-in group border-transparent py-3 rounded-lg flex flex-col text-center bg-white text-primary justify-center items-center"
+                class="flex flex-col items-center justify-center w-full py-3 text-center transition-all ease-in bg-white border-2 border-transparent rounded-lg hover:border-primary group text-primary"
                 @click="card.action()"
               >
                 <IMdiUserOutline class="text-4xl" v-if="card.icon == 'contact'" />
@@ -212,7 +214,7 @@ const { openTransactionModal } = useTransactionModal();
                 <IMdiHomeCityOutline class="text-4xl" v-if="card.icon == 'home'" />
                 <IMdiFileDocument class="text-4xl" v-if="card.icon == 'document'" />
 
-                <p class="text-sm text-body font-bold group-hover:text-primary">
+                <p class="text-sm font-bold text-body group-hover:text-primary">
                   {{ card.label }}
                 </p>
               </button>
@@ -228,13 +230,13 @@ const { openTransactionModal } = useTransactionModal();
         />
         <article class="order-1 space-y-2 lg:w-3/12 lg:order-2">
           <AtBackgroundIconCard
-            class="text-primary bg-primary/10 border-primary/20 border-2 h-32 cursor-pointer"
+            class="h-32 border-2 cursor-pointer text-primary bg-primary/10 border-primary/20"
             icon="fas fa-wallet"
             :value="formatMoney(props.dailyBox?.balance | 0)"
             title="Cuenta de Prestamos"
           />
           <AtBackgroundIconCard
-            class="text-secondary bg-secondary/10 border-secondary/20 border-2 h-32 cursor-pointer"
+            class="h-32 border-2 cursor-pointer text-secondary bg-secondary/10 border-secondary/20"
             icon="fas fa-wallet"
             :value="formatMoney(props.realState.balance | 0)"
             title="Cuenta Inmobiliaria"

@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Domains\CRM\Models\Client;
+use App\Domains\Properties\Models\Property;
+use App\Domains\Properties\Models\PropertyUnit;
 use Illuminate\Console\Command;
 
 class SeedDemo extends Command
@@ -37,6 +39,27 @@ class SeedDemo extends Command
           "user_id" => 1,
           "is_tenant" => 1
         ])
+        ->count($count)
+        ->create();
+      }
+
+      if ($resource == 'owner') {
+        Client::factory([
+          "team_id" => 1,
+          "user_id" => 1,
+          "is_owner" => 1
+        ])
+        ->has(Property::factory([
+          "team_id" => 1,
+          "user_id" => 1,
+        ])
+          ->hasUnits(3, function ($attributes, Property $property) {
+            return [
+              "team_id" => 1,
+              "user_id" => 1,
+              "owner_id" => $property->owner_id
+            ];
+        }), 'properties')
         ->count($count)
         ->create();
       }

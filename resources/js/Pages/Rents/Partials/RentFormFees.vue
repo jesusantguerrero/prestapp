@@ -4,7 +4,7 @@ import { toRefs } from "vue";
 import { AtField, AtInput } from "atmosphere-ui";
 import FormSection from "./FormSection.vue";
 import TaxTypeSelector from "@/Pages/Settings/TaxTypeSelector.vue";
-
+import AppButton from "@/Components/shared/AppButton.vue";
 import { useReactiveForm } from "@/utils/useReactiveForm";
 
 const props = defineProps<{
@@ -32,11 +32,12 @@ const { formData } = useReactiveForm(
       <FormSection title="Moras" section-class="space-y-4">
         <section class="mt-4 flex space-x-4">
           <AppButton
+            variant="neutral"
             v-if="!formData.has_late_fees"
             @click="formData.has_late_fees = true"
           >
-            Aplicar Moras</AppButton
-          >
+            Aplicar Moras
+          </AppButton>
           <template v-else>
             <AtField label="Comisión de mora" class="w-full">
               <AtInput v-model="formData.late_fee">

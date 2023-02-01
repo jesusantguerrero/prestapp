@@ -57,7 +57,6 @@ class GenerateInvoices {
       }
     }
 
-
     public static function forOwnerDistributions() {
       $clientWithPendingDistributions = Client::whereNotNull('owner_distribution_date')
       ->whereRaw("DATE_FORMAT(curdate(), concat('%Y-%m-', clients.owner_distribution_date)) = curdate()",)

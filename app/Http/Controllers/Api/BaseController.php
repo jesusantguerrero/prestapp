@@ -16,6 +16,8 @@ abstract class BaseController extends Controller
     protected $includes = [];
     protected $appends = [];
     protected $filters = [];
+    protected $page = 1;
+    protected $limit = 15;
     use Querify;
 
 

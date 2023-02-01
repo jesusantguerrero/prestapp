@@ -14,6 +14,7 @@ import { formatDate } from "@/utils";
 
 defineProps<{
   data: Record<string, any>;
+  isProcessing: boolean;
 }>();
 
 const emit = defineEmits(["submit"]);
@@ -146,7 +147,13 @@ const onFinished = () => {
       <template v-slot:footer="{ prev, next }">
         <footer class="flex justify-end space-x-2">
           <AtButton type="secondary" rounded @click="prev()">Atras</AtButton>
-          <AppButton variant="inverse" rounded @click="next()">
+          <AppButton
+            variant="inverse"
+            rounded
+            :processing="isProcessing"
+            :disabled="isProcessing"
+            @click="next()"
+          >
             {{ nextButtonLabel }}
           </AppButton>
         </footer>

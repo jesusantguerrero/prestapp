@@ -34,9 +34,9 @@ abstract class LoanBase extends TestCase
     $this->loanData = LoanHelper::getData($this->lender);
   }
 
-  public function createLoan() {
+  public function createLoan(mixed $formData = []) {
     $this->actingAs($this->user);
-    $this->post('/loans', $this->loanData);
+    $this->post('/loans', LoanHelper::getData($this->lender, $formData));
 
     return Loan::latest()->first();
   }

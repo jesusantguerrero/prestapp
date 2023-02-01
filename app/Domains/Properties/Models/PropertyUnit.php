@@ -33,8 +33,13 @@ class PropertyUnit extends Model {
 
     protected static function boot() {
       parent::boot();
-      static::saving(function ($property) {
-          $property->name = $property->name ?? 'Unidad ' . $property->index;
+      static::saving(function ($unit) {
+          $index = $unit->property->units()->count() + 1;
+          $unit->name = $unit->name ?? 'Unidad ' . $index;
+          $unit->team_id = $unit->property->team_id;
+          $unit->user_id = $unit->property->user_id;
+          $unit->owner_id = $unit->property->owner_id;
+          $unit->index = $index;
       });
   }
 

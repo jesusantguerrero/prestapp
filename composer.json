@@ -31,6 +31,7 @@
         "tightenco/ziggy": "^1.0"
     },
     "require-dev": {
+        "insane/remotr": "dev-main",
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.0.1",

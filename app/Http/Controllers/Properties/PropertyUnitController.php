@@ -25,6 +25,8 @@ class PropertyUnitController extends InertiaController
       $this->sorts = ['created_at'];
       $this->includes = ['property', 'owner', 'contract', 'contract.client'];
       $this->filters = [];
+      $this->page = 1;
+      $this->limit = 10;
       $this->resourceName= "units";
   }
 }

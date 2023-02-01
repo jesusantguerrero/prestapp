@@ -4,6 +4,7 @@ namespace App\Domains\Loans\Models;
 
 use App\Domains\CRM\Models\Client;
 use App\Domains\Loans\Enums\LoanInvoiceTypes;
+use App\Models\User;
 use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Core\Transaction;
 use Insane\Journal\Models\Invoice\Invoice;
@@ -82,6 +83,10 @@ class Loan extends Transactionable implements IPayableDocument {
 
     public function client() {
         return $this->belongsTo(Client::class, 'client_id');
+    }
+
+    public function user() {
+        return $this->belongsTo(User::class);
     }
 
     public function installments() {

@@ -1,4 +1,4 @@
-<script setup>
+<script lang="ts" setup>
 import { formatDate, formatMoney } from "@/utils";
 import { ElDropdown, ElIcon } from "element-plus";
 
@@ -35,8 +35,8 @@ defineProps({
           {{ formatMoney(invoice.total) }}
         </span>
       </p>
-      <div class="flex">
-        <span>
+      <div class="flex items-center">
+        <span class="w-32">
           <i :class="getStatusIcon(invoice.status)" /> {{ getStatus(invoice.status) }}
         </span>
         <InvoicePaymentOptions :invoice="invoice" />

@@ -1,8 +1,8 @@
 <template>
   <div class="">
-    <el-popover v-model="show" placement="bottom" width="250">
+    <ElPopover :visible="show" placement="bottom" width="250">
       <div v-if="!customDate" class="dropdown">
-        <ul class="list-group list-group-flush dropdown__body">
+        <ul class="flex flex-col">
           <button
             v-for="(shortcut, i) in shortcuts[mode]"
             :key="`single-shortcut-${i}`"
@@ -25,12 +25,12 @@
         </div>
         <div class="pt-2 form-group">
           <label for="">From </label>
-          <el-date-picker v-model="dates.start" type="date" placeholder="Pick a day" />
+          <ElDatePicker v-model="dates.start" type="date" placeholder="Pick a day" />
         </div>
 
         <div class="form-group">
           <label for=""> To </label>
-          <el-date-picker
+          <ElDatePicker
             v-if="rangeMode"
             v-model="dates.end"
             type="date"
@@ -38,10 +38,12 @@
           />
         </div>
       </div>
-      <button slot="reference" class="btn btn-block range-selector">
-        {{ currentValue || "Date Range" }}
-      </button>
-    </el-popover>
+      <template #reference>
+        <AppButton @click="show=!show" class="btn btn-block range-selector">
+          {{ currentValue || "Date Range" }}
+        </AppButton>
+      </template>
+    </ElPopover>
   </div>
 </template>
 
@@ -54,7 +56,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    value: {
+    modelValue: {
       type: Object,
       required: true,
     },
@@ -121,12 +123,13 @@ export default {
     },
   },
   watch: {
-    value: {
-      handler(date) {
-        this.dates.start = date.start;
-        this.dates.end = date.end;
+    modelValue: {
+      handler(dates) {
+        this.dates.start = dates.start;
+        this.dates.end = dates.end;
       },
       immediate: true,
+      deep: true,
     },
   },
   methods: {
@@ -145,7 +148,7 @@ export default {
 
     setDate(date, prop = "start", close) {
       this.$set(this.dates, prop, date);
-      this.$emit("input", this.dates);
+      this.$emit("update:modelValue", this.dates);
       if (close) {
         this.show = false;
       }
