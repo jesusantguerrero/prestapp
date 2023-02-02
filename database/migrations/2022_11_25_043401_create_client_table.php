@@ -39,6 +39,18 @@ return new class extends Migration
             $table->string('street')->nullable();
             $table->string('ext_number')->nullable();
             $table->text('address_details')->nullable();
+
+            $table->string('work_name');
+            $table->string('lastnames')->nullable();
+            $table->string('work_email')->nullable();
+            $table->string('work_phone')->nullable();
+            $table->text('work_address_details')->nullable();
+
+            $table->string('bank_name')->nullable();
+            $table->string('bank_account_number')->nullable();
+            $table->integer('owner_distribution_date')->nullable();
+            $table->json('generated_distribution_dates')->default('[]');
+
             //
             $table->boolean('is_company')->default(false);
             $table->boolean('is_tenant')->default(false);
@@ -46,8 +58,6 @@ return new class extends Migration
             $table->boolean('is_owner')->default(false);
             $table->enum('type', ['PROSPECT', 'CONTACT', 'CUSTOMER'])->default('PROSPECT');
 
-            $table->integer('owner_distribution_date')->nullable();
-            $table->json('generated_distribution_dates')->default('[]');
             // state
             $table->string('status')->default("INACTIVE");
             $table->timestamps();

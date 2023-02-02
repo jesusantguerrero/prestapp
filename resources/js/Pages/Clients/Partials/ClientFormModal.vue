@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, computed, ref } from "vue";
+import { reactive, computed, ref, watch } from "vue";
 import { router } from "@inertiajs/core";
 // @ts-ignore
 import { AtButton, AtTextarea, AtSimpleSelect } from "atmosphere-ui";
@@ -11,6 +11,7 @@ import SectionNav from "@/Components/SectionNav.vue";
 
 import { clientInteractions } from "@/Modules/clients/clientInteractions";
 import { documentTypes, DOCUMENT_TYPES } from "@/Modules/clients/constants";
+import { useForm } from "@inertiajs/vue3";
 
 const props = defineProps({
   show: {
@@ -21,6 +22,9 @@ const props = defineProps({
   },
   closeable: {
     type: Boolean,
+  },
+  formData: {
+    type: [Object, null],
   },
   type: {
     type: String,
@@ -33,10 +37,11 @@ const props = defineProps({
 const emit = defineEmits(["close", "saved", "update:show"]);
 
 const close = () => {
+  clientForm.reset();
   emit("update:show", false);
 };
 
-const clientForm = reactive({
+const clientForm = useForm({
   names: "",
   lastnames: "",
   email: "",
@@ -91,6 +96,20 @@ const onSubmit = () => {
       console.log(err);
     });
 };
+
+watch(
+  () => props.formData,
+  (newValue) => {
+    Object.keys(clientForm.data()).forEach((field: string) => {
+      if (field == "date") {
+        clientForm[field] = new Date(newValue[field]);
+      } else if (newValue) {
+        clientForm[field] = newValue[field];
+      }
+    });
+  },
+  { deep: true, immediate: true }
+);
 </script>
 
 <template>
