@@ -104,6 +104,13 @@ const {
             Agregar Propiedad
           </AppButton>
           <AppButton
+            variant="inverse"
+            @click="router.visit(route('owners.draw'))"
+            v-if="type == 'owner'"
+          >
+            Pagar distribucion
+          </AppButton>
+          <AppButton
             variant="inverse-secondary"
             @click="router.visit(route('properties.create'))"
             v-else

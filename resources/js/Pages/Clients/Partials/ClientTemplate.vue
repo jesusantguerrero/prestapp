@@ -10,7 +10,7 @@ import PropertySectionNav from "../../Properties/Partials/PropertySectionNav.vue
 import { ElTag } from "element-plus";
 import { AtBackgroundIconCard } from "atmosphere-ui";
 import { IClient } from "@/Modules/clients/clientEntity";
-import EmptyAddTool from "../../Properties/Partials/EmptyAddTool.vue";
+import EmptyAddTool from "@/Pages/Properties/Partials/EmptyAddTool.vue";
 import { clientInteractions } from "@/Modules/clients/clientInteractions";
 
 export interface Props {
