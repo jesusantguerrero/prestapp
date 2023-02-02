@@ -12,6 +12,7 @@ import { AtBackgroundIconCard } from "atmosphere-ui";
 import { IClient } from "@/Modules/clients/clientEntity";
 import EmptyAddTool from "@/Pages/Properties/Partials/EmptyAddTool.vue";
 import { clientInteractions } from "@/Modules/clients/clientInteractions";
+import { useToggleModal } from "@/Modules/_app/useToggleModal";
 
 export interface Props {
   clients: IClient;
@@ -34,6 +35,8 @@ const tabs = {
 const getTabUrl = (tab: string = "") => {
   return `/contacts/${props.clients.id}/${props.type}?section=${tab}`;
 };
+
+const { openModal } = useToggleModal("contact");
 </script>
 
 <template>
@@ -41,7 +44,19 @@ const getTabUrl = (tab: string = "") => {
     <template #header>
       <PropertySectionNav>
         <template #actions>
-          <AppButton @click="" variant="inverse"> Editar </AppButton>
+          <AppButton
+            @click="
+              openModal({
+                data: {
+                  formData: clients,
+                },
+                isOpen: true,
+              })
+            "
+            variant="inverse"
+          >
+            Editar
+          </AppButton>
           <AppButton @click="" variant="inverse"> Nueva Propiedad </AppButton>
         </template>
       </PropertySectionNav>
@@ -74,7 +89,7 @@ const getTabUrl = (tab: string = "") => {
             </p>
           </article>
           <article class="flex space-x-5">
-            <section class="text-center">
+            <section class="text-center" v-if="clients.is_owner">
               <div class="flex items-center w-full text-center">
                 <IconCoins class="mr-2 text-yellow-600" />
                 <span class="mx-auto font-bold text-success">
