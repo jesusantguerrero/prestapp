@@ -35,7 +35,8 @@ class LoanController extends InertiaController
             'frequency' => 'string',
             'grace_days' => 'numeric',
             'interest_rate' => 'numeric|max:100',
-            'installments' => 'array'
+            'installments' => 'array',
+            'source_account_id' => 'numeric'
         ];
         $this->sorts = ['created_at'];
         $this->includes = ['client'];
@@ -70,10 +71,18 @@ class LoanController extends InertiaController
     public function create(Request $request) {
         $teamId = $request->user()->current_team_id;
 
-        return inertia($this->templates['create'], [
-            'loans' => null,
-            'clients' => ClientService::ofTeam($teamId),
-        ]);
+        try {
+          return inertia($this->templates['create'], [
+              'loans' => null,
+              'clients' => ClientService::ofTeam($teamId),
+          ]);
+        } catch (Exception $e) {
+          return response([
+            "errors" => [
+              "message" => $e->getMessage()
+            ]
+            ], 404);
+        }
     }
 
     protected function getEditProps(Request $request, $loan)

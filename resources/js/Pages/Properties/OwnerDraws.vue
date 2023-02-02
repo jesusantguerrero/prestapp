@@ -1,0 +1,211 @@
+<script setup lang="ts">
+import { reactive, watch } from "vue";
+import { AtBackgroundIconCard } from "atmosphere-ui";
+import { router } from "@inertiajs/vue3";
+
+import BaseSelect from "@/Components/shared/BaseSelect.vue";
+import AppLayout from "@/Components/templates/AppLayout.vue";
+import PropertySectionNav from "./Partials/PropertySectionNav.vue";
+
+import { formatMoney, formatDate } from "@/utils";
+import BaseTable from "@/Components/shared/BaseTable.vue";
+import { TableColumnCtx } from "element-plus";
+
+const props = defineProps({
+  invoices: {
+    type: Array,
+  },
+  properties: {
+    type: Array,
+    default() {
+      return [];
+    },
+  },
+  owners: {
+    type: Array,
+    default() {
+      return [];
+    },
+  },
+});
+
+const filters = reactive({
+  owner: null,
+  property: null,
+});
+
+watch(
+  () => filters,
+  () => {
+    const selectedFilters = Object.entries(filters).reduce(
+      (acc, [filterName, filter]) => {
+        acc[filterName] = filter?.value;
+        return acc;
+      },
+      {}
+    );
+
+    router.get(
+      location.pathname,
+      {
+        filters: selectedFilters,
+      },
+      { preserveState: true }
+    );
+  },
+  { deep: true }
+);
+
+interface IInvoice {}
+
+interface SummaryMethodProps<T = IInvoice> {
+  columns: TableColumnCtx<T>[];
+  data: T[];
+}
+const getSummaries = (param: SummaryMethodProps) => {
+  const { columns, data } = param;
+  const sums: string[] = [];
+  columns.forEach((column, index) => {
+    if (index === 1) {
+      sums[index] = "Monto a pagar desde cuenta de immobiliaria";
+      return;
+    }
+    const values = data.map((item) => Number(item[column.property]));
+    if (!values.every((value) => Number.isNaN(value))) {
+      const amount = values.reduce((prev, curr) => {
+        const value = Number(curr);
+        if (!Number.isNaN(value)) {
+          return prev + curr;
+        } else {
+          return prev;
+        }
+      }, 0);
+
+      sums[index] = formatMoney(amount);
+    } else {
+      sums[index] = "";
+    }
+  });
+
+  return sums;
+};
+</script>
+
+<template>
+  <AppLayout title="Centro de pago">
+    <template #header>
+      <PropertySectionNav>
+        <template #actions>
+          <BaseSelect
+            :options="owners"
+            placeholder="Filtrar por dueño"
+            v-model="filters.owner"
+          />
+        </template>
+      </PropertySectionNav>
+    </template>
+
+    <div class="py-10 mx-auto sm:px-6 lg:px-8">
+      <section class="flex space-x-4">
+        <AtBackgroundIconCard
+          class="w-full bg-white border h-28 text-body-1"
+          title="Pagado"
+          :value="formatMoney(paid)"
+        />
+        <button v-if="deposits">Renbolsar Deposito</button>
+        <AtBackgroundIconCard
+          class="w-full bg-white border h-28 text-body-1"
+          title="Balance de Pendiente"
+          :value="formatMoney(outstanding)"
+        />
+        <AtBackgroundIconCard
+          class="w-full bg-white border h-28 text-body-1"
+          title="Dias de mora"
+          :value="lateDays || 0"
+        />
+      </section>
+
+      <div class="mt-4 bg-base-lvl-3 rounded-md overflow-hidden px-1">
+        <BaseTable
+          v-for="client in invoices"
+          class="mt-0"
+          table-class="px-0"
+          show-summary
+          selectable
+          :summary-method="getSummaries"
+          :cols="[
+                {
+                  name: 'description',
+                  label: 'Descripcion / Cliente',
+                  width: 300
+                },
+                {
+                  name: 'due_date',
+                  label: 'Fecha',
+                  render(row: any) {
+                    return formatDate(row.due_date)
+                  }
+                },
+                {
+                  name: 'property_name',
+                  label: 'Propiedad',
+                },
+
+                {
+                  name: 'total',
+                  label: 'Disponible para pago',
+                  render(row: any) {
+                    return formatMoney(row.total)
+                  }
+                },
+                {
+                  name: 'Debt',
+                  label: 'Pago pendiente',
+                  render(row: any) {
+                    return formatMoney(row.debt)
+                  }
+                },
+                {
+                  name: 'total',
+                  label: 'Monto a pagar',
+                  render(row: any) {
+                    return formatMoney(row.total)
+                  }
+                },
+              ]"
+          :table-data="client.invoices"
+        />
+      </div>
+    </div>
+  </AppLayout>
+</template>
+
+<style lang="scss" scoped>
+.body-section {
+  background: white;
+  padding: 15px;
+}
+
+.el-table th {
+  font-weight: bolder;
+  color: #222 !important;
+}
+
+.section-actions {
+  display: flex;
+
+  .app-search__container {
+    width: 80%;
+    margin-right: 15px;
+  }
+
+  .action-buttons {
+    width: 20%;
+    display: flex;
+
+    button {
+      margin-left: auto;
+    }
+  }
+}
+</style>

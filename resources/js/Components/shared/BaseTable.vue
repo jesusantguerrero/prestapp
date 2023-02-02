@@ -1,7 +1,7 @@
 <template>
-  <section class="mb-24">
-    <section class="flex justify-between items-center py-4">
-      <div class="w-full px-4">
+  <section :class="{ 'mb-24': config.search }">
+    <section class="flex justify-between items-center" :class="{ 'py-4': config.search }">
+      <div class="w-full px-4" v-if="config.search">
         <AppSearch class="w-96" v-model="pagination.search" @search="$emit('search')" />
       </div>
       <ElPagination
@@ -17,15 +17,24 @@
         :total="total"
       />
     </section>
-    <section class="px-4">
+    <section :class="tableClass">
       <ElTable
         class="table-fixed"
         style="width: 100%"
+        :default-expand-all="defaultExpandAll"
+        :show-summary="showSummary"
+        :summary-method="summaryMethod"
         :data="tableData"
         :header-cell-class-name="getHeaderClass"
         @sort-change="$emit('sort', $event)"
         @row-click="$emit('row-click', $event)"
       >
+        <ElTableColumn type="selection" width="55" v-if="selectable" />
+        <ElTableColumn type="expand" v-if="$slots.expand">
+          <template #default="props">
+            <slot name="expand" :row="props.row" />
+          </template>
+        </ElTableColumn>
         <ElTableColumn
           v-for="col in cols"
           :prop="col.name"
@@ -72,11 +81,22 @@
 </template>
 
 <script setup lang="ts">
-import formatMoney from "@/utils/formatMoney";
 import CustomCell from "../customCell";
 import AppSearch from "./AppSearch/AppSearch.vue";
 
 defineProps({
+  selectable: {
+    type: Boolean,
+  },
+  defaultExpandAll: {
+    type: Boolean,
+  },
+  showSummary: {
+    type: Boolean,
+  },
+  summaryMethod: {
+    type: [null, Function],
+  },
   cols: {
     type: Array,
     required: true,
@@ -122,6 +142,9 @@ defineProps({
   hideHeaders: {
     type: Boolean,
     default: false,
+  },
+  tableClass: {
+    default: "px-4",
   },
 });
 

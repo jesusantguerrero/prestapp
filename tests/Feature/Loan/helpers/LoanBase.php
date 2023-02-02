@@ -7,6 +7,7 @@ use App\Domains\Loans\Models\Loan;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Insane\Journal\Models\Core\Account;
 use Tests\Feature\Loan\Helpers\LoanHelper;
 use Tests\TestCase;
 
@@ -15,9 +16,9 @@ abstract class LoanBase extends TestCase
   use WithFaker;
   use RefreshDatabase;
 
-  private User $user;
-  private Client $lender;
-  private mixed $loanData;
+  protected User $user;
+  protected Client $lender;
+  protected mixed $loanData;
 
   protected function setup(): void {
     parent::setup();
@@ -34,9 +35,18 @@ abstract class LoanBase extends TestCase
     $this->loanData = LoanHelper::getData($this->lender);
   }
 
+  public function fundAccount(string $accountDisplayId, int $amount, $teamId) {
+      Account::findByDisplayId($accountDisplayId, $teamId)->openBalance($amount);
+  }
+
   public function createLoan(mixed $formData = []) {
     $this->actingAs($this->user);
-    $this->post('/loans', LoanHelper::getData($this->lender, $formData));
+    $loanData = LoanHelper::getData($this->lender, $formData);
+    $account = Account::find($loanData['source_account_id']);
+
+    $account->openBalance($loanData['amount']);
+
+    $this->post('/loans?json=true', LoanHelper::getData($this->lender, $formData));
 
     return Loan::latest()->first();
   }

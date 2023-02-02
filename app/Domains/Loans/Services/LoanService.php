@@ -4,6 +4,7 @@ namespace App\Domains\Loans\Services;
 
 use App\Domains\Accounting\DTO\ReceiptData;
 use App\Domains\Accounting\Helpers\InvoiceHelper;
+use App\Domains\Loans\Helpers\LoanValidator;
 use App\Domains\Loans\Jobs\CreateLoanTransaction;
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
@@ -11,13 +12,15 @@ use App\Models\Setting;
 use Insane\Journal\Models\Core\PaymentDocument;
 
 class LoanService {
-
     public static function createLoan(mixed $loanData, mixed $installments) {
-        $loan = Loan::create(array_merge($loanData, [
-          'status' => Loan::STATUS_DISPOSED,
-        ]));
-        self::createInstallments($loan, $installments);
-        CreateLoanTransaction::dispatch($loan);
+        $validator = new LoanValidator($loanData);
+        if ($validator->isValid()) {
+          $loan = Loan::create(array_merge($loanData, [
+            'status' => Loan::STATUS_DISPOSED,
+          ]));
+          self::createInstallments($loan, $installments);
+          CreateLoanTransaction::dispatch($loan);
+        }
     }
 
     public static function updateLoan(mixed $loanData, Loan $loan) {

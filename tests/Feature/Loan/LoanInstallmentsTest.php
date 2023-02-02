@@ -38,12 +38,13 @@ class LoanInstallmentsTest extends LoanBase {
     $loan = $this->createLoan();
     $repayment = $loan->installments->first();
 
-    $amount = $repayment->amount_due / 2;
+    $amount = 157;
     $response = $this->payRepayment($repayment, $loan, $amount);
     $repayment = $repayment->refresh();
 
     $response->assertStatus(200);
-    $this->assertEquals($amount, $repayment->refresh()->amount_due);
+    $this->assertEquals($amount, $repayment->refresh()->amount_paid);
+    $this->assertGreaterThan(0, $repayment->refresh()->amount_due);
     $this->assertEquals(LoanInstallment::STATUS_PARTIALLY_PAID, $repayment->payment_status);
   }
 

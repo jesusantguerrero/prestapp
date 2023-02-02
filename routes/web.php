@@ -12,6 +12,7 @@ use App\Http\Controllers\SettingsController;
 
 use App\Http\Controllers\CRM\ClientController;
 use App\Http\Controllers\Properties\PropertyController;
+use App\Http\Controllers\Properties\PropertyOwnerController;
 use App\Http\Controllers\Properties\PropertyTransactionController;
 use App\Http\Controllers\Properties\PropertyUnitController;
 use App\Http\Controllers\Properties\RentController;
@@ -104,6 +105,7 @@ Route::middleware([
     // Owner
     Route::post('/clients/{client}/owner-distributions', [ClientController::class, 'generateOwnerDistribution']);
     Route::put('/clients/{client}/owner-distributions/{invoice}', [ClientController::class, 'generateOwnerDistribution']);
+    Route::get('/owner/draws', PropertyOwnerController::class)->name('owners.draw');
 
     // Tenant
     Route::get('/clients/{client}/rents/{rent}/end', [TenantRentController::class, 'endRent'])->name('tenant.end-rent');;
