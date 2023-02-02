@@ -41,7 +41,7 @@ class LoanHelper {
 
     $loanData['installments'] = array_map(function($repayment) {
       return (array) $repayment;
-    } ,$schedule->payments);
+    }, $schedule->payments);
 
     return $loanData;
   }

@@ -478,6 +478,26 @@ return [
             "type" => -1
         ],
         [
+            "category_id" => "business_owner_contribution",
+            "display_id" => "opening_balance_capital",
+            "number" => 3102,
+            "name" => "Opening Balance",
+            "alias" => "Balance de apertura",
+            "index" => 1,
+            "balance_type" => "CREDIT",
+            "type" => -1
+        ],
+        [
+          "category_id" => "business_owner_contribution",
+          "display_id" => "owner_draw",
+          "number" => 3102,
+          "name" => "Drawings",
+          "alias" => "Retiro de propietario",
+          "index" => 1,
+          "balance_type" => "CREDIT",
+          "type" => -1
+      ],
+        [
             "category_id" => "retained_earnings",
             "display_id" => "owner_equity",
             "alias" => "Ganancias de dueños",

@@ -27,7 +27,7 @@ class LoanCronsTest extends LoanBase {
     Notification::fake();
     $loan = $this->createLoan([
       "date" => '2022-12-15',
-      "amount" => 10000,
+      "amount" => 3000,
       "interest_rate" => 10,
       "frequency" => "MONTHLY",
       "repayment_count" => 4
