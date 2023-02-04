@@ -50,7 +50,7 @@ const submit = (formData) => {
         >
             <template #brand>
             <Link :to="{name: 'landing'}" class="w-full font-light font-brand">
-                PrestApp
+                ICLoan
             </Link>
             </template>
         </AtAuthForm>

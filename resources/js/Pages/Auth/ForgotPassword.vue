@@ -25,7 +25,7 @@ const submit = () => {
 
   <AtAuthBox>
     <AtAuthForm
-      app-name="PrestApp"
+      app-name="ICLoan"
       btn-label="Send email"
       btn-class="mb-2 font-bold border-2 rounded-md border-primary bg-gradient-to-br from-purple-400 to-primary hover:bg-primary"
       link-class="text-primary hover:text-primary"
