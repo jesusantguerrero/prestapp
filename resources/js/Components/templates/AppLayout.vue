@@ -229,7 +229,7 @@ watch(
       <template #aside>
         <AtSide
           class="border-none shadow-none text-bold bg-secondary"
-          title="Prestapp"
+          title="ICLoan"
           :is-expanded="isExpanded"
           @update:isExpanded="isExpanded = $event"
           :menu="currentMenu"
@@ -247,7 +247,7 @@ watch(
             <h1 class="flex items-center w-full shrink-0 px-7 text-gray-100">
               <Link :href="route('dashboard')" class="flex items-center space-x-2">
                 <ApplicationMark class="block w-auto h-9" />
-                <span class="text-xl font-bold"> Prestapp </span>
+                <span class="text-xl font-bold"> ICLoan </span>
               </Link>
             </h1>
           </template>

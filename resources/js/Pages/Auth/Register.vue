@@ -42,7 +42,7 @@ const submit = (formData) => {
 
     <AtAuthBox>
         <AtAuthForm
-            app-name="PrestApp"
+            app-name="ICLoan"
             btn-class="mb-2 font-bold border-2 rounded-md border-primary bg-gradient-to-br from-purple-400 to-primary hover:bg-primary"
             link-class="text-primary hover:text-primary"
             mode="register"
@@ -54,7 +54,7 @@ const submit = (formData) => {
         >
             <template #brand>
                 <Link :to="{name: 'landing'}" class="w-full font-light font-brand">
-                    PrestApp
+                    ICLoan
                 </Link>
             </template>
             <template #prependInput>

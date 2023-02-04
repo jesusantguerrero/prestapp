@@ -17,7 +17,7 @@ export default [
         label: 'Cliente',
         class: "text-center",
         headerClass: "text-center",
-        minWidth: 200,
+        width: 270,
         render(row: IClient) {
             const clientName = row.names + ' ' + row.lastnames
             const initials = row.names ? row.names[0] + row.lastnames[0] : '';
@@ -42,22 +42,21 @@ export default [
             label: 'Celular',
             class: "text-center",
             headerClass: "text-center",
+            width: 130,
     },
     {
-            name: 'address',
+            name: 'address_details',
             label: 'Dirección',
             class: "text-left",
             headerClass: "text-left",
             render(row: IClient) {
-              if (row.rent) {
+              const address = row.rent ? row.rent.property.short_name : row.address_details
                 return h('div', { class: 'justify-center' }, [
                   h('div', { class: 'flex items-start space-x-2 text-body-1 font-bold'}, [
-                    h(IconMarker, { class: 'font-bold mt-1'}),
-                    h('span', row.rent.property.short_name)
+                    h(IconMarker, { class: 'font-bold mt-1 w-6 h-6'}),
+                    h('span', address)
                   ]),
                 ]);
-              }
-              return row.address;
             }
     },
     {

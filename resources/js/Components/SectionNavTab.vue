@@ -1,7 +1,7 @@
 <template>
   <button
     type="button"
-    class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 transition border-b-2 border-transparent hover:bg-base-lvl-2 hover:text-body/80 focus:outline-none"
+    class="inline-flex items-center px-3 py-3 text-sm font-medium leading-4 transition border-b-2 border-transparent hover:bg-base-lvl-2 hover:text-body/80 focus:outline-none"
     :class="[...tabClasses, isSelected ? selectedClass : 'text-body']"
     v-bind="$attrs"
   >
@@ -37,7 +37,7 @@ const props = defineProps({
   },
 });
 const tabClasses = computed(() => {
-  const activeStateClass = props.keepActiveState && "focus:bg-base-lvl-1";
+  const activeStateClass = props.keepActiveState;
 
   return [activeStateClass];
 });

@@ -113,16 +113,16 @@ const comparisonRevenue = {
     </template>
 
     <main class="p-5 mx-auto mt-8 text-gray-500 sm:px-6 lg:px-8">
-      <header class="flex space-x-4">
+      <header class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
         <WelcomeWidget
           message="Estadisticas de propiedades"
-          class="text-body-1 w-7/12 shadow-md"
+          class="text-body-1 w-full md:w-7/12 shadow-md"
           :cards="propertyStats"
         />
 
         <WelcomeWidget
           message="Pagos de renta"
-          class="text-body-1 w-5/12 shadow-md"
+          class="text-body-1 w-full md:w-5/12 shadow-md"
           :cards="propertyStats"
           action-label="Ver estado de rentas"
           action-link="/rents"

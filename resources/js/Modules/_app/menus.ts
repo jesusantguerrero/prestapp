@@ -28,7 +28,7 @@ const menus = {
     }],
     [MODULES.LOAN]: [
       {
-        label: 'Resumen de Prestamos',
+        label: 'Resumen',
         url: '/loans/overview',
       },
       {
@@ -55,7 +55,7 @@ const menus = {
       }
     ],
     [MODULES.PROPERTY]: [{
-        label: 'Resumen de Propiedades',
+        label: 'Resumen',
         url: '/properties/overview'
     },
     {

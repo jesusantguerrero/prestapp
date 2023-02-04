@@ -19,7 +19,7 @@ interface Props {
 
 withDefaults(defineProps<Props>(), {
   sectionClass:
-    "flex py-4 space-x-4 divide-x-2 rounded-md divide-base-lvl-2 bg-base-lvl-3",
+    "flex flex-col md:flex-row py-4 space-y-2 md:space-y-0 md:space-x-4 divide-x-2 rounded-md divide-base-lvl-2 bg-base-lvl-3",
 });
 </script>
 
@@ -27,13 +27,13 @@ withDefaults(defineProps<Props>(), {
   <article
     class="px-5 pt-3 transition border divide-y rounded-lg divide-base border-base bg-base-lvl-3"
   >
-    <section class="items-center pb-2 md:justify-between md:flex">
+    <section class="items-center pb-2 justify-between flex">
       <h1 class="font-bold text-body-1">
         {{ message }} <span class="text-primary">{{ username }}</span>
       </h1>
       <div class="space-x-2" v-if="actionLabel && actionLink">
         <AtButton
-          class="text-sm text-primary"
+          class="text-sm text-primary px-0"
           rounded
           @click="actionLink && router.visit(actionLink)"
         >

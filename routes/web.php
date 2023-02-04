@@ -22,7 +22,6 @@ use App\Http\Controllers\SearchController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Insane\Journal\Models\Core\Category;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +34,7 @@ use Insane\Journal\Models\Core\Category;
 |
 */
 
-Route::middleware(['auth:sanctum', 'verified'])->name('api')->prefix('/api')->group(function () {
+Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->name('api.')->group(function () {
   //  accounts and transactions
 
     Route::apiResource('/api/settings', SettingsController::class, [
@@ -47,7 +46,6 @@ Route::middleware(['auth:sanctum', 'verified'])->name('api')->prefix('/api')->gr
      'delete' => 'api.settings.delete',
     ]);
 
-    Route::apiResource('/taxes', TaxController::class);
     Route::apiResource('/accounts', AccountApiController::class);
     Route::apiResource('/categories', CategoryApiController::class);
     Route::apiResource('transaction-lines', TransactionLineApiController::class);
@@ -85,9 +83,9 @@ Route::middleware([
 
     Route::get('/search', [SearchController::class, 'index']);
      // CRM
+    Route::resource('/clients', ClientController::class);
     Route::get('/contacts/{type}', [ClientController::class, 'byTypes']);
     Route::get('/contacts/{client}/{type}', [ClientController::class, 'showByType']);
-    Route::resource('clients', ClientController::class);
     Route::get('/clients/{client}/{section}', [ClientController::class, 'getSection']);
     // Business
 

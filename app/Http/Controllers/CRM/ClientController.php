@@ -26,6 +26,14 @@ class ClientController extends InertiaController
       $this->page = 1;
       $this->limit = 10;
       $this->resourceName= "clients";
+      $this->validationRules = [
+        'names' => 'required',
+        'lastnames' => 'required',
+        'address_details' => 'required',
+        'dni' => 'required',
+        'email' => 'required',
+        'cellphone' => 'required',
+      ];
   }
 
   protected function byTypes(Request $request, $type) {

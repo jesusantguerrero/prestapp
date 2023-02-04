@@ -53,7 +53,7 @@ const linkLabel = computed(() => {
 
     <AtAuthBox>
         <AtAuthForm
-            app-name="PrestApp"
+            app-name="ICLoan"
             btn-label="Login"
             custom-link-label="Recovery"
             btn-class="mb-2 font-bold border-2 rounded-md border-primary bg-gradient-to-br from-purple-400 to-primary hover:bg-primary"

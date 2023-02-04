@@ -148,7 +148,7 @@ const comparisonRevenue = {
 
     <main class="mx-auto text-gray-500 md:mt-16 sm:px-6 lg:px-8">
       <WelcomeWidget
-        message="Bienvenido a PrestApp"
+        message="Bienvenido a ICLoan"
         :username="user.name"
         :cards="welcomeCards"
       />

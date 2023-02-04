@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
@@ -77,12 +76,15 @@ class InertiaController extends Controller {
               return $response->setContent($resource);
           }
         } catch (Exception $e) {
-          return response([
-            "errors" => [
-              "message" => $e->getMessage()
-            ]
-            ], 404);
-        }
+          if ($this->responseType == 'inertia') {
+            return redirect()->back()->withErrors([
+              "default" => $e->getMessage()
+            ]);
+          } else {
+            return $response->setContent($resource);
+          }
+    }
+
 
     }
 
