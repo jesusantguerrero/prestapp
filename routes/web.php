@@ -35,15 +35,27 @@ use Insane\Journal\Models\Core\Category;
 |
 */
 
-Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->group(function () {
+Route::middleware(['auth:sanctum', 'verified'])->name('api')->prefix('/api')->group(function () {
   //  accounts and transactions
-Route::resource('clients', ClientApiController::class);
-Route::resource('properties', PropertyApiController::class);
-Route::resource('rents', RentApiController::class);
-Route::resource('transaction-lines', TransactionLineApiController::class);
-  // Route::patch('/accounts', [AccountApiController::class,  'bulkUpdate']);
-  // Route::resource('categories', CategoryApiController::class);
-  // Route::patch('/categories', [CategoryApiController::class,  'bulkUpdate']);
+
+    Route::apiResource('/api/settings', SettingsController::class, [
+     "only" => ['index', 'store', 'update', 'delete']
+    ])->names([
+     'index' => 'api.settings.index',
+     'store' => 'api.settings.store',
+     'update' => 'api.settings.update',
+     'delete' => 'api.settings.delete',
+    ]);
+
+    Route::apiResource('/taxes', TaxController::class);
+    Route::apiResource('/accounts', AccountApiController::class);
+    Route::apiResource('/categories', CategoryApiController::class);
+    Route::apiResource('transaction-lines', TransactionLineApiController::class);
+
+    Route::apiResource('clients', ClientApiController::class);
+
+    Route::apiResource('properties', PropertyApiController::class);
+    Route::apiResource('rents', RentApiController::class);
 });
 
 Route::get('/', function () {
@@ -70,11 +82,6 @@ Route::middleware([
      Route::resource('/settings', SettingsController::class);
      Route::get('/settings/tab/{tabName}', [SettingsController::class, 'index']);
      Route::get('/settings/{name}', [SettingsController::class, 'section']);
-
-     Route::apiResource('/api/settings', SettingsController::class);
-     Route::apiResource('/api/taxes', TaxController::class);
-     Route::apiResource('/api/accounts', AccountApiController::class);
-     Route::apiResource('/api/categories', CategoryApiController::class);
 
     Route::get('/search', [SearchController::class, 'index']);
      // CRM
