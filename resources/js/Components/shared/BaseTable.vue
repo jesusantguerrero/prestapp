@@ -1,5 +1,5 @@
 <template>
-  <section :class="{ 'mb-24': config.search }">
+  <section class="pt-2 mb-24">
     <section class="flex justify-between items-center" :class="{ 'py-4': config.search }">
       <div class="w-full px-4" v-if="config.search">
         <AppSearch class="w-96" v-model="pagination.search" @search="$emit('search')" />

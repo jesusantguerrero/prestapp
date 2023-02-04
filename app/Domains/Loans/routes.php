@@ -3,6 +3,7 @@
 use App\Http\Controllers\Loans\LoanAgreementController;
 use App\Http\Controllers\Loans\LoanController;
 use App\Http\Controllers\Loans\LoanInstallmentController;
+use App\Http\Controllers\Loans\LoanProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware([

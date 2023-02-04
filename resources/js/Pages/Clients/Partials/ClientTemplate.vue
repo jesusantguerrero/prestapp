@@ -115,9 +115,14 @@ const { openModal } = useToggleModal("contact");
         </div>
       </header>
 
-      <section class="flex w-full space-x-8 rounded-t-none border-t-none">
-        <article class="w-9/12 space-y-4">
-          <section class="flex space-x-4" v-if="!hideStatistics">
+      <section
+        class="flex-col md:flex-row flex w-full md:space-x-8 rounded-t-none border-t-none"
+      >
+        <article class="w-full md:w-9/12 space-y-4">
+          <section
+            class="flex flex-col md:flex-row md:space-y-0 space-y-4 md:space-x-4"
+            v-if="!hideStatistics"
+          >
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
               title="Balance de Cuenta"
@@ -138,7 +143,7 @@ const { openModal } = useToggleModal("contact");
           <slot />
         </article>
 
-        <article class="w-3/12 space-y-2 rounded-md shadow-md">
+        <article class="w-full md:w-3/12 mt-4 md:mt-0 space-y-2 rounded-md shadow-md">
           <div class="px-5 py-10 text-gray-600 bg-gray-200 rounded-md">
             <div class="header">
               <h2 class="text-lg font-bold">Manejo de Cliente</h2>
