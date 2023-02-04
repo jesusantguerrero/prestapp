@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Owners;
+namespace Tests\Feature\Property;
 
 use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Rent;

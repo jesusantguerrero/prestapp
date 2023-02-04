@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Property;
+namespace Tests\Feature\Loan;
 
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
