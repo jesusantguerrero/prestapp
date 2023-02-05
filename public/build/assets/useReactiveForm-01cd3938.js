@@ -1,1 +1,0 @@
-import{z as c,l as a}from"./app-fef21123.js";const m=(u,r,p)=>{const e=c(u);return a(()=>r.value,o=>{Object.keys(e).map(t=>{o[t]&&o[t]!==e[t]&&(e[t]=o[t]||e[t],console.log("applied")),console.log("back but not applied")})},{immediate:!0,deep:!0}),a(()=>({...e}),()=>{p("update:modelValue",{...r.value,...e})},{deep:!0}),{formData:e}};export{m as u};
