@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Loans;
+namespace App\Domains\Loans\Http\Controllers;
 
 use App\Domains\Loans\Models\LoanProduct;
 use App\Http\Controllers\InertiaController;

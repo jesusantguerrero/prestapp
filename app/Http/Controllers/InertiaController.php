@@ -83,9 +83,7 @@ class InertiaController extends Controller {
           } else {
             return $response->setContent($resource);
           }
-    }
-
-
+        }
     }
 
     protected function createResource(Request $request, $postData) {

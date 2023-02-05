@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Loans;
+namespace App\Domains\Loans\Http\Controllers;
 
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
@@ -12,8 +12,7 @@ use Exception;
 class LoanInstallmentController
 {
     use HasEnrichedRequest;
-
-
+  
     public function updateStatus(Loan $loan, LoanInstallment $repayment) {
       if (request()->user()->current_team_id == $loan->team_id) {
         $repayment->updateStatus();
@@ -44,5 +43,4 @@ class LoanInstallmentController
         $installment->markAsPaid();
       }
     }
-
 }

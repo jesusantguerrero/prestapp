@@ -1,14 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Loans;
+namespace App\Domains\Loans\Http\Controllers;
 
 use App\Domains\CRM\Services\ClientService;
 use App\Domains\Loans\Models\Loan;
-use App\Domains\Loans\Models\LoanInstallment;
 use App\Domains\Loans\Services\LoanService;
 use App\Domains\Loans\Services\LoanTransactionsService;
 use App\Http\Controllers\InertiaController;
-use App\Models\Setting;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -36,7 +34,7 @@ class LoanController extends InertiaController
             'grace_days' => 'numeric',
             'interest_rate' => 'numeric|max:100',
             'installments' => 'array',
-            'source_account_id' => 'numeric'
+            'source_account_id' => 'required|numeric'
         ];
         $this->sorts = ['created_at'];
         $this->includes = ['client'];
