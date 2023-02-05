@@ -1,10 +1,16 @@
 <?php
 
-use App\Http\Controllers\Loans\LoanAgreementController;
-use App\Http\Controllers\Loans\LoanController;
-use App\Http\Controllers\Loans\LoanInstallmentController;
-use App\Http\Controllers\Loans\LoanProductController;
+use App\Domains\Loans\Http\Controllers\Api\RepaymentApiController;
+use App\Domains\Loans\Http\Controllers\LoanAgreementController;
+use App\Domains\Loans\Http\Controllers\LoanController;
+use App\Domains\Loans\Http\Controllers\LoanInstallmentController;
+use App\Domains\Loans\Http\Controllers\LoanProductController;
 use Illuminate\Support\Facades\Route;
+
+
+Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->name('api.')->group(function () {
+  Route::apiResource('repayments', RepaymentApiController::class);
+});
 
 Route::middleware([
   'auth:sanctum',
@@ -36,13 +42,15 @@ Route::middleware([
       Route::put('/loans/{loan}/installments/{installment}', 'update');
       Route::post('/loans/{loan}/installments/{installment}/mark-as-paid', 'markAsPaid');
     });
+  
+    Route::get('/payment-center', [LoanController::class, 'paymentCenter']);
+    Route::get('/repayments', [LoanInstallmentController::class, 'index']);
 
     // agreements
     Route::controller(LoanAgreementController::class)->group(function () {
         Route::post('/loans/{loan}/agreements', 'store');
     });
 
-    Route::get('/payment-center', [LoanController::class, 'paymentCenter']);
     Route::resource('/loan-products', LoanProductController::class);
 
   });

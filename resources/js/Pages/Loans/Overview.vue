@@ -6,6 +6,7 @@ import IncomeSummaryWidget from "@/Pages/Dashboard/Partials/IncomeSummaryWidget.
 import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
 import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 import LoanSectionNav from "./Partials/LoanSectionNav.vue";
+import NextPaymentsWidget from "./NextPaymentsWidget.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 
 import { formatMoney } from "@/utils/formatMoney";
@@ -153,11 +154,15 @@ const comparisonRevenue = {
         :cards="welcomeCards"
       />
       <section class="flex flex-col mt-8 lg:space-x-4 lg:flex-row">
-        <IncomeSummaryWidget
-          class="order-2 mt-4 lg:w-8/12 lg:mt-0 lg:order-1"
-          :chart="comparisonRevenue"
-          :headerInfo="comparisonRevenue.headers"
-        />
+        <article class="lg:w-8/12">
+          <IncomeSummaryWidget
+            class="order-2 mt-4 lg:mt-0 lg:order-1"
+            :style="{ height: '300px' }"
+            :chart="comparisonRevenue"
+            :headerInfo="comparisonRevenue.headers"
+          />
+          <NextPaymentsWidget />
+        </article>
         <article class="order-1 space-y-5 lg:w-5/12 lg:order-2">
           <AtBackgroundIconCard
             class="text-white bg-blue-400 h-36"

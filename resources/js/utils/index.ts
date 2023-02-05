@@ -1,4 +1,4 @@
-import { format, parseISO } from "date-fns"
+import { addDays, format, parseISO, subDays } from "date-fns"
 export * from "./formatMoney";
 
 export const formatDate = (stringDate: string|Date, formatText = 'd MMM, yyyy') => {
@@ -43,3 +43,12 @@ export const dateToIso = (date: Date | null) => {
   return date ? formatDate(date, "y-M-d") : null;
 };
 
+
+export const getRangeParams = (field: string, range: number[], direction = 'back') => {
+    const date = new Date();
+    const method = direction == 'back' ? subDays : addDays;
+    const rangeString = range
+      .map((dateCount) => dateToIso(method(date, dateCount)))
+      .join("~");
+    return `filter[${field}]=${rangeString}`;  
+}

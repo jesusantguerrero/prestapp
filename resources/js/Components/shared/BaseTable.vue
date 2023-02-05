@@ -36,7 +36,7 @@
           </template>
         </ElTableColumn>
         <ElTableColumn
-          v-for="col in cols"
+          v-for="col in visibleCols"
           :prop="col.name"
           :key="col.name"
           :label="col.label || col.name"
@@ -81,10 +81,11 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import CustomCell from "../customCell";
 import AppSearch from "./AppSearch/AppSearch.vue";
 
-defineProps({
+const props = defineProps({
   selectable: {
     type: Boolean,
   },
@@ -100,6 +101,9 @@ defineProps({
   cols: {
     type: Array,
     required: true,
+  },
+  hiddenCols: {
+    type: [Array, null],
   },
   isLoading: {
     type: Boolean,
@@ -151,6 +155,11 @@ defineProps({
 const getHeaderClass = (row) => {
   return row.headerClass;
 };
+
+const visibleCols = computed(() => {
+  console.log(props.hiddenCols);
+  return props.cols.filter((col) => !props.hiddenCols.includes(col.name));
+});
 </script>
 
 <style lang="scss">

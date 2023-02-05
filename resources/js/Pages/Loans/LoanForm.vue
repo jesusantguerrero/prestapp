@@ -100,7 +100,7 @@ const onSubmit = () => {
     first_installment_date: formatDate(loanForm.first_installment_date, "y-M-d"),
     client_id: loanForm.client.id,
     source_type: loanForm.sourceType?.id,
-    source_account_id: loanForm.sourceAccount.id,
+    source_account_id: loanForm.sourceAccount?.id,
   };
 
   saveLoan(formData, installments.value.payments)

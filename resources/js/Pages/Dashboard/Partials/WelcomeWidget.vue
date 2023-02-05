@@ -31,15 +31,20 @@ withDefaults(defineProps<Props>(), {
       <h1 class="font-bold text-body-1">
         {{ message }} <span class="text-primary">{{ username }}</span>
       </h1>
-      <div class="space-x-2" v-if="actionLabel && actionLink">
-        <AtButton
-          class="text-sm text-primary px-0"
-          rounded
-          @click="actionLink && router.visit(actionLink)"
-        >
-          <i class="fa fa-home" />
-          {{ actionLabel }}
-        </AtButton>
+
+      <div>
+        <slot name="actions">
+          <div class="space-x-2" v-if="actionLabel && actionLink">
+            <AtButton
+              class="text-sm text-primary px-0"
+              rounded
+              @click="actionLink && router.visit(actionLink)"
+            >
+              <i class="fa fa-home" />
+              {{ actionLabel }}
+            </AtButton>
+          </div>
+        </slot>
       </div>
     </section>
     <slot name="content">
