@@ -5,6 +5,7 @@ import { onMounted, ref, computed } from "vue";
 import cols from "./cols";
 import BaseTable from "@/Components/shared/BaseTable.vue";
 import { getRangeParams } from "@/utils";
+import InstallmentTable from "./Partials/InstallmentTable.vue";
 
 const props = withDefaults(
   defineProps<{
@@ -78,7 +79,7 @@ onMounted(() => {
     </template>
     <template #content>
       <section>
-        <BaseTable :cols="cols" :table-data="payments" />
+        <InstallmentTable :installments="payments" :hidden-cols="['balance']" />
       </section>
     </template>
   </WelcomeWidget>

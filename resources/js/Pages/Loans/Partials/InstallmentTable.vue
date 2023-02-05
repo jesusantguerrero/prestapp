@@ -14,6 +14,7 @@ import { router } from "@inertiajs/core";
 interface Props {
   installments: ILoanInstallment[];
   loanId?: number;
+  hiddenCols?: string[];
 }
 
 const props = defineProps<Props>();
@@ -53,7 +54,7 @@ const onUpdateRepayment = (repayment: ILoanInstallmentSaved) => {
 </script>
 
 <template>
-  <BaseTable :cols="cols" :table-data="installments">
+  <BaseTable :cols="cols" :table-data="installments" :hidden-cols="hiddenCols">
     <template v-slot:actions="{ scope: { row } }">
       <div class="flex space-x-2 justify-end">
         <AppButton
