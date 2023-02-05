@@ -13,7 +13,7 @@ import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import cols from "./cols";
 import { ILoan } from "@/Modules/loans/loanEntity";
 import { subDays } from "date-fns";
-import { dateToIso } from "@/utils";
+import { dateToIso, getRangeParams } from "@/utils";
 
 interface IPaginatedData {
   data: ILoan[];
@@ -41,11 +41,7 @@ const expiringRanges = [
 ];
 
 const setRange = (field: string, range: number[]) => {
-  const date = new Date();
-  const rangeString = range
-    .map((dateCount) => dateToIso(subDays(date, dateCount)))
-    .join("~");
-  const params = `filter[${field}]=${rangeString}`;
+  const params = getRangeParams(field, range);
   router.get(
     `/rents?${params}`,
     {},
