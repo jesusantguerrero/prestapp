@@ -1,5 +1,99 @@
+<script setup lang="ts">
+import { computed } from "vue";
+import CustomCell from "../customCell";
+import AppSearch from "./AppSearch/AppSearch.vue";
+import { useResponsive } from "@/utils/useResponsive";
+
+const { isMobile } = useResponsive();
+
+const props = defineProps({
+  selectable: {
+    type: Boolean,
+  },
+  defaultExpandAll: {
+    type: Boolean,
+  },
+  showSummary: {
+    type: Boolean,
+  },
+  summaryMethod: {
+    type: [null, Function],
+  },
+  cols: {
+    type: Array,
+    required: true,
+  },
+  hiddenCols: {
+    type: [Array, null],
+  },
+  isLoading: {
+    type: Boolean,
+    default: false,
+  },
+  tableData: {
+    type: Array,
+  },
+  config: {
+    type: Object,
+    default() {
+      return {};
+    },
+  },
+  pagination: {
+    type: Object,
+    default() {
+      return {};
+    },
+  },
+  total: {
+    type: Number,
+  },
+  showPrepend: {
+    type: Boolean,
+    default: false,
+  },
+  showAppend: {
+    type: Boolean,
+    default: false,
+  },
+  emptyText: {
+    type: String,
+    default: "No data found",
+  },
+  hideEmptyText: {
+    type: Boolean,
+    default: false,
+  },
+  hideHeaders: {
+    type: Boolean,
+    default: false,
+  },
+  responsive: {
+    type: Boolean,
+    default: false,
+  },
+  tableClass: {
+    default: "px-4",
+  },
+  layout: {
+    type: String,
+    default: "table",
+  },
+});
+
+const getHeaderClass = (row) => {
+  return row.headerClass;
+};
+
+const visibleCols = computed(() => {
+  return !props.hiddenCols
+    ? props.cols
+    : props.cols.filter((col) => !props.hiddenCols.includes(col.name));
+});
+</script>
+
 <template>
-  <section class="pt-2 mb-24">
+  <section class="pt-4 mb-24">
     <section class="flex justify-between items-center" :class="{ 'py-4': config.search }">
       <div class="w-full px-4" v-if="config.search">
         <AppSearch class="w-96" v-model="pagination.search" @search="$emit('search')" />
@@ -18,7 +112,10 @@
       />
     </section>
     <section :class="tableClass">
-      <div v-if="layout == 'grid'">
+      <div
+        class="space-y-2"
+        v-if="layout == 'grid' || (responsive && $slots.card && isMobile)"
+      >
         <slot name="card" :row="row" v-for="row in tableData"></slot>
       </div>
       <ElTable
@@ -83,93 +180,6 @@
     </section>
   </section>
 </template>
-
-<script setup lang="ts">
-import { computed } from "vue";
-import CustomCell from "../customCell";
-import AppSearch from "./AppSearch/AppSearch.vue";
-
-const props = defineProps({
-  selectable: {
-    type: Boolean,
-  },
-  defaultExpandAll: {
-    type: Boolean,
-  },
-  showSummary: {
-    type: Boolean,
-  },
-  summaryMethod: {
-    type: [null, Function],
-  },
-  cols: {
-    type: Array,
-    required: true,
-  },
-  hiddenCols: {
-    type: [Array, null],
-  },
-  isLoading: {
-    type: Boolean,
-    default: false,
-  },
-  tableData: {
-    type: Array,
-  },
-  config: {
-    type: Object,
-    default() {
-      return {};
-    },
-  },
-  pagination: {
-    type: Object,
-    default() {
-      return {};
-    },
-  },
-  total: {
-    type: Number,
-  },
-  showPrepend: {
-    type: Boolean,
-    default: false,
-  },
-  showAppend: {
-    type: Boolean,
-    default: false,
-  },
-  emptyText: {
-    type: String,
-    default: "No data found",
-  },
-  hideEmptyText: {
-    type: Boolean,
-    default: false,
-  },
-  hideHeaders: {
-    type: Boolean,
-    default: false,
-  },
-  tableClass: {
-    default: "px-4",
-  },
-  layout: {
-    type: String,
-    default: "table",
-  },
-});
-
-const getHeaderClass = (row) => {
-  return row.headerClass;
-};
-
-const visibleCols = computed(() => {
-  return !props.hiddenCols
-    ? props.cols
-    : props.cols.filter((col) => !props.hiddenCols.includes(col.name));
-});
-</script>
 
 <style lang="scss">
 .section-actions {
