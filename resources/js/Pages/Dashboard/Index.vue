@@ -201,7 +201,10 @@ const { openTransactionModal } = useTransactionModal();
             Distribución a propietarios pendientes
           </div>
         </div>
-        <WelcomeWidget message="Accesos Rapidos" class="w-full mt-4 md:mt-0 md:w-3/12">
+        <WelcomeWidget
+          message="Accesos Rapidos"
+          class="hidden md:block w-full mt-4 md:mt-0 md:w-3/12"
+        >
           <template #content>
             <div class="grid grid-cols-2 py-2">
               <button
