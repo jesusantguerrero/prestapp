@@ -1,0 +1,1 @@
+import{p as o}from"./index-8305cd09.js";function s(t,n){var e=arguments.length>2&&arguments[2]!==void 0?arguments[2]:[];return e.length>=n?t.apply(null,e.slice(0,n).reverse()):function(){for(var a=arguments.length,u=new Array(a),r=0;r<a;r++)u[r]=arguments[r];return s(t,n,e.concat(u))}}const c=s(o,1);export{c as p};
