@@ -65,4 +65,15 @@ class PropertyTransactionsTest extends PropertyBase
     $this->assertEquals($account->id, $payment->transaction->lines[1]->account_id);
     $this->assertEquals(-1, $payment->transaction->lines[1]->type);
   }
+
+  public function testItShouldCreateADepositRefund() {
+    $this->seed();
+    $this->actingAs($this->user);
+    $rent = $this->createRent();
+
+    $response = $this->createExpense($rent);
+
+    $response->assertStatus(200);
+    $rent = Rent::first();
+  }
 }

@@ -84,7 +84,7 @@
     </div>
 
     <div>
-      <week-pager
+      <WeekPager
         v-if="isTemplate('week')"
         v-model="week"
         class="p-4 bg-white"
@@ -99,7 +99,7 @@
             </div>
           </div>
         </template>
-      </week-pager>
+      </WeekPager>
 
       <ic-table
         :is-loading="isLoading"

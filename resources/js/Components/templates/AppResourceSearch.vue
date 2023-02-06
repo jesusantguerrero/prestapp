@@ -6,7 +6,7 @@
     :width="500"
   >
     <template #reference>
-      <div>
+      <div v-bind="$attrs">
         <AppSearch v-model="state.searchText" />
       </div>
     </template>

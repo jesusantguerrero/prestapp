@@ -18,7 +18,11 @@
       />
     </section>
     <section :class="tableClass">
+      <div v-if="layout == 'grid'">
+        <slot name="card" :row="row" v-for="row in tableData"></slot>
+      </div>
       <ElTable
+        v-else
         class="table-fixed"
         style="width: 100%"
         :default-expand-all="defaultExpandAll"
@@ -150,6 +154,10 @@ const props = defineProps({
   tableClass: {
     default: "px-4",
   },
+  layout: {
+    type: String,
+    default: "table",
+  },
 });
 
 const getHeaderClass = (row) => {
@@ -157,8 +165,9 @@ const getHeaderClass = (row) => {
 };
 
 const visibleCols = computed(() => {
-  console.log(props.hiddenCols);
-  return props.cols.filter((col) => !props.hiddenCols.includes(col.name));
+  return !props.hiddenCols
+    ? props.cols
+    : props.cols.filter((col) => !props.hiddenCols.includes(col.name));
 });
 </script>
 

@@ -68,7 +68,7 @@ const menus = {
     },
     {
         label: 'Inquilinos',
-        url: '/contacts/tenant?relationships=rent,rent.property'
+        url: '/contacts/tenant?filter[status]=active&relationships=rent,rent.property'
     },
     {
       label: 'Dueños',
