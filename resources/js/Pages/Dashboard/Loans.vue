@@ -42,18 +42,6 @@ const props = defineProps({
   bank: {
     type: Number,
   },
-  dailyBox: {
-    type: Number,
-  },
-  cashOnHand: {
-    type: Number,
-  },
-  nextInvoices: {
-    type: Array,
-  },
-  debtors: {
-    type: Array,
-  },
 });
 
 const welcomeCards = [
@@ -65,36 +53,17 @@ const welcomeCards = [
   {
     label: "Capital Prestado",
     icon: "fa-money",
-    value: formatMoney(props.loanCapital),
+    value: formatMoney(props.loanCapital ?? 0),
   },
   {
     label: "Interes Esperado",
     icon: "fa-wallet",
-    value: formatMoney(props.loanExpectedInterest),
+    value: formatMoney(props.loanExpectedInterest ?? 0),
   },
   {
     label: "Total Interes pagado",
-    value: formatMoney(props.loanPaidInterest),
+    value: formatMoney(props.loanPaidInterest ?? 0),
     accent: true,
-  },
-];
-
-const slideOptions = [
-  {
-    name: "caja",
-    title: "Caja Chica",
-  },
-  {
-    name: "pagos",
-    title: "Pagos",
-  },
-  {
-    name: "ganancias",
-    title: "Ingresos",
-  },
-  {
-    name: "debtors",
-    title: "Deudores",
   },
 ];
 
@@ -143,6 +112,8 @@ const comparisonRevenue = {
     <section class="flex flex-col mt-8 lg:space-x-4 lg:flex-row">
       <article class="lg:w-8/12">
         <IncomeSummaryWidget
+          title="Flujo de efectivo"
+          description="Flujo de efectivo en el año"
           class="order-2 mt-4 lg:mt-0 lg:order-1"
           :style="{ height: '300px' }"
           :chart="comparisonRevenue"
@@ -152,90 +123,32 @@ const comparisonRevenue = {
       </article>
       <article class="order-1 space-y-5 lg:w-5/12 lg:order-2">
         <AtBackgroundIconCard
-          class="text-white bg-blue-400 h-36"
+          class="text-white bg-secondary h-36"
           icon="fas fa-wallet"
-          :value="formatMoney(props.cashOnHand.balance | 0)"
+          :value="formatMoney(props.bank.balance | 0)"
           title="Cartera de Prestamos"
         >
           <template #action>
-            <AtButton class="bg-blue-500 rounded-md" @click="isTransferModalOpen = true">
+            <AtButton
+              class="bg-secondary/60 rounded-md"
+              @click="isTransferModalOpen = true"
+            >
               Add Transaction
             </AtButton>
           </template>
         </AtBackgroundIconCard>
-
-        <AtDashlide class="h-full rounded-md" :slides="slideOptions">
-          <template #caja>
-            <AtBackgroundIconCard
-              class="w-full h-full text-gray-400 rounded-t-none rounded-b-none"
-              icon="fas fa-wallet"
-              :value="formatMoney(props.dailyBox.balance)"
-              title="Caja Chica"
-            />
-          </template>
-
-          <template #ganancias>
-            <AtBackgroundIconCard
-              class="w-full h-full text-blue-400 rounded-t-none rounded-b-none"
-              icon="fas fa-dollar-sign"
-              value="5,000"
-              title="Interes Ganado"
-            />
-          </template>
-
-          <template #debtors>
-            <InvoiceCard
-              v-for="invoice in debtors"
-              :invoice="invoice"
-              :actions="{
-                payment: {
-                  label: 'Registrar Pago',
-                },
-                send: {
-                  label: 'Enviar Correo',
-                },
-                download: {
-                  label: 'Descargar PDF',
-                },
-                view: {
-                  label: 'Ver factura',
-                },
-                delete: {
-                  label: 'Eliminar Factura',
-                },
-              }"
-              @action="handleActions($event, invoice)"
-            />
-            {{ debtors }}
-          </template>
-
-          <template #pagos>
-            <div class="px-4 py-1 space-y-2">
-              <InvoiceCard
-                v-for="invoice in nextInvoices"
-                :invoice="invoice"
-                :actions="{
-                  payment: {
-                    label: 'Registrar Pago',
-                  },
-                  send: {
-                    label: 'Enviar Correo',
-                  },
-                  download: {
-                    label: 'Descargar PDF',
-                  },
-                  view: {
-                    label: 'Ver factura',
-                  },
-                  delete: {
-                    label: 'Eliminar Factura',
-                  },
-                }"
-                @action="handleActions($event, invoice)"
-              />
-            </div>
-          </template>
-        </AtDashlide>
+        <NextPaymentsWidget
+          title="Pagos por periodo"
+          endpoint="/api/loan-payments?"
+          method="back"
+          date-field="payment_date"
+          :ranges="[
+            { label: '1D', value: [1, 1] },
+            { label: '7D', value: [7, 0] },
+            { label: '30D', value: [30, 0] },
+            { label: '90D', value: [90, 0] },
+          ]"
+        />
       </article>
     </section>
   </DashboardTemplate>

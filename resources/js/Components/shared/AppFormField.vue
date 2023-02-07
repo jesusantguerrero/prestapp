@@ -1,11 +1,17 @@
 <script setup lang="ts">
+// @ts-ignore
 import { AtField, AtInput } from "atmosphere-ui";
 
-defineProps<{
-  label: string;
-  modelValue?: any;
-  required?: boolean;
-}>();
+withDefaults(
+  defineProps<{
+    label: string;
+    modelValue?: any;
+    required?: boolean;
+  }>(),
+  {
+    required: false,
+  }
+);
 </script>
 
 <template>
@@ -23,7 +29,7 @@ defineProps<{
 </template>
 
 <style lang="scss">
-.form-group[required] {
+.form-group[required="true"] {
   label::after {
     content: "*";
     @apply text-error/80;

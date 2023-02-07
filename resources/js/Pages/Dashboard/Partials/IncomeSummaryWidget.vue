@@ -6,6 +6,8 @@ interface Props {
     series: any[];
     options: Record<string, any>;
   };
+  title: string;
+  description: string;
   sections?: any[];
 }
 defineProps<Props>();
@@ -17,8 +19,8 @@ defineProps<Props>();
   >
     <article class="p-5 h-full" :class="[sections ? 'lg:w-9/12' : 'w-full']">
       <header>
-        <h4 class="font-bold">Total Income</h4>
-        <small>Yearly report income</small>
+        <h4 class="font-bold">{{ title }}</h4>
+        <small>{{ description }}</small>
       </header>
       <div class="w-full h-full mx-auto pb-10">
         <apexchart

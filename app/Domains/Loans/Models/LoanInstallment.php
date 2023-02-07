@@ -142,7 +142,8 @@ class LoanInstallment extends Model implements IPayableDocument {
         "team_id" => $payment->team_id,
         "user_id" => $payment->user_id,
         "date" => $payment->payment_date,
-        "description" => $payment->concept,
+        "description" => $payment->concept ?? "Pago cuota #" . $this->number,
+        "concept" => $payment->concept ?? "Pago cuota #" . $this->number,
         "direction" => $direction,
         "total" => $payment->amount,
         "account_id" => $payment->account_id,
@@ -182,7 +183,7 @@ class LoanInstallment extends Model implements IPayableDocument {
         "account_id" => $payment->account_id,
         "category_id" => null,
         "type" => 1,
-        "concept" => $payment->concept,
+        "concept" => $payment->concept ?? "Pago cuota #" . $this->number,
         "amount" => $totalPaid,
         "anchor" => true,
       ];

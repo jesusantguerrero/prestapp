@@ -10,8 +10,13 @@ import InstallmentTable from "./Partials/InstallmentTable.vue";
 const props = withDefaults(
   defineProps<{
     ranges: any[];
+    title?: string;
+    method?: string;
+    endpoint: string;
+    dateField: string;
   }>(),
   {
+    endpoint: "/api/repayments?filter[payment_status]=~paid&",
     ranges: [
       {
         label: "1D",
@@ -30,6 +35,9 @@ const props = withDefaults(
         value: [0, 90],
       },
     ],
+    dateField: "due_date",
+    method: "forward",
+    title: "Proximos pagos",
   }
 );
 
@@ -46,8 +54,12 @@ const selectedRangeValue = computed(() => {
 const payments = ref([]);
 
 const fetchRepayments = () => {
-  const rangeParams = getRangeParams("due_date", selectedRangeValue.value, "forward");
-  axios.get(`/api/repayments?filter[status]=$paid&${rangeParams}`).then(({ data }) => {
+  const rangeParams = getRangeParams(
+    props.dateField,
+    selectedRangeValue.value,
+    props.method
+  );
+  axios.get(`${props.endpoint}${rangeParams}`).then(({ data }) => {
     payments.value = data.data;
   });
 };
@@ -63,7 +75,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <WelcomeWidget class="mt-4" message="Proximas cuotas">
+  <WelcomeWidget class="mt-4" :message="title">
     <template #actions>
       <section class="flex text-xs space-x-2 text-body-1">
         <span

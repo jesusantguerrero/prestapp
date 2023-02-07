@@ -11,7 +11,7 @@
         ),
       }"
       :key="statusName"
-      @click="$emit('change', item.value || statusName)"
+      @click="$emit('update:modelValue', item.value || statusName)"
     >
       {{ item.label }}
     </button>

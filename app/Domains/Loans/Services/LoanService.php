@@ -9,6 +9,7 @@ use App\Domains\Loans\Jobs\CreateLoanTransaction;
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
 use App\Models\Setting;
+use Insane\Journal\Models\Core\Payment;
 use Insane\Journal\Models\Core\PaymentDocument;
 
 class LoanService {
@@ -81,6 +82,17 @@ class LoanService {
     public static function invoices(int $teamId, int $clientId = null) {
         return LoanInstallment::byTeam($teamId);
         // ->byClient($clientId);
+    }
+
+    public static function paymentReport(int $teamId, int $clientId = null, $type) {
+      if ($type == 'pending' || $type == 'all') {
+        $repayments = LoanInstallment::byTeam($teamId);
+        return $type == 'all' ? $repayments : $repayments->unpaid();
+      } else {
+        return Payment::where('team_id', $teamId)
+        ->with(['payable'])
+        ->byPayable(LoanInstallment::class);
+      }
     }
 
     public static function getStats(Loan $loan) {

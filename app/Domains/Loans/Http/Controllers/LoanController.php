@@ -174,25 +174,27 @@ class LoanController extends InertiaController
     public function paymentCenter(Request $request) {
       $teamId = $request->user()->current_team_id;
       $filters = $request->query('filters');
+      $currentTab = $request->query('tab') ?? 'pending';
       $clientId = $filters ? $filters['client'] : null;
 
-      $qInvoice = LoanService::invoices($teamId, $clientId);
-      $invoices = LoanService::invoices($teamId, $clientId)->paginate();
+      $qInvoice = LoanService::paymentReport($teamId, $clientId, $currentTab);
+      $invoices = $qInvoice->paginate();
 
       return inertia('Loans/PaymentCenter',
       [
           'invoices' => $invoices,
-          'outstanding' => $qInvoice->sum(DB::raw('amount - amount_paid')),
-          'paid' => $qInvoice->sum('amount_paid'),
-          'clients' => $qInvoice
+          // 'outstanding' => $qInvoice->sum(DB::raw('amount - amount_paid')),
+          // 'paid' => $qInvoice->sum('amount_paid'),
+          'clients' => $currentTab == 'payments' ? [] : $qInvoice
           ->groupBy('loan_installments.client_id')
           ->select(DB::raw('client_id id, clients.display_name'))
           ->join('clients', 'clients.id', 'loan_installments.client_id')
           ->get(),
-          'loans' => $qInvoice->groupBy('loan_id')
+          'loans' => $currentTab == 'payments' ? [] : $qInvoice->groupBy('loan_id')
           ->select(DB::raw('loan_id id, loans.amount amount, sum(loans.amount - loans.amount_paid) debt'))
           ->join('loans', 'loans.id', 'loan_installments.loan_id')
-          ->get()
+          ->get(),
+          "currentTab" => $currentTab
       ]);
     }
 }

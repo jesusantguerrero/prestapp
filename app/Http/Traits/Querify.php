@@ -148,7 +148,6 @@ trait Querify
            break;
         }
 
-
         foreach ($optionalValues as $index => $optionalValue) {
           $where = "where";
           if ($index && !$disableSecondWhere) {
@@ -157,7 +156,7 @@ trait Querify
 
           $isBetween = strpos($optionalValue, "~");
 
-          if ($isBetween != false) {
+          if ($isBetween) {
             $betweenArgs = $this->splitAndTrim($optionalValue, '~');
             $methodName = $where."Between";
             $this->modelQuery->$methodName($field, $betweenArgs);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Domains\Accounting\Widget\AccountStatWidget;
 use App\Domains\CRM\Services\ClientService;
+use App\Domains\Loans\Models\LoanInstallment;
 use App\Domains\Loans\Services\LoanService;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Services\PropertyService;
@@ -72,16 +73,12 @@ class DashboardController extends Controller
 
       return inertia('Dashboard/Loans',
       [
-          "revenue" => $reportHelper->revenueReport($teamId),
+          "revenue" => $reportHelper->revenueReport($teamId, 'payments', LoanInstallment::class),
           "activeLoanClients" => ClientService::clientsWithActiveLoans($teamId),
           "loanCapital" => LoanService::disposedCapitalFor($teamId),
           "loanExpectedInterest" => LoanService::expectedInterestFor($teamId),
           "loanPaidInterest" => LoanService::paidInterestFor($teamId),
-          'bank' => $reportHelper->smallBoxRevenue('bank', $teamId),
-          'dailyBox' => $reportHelper->smallBoxRevenue('daily_box', $teamId),
-          'cashOnHand' => $reportHelper->smallBoxRevenue('cash_on_hand', $teamId),
-          'nextInvoices' => $reportHelper->nextInvoices($teamId),
-          'debtors' => $reportHelper->debtors($teamId),
+          'bank' => $reportHelper->smallBoxRevenue('loan_business', $teamId),
           'section' => "loans"
       ]);
     }
