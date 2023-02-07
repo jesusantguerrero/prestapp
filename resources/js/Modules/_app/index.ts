@@ -32,7 +32,7 @@ export const useAppMenu = () => {
         {
             icon: 'fas fa-building',
             label:'Propiedades',
-            to: '/properties/overview',
+            to: '/units?filter[status]=RENTED',
             as: Link,
             isActiveFunction(url: string, currentPath: string) {
               return /properties|units|tenant|owner/.test(currentPath)

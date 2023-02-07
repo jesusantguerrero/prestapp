@@ -28,10 +28,6 @@ const menus = {
     }],
     [MODULES.LOAN]: [
       {
-        label: 'Resumen',
-        url: '/loans/overview',
-      },
-      {
         label: 'Prestamos',
         url: '/loans'
       },
@@ -54,10 +50,7 @@ const menus = {
         hidden: true
       }
     ],
-    [MODULES.PROPERTY]: [{
-        label: 'Resumen',
-        url: '/properties/overview'
-    },
+    [MODULES.PROPERTY]: [
     {
         label: 'Propiedades',
         url: '/units/'
