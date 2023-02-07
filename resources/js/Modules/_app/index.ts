@@ -20,7 +20,7 @@ export const useAppMenu = () => {
             as: Link
         },
         {
-            icon: 'fas fa-dollar-sign',
+            icon: 'fas fa-money-check-alt',
             label: 'Prestamos',
             name: 'prestamos',
             to: '/loans',
@@ -40,7 +40,7 @@ export const useAppMenu = () => {
 
         },
         {
-            icon: 'fas fa-dollar-sign',
+            icon: 'fas fa-calculator',
             label: 'Contabilidad',
             to: '/invoices?filter[type]=expense|invoice',
             as: Link,
@@ -49,7 +49,7 @@ export const useAppMenu = () => {
              }
         },
         {
-          icon: 'fas fa-heart',
+          icon: 'fas fa-chart-bar',
           label:'Reportes',
           to: '/statements',
           as: Link,

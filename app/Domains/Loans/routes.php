@@ -17,7 +17,6 @@ Route::middleware([
   config('jetstream.auth_session'),
   'verified',
 ])->group(function () {
-    Route::get('loans/overview', LoanController::class);
     Route::resource('loans', LoanController::class);
 
     Route::controller(LoanController::class)->group(function () {
