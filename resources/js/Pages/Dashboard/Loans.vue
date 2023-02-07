@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import AppLayout from "@/Components/templates/AppLayout.vue";
 import { AtBackgroundIconCard, AtButton, AtDashlide } from "atmosphere-ui";
 
 import IncomeSummaryWidget from "@/Pages/Dashboard/Partials/IncomeSummaryWidget.vue";
 import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
 import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 import NextPaymentsWidget from "@/Pages/Loans/NextPaymentsWidget.vue";
-import AppButton from "@/Components/shared/AppButton.vue";
+import DashboardTemplate from "./Partials/DashboardTemplate.vue";
 
 import { formatMoney } from "@/utils/formatMoney";
-import DashboardTemplate from "./Partials/DashboardTemplate.vue";
 
 const props = defineProps({
   revenue: {
