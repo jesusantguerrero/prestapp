@@ -14,6 +14,7 @@ const props = withDefaults(
     method?: string;
     endpoint: string;
     dateField: string;
+    defaultRange?: string;
   }>(),
   {
     endpoint: "/api/repayments?filter[payment_status]=~paid&",
@@ -41,7 +42,7 @@ const props = withDefaults(
   }
 );
 
-const selectedRange = ref("1D");
+const selectedRange = ref(props.defaultRange ?? "1D");
 
 const isSelected = (label: string) => {
   return selectedRange.value == label;
@@ -90,9 +91,9 @@ onMounted(() => {
       </section>
     </template>
     <template #content>
-      <section>
+      <slot name="content" :list="payments">
         <InstallmentTable :installments="payments" :hidden-cols="['balance']" />
-      </section>
+      </slot>
     </template>
   </WelcomeWidget>
 </template>

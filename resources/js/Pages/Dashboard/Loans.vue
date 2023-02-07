@@ -8,6 +8,7 @@ import NextPaymentsWidget from "@/Pages/Loans/NextPaymentsWidget.vue";
 import DashboardTemplate from "./Partials/DashboardTemplate.vue";
 
 import { formatMoney } from "@/utils/formatMoney";
+import PaymentsCard from "@/Components/PaymentsCard.vue";
 
 const props = defineProps({
   revenue: {
@@ -126,14 +127,14 @@ const comparisonRevenue = {
           class="text-white bg-secondary h-36"
           icon="fas fa-wallet"
           :value="formatMoney(props.bank.balance | 0)"
-          title="Cartera de Prestamos"
+          title="Balance cuenta prestamos"
         >
           <template #action>
             <AtButton
               class="bg-secondary/60 rounded-md"
               @click="isTransferModalOpen = true"
             >
-              Add Transaction
+              Agregar fondos
             </AtButton>
           </template>
         </AtBackgroundIconCard>
@@ -141,6 +142,7 @@ const comparisonRevenue = {
           title="Pagos por periodo"
           endpoint="/api/loan-payments?"
           method="back"
+          default-range="7D"
           date-field="payment_date"
           :ranges="[
             { label: '1D', value: [1, 1] },
@@ -148,7 +150,13 @@ const comparisonRevenue = {
             { label: '30D', value: [30, 0] },
             { label: '90D', value: [90, 0] },
           ]"
-        />
+        >
+          <template v-slot:content="{ list }">
+            <div class="pt-4">
+              <PaymentsCard v-for="payment in list" :payment="payment" />
+            </div>
+          </template>
+        </NextPaymentsWidget>
       </article>
     </section>
   </DashboardTemplate>
