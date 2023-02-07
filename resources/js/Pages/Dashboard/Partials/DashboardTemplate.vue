@@ -22,11 +22,11 @@ const sections = {
   },
   realState: {
     label: "Inmobiliaria",
-    link: "/dashboard/properties",
+    link: "/dashboard/property",
   },
   loans: {
     label: "Prestamos",
-    link: "/dashboard/loans",
+    link: "/dashboard/loan",
   },
 };
 const handleChange = (sectionName: string) => {

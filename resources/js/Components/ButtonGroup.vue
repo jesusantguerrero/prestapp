@@ -1,12 +1,12 @@
 <template>
   <section
-    class="flex rounded-md border bg-primary/10 font-bold text-primary border-primary min-w-max overflow-hidden"
+    class="flex rounded-md border bg-secondary/10 font-bold text-secondary border-secondary min-w-max overflow-hidden"
   >
     <button
       v-for="(item, statusName) in values"
-      class="px-2 py-1.5 flex items-center border border-transparent hover:bg-primary/5"
+      class="px-2 py-1.5 flex items-center border border-transparent hover:bg-secondary/5"
       :class="{
-        'text-white bg-primary border border-primary hover:text-primary': isSelected(
+        'text-white bg-secondary border border-secondary hover:text-secondary': isSelected(
           statusName
         ),
       }"

@@ -39,7 +39,7 @@ class DashboardController extends Controller
       ]);
     }
 
-    public function properties(Request $request) {
+    public function property(Request $request) {
       $reportHelper = new ReportHelper();
       $teamId = $request->user()->current_team_id;
 
@@ -66,7 +66,7 @@ class DashboardController extends Controller
       ]);
     }
 
-    public function loans(Request $request) {
+    public function loan(Request $request) {
       $reportHelper = new ReportHelper();
       $teamId = $request->user()->current_team_id;
 
