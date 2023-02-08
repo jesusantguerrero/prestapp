@@ -9,6 +9,8 @@ use App\Domains\Loans\Jobs\CreateLoanTransaction;
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
 use App\Models\Setting;
+use Illuminate\Support\Carbon;
+use Insane\Journal\Helpers\ReportHelper;
 use Insane\Journal\Models\Core\Payment;
 use Insane\Journal\Models\Core\PaymentDocument;
 
@@ -98,6 +100,19 @@ class LoanService {
     public static function getStats(Loan $loan) {
       return $loan->installments()->selectRaw("sum(principal - principal_paid) as outstandingPrincipal, sum(interest - interest_paid) as outstandingInterest, sum(late_fee - late_fee_paid) as outstandingFees,sum(amount_due) as outstandingTotal
       ")->first();
+    }
+
+    public static function paidInterestByPeriod($teamId, $timeUnit = 'month', $timeUnitDiff = 2 , $type = 'expenses') {
+      $endDate = Carbon::now()->endOfMonth()->format('Y-m-d');
+      $startDate = Carbon::now()->startOfYear()->format('Y-m-d');
+
+      $results = ReportHelper::getTransactionsByAccount($teamId, ['expected_interest_loans'], $startDate, $endDate);
+      $results =  collect($results["expected_interest_loans"]);
+      return [
+        "year" => $results->sum('outcome'),
+        "months" => $results,
+        "avg" => $results->avg('outcome')
+      ];
     }
 
     public static function getReceipt(Loan $loan, PaymentDocument $document) {

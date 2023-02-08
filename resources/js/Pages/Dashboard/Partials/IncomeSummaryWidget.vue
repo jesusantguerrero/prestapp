@@ -15,7 +15,7 @@ defineProps<Props>();
 
 <template>
   <div
-    class="flex flex-col h-full overflow-hidden bg-white border divide-x-2 rounded-md shadow-xl lg:flex-row sm:rounded-lg"
+    class="flex flex-col h-full overflow-hidden bg-white divide-x-2 lg:flex-row sm:rounded-lg"
   >
     <article class="p-5 h-full" :class="[sections ? 'lg:w-9/12' : 'w-full']">
       <header>
