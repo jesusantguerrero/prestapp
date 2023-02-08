@@ -1,0 +1,1 @@
+import{f as n,s as a,n as o,o as s}from"./app-bdc0a90d.js";const r={__name:"PrintTemplate",props:{ticket:{type:Boolean}},setup(e){return(t,l)=>(s(),n("main",{class:o(["print-container text-body",{"w-32":e.ticket}])},[a(t.$slots,"default")],2))}},i=r;export{i as default};

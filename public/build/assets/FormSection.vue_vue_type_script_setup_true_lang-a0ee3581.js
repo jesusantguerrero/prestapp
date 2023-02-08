@@ -1,0 +1,1 @@
+import{k as a,f as o,a as e,t as n,s as l,n as r,o as c}from"./app-bdc0a90d.js";const i={class:"font-bold text-primary"},p=a({__name:"FormSection",props:{title:null,sectionClass:{default:"grid grid-cols-2 gap-2"}},setup(s){return(t,m)=>(c(),o("section",null,[e("h1",i,n(s.title),1),e("section",{class:r([s.sectionClass,"-mt-4"])},[l(t.$slots,"default")],2)]))}});export{p as _};
