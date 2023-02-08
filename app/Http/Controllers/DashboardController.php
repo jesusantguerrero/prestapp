@@ -78,6 +78,7 @@ class DashboardController extends Controller
           "loanCapital" => LoanService::disposedCapitalFor($teamId),
           "loanExpectedInterest" => LoanService::expectedInterestFor($teamId),
           "loanPaidInterest" => LoanService::paidInterestFor($teamId),
+          "paidInterest" => LoanService::paidInterestByPeriod($teamId),
           'bank' => $reportHelper->smallBoxRevenue('loan_business', $teamId),
           'section' => "loans"
       ]);

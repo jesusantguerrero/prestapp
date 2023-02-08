@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { AtBackgroundIconCard, AtButton, AtDashlide } from "atmosphere-ui";
+import { AtBackgroundIconCard, AtButton } from "atmosphere-ui";
 
 import IncomeSummaryWidget from "@/Pages/Dashboard/Partials/IncomeSummaryWidget.vue";
 import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
-import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 import NextPaymentsWidget from "@/Pages/Loans/NextPaymentsWidget.vue";
 import DashboardTemplate from "./Partials/DashboardTemplate.vue";
+import ChartBar from "./Partials/ChartBar.vue";
 
 import { formatMoney } from "@/utils/formatMoney";
 import PaymentsCard from "@/Components/PaymentsCard.vue";
+import { ref } from "vue";
 
 const props = defineProps({
   revenue: {
@@ -39,6 +40,9 @@ const props = defineProps({
   },
   loanPaidInterest: {
     type: Number,
+  },
+  paidInterest: {
+    type: Array,
   },
   bank: {
     type: Number,
@@ -101,6 +105,39 @@ const comparisonRevenue = {
     },
   ],
 };
+
+const interestPerformance = {
+  headers: {
+    gapName: "Year",
+    month: props.paidInterest.months.at(-1).outcome,
+    avg: props.paidInterest.avg,
+    current: props.paidInterest?.year,
+  },
+  options: {
+    chart: {
+      id: "vuechart-example",
+    },
+    stroke: {
+      curve: "smooth",
+    },
+    dropShadow: {
+      enabled: true,
+      top: 3,
+      left: 0,
+      blur: 1,
+      opacity: 0.5,
+    },
+    colors: ["#fa6b88", "#80CDFE"],
+  },
+  series: [
+    {
+      name: "current year",
+      data: props.paidInterest.months.map((item) => item.outcome),
+    },
+  ],
+};
+
+const summaryType = ref("cash-flow");
 </script>
 
 <template>
@@ -112,14 +149,44 @@ const comparisonRevenue = {
     />
     <section class="flex flex-col mt-8 lg:space-x-4 lg:flex-row">
       <article class="lg:w-8/12">
-        <IncomeSummaryWidget
-          title="Flujo de efectivo"
-          description="Flujo de efectivo en el año"
+        <WelcomeWidget
+          message="Rendimiento del mes"
           class="order-2 mt-4 lg:mt-0 lg:order-1"
-          :style="{ height: '300px' }"
-          :chart="comparisonRevenue"
-          :headerInfo="comparisonRevenue.headers"
-        />
+        >
+          <template #actions>
+            <section class="flex space-x-2">
+              <button
+                @click="summaryType = 'gains'"
+                class="bg-base-lvl-2 rounded-3xl text-body-1 px-4"
+              >
+                Ganancias
+              </button>
+              <button
+                @click="summaryType = 'cash-flow'"
+                class="bg-base-lvl-2 rounded-3xl text-body-1 px-4"
+              >
+                Cash
+              </button>
+            </section>
+          </template>
+          <template #content>
+            <IncomeSummaryWidget
+              v-if="summaryType == 'cash-flow'"
+              title="Flujo de efectivo"
+              description="Flujo de efectivo en el año"
+              :style="{ height: '300px' }"
+              :chart="comparisonRevenue"
+              :headerInfo="comparisonRevenue.headers"
+            />
+            <ChartBar
+              v-else
+              title="Ganancias"
+              description="Ganancias por intereses en el año"
+              :chart="interestPerformance"
+              :headerInfo="interestPerformance.headers"
+            />
+          </template>
+        </WelcomeWidget>
         <NextPaymentsWidget />
       </article>
       <article class="order-1 space-y-5 lg:w-5/12 lg:order-2">

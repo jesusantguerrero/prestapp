@@ -204,7 +204,7 @@ class LoanInstallment extends Model implements IPayableDocument {
                 "account_id" => $fee['account_id'],
                 "category_id" => null,
                 "type" => -1,
-                "concept" => $payment->concept,
+                "concept" =>__($feeName) . " " .$payment->concept,
                 "amount" => $toPay,
                 "anchor" => true,
             ];
