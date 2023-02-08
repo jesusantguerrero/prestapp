@@ -38,7 +38,7 @@ const props = withDefaults(
     ],
     dateField: "due_date",
     method: "forward",
-    title: "Proximos pagos",
+    title: "Proximas coutas",
   }
 );
 

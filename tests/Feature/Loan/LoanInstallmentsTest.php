@@ -6,6 +6,7 @@ use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
 use App\Models\User;
 use Insane\Journal\Models\Core\Account;
+use Insane\Journal\Models\Core\Payment;
 use Tests\Feature\Loan\Helpers\LoanBase;
 
 class LoanInstallmentsTest extends LoanBase {
@@ -32,6 +33,18 @@ class LoanInstallmentsTest extends LoanBase {
     $response->assertStatus(200);
     $this->assertEquals(0, $repayment->refresh()->amount_due);
     $this->assertEquals(LoanInstallment::STATUS_PAID, $repayment->payment_status);
+  }
+
+  public function testItShouldHaveAValidPayment() {
+    $loan = $this->createLoan();
+    $repayment = $loan->installments->first();
+
+    $response = $this->payRepayment($repayment, $loan, $repayment->amount_due);
+
+    $repayment = $repayment->refresh();
+
+    $response->assertStatus(200);
+    $this->assertCount(1, Payment::all());
   }
 
   public function testItShouldPayARepaymentPartially() {

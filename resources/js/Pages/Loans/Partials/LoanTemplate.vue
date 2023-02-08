@@ -21,10 +21,17 @@ import { formatDate } from "@/utils";
 
 const [isAgreementModalOpen, toggleAgreementModal] = useToggle();
 
+interface ILoanStats {
+  outstandingFees: number;
+  outstandingInterest: number;
+  outstandingPrincipal: number;
+  outstandingTotal: number;
+}
+
 interface Props {
   loans: ILoan;
   currentTab: string;
-  stats: Object;
+  stats: ILoanStats;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -158,7 +165,7 @@ const onUpdateStatus = () => {
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
               title="Mora pendiente"
-              :value="formatMoney(stats.outstandingFee)"
+              :value="formatMoney(stats.outstandingFees)"
             />
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"

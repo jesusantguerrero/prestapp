@@ -36,7 +36,7 @@ const formData = useForm({
 const filters = useSectionFilters(["client", "loan"], router);
 
 const handleChange = (value: boolean, row: Record<string, any>) => {
-  row.payment = row.amount_paid - row.amount;
+  row.payment = row.amount_due;
 };
 
 interface IRelatedPayments {
@@ -167,7 +167,7 @@ watch(currentTab, () => {
                 name: 'amount_paid',
                 label: 'Balance',
                 render(row: Record<string, any>) {
-                  return formatMoney(row.amount_paid - row.amount);
+                  return formatMoney(row.amount_due);
                 },
               },
               {

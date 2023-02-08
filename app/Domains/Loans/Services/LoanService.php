@@ -96,7 +96,7 @@ class LoanService {
     }
 
     public static function getStats(Loan $loan) {
-      return $loan->installments()->selectRaw("sum(principal - principal_paid) as outstandingPrincipal, sum(interest - interest_paid) as outstandingInterest,sum(late_fee - late_fee_paid) as outstandingFees,sum(late_fee - late_fee_paid) as outstandingFees,sum(amount_due) as outstandingTotal
+      return $loan->installments()->selectRaw("sum(principal - principal_paid) as outstandingPrincipal, sum(interest - interest_paid) as outstandingInterest, sum(late_fee - late_fee_paid) as outstandingFees,sum(amount_due) as outstandingTotal
       ")->first();
     }
 

@@ -12,7 +12,7 @@ class PaymentApiController extends BaseController
     {
         $this->model = new PaymentDocument();
         // $this->searchable = ['client_name'];
-        // $this->sorts = ['address'];
+        $this->sorts = ['payment_date'];
         $this->validationRules = [];
         $this->includes = ['payable'];
         $this->filters = [

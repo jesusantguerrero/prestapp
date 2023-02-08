@@ -106,7 +106,7 @@ class LoanInstallment extends Model implements IPayableDocument {
     public static function checkStatus($payable) {
         $today = date('Y-m-d');
         $debt = $payable->amount - $payable->amount_paid;
-        if ($debt == 0) {
+        if ($debt <= 0) {
             $status = self::STATUS_PAID;
         } elseif ($debt > 0 && $debt < $payable->amount) {
             $status = self::STATUS_PARTIALLY_PAID;
