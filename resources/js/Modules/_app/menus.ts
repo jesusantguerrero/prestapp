@@ -28,10 +28,6 @@ const menus = {
     }],
     [MODULES.LOAN]: [
       {
-        label: 'Resumen',
-        url: '/loans/overview',
-      },
-      {
         label: 'Prestamos',
         url: '/loans'
       },
@@ -54,10 +50,7 @@ const menus = {
         hidden: true
       }
     ],
-    [MODULES.PROPERTY]: [{
-        label: 'Resumen',
-        url: '/properties/overview'
-    },
+    [MODULES.PROPERTY]: [
     {
         label: 'Propiedades',
         url: '/units/'
@@ -68,7 +61,7 @@ const menus = {
     },
     {
         label: 'Inquilinos',
-        url: '/contacts/tenant?relationships=rent,rent.property'
+        url: '/contacts/tenant?filter[status]=active&relationships=rent,rent.property'
     },
     {
       label: 'Dueños',

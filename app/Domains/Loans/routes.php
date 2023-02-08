@@ -1,5 +1,6 @@
 <?php
 
+use App\Domains\Loans\Http\Controllers\Api\PaymentApiController;
 use App\Domains\Loans\Http\Controllers\Api\RepaymentApiController;
 use App\Domains\Loans\Http\Controllers\LoanAgreementController;
 use App\Domains\Loans\Http\Controllers\LoanController;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->name('api.')->group(function () {
   Route::apiResource('repayments', RepaymentApiController::class);
+  Route::apiResource('loan-payments', PaymentApiController::class);
 });
 
 Route::middleware([
@@ -17,7 +19,6 @@ Route::middleware([
   config('jetstream.auth_session'),
   'verified',
 ])->group(function () {
-    Route::get('loans/overview', LoanController::class);
     Route::resource('loans', LoanController::class);
 
     Route::controller(LoanController::class)->group(function () {
@@ -42,7 +43,7 @@ Route::middleware([
       Route::put('/loans/{loan}/installments/{installment}', 'update');
       Route::post('/loans/{loan}/installments/{installment}/mark-as-paid', 'markAsPaid');
     });
-  
+
     Route::get('/payment-center', [LoanController::class, 'paymentCenter']);
     Route::get('/repayments', [LoanInstallmentController::class, 'index']);
 

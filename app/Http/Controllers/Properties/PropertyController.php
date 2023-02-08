@@ -36,32 +36,6 @@ class PropertyController extends InertiaController
       $this->resourceName= "properties";
   }
 
-    public function __invoke(Request $request) {
-      $reportHelper = new ReportHelper();
-      $teamId = $request->user()->current_team_id;
-
-      $propertyTotals = PropertyService::totalByStatusFor($teamId);
-
-      $invoices = RentService::invoices($teamId);
-
-      return inertia('Properties/Overview',
-      [
-          "revenue" => $reportHelper->revenueReport($teamId),
-          "stats" => [
-            "total" => $propertyTotals->sum(),
-            "available" => $propertyTotals->get(Property::STATUS_AVAILABLE),
-            "rented" => $propertyTotals->get(Property::STATUS_RENTED),
-          ],
-          "totals" => $invoices->select(DB::raw("sum(total) total, sum(total-debt) paid, sum(debt) outstanding, sum(
-            CASE
-            WHEN invoices.debt > 0 THEN 1
-            ELSE 0
-          END) outstandingInvoices"))->first(),
-          'accounts' => $reportHelper->getAccountTransactionsByPeriod($teamId, ['rent', 'security_deposits', 'operating_expense']),
-          'nextInvoices' => $invoices->unpaid()->take(4)->get(),
-      ]);
-    }
-
     public function create(Request $request) {
       $teamId = $request->user()->current_team_id;
 

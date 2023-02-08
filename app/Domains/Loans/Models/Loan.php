@@ -166,7 +166,7 @@ class Loan extends Transactionable implements IPayableDocument {
     public static function checkStatus($payable) {
       $debt = $payable->total - $payable->amount_paid;
 
-      if ($debt == 0 && !$payable->cancelled_at) {
+      if ($debt <= 0 && !$payable->cancelled_at) {
           $status = self::STATUS_PAID;
       } elseif ($debt > 0 && $debt < $payable->amount) {
           $status = self::STATUS_PARTIALLY_PAID;

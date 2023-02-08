@@ -36,7 +36,7 @@ class RecalculatePayment extends Command
           $payment->createTransaction();
         } else {
           $payment = PaymentDocument::find($paymentId);
-          $payment->update(['notes' => 'updated']);
+          $payment->updateDocument();
         }
 
         return Command::SUCCESS;

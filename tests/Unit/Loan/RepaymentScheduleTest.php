@@ -11,7 +11,6 @@ class RepaymentScheduleTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
         $date = '2022-01-15';
         $this->loanSchedule = new RepaymentSchedule([
             "startDate" => $date,
@@ -21,6 +20,7 @@ class RepaymentScheduleTest extends TestCase
             "count" => 12
         ]);
     }
+
     /**
      * A basic unit test example.
      *
@@ -28,7 +28,6 @@ class RepaymentScheduleTest extends TestCase
      */
     public function testItCalculateMonthlyPayment()
     {
-
         $this->assertEquals(4505.30, $this->loanSchedule->payment);
     }
 

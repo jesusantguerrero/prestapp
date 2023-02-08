@@ -1,4 +1,5 @@
 import { addDays, format, parseISO, subDays } from "date-fns"
+import { computed } from "vue";
 export * from "./formatMoney";
 
 export const formatDate = (stringDate: string|Date, formatText = 'd MMM, yyyy') => {
@@ -50,5 +51,5 @@ export const getRangeParams = (field: string, range: number[], direction = 'back
     const rangeString = range
       .map((dateCount) => dateToIso(method(date, dateCount)))
       .join("~");
-    return `filter[${field}]=${rangeString}`;  
+    return `filter[${field}]=${rangeString}`;
 }

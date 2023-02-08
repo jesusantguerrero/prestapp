@@ -5,7 +5,7 @@ import { computed, toRefs } from "vue";
 // @ts-ignore: its my template
 import AppLayout from "@/Components/templates/AppLayout.vue";
 // @ts-ignore: its my template
-import AtTable from "@/Components/AtTable.vue";
+import AtTable from "@/Components/shared/BaseTable.vue";
 // @ts-ignore: its my template
 import LoanSectionNav from "./Partials/LoanSectionNav.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
@@ -17,6 +17,8 @@ import { ILoan } from "@/Modules/loans/loanEntity";
 import cols from "./cols";
 import { formatMoney } from "@/utils";
 import { ElMessageBox } from "element-plus";
+import LoanCard from "./Partials/LoanCard.vue";
+import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
 
 interface IPaginatedData {
   data: ILoan[];
@@ -55,18 +57,23 @@ const { state, updateSearch, executeSearch, reset } = useServerSearch(
     manual: true,
   }
 );
+
+const bp = useBreakpoints(breakpointsTailwind);
+const isMobile = computed(() => {
+  return bp.isSmaller("md");
+});
 </script>
 
 <template>
   <AppLayout title="Prestamos">
     <template #header>
       <LoanSectionNav>
-        <template #actions>
+        <template #actions v-if="!isMobile">
           <AppSearch
             v-model.lazy="state.search"
             v-model:filters="state.filters"
             v-model:sorts="state.sorts"
-            class="w-full"
+            class="w-full hidden md:flex"
             :has-filters="true"
             @clear="reset()"
             @blur="executeSearch"
@@ -79,10 +86,25 @@ const { state, updateSearch, executeSearch, reset } = useServerSearch(
     </template>
 
     <main class="pt-16">
+      <section class="flex">
+        <AppSearch
+          v-model.lazy="state.search"
+          v-model:filters="state.filters"
+          v-model:sorts="state.sorts"
+          class="w-full md:flex"
+          :has-filters="true"
+          @clear="reset()"
+          @blur="executeSearch"
+        />
+        <AppButton variant="inverse" @click="router.visit('/loans/create')">
+          Nuevo prestamo
+        </AppButton>
+      </section>
       <AtTable
         :table-data="listData"
         :cols="cols"
-        class="bg-white rounded-md text-body-1"
+        class="bg-white rounded-md text-body-1 mt-4"
+        :layout="isMobile ? 'grid' : 'table'"
       >
         <template v-slot:actions="{ scope: { row } }">
           <div class="flex">
@@ -100,6 +122,9 @@ const { state, updateSearch, executeSearch, reset } = useServerSearch(
               <IMdiTrash />
             </AppButton>
           </div>
+        </template>
+        <template v-slot:card="{ row }">
+          <LoanCard :loan="row" />
         </template>
       </AtTable>
     </main>

@@ -5,6 +5,7 @@ export interface ILoan {
     id?: number;
     client?: IClient;
     client_id: number;
+    total?: number;
     // loan details
     interest_rate: number;
     amount: number;

@@ -1,1 +1,0 @@
-import{k as o,O as s}from"./app-9b138141.js";const n=o({props:{col:{type:Object},data:{type:Object}},setup(t,{slots:a}){return()=>{var e;return s("div",(e=t.col)==null?void 0:e.render(t.data))}}});export{n as C};

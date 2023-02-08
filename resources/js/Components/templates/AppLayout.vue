@@ -21,6 +21,7 @@ import AppResourceSearch from "./AppResourceSearch.vue";
 import { useAppMenu } from "@/Modules/_app";
 import { useSelect } from "@/Modules/shared/useSelects";
 import { useLocalStorage } from "@vueuse/core";
+import MobileMenuBar from "../mobile/MobileMenuBar.vue";
 
 defineProps({
   title: String,
@@ -86,6 +87,15 @@ watch(
     immediate: true,
   }
 );
+
+const handleActions = (action) => {
+  // const actions = {
+  //   openAddModal: {
+  //     handler: openTransactionModal,
+  //   },
+  // };
+  // actions[action]?.handler();
+};
 </script>
 
 <template>
@@ -104,16 +114,16 @@ watch(
             </AppButton>
             <h4
               :class="[showBackButton ? 'lg:ml-2' : 'lg:ml-6']"
-              class="text-lg font-bold text-secondary"
+              class="pl-4 md:pl-0 text-lg font-bold text-secondary"
             >
               {{ title }}
             </h4>
           </div>
 
           <div class="flex justify-end h-16">
-            <div class="hidden sm:flex sm:items-center sm:ml-6">
-              <AppResourceSearch class="mr-2" />
-              <AppButton class="flex px-1 items-center mr-4 ml-2">
+            <div class="flex items-center sm:ml-6">
+              <AppResourceSearch class="hidden md:block mr-2" />
+              <AppButton class="hidden md:flex px-1 items-center mr-4 ml-2">
                 <IMdiPlus class="mr-2" />
                 Nuevo
               </AppButton>
@@ -187,42 +197,6 @@ watch(
                 </Dropdown>
               </div>
             </div>
-
-            <!-- Hamburger -->
-            <div class="flex items-center -mr-2 sm:hidden">
-              <button
-                class="inline-flex items-center justify-center p-2 text-gray-400 transition rounded-md hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500"
-                @click="showingNavigationDropdown = !showingNavigationDropdown"
-              >
-                <svg
-                  class="w-6 h-6"
-                  stroke="currentColor"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    :class="{
-                      hidden: showingNavigationDropdown,
-                      'inline-flex': !showingNavigationDropdown,
-                    }"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                  <path
-                    :class="{
-                      hidden: !showingNavigationDropdown,
-                      'inline-flex': showingNavigationDropdown,
-                    }"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
           </div>
         </div>
       </template>
@@ -264,9 +238,8 @@ watch(
         </header>
 
         <!-- Page Content -->
-        <main class="pt-8 mx-auto md:px-24">
-          <slot />
-        </main>
+        <main class="pt-0 md:pt-8 mx-auto md:px-24"><slot /></main>
+        <MobileMenuBar :menu="currentMenu" @action="handleActions" />
       </template>
     </AppShell>
     <TheGlobals />

@@ -44,7 +44,7 @@ class PropertyTransactionService {
         "invoice_account_id" => $formData["invoice_account_id"] ?? $rent->property->account_id,
         "account_id" => $formData["account_id"] ??$rent->property->client_account_id,
         'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
-        'total' =>  $formData['amount'] ?? $rent->amount,
+        'total' =>  $formData['total'] ?? $formData['amount'] ?? $rent->amount,
         'items' => array_merge($formData['items'] ?? $items,  $withExtraServices ? $additionalFees : []),
         "related_invoices" => $formData["related_invoices"] ?? []
       ]);
@@ -76,7 +76,7 @@ class PropertyTransactionService {
 
     public static function generateFirstInvoice(Rent $rent) {
       $proRatedAmount = self::getProRatedAmount($rent);
-      
+
       $items = [[
         "name" => "Factura de Renta",
         "concept" => "Factura de {$rent->client->fullName}",
@@ -97,6 +97,7 @@ class PropertyTransactionService {
     }
 
     public static function createDepositRefund($rent, $formData) {
+
       //todo:  validate not to return more than owed
       $refundAccountId = Account::guessAccount($rent, ['General Prepayments', 'customer_prepayments']);
       $invoiceData = [
@@ -104,7 +105,8 @@ class PropertyTransactionService {
         "due_date" => $formData['date'] ?? date('Y-m-d'),
         "concept" => "Factura reembolso de deposito",
         'category_type' => PropertyInvoiceTypes::DepositRefund,
-        "description" => $formData['details'],
+        "description" => "Devolucion de deposito $rent->client_name",
+        "amount" => $formData['total'],
         "total" => $formData['total'],
         "invoice_account_id" => $formData['account_id'],
         "account_id" => $refundAccountId,
@@ -130,7 +132,20 @@ class PropertyTransactionService {
           ];
       }
 
-      return self::createInvoice($invoiceData, $rent, false);
+
+      if (isset($formData['payment_details'])) {
+        $invoiceData['payment_details'] = array_merge(
+          $formData['payment_details'],
+        [
+          "concept" => "Pago {$invoiceData['concept']}"
+        ]);
+      }
+
+      $invoice = self::createInvoice($invoiceData, $rent, false);
+
+
+
+      return $invoice;
     }
 
     public static function createOrUpdateExpense(Rent $rent, $formData, $invoiceId = null) {
@@ -262,13 +277,13 @@ class PropertyTransactionService {
         } else {
           $invoice = Invoice::createDocument($documentData);
         }
-        
+
         User::find($invoice->user_id)->notify(new InvoiceGenerated($invoice));
 
         $client->update([
           'generated_distribution_dates' => array_merge($client->generated_distribution_dates?? [], [$today])
         ]);
-        
+
       }
     }
 

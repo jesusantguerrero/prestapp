@@ -1,89 +1,10 @@
-<template>
-  <section class="pt-2 mb-24">
-    <section class="flex justify-between items-center" :class="{ 'py-4': config.search }">
-      <div class="w-full px-4" v-if="config.search">
-        <AppSearch class="w-96" v-model="pagination.search" @search="$emit('search')" />
-      </div>
-      <ElPagination
-        v-if="config.pagination"
-        class="w-full flex justify-end pr-4"
-        background
-        @current-change="$emit('paginate', $event)"
-        @size-change="$emit('size-change', $event)"
-        layout="total,prev, pager, next,sizes"
-        :current-page="pagination.page"
-        :page-sizes="[10, 20, 50, 100, 200]"
-        :page-size="pagination.limit"
-        :total="total"
-      />
-    </section>
-    <section :class="tableClass">
-      <ElTable
-        class="table-fixed"
-        style="width: 100%"
-        :default-expand-all="defaultExpandAll"
-        :show-summary="showSummary"
-        :summary-method="summaryMethod"
-        :data="tableData"
-        :header-cell-class-name="getHeaderClass"
-        @sort-change="$emit('sort', $event)"
-        @row-click="$emit('row-click', $event)"
-      >
-        <ElTableColumn type="selection" width="55" v-if="selectable" />
-        <ElTableColumn type="expand" v-if="$slots.expand">
-          <template #default="props">
-            <slot name="expand" :row="props.row" />
-          </template>
-        </ElTableColumn>
-        <ElTableColumn
-          v-for="col in visibleCols"
-          :prop="col.name"
-          :key="col.name"
-          :label="col.label || col.name"
-          cell-class-name="px-2 py-4"
-          :header-cell-class-name="col.headerClass"
-          :class-name="col.class"
-          :width="col.width"
-          :min-width="col.minWidth"
-          :class="[col.headerClass]"
-        >
-          <template v-slot="scope" v-if="$slots[col.name] || col.render">
-            <slot :name="col.name" v-bind:scope="scope">
-              <CustomCell
-                v-if="col.render"
-                :class="col.class"
-                :col="col"
-                :data="scope.row"
-              />
-            </slot>
-          </template>
-        </ElTableColumn>
-      </ElTable>
-    </section>
-    <section class="flex justify-between items-center py-4">
-      <div class="w-full"></div>
-      <div class="w-full flex justify-end">
-        <ElPagination
-          v-if="config.pagination"
-          class="w-full flex justify-end pr-4"
-          background
-          @current-change="$emit('paginate', $event)"
-          @size-change="$emit('size-change', $event)"
-          :current-page="pagination.page"
-          layout="total,prev, pager, next,sizes"
-          :page-sizes="[10, 20, 50, 100, 200]"
-          :page-size="pagination.limit"
-          :total="total"
-        />
-      </div>
-    </section>
-  </section>
-</template>
-
 <script setup lang="ts">
 import { computed } from "vue";
 import CustomCell from "../customCell";
 import AppSearch from "./AppSearch/AppSearch.vue";
+import { useResponsive } from "@/utils/useResponsive";
+
+const { isMobile } = useResponsive();
 
 const props = defineProps({
   selectable: {
@@ -147,8 +68,16 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  responsive: {
+    type: Boolean,
+    default: false,
+  },
   tableClass: {
     default: "px-4",
+  },
+  layout: {
+    type: String,
+    default: "table",
   },
 });
 
@@ -157,10 +86,100 @@ const getHeaderClass = (row) => {
 };
 
 const visibleCols = computed(() => {
-  console.log(props.hiddenCols);
-  return props.cols.filter((col) => !props.hiddenCols.includes(col.name));
+  return !props.hiddenCols
+    ? props.cols
+    : props.cols.filter((col) => !props.hiddenCols.includes(col.name));
 });
 </script>
+
+<template>
+  <section class="pt-4 mb-24">
+    <section class="flex justify-between items-center" :class="{ 'py-4': config.search }">
+      <div class="w-full px-4" v-if="config.search">
+        <AppSearch class="w-96" v-model="pagination.search" @search="$emit('search')" />
+      </div>
+      <ElPagination
+        v-if="config.pagination"
+        class="w-full flex justify-end pr-4"
+        background
+        @current-change="$emit('paginate', $event)"
+        @size-change="$emit('size-change', $event)"
+        layout="total,prev, pager, next,sizes"
+        :current-page="pagination.page"
+        :page-sizes="[10, 20, 50, 100, 200]"
+        :page-size="pagination.limit"
+        :total="total"
+      />
+    </section>
+    <section :class="tableClass">
+      <div
+        class="space-y-2"
+        v-if="layout == 'grid' || (responsive && $slots.card && isMobile)"
+      >
+        <slot name="card" :row="row" v-for="row in tableData"></slot>
+      </div>
+      <ElTable
+        v-else
+        class="table-fixed"
+        style="width: 100%"
+        :default-expand-all="defaultExpandAll"
+        :show-summary="showSummary"
+        :summary-method="summaryMethod"
+        :data="tableData"
+        :header-cell-class-name="getHeaderClass"
+        @sort-change="$emit('sort', $event)"
+        @row-click="$emit('row-click', $event)"
+      >
+        <ElTableColumn type="selection" width="55" v-if="selectable" />
+        <ElTableColumn type="expand" v-if="$slots.expand">
+          <template #default="props">
+            <slot name="expand" :row="props.row" />
+          </template>
+        </ElTableColumn>
+        <ElTableColumn
+          v-for="col in visibleCols"
+          :prop="col.name"
+          :key="col.name"
+          :label="col.label || col.name"
+          cell-class-name="px-2 py-4"
+          :header-cell-class-name="col.headerClass"
+          :class-name="col.class"
+          :width="col.width"
+          :min-width="col.minWidth"
+          :class="[col.headerClass]"
+        >
+          <template v-slot="scope" v-if="$slots[col.name] || col.render">
+            <slot :name="col.name" v-bind:scope="scope">
+              <CustomCell
+                v-if="col.render"
+                :class="col.class"
+                :col="col"
+                :data="scope.row"
+              />
+            </slot>
+          </template>
+        </ElTableColumn>
+      </ElTable>
+    </section>
+    <section class="flex justify-between items-center py-4">
+      <div class="w-full"></div>
+      <div class="w-full flex justify-end">
+        <ElPagination
+          v-if="config.pagination"
+          class="w-full flex justify-end pr-4"
+          background
+          @current-change="$emit('paginate', $event)"
+          @size-change="$emit('size-change', $event)"
+          :current-page="pagination.page"
+          layout="total,prev, pager, next,sizes"
+          :page-sizes="[10, 20, 50, 100, 200]"
+          :page-size="pagination.limit"
+          :total="total"
+        />
+      </div>
+    </section>
+  </section>
+</template>
 
 <style lang="scss">
 .section-actions {

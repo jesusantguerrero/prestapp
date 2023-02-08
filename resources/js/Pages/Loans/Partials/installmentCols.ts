@@ -32,7 +32,11 @@ export default [
     label: 'Interés',
     minWidth: 100,
     render(row: ILoanInstallment) {
-      return formatMoney(row.interest)
+      return h('div', {class: 'text-right'}, [
+        h('span', { class: 'text-primary'}, formatMoney(row.interest)),
+         ' + ',
+        h('span', { class: 'text-error'},  formatMoney(row.late_fee))
+      ]);
     }
   },
   {

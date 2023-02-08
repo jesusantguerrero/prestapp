@@ -17,11 +17,14 @@ import { router } from "@inertiajs/core";
 import { IClientSaved } from "@/Modules/clients/clientEntity";
 import { ILoan } from "@/Modules/loans/loanEntity";
 import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
+import AppFormField from "@/Components/shared/AppFormField.vue";
+import ButtonGroup from "@/Components/ButtonGroup.vue";
 
 const props = defineProps<{
   invoices: ILoanInstallment[];
   loans: ILoan[];
   clients: IClientSaved[];
+  currentTab: string;
 }>();
 
 const formData = useForm({
@@ -32,7 +35,9 @@ const formData = useForm({
 
 const filters = useSectionFilters(["client", "loan"], router);
 
-const handleChange = () => {};
+const handleChange = (value: boolean, row: Record<string, any>) => {
+  row.payment = row.amount_due;
+};
 
 interface IRelatedPayments {
   id: number;
@@ -78,48 +83,71 @@ const submit = () => {
     console.log(data);
   });
 };
+
+const sections = {
+  pending: {
+    label: "Pendientes",
+  },
+  all: {
+    label: "Todos",
+  },
+  payments: {
+    label: "Pagos",
+  },
+};
+
+const currentTab = ref(props.currentTab);
+
+watch(currentTab, () => {
+  router.reload({
+    data: {
+      tab: currentTab.value,
+    },
+  });
+});
 </script>
 
 <template>
   <AppLayout title="Centro de pago de prestamos">
     <template #header>
-      <PropertySectionNav />
+      <PropertySectionNav>
+        <template #actions>
+          <ButtonGroup :values="sections" v-model="currentTab" />
+        </template>
+      </PropertySectionNav>
     </template>
 
     <main class="py-10 mx-auto sm:px-6 lg:px-8">
-      <section class="rounded-md bg-base-lvl-3">
-        <header class="flex space-x-4 w-full px-4">
-          <AtField label="Cliente" class="w-full">
-            <BaseSelect
-              v-model="filters.client"
-              :options="clients"
-              placeholder="selecciona un cliente"
-              label="display_name"
-              track-by="id"
-            />
-          </AtField>
-          <AtField label="Categoria" class="w-full">
-            <BaseSelect
-              v-model="filters.loan"
-              :track-by="id"
-              :options="loans"
-              :hide-selected="false"
-              :custom-label="
-                (category) => {
-                  return `Prestamo ${category.id} (${category.amount}) (debt: $${category.debt})`;
-                }
-              "
-              placeholder="selecciona una categoria"
-            />
-          </AtField>
-        </header>
+      <header class="flex space-x-4 w-full px-4 rounded-md bg-base-lvl-3">
+        <AppFormField label="Cliente" class="w-full">
+          <BaseSelect
+            v-model="filters.client"
+            :options="clients"
+            placeholder="selecciona un cliente"
+            label="display_name"
+            track-by="id"
+          />
+        </AppFormField>
+        <AppFormField label="Categoria" class="w-full">
+          <BaseSelect
+            v-model="filters.loan"
+            track-by="id"
+            :options="loans"
+            :hide-selected="false"
+            :custom-label="
+              (category) => {
+                return `Prestamo ${category.id} (${category.amount}) (debt: $${category.debt})`;
+              }
+            "
+            placeholder="selecciona una categoria"
+          />
+        </AppFormField>
+      </header>
+
+      <section class="rounded-md bg-base-lvl-3 mt-4">
         <article class="px-4 pb-10">
           <BaseTable
             :cols="[
-              {
-                name: 'item',
-                label: '',
-              },
               {
                 name: 'loan_id',
                 label: 'Prestamo #',
@@ -131,15 +159,15 @@ const submit = () => {
               {
                 name: 'amount',
                 label: 'Monto del pagare',
-                render(row) {
+                render(row: Record<string, any>) {
                   return formatMoney(row.amount);
                 },
               },
               {
                 name: 'amount_paid',
                 label: 'Balance',
-                render(row) {
-                  return formatMoney(row.amount_paid - row.amount);
+                render(row: Record<string, any>) {
+                  return formatMoney(row.amount_due);
                 },
               },
               {
@@ -149,19 +177,26 @@ const submit = () => {
             ]"
             :table-data="invoices.data"
           >
-            <template v-slot:item="{ scope: { row } }">
-              <div class="items-center space-x-2 d-flex">
-                <ElCheckbox @change="handleChange($event, row)" />
-                <span> {{ row.name }}</span>
+            <template v-slot:loan_id="{ scope: { row } }">
+              <div
+                class="items-center space-x-2 flex cursor-pointer"
+                @click="handleChange(!row.amount, row)"
+              >
+                <ElCheckbox :model-value="!!row.payment" />
+                <span> Prestamo #{{ row.loan_id }}</span>
               </div>
             </template>
 
             <template v-slot:payment="{ scope: { row } }">
               <AtInput
+                v-if="row.amount_due > 0"
                 class="rounded-md shadow-none border-body-1/10"
                 v-model="row.payment"
                 :number-format="true"
               />
+              <span>
+                {{ row.amount_due }}
+              </span>
             </template>
           </BaseTable>
         </article>
