@@ -41,5 +41,4 @@ class LoanTransactionsTest extends LoanBase {
     $this->assertEquals(date('Y-m-d'), $loan->fresh()->cancelled_at);
     $this->assertEquals(Loan::STATUS_CANCELLED, $loan->fresh()->payment_status);
   }
-
 }

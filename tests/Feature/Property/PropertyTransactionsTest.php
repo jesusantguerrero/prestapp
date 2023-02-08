@@ -69,11 +69,57 @@ class PropertyTransactionsTest extends PropertyBase
   public function testItShouldCreateADepositRefund() {
     $this->seed();
     $this->actingAs($this->user);
-    $rent = $this->createRent();
+    $rent = $this->createRent([
+      "deposit" => 5000,
+      "price" => 5000
+    ]);
 
-    $response = $this->createExpense($rent);
+    $response = $this->post("/properties/{$rent->id}/transactions/refund", [
+      'client_id' => $rent->client_id,
+      'account_id' => $rent->property->deposit_account_id,
+      'total' => $rent->deposit,
+      'rent_id' => $rent->id,
+      'payments' => [[
+        'amount' => $rent->deposit,
+        'original_amount' => $rent->deposit,
+        'rent_id' => $rent->id,
+        'id' => '1'
+      ]],
+    ]);
 
     $response->assertStatus(200);
-    $rent = Rent::first();
+    $this->assertEquals($rent->refunds()->first()->total, 5000);
+    $this->assertEquals($rent->refunds()->first()->status, Invoice::STATUS_UNPAID);
+
+  }
+
+  public function testItShouldCreateADepositRefundPaid() {
+    $this->seed();
+    $this->actingAs($this->user);
+    $rent = $this->createRent([
+      "deposit" => 5000,
+      "price" => 5000
+    ]);
+
+    $response = $this->post("/properties/{$rent->id}/transactions/refund", [
+      'client_id' => $rent->client_id,
+      'account_id' => $rent->property->deposit_account_id,
+      'total' => $rent->deposit,
+      'rent_id' => $rent->id,
+      'payments' => [[
+        'amount' => $rent->deposit,
+        'original_amount' => $rent->deposit,
+        'rent_id' => $rent->id,
+        'id' => '1'
+      ]],
+      'payment_details' => [
+        'account_id' => Account::guessAccount($rent, ['Property Expenses', 'expenses']),
+        'details' => 'A custom note',
+        'payment_method' => 'cash'
+      ]
+    ]);
+
+    $response->assertStatus(200);
+    $this->assertEquals($rent->refunds()->first()->status, Invoice::STATUS_PAID);
   }
 }
