@@ -118,7 +118,7 @@ const generateNextInvoice = () => {
       </PropertySectionNav>
     </template>
 
-    <main class="p-5 mt-8">
+    <main class="p-5 mt-16 md:mt-8">
       <AppSectionHeader
         name="Contrato de Alquiler a"
         class="px-5 bg-white border-2 border-white rounded-md rounded-b-none"
@@ -144,8 +144,10 @@ const generateNextInvoice = () => {
           </Link>
         </div>
       </div>
-      <section class="flex w-full space-x-8 rounded-t-none border-t-none">
-        <article class="w-9/12 space-y-2">
+      <section
+        class="flex flex-col md:flex-row w-full md:space-x-8 rounded-t-none border-t-none"
+      >
+        <article class="w-full md:w-9/12 space-y-2">
           <WelcomeWidget message="Detalles de contrato" class="w-full text-body-1">
             <template #content>
               <section class="py-4 space-y-2">
@@ -190,7 +192,9 @@ const generateNextInvoice = () => {
           </WelcomeWidget>
         </article>
 
-        <article class="w-3/12 p-4 space-y-2 rounded-md bg-base-lvl-3">
+        <article
+          class="w-full md:w-3/12 mt-4 md:mt-0 p-4 space-y-2 rounded-md bg-base-lvl-3"
+        >
           <section class="flex space-x-4">
             <AppButton class="w-full" variant="secondary" @click="generateNextInvoice">
               Generar proximo pago

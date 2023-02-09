@@ -70,6 +70,30 @@ module.exports = {
         "body": "#2E384D",
         "body-1": "#9298AD"
     },
+    jemm: {
+        primary: "#5F0404",
+        "primary-dark": "#290202",
+        "primary-light": "#D40909",
+        "primary-shade-1": "#FFB4A1",
+        "primary-shade-2": "#EF8777",
+        "primary-shade-3": "#E27C6C",
+        "primary-shade-4": "#380000",
+        "secondary": "#00203D",
+        "accent": "#005B5C",
+        "highlight": "#F65D4E",
+        "neutral": "#FFF5F1", // "#BEA6A1" #FCEEEE
+        "base-deep-1": colors.slate[400],
+        "base-100": "#F5F6FA",
+        "base-lvl-1": colors.slate[100],
+        "base-lvl-2": colors.slate[50],
+        "base-lvl-3": colors.white,
+        info: "#00E3DC",
+        success: "#00C9C4",
+        warning: "#D2B48C",
+        error: "#F65D4E",
+        "body": "#2E384D",
+        "body-1": "#9298AD"
+    },
     blueLight: {
         primary: "#47A9F1",
         "primary-light": "#63D0DD",

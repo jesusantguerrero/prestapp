@@ -21,7 +21,7 @@ const props = withDefaults(defineProps<Props>(), {
   type: "lender",
 });
 
-const emit = defineEmits(["success", "error"]);
+const emit = defineEmits(["success", "error", "update:isLoading"]);
 
 const clientForm = useForm({
   names: "",
@@ -66,6 +66,7 @@ const documentType = computed(() => {
 });
 
 const onSubmit = () => {
+  emit("update:isLoading", true);
   clientInteractions
     .create({
       ...clientForm,
@@ -76,6 +77,9 @@ const onSubmit = () => {
     })
     .catch((err) => {
       emit("error", err);
+    })
+    .finally(() => {
+      emit("update:isLoading", false);
     });
 };
 
@@ -110,8 +114,8 @@ watch(
     <h1 class="font-bold text-lg w-full text-center">
       {{ currentTab }}
     </h1>
-    <article v-if="selectedTab == 'general'">
-      <section class="flex space-x-2">
+    <article v-if="selectedTab == 'general'" class="px-2 md:px-0">
+      <section class="flex flex-col md:flex-row md:space-x-2">
         <AppFormField label="Nombres" v-model="clientForm.names" required />
         <AppFormField label="Apellidos" v-model="clientForm.lastnames" rounded required />
       </section>
@@ -121,7 +125,7 @@ watch(
           class="border px-4 py-2 bg-neutral/20 shadow-none border-neutral hover:border-secondary/60 focus:border-secondary/60"
         />
       </AppFormField>
-      <section class="flex space-x-2">
+      <section class="flex flex-col md:flex-row md:space-x-2">
         <AppFormField label="Tipo Documento" required>
           <BaseSelect
             :options="documentTypes"
@@ -131,7 +135,7 @@ watch(
         </AppFormField>
         <AppFormField :label="documentType" v-model="clientForm.dni" rounded required />
       </section>
-      <section class="flex space-x-2">
+      <section class="flex flex-col md:flex-row md:space-x-2">
         <AppFormField label="Email" v-model="clientForm.email" rounded type="email" />
         <AppFormField
           required
@@ -142,14 +146,14 @@ watch(
         />
       </section>
     </article>
-    <article v-else-if="selectedTab == 'work'">
+    <article v-else-if="selectedTab == 'work'" class="px-2 md:px-0">
       <section class="flex space-x-2">
         <AppFormField label="Lugar de trabajo" v-model="clientForm.work_name" />
       </section>
       <AppFormField label="Dirección de trabajo">
         <AtTextarea v-model="clientForm.work_address_details" class="border" />
       </AppFormField>
-      <section class="flex space-x-2">
+      <section class="flex flex-col md:flex-row md:space-x-2">
         <AppFormField
           label="Email"
           v-model="clientForm.work_email"

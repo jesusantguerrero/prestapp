@@ -52,7 +52,9 @@ withDefaults(defineProps<Props>(), {
         <AtBackgroundIconCard
           v-for="card in cards"
           class="w-full h-24 shadow-none"
-          :class="[card.accent ? 'bg-primary text-white' : 'bg-white text-primary']"
+          :class="[
+            card.accent ? 'bg-primary-shade-2 text-white' : 'bg-white text-primary',
+          ]"
           :icon="`fas ${card.icon}`"
           :value="card.value"
           :title="card.label"

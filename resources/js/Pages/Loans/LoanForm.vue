@@ -21,6 +21,7 @@ import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import FormSection from "../Rents/Partials/FormSection.vue";
 import LoanSummary from "./Partials/LoanSummary.vue";
 import AccountSelect from "@/Components/shared/Selects/AccountSelect.vue";
+import AppFormField from "@/Components/shared/AppFormField.vue";
 
 interface Props {
   loans: ILoan;
@@ -92,6 +93,7 @@ const hasInstallments = computed(() => {
   return installments.value && installments.value?.payments?.length;
 });
 
+const isLoading = ref(false);
 const onSubmit = () => {
   const formData = {
     ...loanForm,
@@ -102,7 +104,7 @@ const onSubmit = () => {
     source_type: loanForm.sourceType?.id,
     source_account_id: loanForm.sourceAccount?.id,
   };
-
+  isLoading.value = true;
   saveLoan(formData, installments.value.payments)
     .then(() => {
       close();
@@ -110,6 +112,9 @@ const onSubmit = () => {
     })
     .catch((err) => {
       console.log(err);
+    })
+    .finally(() => {
+      isLoading.value = false;
     });
 };
 
@@ -125,32 +130,38 @@ const goToList = () => {
     <template #header>
       <LoanSectionNav>
         <template #actions>
-          <AppButton variant="secondary" @click="onSubmit()" :disabled="!hasInstallments">
+          <AppButton
+            variant="secondary"
+            class="hidden md:flex"
+            @click="onSubmit()"
+            :disabled="!hasInstallments"
+          >
             {{ saveButtonLabel }}
           </AppButton>
         </template>
       </LoanSectionNav>
     </template>
 
-    <main class="flex w-full pb-10 mt-16 space-x-4">
-      <section class="w-8/12 p-4 bg-white rounded-md shadow-md text-body-1">
-        <FormSection title="Datos del cliente">
-          <AtField label="Cliente" class="w-full">
+    <main class="flex flex-col md:flex-row w-full pb-10 mt-24 md:mt-16 md:space-x-4">
+      <section class="w-full md:w-8/12 p-4 bg-white rounded-md shadow-md text-body-1">
+        <FormSection title="Datos del cliente" class="w-full" section-class="w-full">
+          <AppFormField label="Cliente" class="w-full">
             <BaseSelect
               v-model="loanForm.client"
               track-by="id"
               endpoint="/api/clients"
               placeholder="Selecciona un cliente"
               label="display_name"
+              class="w-full"
             />
-          </AtField>
+          </AppFormField>
         </FormSection>
-        <FormSection title="Datos de termino" section-class="w-full">
-          <section class="flex space-x-4">
-            <AtField label="Monto a prestar" class="w-full">
+        <FormSection title="Terminos de prestamo" section-class="w-full">
+          <section class="flex flex-col md:flex-row md:space-x-4">
+            <AppFormField label="Monto a prestar" class="w-full">
               <AtInput v-model="loanForm.amount" number-format rounded />
-            </AtField>
-            <AtField label="Interés mensual" class="w-full">
+            </AppFormField>
+            <AppFormField label="Interés mensual" class="w-full">
               <AtInput v-model="loanForm.interest_rate" number-format max="100" rounded>
                 <template #suffix>
                   <div>
@@ -158,21 +169,29 @@ const goToList = () => {
                   </div>
                 </template>
               </AtInput>
-            </AtField>
-            <AtField label="Cuotas" class="w-full">
+            </AppFormField>
+            <AppFormField label="Cuotas" class="w-full">
               <AtInput v-model="loanForm.repayment_count" rounded />
-            </AtField>
+            </AppFormField>
           </section>
-          <section class="flex space-x-4">
-            <AtField label="Fecha de desembolso">
-              <ElDatePicker v-model="loanForm.disbursement_date" size="large" />
-            </AtField>
-            <AtField label="Fecha de primer pago">
-              <ElDatePicker v-model="loanForm.first_installment_date" size="large" />
-            </AtField>
-            <AtField label="Frecuencia" class="w-full">
+          <section class="flex flex-col md:flex-row md:space-x-4">
+            <AppFormField label="Fecha de desembolso">
+              <ElDatePicker
+                v-model="loanForm.disbursement_date"
+                size="large"
+                class="w-full"
+              />
+            </AppFormField>
+            <AppFormField label="Fecha de primer pago">
+              <ElDatePicker
+                v-model="loanForm.first_installment_date"
+                size="large"
+                class="w-full"
+              />
+            </AppFormField>
+            <AppFormField label="Frecuencia" class="w-full">
               <AtSimpleSelect :options="loanFrequencies" v-model="loanForm.frequency" />
-            </AtField>
+            </AppFormField>
           </section>
         </FormSection>
         <AppButton class="w-full" @click="showAdvancedOptions = !showAdvancedOptions">
@@ -184,22 +203,22 @@ const goToList = () => {
           class="mt-4"
           v-if="showAdvancedOptions"
         >
-          <section class="flex w-full space-x-4">
-            <AtField label="Dias de gracia" class="w-full">
+          <section class="flex flex-col md:flex-row w-full md:space-x-4">
+            <AppFormField label="Dias de gracia" class="w-full">
               <AtInput v-model="loanForm.grace_days" rounded />
-            </AtField>
-            <AtField label="Interes de mora" class="w-full">
+            </AppFormField>
+            <AppFormField label="Interes de mora" class="w-full">
               <AtInput v-model="loanForm.late_fee" rounded />
-            </AtField>
-            <AtField label="Cuotas cobradas" class="w-full">
+            </AppFormField>
+            <AppFormField label="Cuotas cobradas" class="w-full">
               <AtInput v-model="loanForm.paid_installments" rounded />
-            </AtField>
+            </AppFormField>
           </section>
           <section class="flex space-x-4">
-            <AtField label="Gastos de cierre" class="w-full">
+            <AppFormField label="Gastos de cierre" class="w-full">
               <AtInput v-model="loanForm.closing_fees" rounded />
-            </AtField>
-            <AtField class="w-full" />
+            </AppFormField>
+            <AtField class="w-full hidden" />
           </section>
         </FormSection>
         <FormSection
@@ -224,15 +243,15 @@ const goToList = () => {
                 placeholder="Selecciona una cartera"
               />
             </AtField> -->
-            <AtField label="Cuenta origen" field="sourceAccount" class="w-full">
+            <AppFormField label="Cuenta origen" field="sourceAccount" class="w-full">
               <AccountSelect v-model="loanForm.sourceAccount" />
-            </AtField>
+            </AppFormField>
           </section>
         </FormSection>
       </section>
 
       <article
-        class="w-4/12 rounded-md bg-white shadow-md relative overflow-hidden grid gap-4 grid-cols-1 grid-rows-[1fr_50px]"
+        class="w-full md:w-4/12 mt-4 md:mt-0 rounded-md bg-white shadow-md relative overflow-hidden grid gap-4 grid-cols-1 grid-rows-[1fr_50px]"
       >
         <section class="w-full px-4 overflow-hidden text-body-1">
           <header class="py-4 font-bold">Resumen de prestamo</header>
@@ -255,7 +274,12 @@ const goToList = () => {
           >
             Cancelar
           </AtButton>
-          <AppButton variant="secondary" @click="onSubmit" :disabled="!hasInstallments">
+          <AppButton
+            :processing="isLoading"
+            variant="secondary"
+            @click="onSubmit"
+            :disabled="!hasInstallments || isLoading"
+          >
             Registar Prestamo
           </AppButton>
         </footer>

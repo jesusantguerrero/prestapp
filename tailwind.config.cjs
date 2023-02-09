@@ -18,7 +18,7 @@ module.exports = {
                 sans: ['Nunito', ...defaultTheme.fontFamily.sans],
             },
             colors: {
-                ...themes.blueLight
+                ...themes.jemm
             },
             gridTemplateRows: {
               'section-footer': '1fr 100px',

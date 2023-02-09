@@ -19,6 +19,8 @@ import { formatMoney } from "@/utils";
 import { ElMessageBox } from "element-plus";
 import LoanCard from "./Partials/LoanCard.vue";
 import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
+import ButtonCircle from "@/Components/mobile/ButtonCircle.vue";
+import { useResponsive } from "@/utils/useResponsive";
 
 interface IPaginatedData {
   data: ILoan[];
@@ -57,36 +59,17 @@ const { state, updateSearch, executeSearch, reset } = useServerSearch(
     manual: true,
   }
 );
-
-const bp = useBreakpoints(breakpointsTailwind);
-const isMobile = computed(() => {
-  return bp.isSmaller("md");
-});
+const { isMobile } = useResponsive();
 </script>
 
 <template>
   <AppLayout title="Prestamos">
     <template #header>
-      <LoanSectionNav>
-        <template #actions v-if="!isMobile">
-          <AppSearch
-            v-model.lazy="state.search"
-            v-model:filters="state.filters"
-            v-model:sorts="state.sorts"
-            class="w-full hidden md:flex"
-            :has-filters="true"
-            @clear="reset()"
-            @blur="executeSearch"
-          />
-          <AppButton variant="inverse" @click="router.visit('/loans/create')">
-            Nuevo prestamo
-          </AppButton>
-        </template>
-      </LoanSectionNav>
+      <LoanSectionNav />
     </template>
 
     <main class="pt-16">
-      <section class="flex">
+      <section class="flex space-x-4">
         <AppSearch
           v-model.lazy="state.search"
           v-model:filters="state.filters"
@@ -96,7 +79,11 @@ const isMobile = computed(() => {
           @clear="reset()"
           @blur="executeSearch"
         />
-        <AppButton variant="inverse" @click="router.visit('/loans/create')">
+        <AppButton
+          variant="inverse"
+          @click="router.visit('/loans/create')"
+          class="hidden md:flex"
+        >
           Nuevo prestamo
         </AppButton>
       </section>
@@ -127,6 +114,13 @@ const isMobile = computed(() => {
           <LoanCard :loan="row" />
         </template>
       </AtTable>
+      <ButtonCircle
+        class="fixed bottom-16 right-5"
+        @click="router.visit('/loans/create')"
+        v-if="isMobile"
+      >
+        <IMdiPlus />
+      </ButtonCircle>
     </main>
   </AppLayout>
 </template>

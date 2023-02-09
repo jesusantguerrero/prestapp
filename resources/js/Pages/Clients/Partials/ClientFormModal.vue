@@ -38,6 +38,8 @@ const onError = (message: string) => {
     message: message,
   });
 };
+
+const isLoading = ref(false);
 </script>
 
 <template>
@@ -54,14 +56,24 @@ const onError = (message: string) => {
     <ClientForm
       :form-data="formData"
       :type="type"
+      v-model:isLoading="isLoading"
       ref="clientFormRef"
       @success="$emit('saved')"
       @error="onError"
     />
 
     <footer class="px-6 py-4 space-x-3 text-gray-600 text-right bg-neutral">
-      <AtButton @click="close()" class="text-gray"> Cancelar </AtButton>
-      <AppButton variant="secondary" @click="onSubmit()"> Guardar </AppButton>
+      <AtButton :disabled="isLoading" @click="close()" class="text-gray">
+        Cancelar
+      </AtButton>
+      <AppButton
+        :processing="isLoading"
+        :disabled="isLoading"
+        variant="secondary"
+        @click="onSubmit()"
+      >
+        Guardar
+      </AppButton>
     </footer>
   </Modal>
 </template>

@@ -149,8 +149,10 @@ const onUpdateStatus = () => {
           </Link>
         </footer>
       </section>
-      <section class="flex w-full space-x-8 rounded-t-none border-t-none">
-        <article class="w-9/12 space-y-2 overflow-auto">
+      <section
+        class="flex flex-col md:flex-row w-full space-x-8 rounded-t-none border-t-none"
+      >
+        <article class="w-full md:w-9/12 space-y-2 overflow-auto">
           <section class="flex space-x-4">
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
@@ -178,7 +180,7 @@ const onUpdateStatus = () => {
         </article>
 
         <article
-          class="w-3/12 p-4 space-y-2 overflow-hidden border rounded-md shadow-md bg-base-lvl-3"
+          class="w-full md:w-3/12 p-4 space-y-2 overflow-hidden border rounded-md shadow-md bg-base-lvl-3"
         >
           <section class="grid grid-cols-1 gap-2">
             <AppButton

@@ -202,7 +202,7 @@ const handleActions = (action) => {
       </template>
       <template #aside>
         <AtSide
-          class="border-none shadow-none text-bold bg-secondary"
+          class="border-none shadow-none text-bold bg-primary"
           title="ICLoan"
           :is-expanded="isExpanded"
           @update:isExpanded="isExpanded = $event"
@@ -212,7 +212,7 @@ const handleActions = (action) => {
           brand-container-class="py-2"
           nav-container-class="px-2 pt-1 space-y-2 border-t border-base-lvl-3/20"
           icon-class="text-gray-100 transition hover:text-primary hover:bg-base-lvl-3/10"
-          item-class="px-5 py-[0.80rem] rounded-md font-bold text-gray-100 w-54 hover:text-primary hover:bg-base-lvl-3/10"
+          item-class="px-5 py-[0.80rem] rounded-md font-bold text-gray-100 w-54 hover:text-primary-shade-1 hover:bg-base-lvl-3/10"
           item-active-class="text-primary bg-base-lvl-3/10"
           is-expandable
         >

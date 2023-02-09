@@ -76,6 +76,7 @@ class InertiaController extends Controller {
               return $response->setContent($resource);
           }
         } catch (Exception $e) {
+          throw $e;
           if ($this->responseType == 'inertia') {
             return redirect()->back()->withErrors([
               "default" => $e->getMessage()

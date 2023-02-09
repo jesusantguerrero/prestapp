@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import PrintContainer from "./Partials/PrintTemplate.vue";
-import { formatDate, formatMoney } from "@/utils";
+import { formatMoney } from "@/utils";
 
 interface Props {
   company: Object;
@@ -110,10 +110,10 @@ defineProps<Props>();
 .header {
   min-height: 100px;
   .logo {
-    height: 60px;
-    width: 60px;
-    background: url(http://michaeltruong.ca/images/logo1.png) no-repeat;
-    background-size: 60px 60px;
+    height: 100px;
+    width: 100px;
+    background: url(/logo.png) no-repeat;
+    background-size: 100px 100px;
   }
 }
 

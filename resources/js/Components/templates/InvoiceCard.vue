@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { formatDate, formatMoney } from "@/utils";
-import { ElDropdown, ElIcon } from "element-plus";
 
 import InvoicePaymentOptions from "./InvoicePaymentOptions.vue";
 
@@ -31,7 +30,7 @@ defineProps({
     <section class="font-bold text-right">
       <p class="flex space-x-2 justify-end items-center">
         <slot name="header-actions" />
-        <span class="text-green-500">
+        <span class="text-success">
           {{ formatMoney(invoice.total) }}
         </span>
       </p>

@@ -12,8 +12,6 @@ import SectionFooterCard from "./SectionFooterCard.vue";
 import { formatMoney } from "@/utils/formatMoney";
 import { useTransactionModal } from "@/Modules/transactions/useTransactionModal";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
-import ButtonGroup from "@/Components/ButtonGroup.vue";
-import { ref } from "vue";
 import DashboardTemplate from "./Partials/DashboardTemplate.vue";
 
 const props = defineProps({

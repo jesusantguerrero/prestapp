@@ -1,138 +1,127 @@
 <template>
-    <AppLayout>
-        <div class="h-auto py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between py-2 mb-10 border-4 border-white rounded-md bg-gray-50">
-                <div class="px-5 font-bold text-gray-600">
-                    Settings / Business
-                </div>
-
-                <div class="flex overflow-hidden font-bold text-gray-500 rounded-t-lg max-w-min">
-                    <AtButton @click="save()" class="w-32" type="primary"> Save </AtButton>
-                </div>
-            </div>
-
-            <div class="w-full px-5 py-10 space-y-5 bg-white divide-y divide-gray-200">
-                <div class="pb-2">
-                    <div class="md:max-w-sm">
-                        <h2 class="font-bold"> Business Name</h2>
-                        <AtInput placeholder="Business Name" v-model="formData.business_name"/>
-                    </div>
-                </div>
-
-                <div class="w-full">
-                    <div class="md:max-w-sm">
-                        <h2 class="my-4 font-bold"> Business Address</h2>
-                        <div class="flex space-x-4">
-                            <div class="w-8/12">
-                                <label for="" class="font-bold text-gray-500">Street</label>
-                                <at-input type="text" v-model="formData.business_street"/>
-                            </div>
-                            <div class="w-4/12">
-                                <label for="" class="font-bold text-gray-500">Apt/Unit</label>
-                                <at-input type="text" v-model="formData.business_apt_unit"/>
-                            </div>
-                        </div>
-
-                        <div class="flex mt-2 space-x-4">
-                            <div class="w-8/12">
-                                <label for="" class="font-bold text-gray-500">City</label>
-                                <at-input type="text" v-model="formData.business_city"/>
-                            </div>
-                            <div class="w-4/12">
-                                <label for="" class="font-bold text-gray-500">Zip Code</label>
-                                <at-input type="text" v-model="formData.business_zip_code"/>
-                            </div>
-                        </div>
-
-                        <div class="flex mt-2 space-x-4">
-                            <div class="w-8/12">
-                                <label for="" class="font-bold text-gray-500">Country</label>
-                                <at-input type="text" v-model="formData.business_country"/>
-                            </div>
-                            <div class="w-4/12">
-                                <label for="" class="font-bold text-gray-500">State</label>
-                                <at-input type="text" v-model="formData.business_state"/>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="md:max-w-sm">
-                            <h2 class="my-4 font-bold"> Business Phone number</h2>
-                            <label for="" class="font-bold text-gray-500">Phone Number</label>
-                            <at-input type="tel" v-model="formData.business_phone"/>
-                    </div>
-                </div>
-                <div>
-                <div class="md:max-w-sm">
-                    <h2 class="my-4 font-bold"> Tax ID</h2>
-                    <div class="flex space-x-4">
-                        <div class="w-4/12">
-                            <label for="" class="font-bold text-gray-500">Tax ID Label</label>
-                            <at-input type="text" v-model="formData.business_tax_id_label"/>
-                        </div>
-
-                        <div class="w-8/12">
-                            <label for="" class="font-bold text-gray-500">Tax ID Number</label>
-                            <at-input type="text" v-model="formData.business_tax_id_number"/>
-                        </div>
-                    </div>
-                </div>
-                </div>
-            </div>
-
+  <AppLayout title="Configuracion / Empresa">
+    <template #header>
+      <div class="flex items-center justify-end py-1 px-5">
+        <div class="flex overflow-hidden font-bold text-gray-500 rounded-t-lg max-w-min">
+          <AppButton variant="secondary" @click="save()"> Save </AppButton>
         </div>
-    </AppLayout>
+      </div>
+    </template>
+
+    <main class="h-auto py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
+      <div class="w-full px-5 py-10 space-y-5 bg-white divide-y divide-gray-200">
+        <section class="pb-2 w-6/12">
+          <article class="md:w-full">
+            <h2 class="my-4 font-bold text-primary">Registro Legal</h2>
+            <AppFormField label="Nombre de Empresa" v-model="formData.business_name" />
+            <section class="flex space-x-4">
+              <AppFormField
+                class="w-4/12"
+                label="Nombre registro legal"
+                v-model="formData.business_tax_id_label"
+                placeholder="RNC"
+              />
+
+              <AppFormField
+                class="w-8/12"
+                label="# Registro Legal"
+                v-model="formData.business_tax_id_number"
+              />
+            </section>
+          </article>
+        </section>
+
+        <section class="w-full flex space-x-4">
+          <article class="md:w-full">
+            <h2 class="my-4 font-bold text-primary">Detalles de direccion</h2>
+            <section class="flex space-x-4">
+              <AppFormField
+                class="w-8/12"
+                label="Calle"
+                v-model="formData.business_street"
+              />
+              <AppFormField
+                class="w-4/12"
+                label="#"
+                v-model="formData.business_apt_unit"
+              />
+            </section>
+
+            <section class="flex space-x-4">
+              <AppFormField
+                class="w-8/12"
+                label="Ciudad"
+                v-model="formData.business_city"
+              />
+              <AppFormField
+                class="w-4/12"
+                label="Codigo Zip"
+                v-model="formData.business_zip_code"
+              />
+            </section>
+
+            <section class="flex mt-2 space-x-4">
+              <AppFormField
+                class="w-8/12"
+                label="Pais"
+                v-model="formData.business_country"
+              />
+              <AppFormField
+                class="w-4/12"
+                label="Provincia"
+                v-model="formData.business_state"
+              />
+            </section>
+          </article>
+          <article class="md:w-full">
+            <h2 class="my-4 font-bold text-primary">Detalles de contacto</h2>
+            <section>
+              <AppFormField
+                label="Phone Number"
+                type="tel"
+                v-model="formData.business_phone"
+              />
+            </section>
+          </article>
+        </section>
+      </div>
+    </main>
+  </AppLayout>
 </template>
 
-<script>
-import { reactive, toRefs } from '@vue/reactivity'
-import { AtButton, AtInput } from 'atmosphere-ui'
-import axios from 'axios'
-import { ElNotification } from 'element-plus'
+<script lang="ts" setup>
+import { ref } from "@vue/reactivity";
+import { AtButton, AtInput } from "atmosphere-ui";
+import axios from "axios";
+import { ElNotification } from "element-plus";
 
-import AppLayout from '../../Components/templates/AppLayout.vue'
+import AppLayout from "../../Components/templates/AppLayout.vue";
+import AppButton from "@/Components/shared/AppButton.vue";
+import AppFormField from "@/Components/shared/AppFormField.vue";
 
-export default {
-    components: { AppLayout, AtInput, AtButton, AppLayout, AtButton, AtInput },
-    props: {
-        settingData: {
-            type: Object,
-            default() {
-                return {}
-            }
-        }
+const props = defineProps({
+  settingData: {
+    type: Object,
+    default() {
+      return {};
     },
-    setup(props) {
-        const state = reactive({
-            formData: {}
-        })
+  },
+});
+const formData = ref({});
 
-        state.formData = {...state.formData,...props.settingData}
+formData.value = { ...formData.value, ...props.settingData };
 
-        const save = () => {
-            axios({
-                url: "/api/settings",
-                method: "POST",
-                data: state.formData
-            }).then(() => {
-                ElNotification({
-                    title: "Business Data Updated",
-                    message: "Business Data Updated",
-                    type: 'success'
-                })
-            })
-        }
-
-        return {
-            ...toRefs(state),
-            save
-        }
-    }
-}
+const save = () => {
+  axios({
+    url: "/api/settings",
+    method: "POST",
+    data: formData.value,
+  }).then(() => {
+    ElNotification({
+      title: "Business Data Updated",
+      message: "Business Data Updated",
+      type: "success",
+    });
+  });
+};
 </script>
-
-<style>
-
-</style>

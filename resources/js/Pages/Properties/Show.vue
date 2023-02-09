@@ -144,8 +144,10 @@ const addUnit = () => {
         </section>
       </header>
 
-      <section class="flex w-full space-x-8 rounded-t-none border-t-none">
-        <article class="w-9/12 space-y-4">
+      <section
+        class="flex flex-col md:flex-row w-full space-x-8 rounded-t-none border-t-none"
+      >
+        <article class="w-full md:w-9/12 space-y-4">
           <section class="flex space-x-4">
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
