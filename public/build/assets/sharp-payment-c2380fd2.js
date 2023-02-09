@@ -1,1 +1,0 @@
-import{o as e,f as o,a as t}from"./app-bdc0a90d.js";const n={viewBox:"0 0 24 24",width:"1.2em",height:"1.2em"},c=t("path",{fill:"currentColor",d:"M22 4H2v16h20V4zm-2 14H4v-6h16v6zm0-10H4V6h16v2z"},null,-1),s=[c];function a(r,_){return e(),o("svg",n,s)}const i={name:"ic-sharp-payment",render:a};export{i as _};

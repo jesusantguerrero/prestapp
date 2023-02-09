@@ -1,0 +1,1 @@
+.print-container,body{width:100%;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;background:#222}@media print{.print-container,body{width:-moz-fit-content!important;width:fit-content!important;display:block!important;background:transparent!important}.print-container .pos-ticket,body .pos-ticket{box-shadow:unset!important}}

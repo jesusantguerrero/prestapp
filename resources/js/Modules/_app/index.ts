@@ -1,6 +1,8 @@
+import { cloneDeep } from 'lodash';
 import { Link } from "@inertiajs/vue3"
-export * from "./menus";
+import IMdiPlus from '~icons/mdi/plus-thick';
 
+export * from "./menus";
 interface IAppMenuItem {
   icon: string;
   name: string;
@@ -46,7 +48,8 @@ export const useAppMenu = () => {
             as: Link,
             isActiveFunction(url:string, currentPath: string) {
                 return /invoices/.test(currentPath)
-             }
+            },
+            hidden: true,
         },
         {
           icon: 'fas fa-chart-bar',
@@ -58,6 +61,14 @@ export const useAppMenu = () => {
          }
       },
     ].filter(item => !item?.hidden);
+
+    let mobileMenu = cloneDeep(appMenu)
+    mobileMenu.splice(2, null, {
+        name: 'add',
+        label: 'Add',
+        icon: IMdiPlus,
+        action: 'openTransactionModal'
+    });
 
     const headerMenu =  [
         {
@@ -77,7 +88,8 @@ export const useAppMenu = () => {
 
     return {
         appMenu,
-        headerMenu
+        headerMenu,
+        mobileMenu
     }
 }
 

@@ -53,7 +53,7 @@ const logout = () => {
   router.post(route("logout"));
 };
 
-const { appMenu: currentMenu, headerMenu } = useAppMenu();
+const { appMenu: currentMenu, headerMenu, mobileMenu } = useAppMenu();
 
 //  categories
 const pageProps = usePage().props;
@@ -239,7 +239,7 @@ const handleActions = (action) => {
 
         <!-- Page Content -->
         <main class="pt-0 md:pt-8 mx-auto md:px-24"><slot /></main>
-        <MobileMenuBar :menu="currentMenu" @action="handleActions" />
+        <MobileMenuBar :menu="mobileMenu" @action="handleActions" />
       </template>
     </AppShell>
     <TheGlobals />

@@ -97,8 +97,13 @@ module.exports = {
     blueLight: {
         primary: "#47A9F1",
         "primary-light": "#63D0DD",
+        "primary-shade-1": "#47A9F1",
+        "primary-shade-2": "#47A9F1",
+        "primary-shade-3": "#47A9F1",
+        "primary-shade-4": "#47A9F1",
         "secondary": "#0C165B",
         "accent": "#5F47DD",
+        "highlight": "#00E3DC",
         "neutral": "#ECEEF5",
         "base-deep-1": colors.slate[400],
         "base-100": "#F5F6FA",
