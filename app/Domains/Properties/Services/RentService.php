@@ -71,8 +71,15 @@ class RentService {
 
     //  payments / invoices
     public static function invoices($teamId, $statuses = []) {
-      $query = Invoice::selectRaw('clients.names contact, clients.id contact_id, invoices.debt, invoices.due_date, invoices.id id, invoices.concept')
-        ->where([
+      $query = Invoice::selectRaw('
+          clients.names contact,
+          clients.id contact_id,
+          invoices.debt,
+          invoices.due_date,
+          invoices.total,
+          invoices.id id,
+          invoices.concept concept'
+        )->where([
           'invoices.team_id' => $teamId,
           'invoices.type' => 'INVOICE',
           'invoiceable_type' => Rent::class

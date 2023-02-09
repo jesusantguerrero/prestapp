@@ -22,9 +22,12 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits(["close", "saved", "update:show"]);
 
+const isLoading = ref(false);
 const clientFormRef = ref();
+
 const close = () => {
   clientFormRef.value.reset();
+  isLoading.value = false;
   emit("update:show", false);
 };
 
@@ -38,8 +41,6 @@ const onError = (message: string) => {
     message: message,
   });
 };
-
-const isLoading = ref(false);
 </script>
 
 <template>

@@ -67,7 +67,7 @@ export default [
   {
     name: "actions",
     label: "Acciones",
-    class: "text-center flex my-auto justify-end pr-4",
+    class: "text-right bg-red-500",
     headerClass: "text-center",
   },
 ];

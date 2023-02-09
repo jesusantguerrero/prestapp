@@ -10,6 +10,7 @@ import TransactionTypesPicker from "./TransactionTypesPicker.vue";
 
 import { TRANSACTION_DIRECTIONS } from "@/Modules/transactions";
 import AccountSelect from "./Selects/AccountSelect.vue";
+import AppFormField from "./AppFormField.vue";
 
 const props = defineProps({
   show: {
@@ -55,7 +56,7 @@ const state = reactive({
     payee_id: "",
     account: null,
     payee_label: "",
-    date: null,
+    date: new Date(),
     description: "",
     direction: "WITHDRAW",
     category_id: null,
@@ -218,7 +219,7 @@ const isPickerOpen = ref(false);
               </header>
 
               <div class="md:flex md:space-x-2 md:px-0 px-4">
-                <AtField
+                <AppFormField
                   label="Fecha"
                   class="md:w-4/12 md:block flex w-full justify-between"
                 >
@@ -228,32 +229,31 @@ const isPickerOpen = ref(false);
                     size="large"
                     class="w-48 md:w-full"
                   />
-                </AtField>
+                </AppFormField>
 
-                <AtField
+                <AppFormField
                   label="Concepto"
                   class="md:w-8/12 flex w-full md:block md:space-x-0 justify-between"
-                >
-                  <AtInput v-model="form.description" class="w-48 md:w-full" />
-                </AtField>
+                  v-model="form.description"
+                />
               </div>
-              <AtField
+              <AppFormField
                 :label="accountLabel"
                 class="md:w-full md:block md:space-x-0 flex w-full justify-between space-x-4"
               >
                 <AccountSelect endpoint="/api/accounts" v-model="form.account" />
-              </AtField>
+              </AppFormField>
               <div class="md:flex md:space-x-3 md:px-0 px-4">
-                <AtField :label="categoryLabel" class="hidden md:block md:w-full">
+                <AppFormField :label="categoryLabel" class="hidden md:block md:w-full">
                   <AccountSelect endpoint="/api/accounts" v-model="form.counterAccount" />
-                </AtField>
-                <AtField label="Monto" class="hidden md:block md:w-5/12">
+                </AppFormField>
+                <AppFormField label="Monto" class="hidden md:block md:w-5/12">
                   <AtInput :number-format="true" v-model="form.total">
                     <template #prefix>
                       <span class="flex items-center pl-2"> RD$ </span>
                     </template>
                   </AtInput>
-                </AtField>
+                </AppFormField>
               </div>
             </div>
           </slot>

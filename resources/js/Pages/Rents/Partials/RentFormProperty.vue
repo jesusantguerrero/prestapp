@@ -8,6 +8,7 @@ import FormSection from "./FormSection.vue";
 
 import { IUnit } from "@/Modules/properties/propertyEntity";
 import { useReactiveForm } from "@/utils/useReactiveForm";
+import AppFormField from "@/Components/shared/AppFormField.vue";
 
 const props = defineProps<{
   modelValue: Record<string, any>;
@@ -36,8 +37,8 @@ const availableUnits = computed(() => {
 
 <template>
   <section>
-    <FormSection>
-      <AtField class="w-full" label="Propiedad">
+    <FormSection section-class="flex flex-col md:flex-row">
+      <AppFormField class="w-full" label="Propiedad">
         <BaseSelect
           v-model="formData.property"
           endpoint="/api/properties"
@@ -45,8 +46,8 @@ const availableUnits = computed(() => {
           label="name"
           track-by="id"
         />
-      </AtField>
-      <AtField class="w-full" v-if="formData.property" label="Unidad">
+      </AppFormField>
+      <AppFormField class="w-full" v-if="formData.property" label="Unidad">
         <BaseSelect
           v-model="formData.unit"
           :options="availableUnits"
@@ -54,7 +55,7 @@ const availableUnits = computed(() => {
           label="name"
           track-by="id"
         />
-      </AtField>
+      </AppFormField>
     </FormSection>
   </section>
 </template>

@@ -23,7 +23,14 @@ withDefaults(
         rounded
         :required="required"
         class="bg-neutral/20 shadow-none border-neutral hover:border-secondary/60 focus:border-secondary/60"
-      />
+      >
+        <template #suffix>
+          <slot name="suffix" />
+        </template>
+        <template #prefix>
+          <slot name="prefix" />
+        </template>
+      </AtInput>
     </slot>
   </AtField>
 </template>

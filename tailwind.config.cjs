@@ -8,8 +8,8 @@ module.exports = {
         './vendor/laravel/jetstream/**/*.blade.php',
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
-        './resources/js/**/*.vue',
-        './node_modules/atmosphere-ui/**/*.{vue,js}',
+        './resources/js/**/*.{vue,ts,js}',
+        './node_modules/atmosphere-ui/**/*.{vue,js,ts}',
     ],
 
     theme: {
