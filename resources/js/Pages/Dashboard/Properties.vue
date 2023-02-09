@@ -126,7 +126,7 @@ const comparisonRevenue = {
               :goal="totals?.total"
               :current="totals?.paid"
               class="h-2.5 text-white rounded-md"
-              :progress-class="['bg-primary', 'bg-primary/5']"
+              :progress-class="['bg-primary-shade-2', 'bg-primary-shade-1']"
               :show-labels="false"
             >
               <template v-slot:before="{ progress }">
@@ -140,7 +140,7 @@ const comparisonRevenue = {
 
               <template v-slot:after="{ progress }">
                 <div class="justify-between w-full flex mt-1">
-                  <p>
+                  <p v-if="totals?.outstandingInvoices">
                     <span
                       class="font-bold"
                       :class="[

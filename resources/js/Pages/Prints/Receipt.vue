@@ -14,7 +14,7 @@ defineProps<Props>();
 <template>
   <PrintContainer>
     <section class="recibo-body">
-      <div class="cabecera">
+      <div class="cabecera" v-if="company">
         <img class="logo-recibo" :src="`/assets/uploads/${company.logo}`" alt="" />
         <div class="company-name">
           <h2 class="company-oficial-name">{{ company.business_name }}</h2>
@@ -79,7 +79,7 @@ defineProps<Props>();
         </template>
         <p>
           <span class="text-main">Recibe:</span>
-          <span class="text-placeholder lg">{{ user.name }}</span>
+          <span class="text-placeholder lg">{{ receipt.user?.name }}</span>
           <span class="text-main center">Total:</span>
           <span class="text-placeholder md text-right">
             {{ formatMoney(receipt.amount) }}</span

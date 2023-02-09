@@ -13,6 +13,8 @@ import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.v
 import AppButton from "@/Components/shared/AppButton.vue";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
 import { useServerSearch } from "@/utils/useServerSearch";
+import { useResponsive } from "@/utils/useResponsive";
+import ButtonCircle from "@/Components/mobile/ButtonCircle.vue";
 
 const props = withDefaults(
   defineProps<{
@@ -69,6 +71,8 @@ const {
     manual: true,
   }
 );
+
+const { isMobile } = useResponsive();
 </script>
 
 <template>
@@ -76,11 +80,16 @@ const {
     <template #header>
       <LoanSectionNav v-if="type == 'lender'">
         <template #actions>
-          <AppButton variant="inverse-secondary" @click="router.visit('/loans/create')">
+          <AppButton
+            variant="inverse-secondary"
+            class="hidden md:flex"
+            @click="router.visit('/loans/create')"
+          >
             Nuevo prestamo
           </AppButton>
           <AppButton
             variant="secondary"
+            class="hidden md:flex"
             @click="
               toggleModal({
                 data: {
@@ -142,6 +151,23 @@ const {
         @paginate="paginate"
         @size-change="changeSize"
       />
+      <div class="fixed bottom-16 right-5 flex space-x-2" v-if="isMobile">
+        <ButtonCircle @click="router.visit('/loans/create')">
+          <IMdiDocument />
+        </ButtonCircle>
+        <ButtonCircle
+          @click="
+            toggleModal({
+              data: {
+                type: type,
+              },
+              isOpen: true,
+            })
+          "
+        >
+          <IMdiPlus />
+        </ButtonCircle>
+      </div>
     </main>
   </AppLayout>
 </template>

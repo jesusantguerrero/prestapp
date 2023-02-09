@@ -2,8 +2,10 @@
   <header
     class="flex items-center justify-between w-full px-5 py-2 border rounded-lg bg-gray-50 no-print"
   >
-    <h2 class="flex items-center text-xl font-semibold leading-tight text-gray-500">
-      <span class="mr-2 font-bold text-blue-500 capitalize"> {{ name }} </span>
+    <h2
+      class="flex items-center text-sm md:text-xl font-semibold leading-tight text-gray-500"
+    >
+      <span class="mr-2 font-bold text-primary capitalize"> {{ name }} </span>
       <span v-if="resource && resource.id">
         {{ sectionTitle }}
       </span>
@@ -67,7 +69,7 @@ const props = defineProps({
   hideAction: {
     type: Boolean,
     default: false,
-  }
+  },
 });
 
 const sectionTitle = computed(() => {

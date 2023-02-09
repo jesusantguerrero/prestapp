@@ -10,6 +10,8 @@ import ChartBar from "./Partials/ChartBar.vue";
 import { formatMoney } from "@/utils/formatMoney";
 import PaymentsCard from "@/Components/PaymentsCard.vue";
 import { ref } from "vue";
+import { config } from "@/config";
+import { formatDate } from "@/utils";
 
 const props = defineProps({
   revenue: {
@@ -92,15 +94,15 @@ const comparisonRevenue = {
       blur: 1,
       opacity: 0.5,
     },
-    colors: ["#fa6b88", "#80CDFE"],
+    colors: [config.colors.highlight, config.colors.info],
   },
   series: [
     {
-      name: "previous year",
+      name: "Año anterior",
       data: props.revenue.previousYear.values.map((item) => item.total),
     },
     {
-      name: "current year",
+      name: "Este año",
       data: props.revenue.currentYear.values.map((item) => item.total),
     },
   ],
@@ -127,11 +129,12 @@ const interestPerformance = {
       blur: 1,
       opacity: 0.5,
     },
-    colors: ["#fa6b88", "#80CDFE"],
+    colors: [config.colors.highlight, config.colors.info],
   },
   series: [
     {
-      name: "current year",
+      name: "Ganancias intereses",
+      labels: props.paidInterest.months.map((item) => formatDate(item.date)),
       data: props.paidInterest.months.map((item) => item.outcome),
     },
   ],

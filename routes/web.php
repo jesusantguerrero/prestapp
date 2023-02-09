@@ -37,7 +37,7 @@ use Inertia\Inertia;
 Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->name('api.')->group(function () {
   //  accounts and transactions
 
-    Route::apiResource('/api/settings', SettingsController::class, [
+    Route::apiResource('/settings', SettingsController::class, [
      "only" => ['index', 'store', 'update', 'delete']
     ])->names([
      'index' => 'api.settings.index',

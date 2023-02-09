@@ -51,6 +51,16 @@ class Property extends Model {
         });
     }
 
+    public function initAccounts() {
+      $this->setResourceAccount('account_id', 'rent');
+      $this->setResourceAccount('owner_account_id', 'expected_payments_owners', $this->owner);
+      $this->setResourceAccount('deposit_account_id', 'security_deposits');
+      $this->setResourceAccount('commission_account_id', 'expected_commissions_owners');
+      $this->setResourceAccount('late_fee_account_id', 'owed_commissions');
+      $this->name = $this->name ?? $this->shortName;
+      $this->saveQuietly();
+    }
+
     public function owner() {
         return $this->belongsTo(Client::class, 'owner_id');
     }

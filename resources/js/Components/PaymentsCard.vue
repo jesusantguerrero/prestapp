@@ -10,7 +10,7 @@ defineProps<Props>();
 
 <template>
   <article
-    class="text-sm flex text-body justify-between py-4 shadow-sm px-4 rounded-md border mb-2"
+    class="text-sm flex flex-col md:flex-row text-body justify-between py-4 shadow-sm px-4 rounded-md border mb-2"
   >
     <section class="flex space-x-3 items-center">
       <IMdiDocument class="text-xl" />
@@ -25,7 +25,9 @@ defineProps<Props>();
       </div>
     </section>
     <section>
-      <p class="font-bold text-xl text-green-500 flex space-x-3 items-center">
+      <p
+        class="font-bold text-xl text-success flex mt-4 md:mt-0 justify-between space-x-3 items-center"
+      >
         <span>
           {{ formatMoney(payment.amount) }}
         </span>
@@ -39,7 +41,9 @@ defineProps<Props>();
           <p>Recibo</p>
         </a>
       </p>
-      <span>{{ payment.resource.client_name }}</span>
+      <span class="w-full text-center inline-block md:inline">{{
+        payment.resource.client_name
+      }}</span>
     </section>
   </article>
 </template>

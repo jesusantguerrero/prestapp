@@ -4,7 +4,7 @@
   >
     <button
       v-for="(item, statusName) in values"
-      class="px-2 py-1.5 flex items-center border border-transparent hover:bg-secondary/5"
+      class="px-2 py-1.5 w-full md:w-fit flex items-center border border-transparent hover:bg-secondary/5"
       :class="{
         'text-white bg-secondary border border-secondary hover:text-secondary': isSelected(
           statusName

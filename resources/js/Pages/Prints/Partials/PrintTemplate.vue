@@ -12,14 +12,27 @@ defineProps({
   </main>
 </template>
 
-<style>
+<style lang="scss">
 .print-container,
 body {
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   background: #222;
+}
+
+@media print {
+  .print-container,
+  body {
+    width: fit-content !important;
+    display: block !important;
+    background: transparent !important;
+
+    .pos-ticket {
+      box-shadow: unset !important;
+    }
+  }
 }
 </style>

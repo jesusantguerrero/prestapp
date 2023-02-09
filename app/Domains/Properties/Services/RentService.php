@@ -7,6 +7,7 @@ use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Properties\Models\Rent;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Insane\Journal\Models\Invoice\Invoice;
 
 class RentService {
@@ -16,17 +17,23 @@ class RentService {
       if (!$unit || $unit->status !== PropertyUnit::STATUS_AVAILABLE) {
         throw new Exception('This unit is not available at the time');
       } else {
-        $rentData =
-        array_merge($rentData, [
-          'account_id' => $unit->property->account_id,
-          'owner_id' => $unit->property->owner_id,
-          'commission_account_id' => $unit->property->commission_account_id,
-          'late_fee_account_id' => $unit->property->late_fee_account_id,
-        ]);
-        $rent = Rent::create($rentData);
-        $rent->unit->update(['status' => PropertyUnit::STATUS_RENTED]);
-        PropertyTransactionService::createDepositTransaction($rent, $rentData);
-        return PropertyTransactionService::generateFirstInvoice($rent);
+        return DB::transaction(function() use ($rentData, $unit) {
+          $property = $unit->property;
+          if (!$property->account_id) {
+            $property->initAccounts();
+            $property = $unit->property()->first();
+          }
+          $rentData = array_merge($rentData, [
+            'account_id' => $property->account_id,
+            'owner_id' => $property->owner_id,
+            'commission_account_id' => $property->commission_account_id,
+            'late_fee_account_id' => $property->late_fee_account_id,
+          ]);
+          $rent = Rent::create($rentData);
+          $rent->unit->update(['status' => PropertyUnit::STATUS_RENTED]);
+          PropertyTransactionService::createDepositTransaction($rent->fresh(), $rentData);
+          return PropertyTransactionService::generateFirstInvoice($rent);
+        });
       }
     }
 

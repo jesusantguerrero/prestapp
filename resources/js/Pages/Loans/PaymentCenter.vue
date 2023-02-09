@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { useForm } from "@inertiajs/vue3";
-import { AtField, AtInput } from "atmosphere-ui";
-import { watch, ref, computed, reactive } from "vue";
+import { AtInput } from "atmosphere-ui";
+import { watch, ref } from "vue";
 import { ElNotification } from "element-plus";
+import axios from "axios";
 
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import BaseTable from "@/Components/shared/BaseTable.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import PropertySectionNav from "./Partials/LoanSectionNav.vue";
-import axios from "axios";
 import AppButton from "@/Components/shared/AppButton.vue";
+import AppFormField from "@/Components/shared/AppFormField.vue";
+import ButtonGroup from "@/Components/ButtonGroup.vue";
 
 import { formatMoney } from "@/utils";
 import { useSectionFilters } from "@/Modules/_app/useSectionFilters";
@@ -17,8 +19,6 @@ import { router } from "@inertiajs/core";
 import { IClientSaved } from "@/Modules/clients/clientEntity";
 import { ILoan } from "@/Modules/loans/loanEntity";
 import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
-import AppFormField from "@/Components/shared/AppFormField.vue";
-import ButtonGroup from "@/Components/ButtonGroup.vue";
 
 const props = defineProps<{
   invoices: ILoanInstallment[];
@@ -112,12 +112,17 @@ watch(currentTab, () => {
     <template #header>
       <PropertySectionNav>
         <template #actions>
-          <ButtonGroup :values="sections" v-model="currentTab" />
+          <ButtonGroup :values="sections" v-model="currentTab" class="hidden md:flex" />
         </template>
       </PropertySectionNav>
     </template>
 
-    <main class="py-10 mx-auto sm:px-6 lg:px-8">
+    <main class="py-10 mx-auto md-24 md:mt-0 sm:px-6 lg:px-8">
+      <ButtonGroup
+        :values="sections"
+        v-model="currentTab"
+        class="w-full mt-4 md:hidden"
+      />
       <header class="flex space-x-4 w-full px-4 rounded-md bg-base-lvl-3">
         <AppFormField label="Cliente" class="w-full">
           <BaseSelect
@@ -200,9 +205,12 @@ watch(currentTab, () => {
             </template>
           </BaseTable>
         </article>
-        <footer class="w-full text-right space-x-4 pb-4">
-          <AppButton> Cancel</AppButton>
-          <AppButton @click="submit"> Guardar y Pagar</AppButton>
+        <footer
+          class="w-full text-right px-4 md:px-0 space-x-4 pb-4"
+          v-if="currentTab == 'pending' && filters.client"
+        >
+          <AppButton variant="neutral"> Cancelar</AppButton>
+          <AppButton variant="secondary" @click="submit"> Guardar y Pagar</AppButton>
         </footer>
       </section>
     </main>

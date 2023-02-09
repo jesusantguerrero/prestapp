@@ -9,7 +9,9 @@ use App\Domains\Loans\Jobs\CreateLoanTransaction;
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
 use App\Models\Setting;
+use Exception;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Insane\Journal\Helpers\ReportHelper;
 use Insane\Journal\Models\Core\Payment;
 use Insane\Journal\Models\Core\PaymentDocument;
@@ -18,11 +20,18 @@ class LoanService {
     public static function createLoan(mixed $loanData, mixed $installments) {
         $validator = new LoanValidator($loanData);
         if ($validator->isValid()) {
-          $loan = Loan::create(array_merge($loanData, [
-            'status' => Loan::STATUS_DISPOSED,
-          ]));
-          self::createInstallments($loan, $installments);
-          CreateLoanTransaction::dispatch($loan);
+            try {
+                DB::beginTransaction();
+                $loan = Loan::create(array_merge($loanData, [
+                  'status' => Loan::STATUS_DISPOSED,
+                ]));
+                LoanService::createInstallments($loan, $installments);
+                CreateLoanTransaction::dispatch($loan);
+            } catch (Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
+            DB::commit();
         }
     }
 
@@ -107,10 +116,10 @@ class LoanService {
       $startDate = Carbon::now()->startOfYear()->format('Y-m-d');
 
       $results = ReportHelper::getTransactionsByAccount($teamId, ['expected_interest_loans'], $startDate, $endDate);
-      $results =  collect($results["expected_interest_loans"]);
+      $results =  collect($results["expected_interest_loans"] ?? []);
       return [
         "year" => $results->sum('outcome'),
-        "months" => $results,
+        "months" => count($results) ? $results : [[]],
         "avg" => $results->avg('outcome')
       ];
     }
