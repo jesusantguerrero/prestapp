@@ -9,6 +9,7 @@ const { isMobile } = useResponsive();
 const props = defineProps({
   selectable: {
     type: Boolean,
+    default: false,
   },
   defaultExpandAll: {
     type: Boolean,
@@ -81,7 +82,7 @@ const props = defineProps({
   },
 });
 
-const getHeaderClass = (row) => {
+const getHeaderClass = (row: Record<string, any>) => {
   return row.headerClass;
 };
 

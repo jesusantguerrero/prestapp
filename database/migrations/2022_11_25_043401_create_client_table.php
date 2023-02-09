@@ -42,7 +42,7 @@ return new class extends Migration
 
             $table->string('work_name');
             $table->string('work_email')->nullable();
-            $table->string('work_phone')->nullable();
+            $table->string('work_cellphone')->nullable();
             $table->text('work_address_details')->nullable();
 
             $table->string('bank_name')->nullable();

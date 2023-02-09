@@ -10,6 +10,7 @@ import { useReactiveForm } from "@/utils/useReactiveForm";
 import { addMonths } from "date-fns";
 import AccountSelect from "@/Components/shared/Selects/AccountSelect.vue";
 import { paymentMethods } from "@/Modules/loans/constants";
+import AppFormField from "@/Components/shared/AppFormField.vue";
 
 const props = defineProps<{
   modelValue: Record<string, any>;
@@ -42,8 +43,8 @@ const { formData } = useReactiveForm(
 
 <template>
   <section>
-    <FormSection title="Datos de deposito">
-      <AtField label="Deposito" class="w-full">
+    <FormSection title="Datos de deposito" section-class="flex flex-col md:flex-row">
+      <AppFormField label="Deposito" class="w-full">
         <AtInput
           :number-format="true"
           :model-value="formData.deposit"
@@ -64,10 +65,13 @@ const { formData } = useReactiveForm(
             </button>
           </template>
         </AtInput>
-      </AtField>
-      <AtField label="Fecha de pago deposito" class="flex flex-col w-full">
+      </AppFormField>
+      <AppFormField
+        label="Fecha de pago deposito"
+        class="flex flex-col w-full -mt-8 md:mt-0"
+      >
         <ElDatePicker v-model="formData.deposit_due" size="large" class="w-full" />
-      </AtField>
+      </AppFormField>
     </FormSection>
 
     <FormSection
@@ -75,15 +79,17 @@ const { formData } = useReactiveForm(
       v-if="formData.is_deposit_received"
       section-class="flex w-full space-x-4"
     >
-      <AtField label="Referencia" class="w-full">
-        <AtInput v-model="formData.deposit_reference" rounded />
-      </AtField>
+      <AppFormField
+        label="Referencia"
+        class="w-full"
+        v-model="formData.deposit_reference"
+      />
 
-      <AtField label="Cuenta de pago" class="w-full">
+      <AppFormField label="Cuenta de pago" class="w-full">
         <AccountSelect v-model="formData.payment_account_id" rounded />
-      </AtField>
+      </AppFormField>
 
-      <AtField label="Metodo de pago" class="w-full">
+      <AppFormField label="Metodo de pago" class="w-full">
         <AtSimpleSelect
           v-model="formData.payment_method_id"
           v-model:selected="formData.paymentMethod"
@@ -93,14 +99,20 @@ const { formData } = useReactiveForm(
           label="name"
           key-track="id"
         />
-      </AtField>
+      </AppFormField>
     </FormSection>
 
-    <FormSection title="Datos de renta" section-class="grid grid-cols-2 gap-2">
-      <AtField label="Precio de renta" class="w-full">
-        <AtInput :number-format="true" v-model="formData.amount" />
-      </AtField>
-      <AtField label="Comisión" class="w-full">
+    <FormSection
+      title="Datos de renta"
+      section-class="flex flex-col md:grid md:grid-cols-2 md:gap-2"
+    >
+      <AppFormField
+        label="Precio de renta"
+        class="w-full"
+        :number-format="true"
+        v-model="formData.amount"
+      />
+      <AppFormField label="Comisión" class="w-full">
         <AtInput v-model="formData.commission">
           <template #suffix>
             <TaxTypeSelector
@@ -109,16 +121,16 @@ const { formData } = useReactiveForm(
             />
           </template>
         </AtInput>
-      </AtField>
-      <AtField label="Fecha de Inicio" class="flex flex-col">
+      </AppFormField>
+      <AppFormField label="Fecha de Inicio" class="flex flex-col">
         <ElDatePicker v-model="formData.date" size="large" />
-      </AtField>
-      <AtField label="Fecha de primer pago" class="flex flex-col">
+      </AppFormField>
+      <AppFormField label="Fecha de primer pago" class="flex flex-col">
         <ElDatePicker v-model="formData.first_invoice_date" size="large" />
-      </AtField>
-      <AtField label="Finaliza en" class="flex flex-col">
+      </AppFormField>
+      <AppFormField label="Finaliza en" class="flex flex-col">
         <ElDatePicker v-model="formData.end_date" size="large" />
-      </AtField>
+      </AppFormField>
     </FormSection>
   </section>
 </template>

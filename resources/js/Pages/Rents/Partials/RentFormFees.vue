@@ -6,6 +6,7 @@ import FormSection from "./FormSection.vue";
 import TaxTypeSelector from "@/Pages/Settings/TaxTypeSelector.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import { useReactiveForm } from "@/utils/useReactiveForm";
+import AppFormField from "@/Components/shared/AppFormField.vue";
 
 const props = defineProps<{
   modelValue: Record<string, any>;
@@ -29,8 +30,8 @@ const { formData } = useReactiveForm(
 <template>
   <section>
     <article class="w-full space-y-4">
-      <FormSection title="Moras" section-class="space-y-4">
-        <section class="mt-4 flex space-x-4">
+      <FormSection title="Moras" section-class=" space-y-4">
+        <section class="mt-4 flex flex-col md:flex-row md:space-x-4">
           <AppButton
             variant="neutral"
             v-if="!formData.has_late_fees"
@@ -39,16 +40,20 @@ const { formData } = useReactiveForm(
             Aplicar Moras
           </AppButton>
           <template v-else>
-            <AtField label="Comisión de mora" class="w-full">
-              <AtInput v-model="formData.late_fee">
-                <template #suffix>
-                  <TaxTypeSelector v-model="formData.late_fee_type" />
-                </template>
-              </AtInput>
-            </AtField>
-            <AtField label="Dias de gracia" class="w-full">
-              <AtInput v-model="formData.grace_days" />
-            </AtField>
+            <AppFormField
+              label="Comisión de mora"
+              class="w-full"
+              v-model="formData.late_fee"
+            >
+              <template #suffix>
+                <TaxTypeSelector v-model="formData.late_fee_type" />
+              </template>
+            </AppFormField>
+            <AppFormField
+              label="Dias de gracia"
+              class="w-full"
+              v-model="formData.grace_days"
+            />
           </template>
         </section>
 

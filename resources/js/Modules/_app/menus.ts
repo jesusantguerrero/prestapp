@@ -33,7 +33,10 @@ const menus = {
       },
       {
         label: 'Clientes',
-        url: '/contacts/lender'
+        url: '/contacts/lender',
+        isActiveFunction(currentPath: string) {
+          return /contacts/.test(currentPath)
+        },
       },
       {
         label: 'Centro de pago',

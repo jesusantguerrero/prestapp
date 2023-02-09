@@ -32,7 +32,7 @@ const clientToggleText = computed(() => {
 
 <template>
   <section>
-    <FormSection>
+    <FormSection section-class="w-full -px-10">
       <div class="w-full mt-8">
         <header class="flex justify-between">
           <label for="">Inquilino</label>

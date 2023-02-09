@@ -47,7 +47,7 @@ class DashboardController extends Controller
       $propertyTotals = PropertyService::totalByStatusFor($teamId);
 
       $invoices = RentService::invoices($teamId);
-
+      $qInvoices = RentService::invoices($teamId);
       return inertia('Dashboard/Properties',
       [
           "revenue" => $reportHelper->revenueReport($teamId),
@@ -62,7 +62,7 @@ class DashboardController extends Controller
             ELSE 0
           END) outstandingInvoices"))->first(),
           'accounts' => $reportHelper->getAccountTransactionsByPeriod($teamId, ['rent', 'security_deposits', 'operating_expense']),
-          'nextInvoices' => $invoices->unpaid()->take(4)->get(),
+          'nextInvoices' => $qInvoices->unpaid()->take(4)->get(),
           'section' => "realState"
       ]);
     }

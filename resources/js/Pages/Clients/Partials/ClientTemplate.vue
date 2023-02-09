@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { Link } from "@inertiajs/vue3";
+import { AtBackgroundIconCard } from "atmosphere-ui";
+import { ElTag } from "element-plus";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import AppSectionHeader from "@/Components/AppSectionHeader.vue";
+import EmptyAddTool from "@/Pages/Properties/Partials/EmptyAddTool.vue";
+import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.vue";
+import LoanSectionNav from "@/Pages/Loans/Partials/LoanSectionNav.vue";
 
 import { formatMoney } from "@/utils";
-import PropertySectionNav from "../../Properties/Partials/PropertySectionNav.vue";
-import { ElTag } from "element-plus";
-import { AtBackgroundIconCard } from "atmosphere-ui";
 import { IClient } from "@/Modules/clients/clientEntity";
-import EmptyAddTool from "@/Pages/Properties/Partials/EmptyAddTool.vue";
 import { clientInteractions } from "@/Modules/clients/clientInteractions";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
 
@@ -42,7 +43,7 @@ const { openModal } = useToggleModal("contact");
 <template>
   <AppLayout :title="`Clientes / ${clients.fullName}`">
     <template #header>
-      <PropertySectionNav>
+      <PropertySectionNav v-if="!clients.is_lender">
         <template #actions>
           <AppButton
             @click="
@@ -60,6 +61,7 @@ const { openModal } = useToggleModal("contact");
           <AppButton @click="" variant="inverse"> Nueva Propiedad </AppButton>
         </template>
       </PropertySectionNav>
+      <LoanSectionNav v-else />
     </template>
 
     <main class="p-5 mt-8">
@@ -146,15 +148,16 @@ const { openModal } = useToggleModal("contact");
         <article class="w-full md:w-3/12 mt-4 md:mt-0 space-y-2 rounded-md shadow-md">
           <div class="px-5 py-10 text-gray-600 bg-gray-200 rounded-md">
             <div class="header">
-              <h2 class="text-lg font-bold">Manejo de Cliente</h2>
+              <h2 class="text-lg font-bold">Manejo de contacto</h2>
               <small>
-                Private place for you and your internal team to manage this project</small
+                Espacio para manejar los detalles de tu contacto y todas sus cosas.</small
               >
             </div>
 
             <div class="mt-4 space-y-2">
               <section class="flex space-x-4">
                 <AppButton
+                  v-if="clients.is_owner"
                   class="w-full"
                   @click="clientInteractions.generateOwnerDistribution(clients.id)"
                 >

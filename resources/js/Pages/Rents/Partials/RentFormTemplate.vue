@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { watch, computed, ref, reactive } from "vue";
-import { AtButton } from "atmosphere-ui";
 import { addMonths } from "date-fns";
-import { AtSteps, AtStep } from "atmosphere-ui";
+import { AtSteps, AtStep, Atbutton } from "atmosphere-ui";
 
 import AppButton from "@/Components/shared/AppButton.vue";
 
@@ -10,6 +9,7 @@ import RentFormPersonal from "./RentFormPersonal.vue";
 import RentFormProperty from "./RentFormProperty.vue";
 import RentFormContract from "./RentFormContract.vue";
 import RentFormFees from "./RentFormFees.vue";
+
 import { dateToIso, formatDate } from "@/utils";
 
 defineProps<{
@@ -125,41 +125,45 @@ const onFinished = () => {
 </script>
 
 <template>
-  <section>
-    <AtSteps
-      v-model="currentStep"
-      finish-status="success"
-      simple
-      style="margin-top: 20px"
-      @finished="onFinished"
-    >
-      <AtStep name="personal" title="Datos Personales" :before-change="validateStep">
-        <RentFormPersonal :model-value="rentForm" @update:model-value="handleUpdate" />
-      </AtStep>
-      <AtStep name="property" title="Propiedad" :before-change="validateStep">
-        <RentFormProperty :model-value="rentForm" @update:model-value="handleUpdate" />
-      </AtStep>
-      <AtStep name="rent_details" title="Detalles de renta" :before-change="validateStep">
-        <RentFormContract :model-value="rentForm" @update:model-value="handleUpdate" />
-      </AtStep>
-      <AtStep name="fees" title="Cargos y mora">
-        <RentFormFees :model-value="rentForm" @update:model-value="handleUpdate" />
-      </AtStep>
+  <AtSteps
+    v-model="currentStep"
+    finish-status="success"
+    simple
+    style="margin-top: 20px"
+    active-class="bg-primary text-white"
+    circle-active-color="bg-primary text-white"
+    load-shadow-color="shadow-primary"
+    @finished="onFinished"
+  >
+    <AtStep name="personal" title="Datos Personales" :before-change="validateStep">
+      <RentFormPersonal :model-value="rentForm" @update:model-value="handleUpdate" />
+    </AtStep>
+    <AtStep name="property" title="Propiedad" :before-change="validateStep">
+      <RentFormProperty :model-value="rentForm" @update:model-value="handleUpdate" />
+    </AtStep>
+    <AtStep name="rent_details" title="Detalles de renta" :before-change="validateStep">
+      <RentFormContract :model-value="rentForm" @update:model-value="handleUpdate" />
+    </AtStep>
+    <AtStep name="fees" title="Cargos y mora">
+      <RentFormFees :model-value="rentForm" @update:model-value="handleUpdate" />
+    </AtStep>
 
-      <template v-slot:footer="{ prev, next }">
-        <footer class="flex justify-end space-x-2">
-          <AtButton type="secondary" rounded @click="prev()">Atras</AtButton>
-          <AppButton
-            variant="inverse"
-            rounded
-            :processing="isProcessing"
-            :disabled="isProcessing"
-            @click="next()"
-          >
-            {{ nextButtonLabel }}
-          </AppButton>
-        </footer>
-      </template>
-    </AtSteps>
-  </section>
+    <template v-slot:footer="{ prev, next }">
+      <footer class="flex justify-end space-x-2 mt-auto md:mt-16 md:px-32">
+        <AppButton variant="neutral" @click="prev()" class="w-full md:w-fit"
+          >Atras</AppButton
+        >
+        <AppButton
+          variant="inverse"
+          rounded
+          class="w-full md:w-fit"
+          :processing="isProcessing"
+          :disabled="isProcessing"
+          @click="next()"
+        >
+          {{ nextButtonLabel }}
+        </AppButton>
+      </footer>
+    </template>
+  </AtSteps>
 </template>

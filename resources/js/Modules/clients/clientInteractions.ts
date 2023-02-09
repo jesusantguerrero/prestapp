@@ -10,11 +10,12 @@ class ClientInteractions {
             [`is_${type}`]: true,
         }
         return new Promise((resolve, reject) => {
-            return router.post('/clients', formData, {
+            router.post('/clients', formData, {
                 onSuccess(data: IClient) {
                     resolve(data)
                 },
                 onError(reason: String) {
+                    debugger
                     reject(reason)
                 }
             });

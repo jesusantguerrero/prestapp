@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { useForm, router } from "@inertiajs/vue3";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
@@ -30,7 +30,9 @@ const onSubmit = (formData: Record<string, any>) => {
 
 <template>
   <AppLayout title="Crear contrato">
-    <main class="w-full bg-white px-5 py-5 rounded-md text-body-1">
+    <main
+      class="w-full rent-form pb-24 md:pb-4 bg-white px-5 py-5 rounded-md text-body-1"
+    >
       <RentFormTemplate
         :data="rentForm"
         :current-step="step"
@@ -40,3 +42,12 @@ const onSubmit = (formData: Record<string, any>) => {
     </main>
   </AppLayout>
 </template>
+
+<style scoped>
+@screen sm {
+  .rent-form {
+    height: calc(100vh - 100px);
+    overflow: auto;
+  }
+}
+</style>

@@ -76,6 +76,7 @@ const onSubmit = () => {
       emit("success");
     })
     .catch((err) => {
+      emit("update:isLoading", false);
       emit("error", err);
     })
     .finally(() => {

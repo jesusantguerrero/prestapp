@@ -11,6 +11,7 @@ import { MathHelper } from "@/Modules/loans/mathHelper";
 import { paymentMethods } from "@/Modules/loans/constants";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import AccountSelect from "@/Components/shared/Selects/AccountSelect.vue";
+import AppFormField from "@/Components/shared/AppFormField.vue";
 
 const defaultPaymentForm = {
   amount: 0,
@@ -219,35 +220,37 @@ function emitChange(value) {
 <template>
   <ElDialog
     title="Pagar prestamo"
+    class="rounded-lg overflow-hidden"
     @open="setFormData()"
     :model-value="modelValue"
     @update:model-value="$emit('update:modelValue', $event)"
   >
+    <template #header>
+      <header
+        class="border-b -mx-6 -mt-6 -mr-10 bg-secondary/80 text-white py-4 px-4 flex items-center justify-between"
+      >
+        <h4 class="font-bold text-xl">Crear Contacto</h4>
+        <button class="hover:text-danger" @click="close()">
+          <IMdiClose />
+        </button>
+      </header>
+    </template>
     <div class="">
       <section class="flex space-x-4">
-        <AtField class="w-full text-left" label="Concepto">
-          <AtInput
-            type="text"
-            class="form-control"
-            name="invoice-description"
-            id="invoice-description"
-            v-model="paymentForm.concept"
-            rounded
-          />
-        </AtField>
+        <AppFormField
+          class="w-full text-left"
+          label="Concepto"
+          v-model="paymentForm.concept"
+        />
 
-        <AtField class="w-full text-left" label="Referencia">
-          <AtInput
-            type="text"
-            class="form-control"
-            name="invoice-description"
-            id="invoice-description"
-            v-model="paymentForm.reference"
-            rounded
-          />
-        </AtField>
+        <AppFormField
+          class="w-full text-left"
+          label="Referencia"
+          v-model="paymentForm.reference"
+          rounded
+        />
 
-        <AtField class="w-full text-left" label="Monto Recibido">
+        <AppFormField class="w-full text-left" label="Monto Recibido">
           <AtInput
             class="form-control"
             number-format
@@ -256,48 +259,47 @@ function emitChange(value) {
             required
           />
           {{ documentTotal }}
-        </AtField>
+        </AppFormField>
       </section>
 
       <section class="flex space-x-4">
-        <AtField class="w-5/12 mb-5 text-left" label="Cuenta de Pago">
+        <AppFormField class="w-5/12 mb-5 text-left" label="Cuenta de Pago">
           <AccountSelect
             :endpoint="accountsEndpoint"
             v-model="paymentForm.paymentAccount"
             placeholder="Selecciona una cuenta"
             @update:modelValue="paymentForm.account_id = $event?.id"
           />
-        </AtField>
-        <AtField class="w-3/12 mb-5 text-left" label="Metodo de Pago">
+        </AppFormField>
+        <AppFormField class="w-3/12 mb-5 text-left" label="Metodo de Pago">
           <AtSimpleSelect
             v-model="paymentForm.payment_method_id"
             v-model:selected="paymentForm.paymentMethod"
             :options="paymentMethods"
-            placeholder="Seleccione metodo de pago"
+            placeholder="Forma pago"
             class="w-full"
             label="name"
             key-track="id"
           />
-        </AtField>
-        <AtField label="Fecha de pago" class="w-3/12">
+        </AppFormField>
+        <AppFormField label="Fecha de pago" class="w-3/12">
           <ElDatePicker
             v-model="paymentForm.payment_date"
             size="large"
             class="w-full"
             rounded
           />
-        </AtField>
+        </AppFormField>
       </section>
 
-      <div class="w-full text-left">
-        <label for="">Notes</label>
+      <AppFormField class="w-full text-left" label="Notes">
         <textarea
           class="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:border-gray-400"
           v-model="paymentForm.notes"
           cols="3"
           rows="3"
         />
-      </div>
+      </AppFormField>
 
       <PaymentGrid
         v-if="paymentForm.documents"
@@ -308,17 +310,29 @@ function emitChange(value) {
 
     <template #footer>
       <div class="space-x-2 dialog-footer">
-        <AtButton @click="emitChange(false)" class="bg-white border rounded-md text-gray">
+        <AtButton
+          :disabled="isLoading"
+          @click="emitChange(false)"
+          class="bg-white border rounded-md text-gray"
+        >
           Cancel
         </AtButton>
         <AppButton
           class="text-white bg-blue-500"
           v-if="paymentForm.id"
           @click="deletePayment()"
+          :disabled="isLoading"
         >
           Delete
         </AppButton>
-        <AppButton v-else @click="onSubmit()" :disabled="isLoading" :loading="isLoading">
+        <AppButton
+          v-else
+          variant="secondary"
+          @click="onSubmit()"
+          :processing="isLoading"
+          :disabled="isLoading"
+          :loading="isLoading"
+        >
           Efectuar pago
         </AppButton>
       </div>
