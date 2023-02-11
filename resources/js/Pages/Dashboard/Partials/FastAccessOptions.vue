@@ -40,6 +40,14 @@ const welcomeCards = computed(() => {
       },
     },
     {
+      label: "Precalcular prestamo",
+      icon: "calculator",
+      action() {
+        router.visit("/loans/create");
+      },
+      extended: true,
+    },
+    {
       label: "Pago prestamo",
       icon: "money",
       action() {
@@ -89,19 +97,21 @@ const { openTransactionModal } = useTransactionModal();
     <template v-for="card in welcomeCards">
       <button
         v-if="card.action"
-        class="flex flex-col items-center justify-center w-full py-3 text-center transition-all ease-in bg-white border-2 border-transparent rounded-lg hover:border-primary group text-primary"
+        class="flex flex-col items-center hover:text-primary justify-center w-full py-3 text-center transition-all ease-in bg-white border-2 border-transparent rounded-lg hover:border-primary group"
+        :class="[extended ? 'text-body-1/50' : 'text-primary']"
         @click="card.action()"
       >
         <IMdiUserOutline class="text-4xl" v-if="card.icon == 'contact'" />
         <IMdiMoney class="text-4xl" v-if="card.icon == 'money'" />
         <IMdiHomeCityOutline class="text-4xl" v-if="card.icon == 'home'" />
         <IMdiFileDocument class="text-4xl" v-if="card.icon == 'document'" />
+        <IMdiCalculator class="text-4xl" v-if="card.icon == 'calculator'" />
 
-        <p class="text-sm font-bold text-body group-hover:text-primary">
+        <p class="text-sm font-bold text-body-1/50 group-hover:text-primary">
           {{ card.label }}
         </p>
       </button>
-      <h4 v-else class="col-span-3 mt-2">
+      <h4 v-else class="col-span-3 mt-2 text-secondary">
         {{ card.label }}
       </h4>
     </template>
