@@ -162,7 +162,7 @@ const comparisonRevenue = {
     <section class="flex flex-col mt-8 lg:space-x-4 lg:flex-row">
       <section class="lg:w-7/12 space-y-4">
         <IncomeSummaryWidget
-          class="order-2 mt-4 lg:w-full lg:mt-0 lg:order-1"
+          class="order-2 mt-4 lg:w-full lg:mt-0 lg:order-1 shadow-md"
           :style="{ height: '350px' }"
           :chart="comparisonRevenue"
           :headerInfo="comparisonRevenue.headers"
@@ -193,8 +193,8 @@ const comparisonRevenue = {
         />
 
         <IncomeSummaryWidget
-          class="order-2 mt-4 lg:w-full lg:mt-0 lg:order-1"
-          :style="{ height: '230px' }"
+          class="order-2 mt-4 lg:w-full lg:mt-0 lg:order-1 shadow-md"
+          :style="{ height: '350px' }"
           :chart="comparisonRevenue"
           :headerInfo="comparisonRevenue.headers"
         />
@@ -203,6 +203,7 @@ const comparisonRevenue = {
           message="Unidades recientes"
           class="text-body-1 w-full shadow-md"
           :cards="propertyStats"
+          v-if="false"
         >
           <template #content>
             <div class="rounded-md h-44 w-full bg-base-lvl-2 p-4 mb-4">
