@@ -1,7 +1,7 @@
 <template>
   <div>
     <multiselect
-      class="base-select"
+      class="base-select h-full"
       :id="id"
       :modelValue="modelValue"
       :disabled="disabled"

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useForm } from "@inertiajs/vue3";
+// @ts-ignore
 import { AtInput } from "atmosphere-ui";
 import { watch, ref } from "vue";
 import { ElNotification } from "element-plus";
@@ -19,6 +20,7 @@ import { router } from "@inertiajs/core";
 import { IClientSaved } from "@/Modules/clients/clientEntity";
 import { ILoan } from "@/Modules/loans/loanEntity";
 import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
+import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
 
 const props = defineProps<{
   invoices: ILoanInstallment[];
@@ -33,7 +35,7 @@ const formData = useForm({
   payments: [],
 });
 
-const filters = useSectionFilters(["client", "loan"], router);
+const { filters, reset } = useSectionFilters(["client", "loan", "search"], router);
 
 const handleChange = (value: boolean, row: Record<string, any>) => {
   row.payment = row.amount_due;
@@ -105,6 +107,9 @@ watch(currentTab, () => {
     },
   });
 });
+
+const loanLabel = (category: Record<string, any>) =>
+  `Prestamo ${category.id} (${category.amount}) (debt: $${category.debt})`;
 </script>
 
 <template>
@@ -123,30 +128,29 @@ watch(currentTab, () => {
         v-model="currentTab"
         class="w-full mt-4 md:hidden"
       />
-      <header class="flex space-x-4 w-full px-4 rounded-md bg-base-lvl-3">
-        <AppFormField label="Cliente" class="w-full">
-          <BaseSelect
-            v-model="filters.client"
-            :options="clients"
-            placeholder="selecciona un cliente"
-            label="display_name"
-            track-by="id"
-          />
-        </AppFormField>
-        <AppFormField label="Categoria" class="w-full">
-          <BaseSelect
-            v-model="filters.loan"
-            track-by="id"
-            :options="loans"
-            :hide-selected="false"
-            :custom-label="
-              (category) => {
-                return `Prestamo ${category.id} (${category.amount}) (debt: $${category.debt})`;
-              }
-            "
-            placeholder="selecciona una categoria"
-          />
-        </AppFormField>
+      <header class="flex space-x-4 w-full rounded-md">
+        <AppSearch
+          v-model.lazy="filters.search"
+          class="w-full md:flex"
+          @clear="reset()"
+        />
+        <BaseSelect
+          class="w-full"
+          v-model="filters.client"
+          :options="clients"
+          placeholder="Cliente"
+          label="display_name"
+          track-by="id"
+        />
+        <BaseSelect
+          class="w-full"
+          v-model="filters.loan"
+          track-by="id"
+          :options="loans"
+          :hide-selected="false"
+          :custom-label="loanLabel"
+          placeholder="Categoria"
+        />
       </header>
 
       <section class="rounded-md bg-base-lvl-3 mt-4">

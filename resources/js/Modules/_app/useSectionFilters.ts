@@ -5,23 +5,24 @@ interface IFilterConfig {
   value: ''
 }
 
-const getFilters = (filters: IFilterConfig[] | string[]) => {
-  return filters.reduce((filters, filterConfig) => {
-    filters[filterConfig?.name ?? filterConfig] = null
+const getFilters = (filters: IFilterConfig[] | string[]): Record<string, any> => {
+  return filters.reduce((filters: Record<string, any> , filterConfig: IFilterConfig | string) => {
+    const field = typeof filterConfig == 'string' ? filterConfig :filterConfig.name
+    filters[field] = null
     return filters;
   }, {})
 }
 
 const getFilterValues = (filters: Record<string, any>, prop: string) => {
   return Object.entries(filters).reduce(
-    (acc, [filterName, filter]) => {
+    (acc: Record<string, any>, [filterName, filter]) => {
       if (filter) acc[filterName] = filter[prop];
       return acc;
     },
     {}
   )
 }
-export const useSectionFilters = (filterConfig: IFilterConfig[], router: any, prop = 'id') => {
+export const useSectionFilters = (filterConfig: IFilterConfig[] | string[], router: any, prop = 'id') => {
 
   const filters = reactive(getFilters(filterConfig));
 
@@ -29,7 +30,6 @@ export const useSectionFilters = (filterConfig: IFilterConfig[], router: any, pr
     () => filters,
     (filters) => {
       const selectedFilters = getFilterValues(filters, prop)
-      console.log(selectedFilters, filters)
 
       router.get(
         location.pathname,
@@ -42,5 +42,16 @@ export const useSectionFilters = (filterConfig: IFilterConfig[], router: any, pr
     { deep: true }
   );
 
-  return filters;
+  const reset = () => {
+    router.get(location.pathname, {}, { preserveState: true });
+      
+    Object.keys(filters).forEach((key) => {
+      filters[key] = ""
+    })
+  }
+
+  return {
+    filters,
+    reset
+  };
 }
