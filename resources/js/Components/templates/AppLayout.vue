@@ -14,7 +14,7 @@ import DropdownLink from "@/Components/DropdownLink.vue";
 import AppButton from "../shared/AppButton.vue";
 import TheGlobals from "../TheGlobals.vue";
 import AppNotificationBell from "./AppNotificationBell.vue";
-import WatchlistButton from "./WatchlistButton.vue";
+import AddNewButton from "./AddNewButton.vue";
 // @ts-ignore
 import AppResourceSearch from "./AppResourceSearch.vue";
 
@@ -123,13 +123,13 @@ const handleActions = (action) => {
           <div class="flex justify-end h-16">
             <div class="flex items-center sm:ml-6">
               <AppResourceSearch class="hidden md:block mr-2" />
-              <AppButton class="hidden md:flex px-1 items-center mr-4 ml-2">
-                <IMdiPlus class="mr-2" />
-                Nuevo
-              </AppButton>
 
-              <WatchlistButton class="hidden mr-2 md:inline-block" v-if="!isOnboarding" />
-              <WatchlistButton class="hidden mr-2 md:inline-block" v-if="!isOnboarding" />
+              <AddNewButton class="hidden mr-2 md:inline-block" v-if="!isOnboarding">
+                <AppButton class="hidden md:flex px-1 items-center mr-4 ml-2">
+                  <IMdiPlus class="mr-2" />
+                  Nuevo
+                </AppButton>
+              </AddNewButton>
               <AppNotificationBell
                 :notifications="pageProps.unreadNotifications"
                 @click="$router.visit('/notifications')"
@@ -202,7 +202,7 @@ const handleActions = (action) => {
       </template>
       <template #aside>
         <AtSide
-          class="border-none shadow-none text-bold bg-primary"
+          class="border-none shadow-none text-bold bg-secondary"
           title="ICLoan"
           :is-expanded="isExpanded"
           @update:isExpanded="isExpanded = $event"

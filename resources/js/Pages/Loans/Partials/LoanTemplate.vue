@@ -152,7 +152,10 @@ const onUpdateStatus = () => {
       <section
         class="flex flex-col md:flex-row w-full space-x-8 rounded-t-none border-t-none"
       >
-        <article class="w-full md:w-9/12 space-y-2 overflow-auto">
+        <article
+          class="w-full space-y-2 overflow-auto"
+          :class="[loans.payment_status == 'PAID' ? 'w-full' : ' md:w-9/12']"
+        >
           <section class="flex space-x-4">
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
@@ -180,9 +183,10 @@ const onUpdateStatus = () => {
         </article>
 
         <article
+          v-if="loans.payment_status !== 'PAID'"
           class="w-full md:w-3/12 p-4 space-y-2 overflow-hidden border rounded-md shadow-md bg-base-lvl-3"
         >
-          <section class="grid grid-cols-1 gap-2">
+          <section class="grid grid-cols-1 gap-2" v-if="loans.payment_status !== 'PAID'">
             <AppButton
               @click="onMultiplePayment()"
               class="flex items-center justify-center text-sm"
@@ -197,6 +201,7 @@ const onUpdateStatus = () => {
             <AppButton
               @click="toggleAgreementModal()"
               variant="secondary"
+              v-if="loans.payment_status !== 'PAID'"
               class="flex items-center justify-center text-sm"
             >
               <IMdiHandshakeOutline class="mr-1" />
@@ -206,6 +211,7 @@ const onUpdateStatus = () => {
             <AppButton
               variant="secondary"
               class="flex items-center justify-center w-full text-sm"
+              v-if="loans.payment_status !== 'PAID'"
             >
               <IMdiHandshakeOutline class="mr-1" />
               Finalizar

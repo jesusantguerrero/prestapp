@@ -134,7 +134,6 @@ const interestPerformance = {
   series: [
     {
       name: "Ganancias intereses",
-      labels: props.paidInterest.months.map((item) => formatDate(item.date)),
       data: props.paidInterest.months.map((item) => item.outcome),
     },
   ],

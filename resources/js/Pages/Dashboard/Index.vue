@@ -13,6 +13,7 @@ import { formatMoney } from "@/utils/formatMoney";
 import { useTransactionModal } from "@/Modules/transactions/useTransactionModal";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
 import DashboardTemplate from "./Partials/DashboardTemplate.vue";
+import FastAccessOptions from "./Partials/FastAccessOptions.vue";
 
 const props = defineProps({
   revenue: {
@@ -198,22 +199,7 @@ const { openTransactionModal } = useTransactionModal();
         class="hidden md:block w-full mt-4 md:mt-0 md:w-3/12"
       >
         <template #content>
-          <div class="grid grid-cols-2 py-2">
-            <button
-              v-for="card in welcomeCards"
-              class="flex flex-col items-center justify-center w-full py-3 text-center transition-all ease-in bg-white border-2 border-transparent rounded-lg hover:border-primary group text-primary"
-              @click="card.action()"
-            >
-              <IMdiUserOutline class="text-4xl" v-if="card.icon == 'contact'" />
-              <IMdiMoney class="text-4xl" v-if="card.icon == 'money'" />
-              <IMdiHomeCityOutline class="text-4xl" v-if="card.icon == 'home'" />
-              <IMdiFileDocument class="text-4xl" v-if="card.icon == 'document'" />
-
-              <p class="text-sm font-bold text-body group-hover:text-primary">
-                {{ card.label }}
-              </p>
-            </button>
-          </div>
+          <FastAccessOptions />
         </template>
       </WelcomeWidget>
     </section>

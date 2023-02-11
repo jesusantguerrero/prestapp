@@ -82,7 +82,7 @@ const { isMobile } = useResponsive();
         <AppButton
           variant="inverse"
           @click="router.visit('/loans/create')"
-          class="hidden md:flex"
+          class="hidden md:flex items-center"
         >
           Nuevo prestamo
         </AppButton>
@@ -94,16 +94,16 @@ const { isMobile } = useResponsive();
         :layout="isMobile ? 'grid' : 'table'"
       >
         <template v-slot:actions="{ scope: { row } }">
-          <div class="flex">
+          <div class="flex justify-end">
             <Link
-              class="relative inline-block px-5 py-2 overflow-hidden font-bold text-body transition rounded-md focus:outline-none hover:bg-opacity-80 min-w-max"
+              class="relative inline-block cursor-pointer hover:bg-primary hover:text-white px-5 py-2 overflow-hidden font-bold text-body transition rounded-md focus:outline-none hover:bg-opacity-80 min-w-max"
               :href="`/loans/${row.id}`"
             >
               <IMdiChevronRight />
             </Link>
             <AppButton
               variant="neutral"
-              class="hover:text-error transition hover:border-red-400"
+              class="hover:text-error transition items-center flex flex-col justify-center hover:border-red-400"
               @click="deleteLoan(row)"
             >
               <IMdiTrash />

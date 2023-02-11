@@ -10,6 +10,7 @@ import AccountSelect from "@/Components/shared/Selects/AccountSelect.vue";
 
 import { MathHelper } from "@/Modules/loans/mathHelper";
 import { paymentMethods } from "@/Modules/loans/constants";
+import AppFormField from "@/Components/shared/AppFormField.vue";
 
 const defaultFormData = {
   amount: 0,
@@ -17,7 +18,9 @@ const defaultFormData = {
 };
 
 const props = defineProps({
-  modelValue: Boolean,
+  modelValue: {
+    type: Boolean,
+  },
   defaultConcept: {
     type: String,
     required: true,
@@ -26,8 +29,13 @@ const props = defineProps({
     type: Number,
     required: true,
   },
-  payment: [Object, null],
-  due: Number,
+  payment: {
+    type: [Object, null],
+  },
+  due: {
+    type: Number,
+    default: 0,
+  },
   endpoint: {
     type: String,
     required: true,
@@ -39,8 +47,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update:modelValue", "saved"]);
-
-const categories = inject("accountsOptions", []);
 
 const formData = ref(generatePaymentData());
 
@@ -104,9 +110,10 @@ const rentsUrl = computed(() => {
   return `/api/rents?filter[client_id]=${formData.value.client?.id}`;
 });
 
+const isLoading = ref(false);
 function onSubmit() {
   if (!formData.value.amount) {
-    notify({
+    ElNotification({
       type: "error",
       message: "should specify an amount",
     });
@@ -123,6 +130,7 @@ function onSubmit() {
     details: formData.value.notes,
   };
 
+  isLoading.value = true;
   axios
     .post(`properties/${data.rent_id}/transactions/expense`, data)
     .then(() => {
@@ -134,6 +142,9 @@ function onSubmit() {
         type: "error",
         message: err.response ? err.response.data.status.message : "Ha ocurrido un error",
       });
+    })
+    .finally(() => {
+      isLoading.value = false;
     });
 }
 
@@ -170,12 +181,22 @@ function emitChange(value) {
 
 <template>
   <ElDialog
-    title="Crear factura"
     @open="setFormData()"
     :model-value="modelValue"
+    class="overflow-hidden"
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <div>
+    <template #header>
+      <header
+        class="border-b -mx-6 -mt-6 -mr-10 bg-secondary/80 text-white py-4 px-4 flex items-center justify-between"
+      >
+        <h4 class="font-bold text-xl">{{ title ?? defaultConcept }}</h4>
+        <button class="hover:text-danger" @click="close()">
+          <IMdiClose />
+        </button>
+      </header>
+    </template>
+    <div class="-mt-10">
       <section class="flex space-x-4">
         <AtField class="w-full text-left" label="Concepto">
           <AtInput
@@ -198,10 +219,10 @@ function emitChange(value) {
           />
         </AtField> -->
         <section class="flex">
-          <AtField label="Fecha limite" class="w-6/12">
+          <AppFormField label="Fecha limite" class="w-6/12">
             <ElDatePicker v-model="formData.date" size="large" class="w-full" rounded />
-          </AtField>
-          <AtField class="w-6/12 text-left" label="Monto Recibido">
+          </AppFormField>
+          <AppFormField class="w-6/12 text-left" label="Monto Recibido">
             <AtInput
               class="form-control"
               number-format
@@ -210,52 +231,67 @@ function emitChange(value) {
               required
             />
             {{ documentTotal }}
-          </AtField>
+          </AppFormField>
         </section>
       </section>
 
       <section class="mt-4 flex space-x-4">
-        <BaseSelect
-          v-model="formData.client"
-          endpoint="/api/clients"
-          placeholder="Selecciona cliente"
-          label="display_name"
-          track-by="id"
-        />
-
-        <BaseSelect
-          v-model="formData.rent"
-          :endpoint="rentsUrl"
-          placeholder="Selecciona el contrato"
-          label="date"
-          track-by="id"
-        />
+        <AppFormField label="Cliente">
+          <BaseSelect
+            v-model="formData.client"
+            endpoint="/api/clients"
+            placeholder="Selecciona cliente"
+            label="display_name"
+            track-by="id"
+          />
+        </AppFormField>
+        <AppFormField label="Propiedad">
+          <BaseSelect
+            v-model="formData.rent"
+            :endpoint="rentsUrl"
+            placeholder="Selecciona el contrato"
+            label="date"
+            track-by="id"
+          />
+        </AppFormField>
       </section>
 
-      <div class="w-full text-left">
-        <label for="">Notes</label>
+      <AppFormField class="w-full text-left" label="Notes">
         <textarea
           class="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:border-gray-400"
           v-model="formData.notes"
           cols="3"
           rows="3"
         />
-      </div>
+      </AppFormField>
     </div>
 
     <template #footer>
       <div class="space-x-2 dialog-footer">
-        <AtButton @click="emitChange(false)" class="bg-white border rounded-md text-gray">
+        <AtButton
+          :disabled="isLoading"
+          @click="emitChange(false)"
+          class="bg-white border rounded-md text-gray"
+        >
           Cancel
         </AtButton>
         <AppButton
           class="text-white bg-blue-500"
           v-if="formData.id"
           @click="deletePayment()"
+          :disabled="isLoading"
         >
           Delete
         </AppButton>
-        <AppButton variant="secondary" v-else @click="onSubmit()"> Guardar </AppButton>
+        <AppButton
+          :processing="isLoading"
+          :disabled="isLoading"
+          variant="secondary"
+          v-else
+          @click="onSubmit()"
+        >
+          Guardar
+        </AppButton>
       </div>
     </template>
   </ElDialog>
