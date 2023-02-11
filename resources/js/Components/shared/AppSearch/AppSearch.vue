@@ -109,7 +109,7 @@ const handleInput = useDebounceFn((searchText) => {
       </template>
     </AtInput>
     <AppSearchFilters
-      v-if="!isVisibleOption('filter')"
+      v-if="!isVisibleOption('filter') && sorts"
       class="flex space-x-4 items-center"
       title="Sort by"
       :is-active="isVisibleOption('sort')"
@@ -139,7 +139,7 @@ const handleInput = useDebounceFn((searchText) => {
     </AppSearchFilters>
     <AppSearchFilters
       class="flex space-x-4 items-center text-body-1"
-      v-if="!isVisibleOption('sort')"
+      v-if="!isVisibleOption('sort') && filters"
       :is-active="isVisibleOption('filter')"
       :fields="['releaseYear', 'programType']"
       :filters="filters"

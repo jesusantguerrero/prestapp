@@ -1,26 +1,28 @@
 <script setup lang="ts">
-import AppLayout from "@/Components/templates/AppLayout.vue";
-import { IClient } from "@/Modules/clients/clientEntity.ts";
-import { IPaginatedData } from "@/utils/constants";
 import { computed, toRefs } from "vue";
-import ClientsTable from "./Partials/ClientsTable.vue";
 import { router } from "@inertiajs/vue3";
 
+import AppLayout from "@/Components/templates/AppLayout.vue";
+import ClientsTable from "./Partials/ClientsTable.vue";
 // @ts-ignore: its my template
 import LoanSectionNav from "@/Pages/Loans/Partials/LoanSectionNav.vue";
 // @ts-ignore: its my template
 import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
-import { useServerSearch } from "@/utils/useServerSearch";
-import { useResponsive } from "@/utils/useResponsive";
 import ButtonCircle from "@/Components/mobile/ButtonCircle.vue";
+
+import { IClient } from "@/Modules/clients/clientEntity";
+import { IPaginatedData } from "@/utils/constants";
+import { IServerSearchData, useServerSearch } from "@/utils/useServerSearch";
+import { useResponsive } from "@/utils/useResponsive";
+import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
 
 const props = withDefaults(
   defineProps<{
     clients: IClient[] | IPaginatedData<IClient>;
     type?: string;
-    serverSearchOptions: Object;
+    serverSearchOptions: IServerSearchData;
   }>(),
   {
     serverSearchOptions: () => ({
@@ -61,6 +63,7 @@ const {
   updateSearch,
   changeSize,
   paginate,
+  reset,
   state: searchState,
 } = useServerSearch(
   serverSearchOptions,
@@ -78,31 +81,7 @@ const { isMobile } = useResponsive();
 <template>
   <AppLayout :title="sectionTitle">
     <template #header>
-      <LoanSectionNav v-if="type == 'lender'">
-        <template #actions>
-          <AppButton
-            variant="inverse-secondary"
-            class="hidden md:flex"
-            @click="router.visit('/loans/create')"
-          >
-            Nuevo prestamo
-          </AppButton>
-          <AppButton
-            variant="secondary"
-            class="hidden md:flex"
-            @click="
-              toggleModal({
-                data: {
-                  type: type,
-                },
-                isOpen: true,
-              })
-            "
-          >
-            Nuevo cliente
-          </AppButton>
-        </template>
-      </LoanSectionNav>
+      <LoanSectionNav v-if="type == 'lender'" />
       <PropertySectionNav v-else>
         <template #actions>
           <AppButton
@@ -142,8 +121,42 @@ const { isMobile } = useResponsive();
         </template>
       </PropertySectionNav>
     </template>
-    <main class="mt-16 bg-white rounded-md">
+    <main class="mt-16">
+      <section class="flex space-x-4">
+        <AppSearch
+          v-model.lazy="searchState.search"
+          class="w-full md:flex"
+          :has-filters="true"
+          @clear="reset()"
+          @blur="executeSearch"
+        />
+        <article class="flex space-x-2" v-if="type == 'lender'">
+          <AppButton
+            variant="inverse-secondary"
+            class="hidden md:flex"
+            @click="router.visit('/loans/create')"
+          >
+            Nuevo prestamo
+          </AppButton>
+          <AppButton
+            variant="secondary"
+            class="hidden md:flex"
+            @click="
+              toggleModal({
+                data: {
+                  type: type,
+                },
+                isOpen: true,
+              })
+            "
+          >
+            Nuevo cliente
+          </AppButton>
+        </article>
+      </section>
+
       <ClientsTable
+        class="bg-white rounded-md"
         :clients="listData"
         :pagination="searchState"
         :total="paginationTotal"
