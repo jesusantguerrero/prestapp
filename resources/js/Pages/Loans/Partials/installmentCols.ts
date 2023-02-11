@@ -13,7 +13,9 @@ export default [
   },
   {
     name: 'amount',
-    label: 'Monto',
+    label: 'Cuota',
+    align: 'right',
+    class: 'text-right',
     minWidth: 100,
     render(row: ILoanInstallment) {
       return formatMoney(row.amount)
@@ -22,6 +24,8 @@ export default [
   {
     name: 'capital',
     label: 'Capital',
+    align: 'right',
+    class: 'text-right',
     minWidth: 100,
     render(row: ILoanInstallment) {
       return formatMoney(row.principal)
@@ -30,12 +34,16 @@ export default [
   {
     name: 'interest',
     label: 'Interés',
+    align: 'right',
+    class: 'text-right',
     minWidth: 100,
     render(row: ILoanInstallment) {
       return h('div', {class: 'text-right'}, [
         h('span', { class: 'text-primary'}, formatMoney(row.interest)),
-         ' + ',
-        h('span', { class: 'text-error'},  formatMoney(row.late_fee))
+        row.late_fee > 0 ? h('span', [
+          ' + ',
+          h('span', { class: 'text-error'},  formatMoney(row.late_fee))
+        ]): null
       ]);
     }
   },
@@ -43,7 +51,7 @@ export default [
     name: 'balance',
     label: 'Balance pendiente',
     width: 200,
-    headerClass: 'text-right',
+    align: 'right',
     class: "text-right",
     render(row: ILoanInstallment) {
       return h('div', {class: 'flex space-x-4 w-full justify-end'}, [

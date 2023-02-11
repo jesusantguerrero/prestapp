@@ -5,6 +5,7 @@ import { ref } from "vue";
 
 import AppButton from "@/Components/shared/AppButton.vue";
 import { useForm } from "@inertiajs/vue3";
+import AppFormField from "@/Components/shared/AppFormField.vue";
 
 const props = defineProps({
   modelValue: Boolean,
@@ -47,25 +48,31 @@ function emitChange(value: boolean) {
 
 <template>
   <ElDialog
-    title="Agregar acuerdo de pago"
+    class="rounded-lg overflow-hidden"
     width="550"
     :model-value="modelValue"
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <div class="">
+    <template #header>
+      <header
+        class="border-b -mx-6 -mt-6 -mr-10 bg-secondary/80 text-white py-4 px-4 flex items-center justify-between"
+      >
+        <h4 class="font-bold text-xl">Agregar acuerdo de pago</h4>
+        <button class="hover:text-danger" @click="close()">
+          <IMdiClose />
+        </button>
+      </header>
+    </template>
+    <div class="-mt-8">
       <section class="flex space-x-4">
-        <AtField class="w-full text-left" label="Concepto">
-          <AtInput
-            type="text"
-            class="form-control"
-            name="invoice-description"
-            id="invoice-description"
-            v-model="formData.reason"
-            rounded
-          />
-        </AtField>
+        <AppFormField
+          class="w-full text-left"
+          label="Concepto"
+          v-model="formData.reason"
+          rounded
+        />
 
-        <AtField class="w-full text-left" label="Monto Recibido">
+        <AppFormField class="w-full text-left" label="Monto Recibido">
           <AtInput
             class="form-control"
             number-format
@@ -73,14 +80,14 @@ function emitChange(value: boolean) {
             rounded
             required
           />
-        </AtField>
+        </AppFormField>
       </section>
 
       <section class="flex space-x-4 justify-between">
-        <AtField label="Fecha de creacion" class="w-full">
+        <AppFormField label="Fecha de creacion" class="w-full">
           <ElDatePicker v-model="formData.date" size="large" class="w-full" rounded />
-        </AtField>
-        <AtField label="Fecha de limite" class="w-full">
+        </AppFormField>
+        <AppFormField label="Fecha de limite" class="w-full">
           <ElDatePicker
             v-model="formData.due"
             size="large"
@@ -88,17 +95,22 @@ function emitChange(value: boolean) {
             class="w-full"
             rounded
           />
-        </AtField>
+        </AppFormField>
       </section>
     </div>
 
     <template #footer>
-      <div class="space-x-2 dialog-footer">
-        <AtButton @click="emitChange(false)" class="bg-white border rounded-md text-gray">
+      <div class="space-x-2 flex justify-end dialog-footer">
+        <AppButton
+          variant="neutral"
+          @click="emitChange(false)"
+          class="bg-white border rounded-md text-gray"
+        >
           Cancel
-        </AtButton>
+        </AppButton>
         <AppButton
           @click="onSubmit()"
+          variant="secondary"
           :disabled="formData.processing"
           :loading="formData.processing"
         >
