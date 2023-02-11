@@ -18,12 +18,21 @@
     v-bind="contactData"
     @saved="onContactSaved"
   />
+
+  <InvoiceFormModal
+    title="Registar gasto de propiedad"
+    v-if="isInvoiceModalOpen"
+    v-model="isInvoiceModalOpen"
+    v-bind="invoiceData"
+    @saved="router.reload()"
+  />
 </template>
 
 <script setup lang="ts">
 import { router } from "@inertiajs/vue3";
 import PaymentFormModal from "@/Pages/Loans/Partials/PaymentFormModal.vue";
 import TransactionModal from "@/Components/shared/TransactionModal.vue";
+import InvoiceFormModal from "@/Pages/Journal/Invoices/Partials/InvoiceFormModal.vue";
 
 import {
   usePaymentModal,
@@ -45,13 +54,21 @@ const onTransactionSaved = () => {
   closeTransactionModal();
 };
 
+//  contact form management
 const {
   isOpen: isContactModalOpen,
   closeModal: closeClientModal,
   data: contactData,
 } = useToggleModal("contact");
+
 const onContactSaved = () => {
   router.reload();
   closeClientModal();
 };
+
+const {
+  isOpen: isInvoiceModalOpen,
+  closeModal: closeInvoiceModal,
+  data: invoiceData,
+} = useToggleModal("invoice");
 </script>

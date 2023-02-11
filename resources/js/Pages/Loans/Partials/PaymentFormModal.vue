@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import { AtButton, AtField, AtInput, AtSimpleSelect } from "atmosphere-ui";
+import { AtButton, AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { format as formatDate } from "date-fns";
 import { ElDatePicker, ElDialog, ElNotification } from "element-plus";
-import { inject, ref, watch, computed } from "vue";
+import { ref, watch, computed } from "vue";
 
 import AppButton from "@/Components/shared/AppButton.vue";
 import PaymentGrid from "./PaymentGrid.vue";
 
 import { MathHelper } from "@/Modules/loans/mathHelper";
 import { paymentMethods } from "@/Modules/loans/constants";
-import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import AccountSelect from "@/Components/shared/Selects/AccountSelect.vue";
 import AppFormField from "@/Components/shared/AppFormField.vue";
 
@@ -18,27 +17,20 @@ const defaultPaymentForm = {
   account_id: "",
 };
 
-const props = defineProps({
-  modelValue: Boolean,
-  defaultConcept: {
-    type: String,
-    required: true,
-  },
-  defaultAmount: {
-    type: Number,
-    required: true,
-  },
-  payment: [Object, null],
-  due: Number,
-  endpoint: {
-    type: String,
-    required: true,
-  },
-  accountsEndpoint: {
-    type: String,
-    default: "/api/accounts",
-  },
-});
+const props = withDefaults(
+  defineProps<{
+    modelValue: boolean;
+    defaultConcept: string;
+    defaultAmount: string;
+    payment: Record<string, any> | null;
+    due: Number;
+    endpoint: string;
+    accountsEndpoint: string;
+  }>(),
+  {
+    accountsEndpoint: "/api/accounts",
+  }
+);
 
 const emit = defineEmits(["update:modelValue", "saved"]);
 
@@ -219,7 +211,6 @@ function emitChange(value) {
 
 <template>
   <ElDialog
-    title="Pagar prestamo"
     class="rounded-lg overflow-hidden"
     @open="setFormData()"
     :model-value="modelValue"
@@ -229,7 +220,7 @@ function emitChange(value) {
       <header
         class="border-b -mx-6 -mt-6 -mr-10 bg-secondary/80 text-white py-4 px-4 flex items-center justify-between"
       >
-        <h4 class="font-bold text-xl">Crear Contacto</h4>
+        <h4 class="font-bold text-xl">{{ title ?? defaultConcept }}</h4>
         <button class="hover:text-danger" @click="close()">
           <IMdiClose />
         </button>

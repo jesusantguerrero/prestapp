@@ -117,9 +117,10 @@ class LoanService {
 
       $results = ReportHelper::getTransactionsByAccount($teamId, ['expected_interest_loans'], $startDate, $endDate);
       $results =  collect($results["expected_interest_loans"] ?? []);
+      
       return [
         "year" => $results->sum('outcome'),
-        "months" => count($results) ? $results : [[]],
+        "months" => $results->values(),
         "avg" => $results->avg('outcome')
       ];
     }

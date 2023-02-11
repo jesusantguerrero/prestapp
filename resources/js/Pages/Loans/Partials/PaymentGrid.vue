@@ -20,7 +20,7 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { AtInput, AtTable } from "atmosphere-ui";
 import { ElCheckbox } from "element-plus";
 import { computed, reactive, toRefs } from "vue"
