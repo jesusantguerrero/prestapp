@@ -2,7 +2,7 @@
 import { useForm } from "@inertiajs/vue3";
 // @ts-ignore
 import { AtInput } from "atmosphere-ui";
-import { watch, ref } from "vue";
+import { watch, ref, computed } from "vue";
 import { ElNotification } from "element-plus";
 import axios from "axios";
 
@@ -11,16 +11,16 @@ import BaseTable from "@/Components/shared/BaseTable.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import PropertySectionNav from "./Partials/LoanSectionNav.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
-import AppFormField from "@/Components/shared/AppFormField.vue";
 import ButtonGroup from "@/Components/ButtonGroup.vue";
 
-import { formatMoney } from "@/utils";
+import { cols } from "./paymentCenterCols";
 import { useSectionFilters } from "@/Modules/_app/useSectionFilters";
 import { router } from "@inertiajs/core";
 import { IClientSaved } from "@/Modules/clients/clientEntity";
 import { ILoan } from "@/Modules/loans/loanEntity";
 import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
 import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
+import PaymentsCard from "@/Components/PaymentsCard.vue";
 
 const props = defineProps<{
   invoices: ILoanInstallment[];
@@ -36,6 +36,9 @@ const formData = useForm({
 });
 
 const { filters, reset } = useSectionFilters(["client", "loan", "search"], router);
+
+const loanLabel = (category: Record<string, any>) =>
+  `Prestamo ${category.id} (${category.amount}) (debt: $${category.debt})`;
 
 const handleChange = (value: boolean, row: Record<string, any>) => {
   row.payment = row.amount_due;
@@ -99,7 +102,6 @@ const sections = {
 };
 
 const currentTab = ref(props.currentTab);
-
 watch(currentTab, () => {
   router.reload({
     data: {
@@ -107,9 +109,9 @@ watch(currentTab, () => {
     },
   });
 });
-
-const loanLabel = (category: Record<string, any>) =>
-  `Prestamo ${category.id} (${category.amount}) (debt: $${category.debt})`;
+const isPayment = computed(() => {
+  return currentTab.value == "payments";
+});
 </script>
 
 <template>
@@ -156,34 +158,8 @@ const loanLabel = (category: Record<string, any>) =>
       <section class="rounded-md bg-base-lvl-3 mt-4">
         <article class="px-4 pb-10">
           <BaseTable
-            :cols="[
-              {
-                name: 'loan_id',
-                label: 'Prestamo #',
-              },
-              {
-                name: 'client.display_name',
-                label: 'Cliente',
-              },
-              {
-                name: 'amount',
-                label: 'Monto del pagare',
-                render(row: Record<string, any>) {
-                  return formatMoney(row.amount);
-                },
-              },
-              {
-                name: 'amount_paid',
-                label: 'Balance',
-                render(row: Record<string, any>) {
-                  return formatMoney(row.amount_due);
-                },
-              },
-              {
-                name: 'payment',
-                label: 'Monto de reembolso',
-              },
-            ]"
+            :layout="isPayment ? 'grid' : 'table'"
+            :cols="cols"
             :table-data="invoices.data"
           >
             <template v-slot:loan_id="{ scope: { row } }">
@@ -206,6 +182,9 @@ const loanLabel = (category: Record<string, any>) =>
               <span>
                 {{ row.amount_due }}
               </span>
+            </template>
+            <template v-slot:card="{ row: payment }">
+              <PaymentsCard v-if="payment" :payment="payment" />
             </template>
           </BaseTable>
         </article>

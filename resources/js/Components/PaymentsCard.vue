@@ -32,7 +32,9 @@ defineProps<Props>();
           {{ formatMoney(payment.amount) }}
         </span>
         <a
-          :href="`/loans/${payment.resource?.id}/payments/${payment.id}/print`"
+          :href="`/loans/${payment.resource?.id ?? payment.payable.loan_id}/payments/${
+            payment.id
+          }/print`"
           target="_blank"
           rel="noopener noreferrer"
           class="text-secondary px-3 py-1 rounded-md border border-base-lvl-1 flex text-sm bg-base-lvl-2"
@@ -42,7 +44,7 @@ defineProps<Props>();
         </a>
       </p>
       <span class="w-full text-center inline-block md:inline">{{
-        payment.resource.client_name
+        payment.resource?.client_name ?? payment.payable.clientName
       }}</span>
     </section>
   </article>
