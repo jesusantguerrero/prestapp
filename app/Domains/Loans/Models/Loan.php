@@ -31,6 +31,10 @@ class Loan extends Transactionable implements IPayableDocument {
     const STATUS_PAID = 'PAID';
     const STATUS_CANCELLED = 'CANCELLED';
 
+    const TYPE_REFINANCE = 'REFINANCE';
+    const TYPE_AGREEMENT = 'AGREEMENT';
+    const TYPE_NORMAL = 'NORMAL';
+
     const ACTIVE_STATUSES = [
         self::STATUS_DISPOSED,
         self::STATUS_PENDING,
@@ -61,6 +65,7 @@ class Loan extends Transactionable implements IPayableDocument {
         'source_type',
         'source_account_id',
         'last_paid_at',
+        'type',
         'cancel_type',
         'cancel_at_debt',
         'cancel_reason',
@@ -74,14 +79,19 @@ class Loan extends Transactionable implements IPayableDocument {
 
     protected static function boot() {
       parent::boot();
-      static::saving(function ($loan) {
+      static::creating(function ($loan) {
           $loan->setResourceAccount('client_account_id', 'expected_payments_loans', $loan->client);
           $loan->setResourceAccount('fees_account_id', 'expected_interest_loans', $loan->client);
           $loan->late_fee_account_id = $loan->fees_account_id;
-          self::checkPayments($loan);
-          self::calculateTotal($loan);
           $loan->client_name = $loan->client->fullName;
           $loan->client_address = $loan->client->address ?? $loan->client->address_details;
+       
+      });
+
+      static::saving(function ($loan) {
+          self::checkPayments($loan);
+          self::calculateTotal($loan);
+          self::checkStatus($loan);
       });
     }
 
@@ -115,6 +125,16 @@ class Loan extends Transactionable implements IPayableDocument {
     public function scopeLate($query)
     {
         return $query->where('payment_status', self::STATUS_LATE);
+    }
+
+    public function scopeAgreement($query)
+    {
+        return $query->where('type', self::TYPE_AGREEMENT);
+    }
+
+    public function scopeRefinance($query)
+    {
+        return $query->where('type', self::TYPE_REFINANCE);
     }
 
     public function scopeActive($query)
@@ -169,6 +189,9 @@ class Loan extends Transactionable implements IPayableDocument {
 
     public static function checkStatus($payable) {
       $debt = $payable->total - $payable->amount_paid;
+      echo $debt . " debt" . "ID: $payable->id" . PHP_EOL;
+      echo $payable->total . " Total" . PHP_EOL;
+      echo $payable->amount_paid . " Paid" . PHP_EOL;
 
       if ($debt <= 0 && !$payable->cancelled_at) {
           $status = self::STATUS_PAID;
@@ -183,7 +206,8 @@ class Loan extends Transactionable implements IPayableDocument {
       } else {
           $status = $payable->payment_status;
       }
-      return $status;
+      echo $status. " -> Tha status " . PHP_EOL;
+      $payable->payment_status = $status;
     }
 
     public function updateStatus() {

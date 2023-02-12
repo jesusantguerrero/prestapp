@@ -50,18 +50,26 @@ class LoanController extends InertiaController
     public function create(Request $request) {
         $teamId = $request->user()->current_team_id;
 
-        try {
-          return inertia($this->templates['create'], [
-              'loans' => null,
-              'clients' => ClientService::ofTeam($teamId),
-          ]);
-        } catch (Exception $e) {
-          return response([
-            "errors" => [
-              "message" => $e->getMessage()
-            ]
-            ], 404);
-        }
+        return inertia($this->templates['create'], [
+            'loans' => null,
+            'clients' => ClientService::ofTeam($teamId),
+        ]);
+    }
+
+    public function refinance(Loan $loan) {
+      $teamId = request()->user()->current_team_id;
+
+      return inertia($this->templates['create'], [
+          'loans' => array_merge(
+          $loan->toArray(),
+          [
+            'sourceAccount' => $loan->sourceAccount,
+            'client' => $loan->client,
+            'installments' => $loan->installments,
+            'paymentDocuments' => $loan->paymentDocuments
+          ]),
+          "stats" => LoanService::getStats($loan)
+      ]);
     }
 
     protected function getEditProps(Request $request, $loan)
@@ -103,7 +111,6 @@ class LoanController extends InertiaController
       $postData = $this->getPostData();
       LoanTransactionsService::close($loan, $postData);
     }
-
 
     // payable document related
     public function pay(Loan $loan) {

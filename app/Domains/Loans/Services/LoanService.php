@@ -4,6 +4,7 @@ namespace App\Domains\Loans\Services;
 
 use App\Domains\Accounting\DTO\ReceiptData;
 use App\Domains\Accounting\Helpers\InvoiceHelper;
+use App\Domains\CRM\Models\Client;
 use App\Domains\Loans\Helpers\LoanValidator;
 use App\Domains\Loans\Jobs\CreateLoanTransaction;
 use App\Domains\Loans\Models\Loan;
@@ -27,6 +28,45 @@ class LoanService {
                 ]));
                 LoanService::createInstallments($loan, $installments);
                 CreateLoanTransaction::dispatch($loan);
+                $loan->client->update([
+                  'status' => Client::STATUS_ACTIVE
+                ]);
+            } catch (Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
+            DB::commit();
+        }
+    }
+
+    public static function refinance(Loan $loan, mixed $loanData) {
+      $unpaidRepayments = $loan->installments()->unpaid()->count();
+      $debt = $loan::query()->sum(DB::raw('total - amount_paid'));
+      if ($unpaidRepayments == 0) {
+          throw new Exception('No pending repayments');
+      } else  {
+            try {
+                DB::beginTransaction();
+               
+                $agreement = Loan::create(array_merge(
+                  $loanData, 
+                  [
+                    "team_id" => $loan->team_id,
+                    "user_id" => $loan->user_id,
+                    "client_id" => $loan->client_id,
+                    'original_loan' => $loan->id,
+                    'type' => Loan::TYPE_REFINANCE,
+                    'status' => Loan::STATUS_DISPOSED,
+                    'source_account_id' => $loan->account_id
+                  ]
+                ));
+                LoanService::cancel($loan, [
+                  'date' => $agreement->date,
+                  'reason' => $loanData['reason'] ?? 'Refinance',
+                  'cancel_debt' => $debt
+                ], 'refinance');
+                LoanService::createInstallments($agreement, $loanData['installments']);
+                CreateLoanTransaction::dispatch($agreement);
             } catch (Exception $e) {
                 DB::rollBack();
                 throw $e;

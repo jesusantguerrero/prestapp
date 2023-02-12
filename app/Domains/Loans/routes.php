@@ -24,8 +24,9 @@ Route::middleware([
     Route::controller(LoanController::class)->group(function () {
       Route::get('/loan-accounts', 'loanSourceAccounts');
       Route::get('/loan-accounts/{id}', 'loanSourceAccounts');
+      Route::get('/loans/{loan}/refinance', 'refinance');
       Route::get('/loans/{loan}/{section}', 'getSection');
-
+      
       Route::post('/loans/{loan}/update-status', 'updateStatus');
       Route::post('/loans/{loan}/pay', 'pay');
       Route::post('/loans/{loan}/payoff', 'payoff');
@@ -50,6 +51,7 @@ Route::middleware([
     // agreements
     Route::controller(LoanAgreementController::class)->group(function () {
         Route::post('/loans/{loan}/agreements', 'store');
+        Route::post('/loans/{loan}/refinance', 'refinance');
     });
 
     Route::resource('/loan-products', LoanProductController::class);
