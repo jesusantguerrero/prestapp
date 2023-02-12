@@ -45,7 +45,7 @@ class Loan extends Transactionable implements IPayableDocument {
         'client_address',
         'date',
         'disbursement_date',
-        'first_installment_date',
+        'first_repayment_date',
         'repayment_count',
         'frequency',
         'amount',

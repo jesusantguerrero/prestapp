@@ -33,7 +33,7 @@ return new class extends Migration
             $table->string('client_name')->nullable();
             $table->string('client_address')->nullable();
             $table->date('date');
-            $table->date('first_installment_date');
+            $table->date('first_repayment_date');
             $table->date('disbursement_date');
             $table->integer('repayment_count');
             $table->enum('frequency', ['WEEKLY', 'BIWEEKLY', 'MONTHLY']);

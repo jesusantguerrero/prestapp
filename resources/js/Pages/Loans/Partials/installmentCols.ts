@@ -1,3 +1,4 @@
+import IconMarkerVue from "@/Components/icons/IconMarker.vue";
 import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
 import { formatMoney , formatDate } from "@/utils";
 import { h } from "vue";
@@ -9,6 +10,21 @@ export default [
     label: 'Fecha',
     render(row: ILoanInstallment) {
       return formatDate(row.due_date)
+    }
+  },
+  {
+    name: 'loan_id',
+    minWidth: 170,
+    label: 'Prestamo',
+    align: 'center',
+    render(row: ILoanInstallment) {
+      return h('div', { class: 'px-4' }, [
+        h('div', { class: 'flex items-start space-x-2 text-primary font-bold'}, [
+          h(IconMarkerVue, { class: 'text-primary font-bold mt-1'}),
+          h('span', row.client?.fullName)
+        ]),
+        h('span',{ class: 'text-body-1 text-sm'}, `${formatMoney(row.total)} (${formatMoney(row.amount)})`)
+      ]);
     }
   },
   {
@@ -62,6 +78,7 @@ export default [
   },
   {
     name: 'actions',
+    align: 'center',
     label: 'Acciones',
   }
 ]

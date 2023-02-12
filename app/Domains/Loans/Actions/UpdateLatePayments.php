@@ -13,7 +13,7 @@ class UpdateLatePayments {
         $lateInstallments = LoanInstallment::whereRaw('loan_installments.amount_paid < loan_installments.amount')
         ->where('due_date', '<', $today)
         ->where('loan_installments.late_fee', '=', 0)
-        ->whereRaw('loans.late_fee', '>',  0)
+        ->where('loans.late_fee', '>',  0)
         ->join('loans', 'loans.id', 'loan_id')
         ->get();
 

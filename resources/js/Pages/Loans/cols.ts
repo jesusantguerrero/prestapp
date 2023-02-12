@@ -25,12 +25,12 @@ export default [
     },
   },
   {
-    name: "first_installment_date",
+    name: "first_repayment_date",
     class: "text-center",
     headerClass: "text-center",
     label: "Fecha de inicio",
     render(row: ILoan) {
-      return formatDate(row.first_installment_date)
+      return formatDate(row.first_repayment_date)
     }
   },
 
