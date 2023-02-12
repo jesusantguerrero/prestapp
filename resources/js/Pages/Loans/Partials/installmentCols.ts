@@ -1,6 +1,7 @@
 import IconMarkerVue from "@/Components/icons/IconMarker.vue";
 import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
 import { formatMoney , formatDate } from "@/utils";
+import { Link } from "@inertiajs/vue3";
 import { h } from "vue";
 
 export default [
@@ -18,7 +19,7 @@ export default [
     label: 'Prestamo',
     align: 'center',
     render(row: ILoanInstallment) {
-      return h('div', { class: 'px-4' }, [
+      return h(Link, { class: 'px-4 cursor-pointer', href: `/loans/${row.loan_id}` }, [
         h('div', { class: 'flex items-start space-x-2 text-primary font-bold'}, [
           h(IconMarkerVue, { class: 'text-primary font-bold mt-1'}),
           h('span', row.client?.fullName)

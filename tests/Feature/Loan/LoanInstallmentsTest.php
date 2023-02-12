@@ -17,6 +17,7 @@ class LoanInstallmentsTest extends LoanBase {
       'account_id' => Account::findByDisplayId('daily_box', $loan->team_id),
       'amount' => $paymentAmount,
       'date' => date('Y-m-d'),
+      'payment_date' => date('Y-m-d'),
       'details' => 'First payment',
       'concept' => 'First payment',
     ]);
@@ -33,6 +34,20 @@ class LoanInstallmentsTest extends LoanBase {
     $response->assertStatus(200);
     $this->assertEquals(0, $repayment->refresh()->amount_due);
     $this->assertEquals(LoanInstallment::STATUS_PAID, $repayment->payment_status);
+  }
+
+  public function testPaymentShouldHaveLoanInfo() {
+    $loan = $this->createLoan();
+    $repayment = $loan->installments->first();
+
+    $this->payRepayment($repayment, $loan, $repayment->amount_due);
+
+    $loan = $loan->refresh();
+    $document = $loan->paymentDocuments()->first();
+
+    $this->assertEquals($document->payment_date, $loan->last_paid_at);
+    $this->assertEquals($document->amount, (double) $document->meta_data['Total pagado']['value']);
+    $this->assertLessThan($loan->total, $document->meta_data['Balance prestamo']['value']);
   }
 
   public function testItShouldHaveAValidPayment() {

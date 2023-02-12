@@ -55,7 +55,7 @@ const onMultiplePayment = () => {
     id: undefined,
     documents: props.loans.installments
       .map((installment: ILoanInstallment) => ({
-        name: `Pago ${installment.id}`,
+        name: `Cuota #${installment.number}`,
         ...installment,
         // @ts-ignore solve backend sending decimals as strings
         amount: parseFloat(installment.amount_due),

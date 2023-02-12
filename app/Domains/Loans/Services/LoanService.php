@@ -132,26 +132,24 @@ class LoanService {
       $documentData['total_in_words'] = InvoiceHelper::numberToWords($document->amount);
 
       $description = $document->payments->reduce(function ($description, $payment) {
-        return $description . "Pagaré {$payment->payable->number} ";
+        $concept = $payment->payable->amount_due > 0 ? "Abono" : "Pago";
+
+        return $description . "$concept cuota {$payment->payable->number} ";
       });
 
       $receipt = new ReceiptData(
         Setting::getBySection($loan->team_id, 'business'),
         $loan->client,
         $description,
-        $document->payments->map(function ($payment) {
+        $document->payments->map(function ($payment) use ($loan) {
+          $concept = $payment->payable->amount_due > 0 ? "Abono" : "Pago";
           return [
-            "concept" => "Pagaré {$payment->payable->number}",
+            "concept" => "$concept cuota {$payment->payable->number} de {$loan->repayment_count}",
             "amount" => $payment->amount
           ];
         }),
         $document->amount,
-        [
-          "Fecha ultima cuota pagada: 0",
-          "Cuotas atrasadas: 0",
-          "Total pagado: 0",
-          "Balance del prestamo: 0"
-        ],
+        $document->meta_data,
         "**Verifique su recibo valor no reembolsable**"
       );
 

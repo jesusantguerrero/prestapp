@@ -2,6 +2,7 @@
 import { computed, toRefs } from "vue";
 import PrintContainer from "./Partials/PrintTemplate.vue";
 import { formatDate, formatMoney } from "@/utils";
+import MetaLine from "./Partials/MetaLine.vue";
 
 interface Props {
   company: Object;
@@ -81,13 +82,19 @@ const businessAddress = computed(() => {
             </template>
             <tr class="font-bold">
               <td class="pt-4">Total a pagar</td>
-              <td class="pt-4">{{ formatMoney(receipt.total) }}</td>
+              <td class="pt-4 text-right">{{ formatMoney(receipt.total) }}</td>
             </tr>
           </tbody>
         </table>
       </main>
       <footer class="footer border-t border-dashed py-2 mt-2">
-        <p class="text-sm" v-for="note in receipt.footNotes">{{ note }}</p>
+        <MetaLine
+          class="text-sm flex justify-between"
+          v-for="(note, noteTitle) in receipt.footNotes"
+          :label="noteTitle"
+          :value="note.value"
+          :type="note.type"
+        />
       </footer>
       <footer class="footer border-t border-dashed py-1">
         <small> {{ receipt.footNote }}</small>
