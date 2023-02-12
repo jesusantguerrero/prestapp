@@ -1,19 +1,3 @@
-<template>
-  <button
-    type="button"
-    class="inline-flex items-center px-3 py-3 text-sm font-medium leading-4 transition border-b-2 border-transparent hover:bg-base-lvl-2 hover:text-body/80 focus:outline-none"
-    :class="[...tabClasses, isActive() ? selectedClass : 'text-body']"
-    v-bind="$attrs"
-  >
-    <slot name="icon">
-      <i class="fa mr-2" :class="icon" v-if="icon" />
-    </slot>
-    <slot>
-      {{ label }}
-    </slot>
-  </button>
-</template>
-
 <script setup lang="ts">
 import { computed } from "vue";
 
@@ -28,15 +12,14 @@ const props = defineProps({
   value: {
     type: String,
   },
+  currentValue: {
+    type: String,
+  },
   label: {
     type: String,
   },
   isActiveFunction: {
     type: Function,
-  },
-  isSelected: {
-    type: Boolean,
-    default: false,
   },
   tabClass: {
     type: String,
@@ -44,22 +27,33 @@ const props = defineProps({
   },
   selectedClass: {
     type: String,
-    default: "border-b-2 border-primary text-primary",
+    default: "border-primary text-primary",
   },
 });
 
-const tabClasses = computed(() => {
-  const activeStateClass = props.keepActiveState;
-
-  return [activeStateClass];
-});
-
-const isActive = () => {
-  const regex = new RegExp(props.value);
+const isActive = computed(() => {
+  const regex = new RegExp(props.value ?? "");
   const currentPath = window.location.pathname;
 
-  return props.isActiveFunction
-    ? props.isActiveFunction(currentPath)
-    : regex.test(currentPath);
-};
+  if (props.value?.startsWith("/")) {
+    return props.isActiveFunction
+      ? props.isActiveFunction(currentPath)
+      : regex.test(currentPath);
+  }
+  return props.value == props.currentValue;
+});
 </script>
+
+<template>
+  <button
+    type="button"
+    class="inline-flex items-center px-3 py-3 text-sm leading-4 transition border-b-2 hover:bg-base-lvl-2 hover:text-body/80 focus:outline-none active:outline-none"
+    :class="[isActive ? selectedClass : 'text-body font-medium border-transparent']"
+    v-bind="$attrs"
+  >
+    <slot name="icon">
+      <i class="fa mr-2" :class="icon" v-if="icon" />
+    </slot>
+    <slot> {{ label }}</slot>
+  </button>
+</template>

@@ -1,25 +1,19 @@
 <script setup lang="ts">
 import { router } from "@inertiajs/vue3";
-import { computed } from "vue";
 import SectionNavTab from "./SectionNavTab.vue";
 
-const props = defineProps<{
-  sections: Record<string, any>;
-  modelValue?: string;
-  selectedClass?: string;
-}>();
+withDefaults(
+  defineProps<{
+    modelValue?: string;
+    sections: Record<string, any>;
+    selectedClass?: string;
+  }>(),
+  {
+    selectedClass: "border-primary text-primary",
+  }
+);
 
 const emit = defineEmits(["update:modelValue"]);
-
-const currentPath = computed(() => {
-  return document?.location?.pathname;
-});
-
-const isSelected = (section: any, sectionValueName: string | number) => {
-  const sectionName = section.url || section.value || sectionValueName;
-  const value = props.modelValue || currentPath.value;
-  return sectionName == value;
-};
 
 const handleClick = (section: any, sectionName: string | number) => {
   if (section.url) {
@@ -35,9 +29,9 @@ const handleClick = (section: any, sectionName: string | number) => {
     <SectionNavTab
       v-for="(section, sectionName) in sections"
       @click="handleClick(section, sectionName)"
-      :is-selected="isSelected(section, sectionName)"
-      :key="section.url"
-      :value="section.url"
+      :current-value="modelValue"
+      :key="section.url ?? section.value ?? sectionName"
+      :value="section.url ?? section.value ?? sectionName"
       :is-active-function="section.isActiveFunction"
       :selected-class="selectedClass"
       :label="section.label"
