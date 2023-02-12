@@ -182,7 +182,7 @@ function createPayment() {
     })
     .catch((err) => {
       console.log(err);
-      notify({
+      ElNotification({
         type: "error",
         message: err.response ? err.response.data.status.message : "Ha ocurrido un error",
       });
