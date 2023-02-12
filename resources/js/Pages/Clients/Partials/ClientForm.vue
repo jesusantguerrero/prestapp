@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { router } from "@inertiajs/core";
 // @ts-ignore
 import { AtTextarea } from "atmosphere-ui";
 

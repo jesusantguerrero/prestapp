@@ -4,8 +4,10 @@ namespace App\Domains\Loans\Models;
 
 use App\Domains\CRM\Models\Client;
 use App\Domains\Loans\Enums\LoanInvoiceTypes;
+use App\Domains\Loans\Helpers\MetaLine;
 use App\Models\User;
 use Insane\Journal\Models\Core\Account;
+use Insane\Journal\Models\Core\PaymentDocument;
 use Insane\Journal\Models\Core\Transaction;
 use Insane\Journal\Models\Invoice\Invoice;
 use Insane\Journal\Traits\HasPaymentDocuments;
@@ -45,10 +47,11 @@ class Loan extends Transactionable implements IPayableDocument {
         'client_address',
         'date',
         'disbursement_date',
-        'first_installment_date',
+        'first_repayment_date',
         'repayment_count',
         'frequency',
         'amount',
+        'amount_paid',
         'interest_rate',
         'grace_days',
         'late_fee',
@@ -57,6 +60,7 @@ class Loan extends Transactionable implements IPayableDocument {
         'category_id',
         'source_type',
         'source_account_id',
+        'last_paid_at',
         'cancel_type',
         'cancel_at_debt',
         'cancel_reason',
@@ -74,8 +78,8 @@ class Loan extends Transactionable implements IPayableDocument {
           $loan->setResourceAccount('client_account_id', 'expected_payments_loans', $loan->client);
           $loan->setResourceAccount('fees_account_id', 'expected_interest_loans', $loan->client);
           $loan->late_fee_account_id = $loan->fees_account_id;
-          self::calculateTotal($loan);
           self::checkPayments($loan);
+          self::calculateTotal($loan);
           $loan->client_name = $loan->client->fullName;
           $loan->client_address = $loan->client->address ?? $loan->client->address_details;
       });
@@ -199,15 +203,19 @@ class Loan extends Transactionable implements IPayableDocument {
 
     public function prePaymentMeta($paymentData): array {
       return  [[
-        "Fecha ultima cuota pagada" => $this->last_paid_at ?? '',
+        "Fecha ultima cuota pagada" => new MetaLine($this->last_paid_at ?? '', 'date'),
       ]];
     }
 
-    public function postPaymentMeta($paymentDoc): array {
+    public function postPaymentMeta(PaymentDocument $document): array {
+      $this->updateQuietly([
+        'last_paid_at' => $document->payment_date
+      ]);
+
       return  [[
-        "Cuotas atrasadas" =>  $this->installments()->late()->count(),
-        "Total pagado" => $this->amount_paid,
-        "Balance del prestamo" => $this->amount_due
+        "Cuotas atrasadas" => new MetaLine($this->installments()->late()->count()),
+        "Total pagado" => new MetaLine($this->amount_paid, 'money'),
+        "Balance prestamo" => new MetaLine($this->amount_due, 'money')
       ]];
     }
 

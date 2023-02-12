@@ -2,8 +2,6 @@
 import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
 
 import { onMounted, ref, computed } from "vue";
-import cols from "./cols";
-import BaseTable from "@/Components/shared/BaseTable.vue";
 import { getRangeParams } from "@/utils";
 import InstallmentTable from "./Partials/InstallmentTable.vue";
 
@@ -76,7 +74,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <WelcomeWidget class="mt-4" :message="title">
+  <WelcomeWidget :message="title" borderless :rounded="false">
+    <template #title>
+      <slot name="title" />
+    </template>
     <template #actions>
       <section class="flex text-xs space-x-2 text-body-1">
         <span

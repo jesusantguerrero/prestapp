@@ -65,8 +65,8 @@ class InertiaController extends Controller {
         $postData['user_id'] = $request->user()->id;
         $postData['team_id'] = $request->user()->current_team_id;
 
+        $this->validate($request, $this->getValidationRules($postData));
         try {
-          $this->validate($request, $this->getValidationRules($postData));
           $resource = $this->createResource($request, $postData);
 
           $this->afterSave($postData, $resource);
@@ -77,9 +77,7 @@ class InertiaController extends Controller {
           }
         } catch (Exception $e) {
           if ($this->responseType == 'inertia') {
-            return redirect()->back()->withErrors([
-              "default" => $e->getMessage()
-            ]);
+            return redirect()->back()->withErrors($e->getMessage());
           } else {
             return $response->setContent($resource);
           }

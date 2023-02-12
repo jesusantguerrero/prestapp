@@ -20,9 +20,9 @@ class SettingsController extends Controller
     {
 
         return Inertia::render('Settings/Index', [
-            // "taxesDefinition" => Tax::where('team_id', $request->user()->current_team_id)->get(),
-            // "tabName" =>  $tabName,
-            // "settingData" => Setting::getBySection($request->user()->current_team_id, $tabName)
+            "taxesDefinition" => Tax::where('team_id', $request->user()->current_team_id)->get(),
+            "tabName" =>  $tabName,
+            "settingData" => Setting::getBySection($request->user()->current_team_id, $tabName)
         ]);
     }
 

@@ -119,7 +119,7 @@ class LoanController extends InertiaController
 
     public function printPaymentDocument(Loan $loan, PaymentDocument $paymentDocument) {
       $receipt = LoanService::getReceipt($loan, $paymentDocument);
-      $template = request()->query('type') ?? 'Receipt';
+      $template = request()->query('type') ?? 'BareTicket';
 
       return inertia("Prints/$template", [
         "receipt" => $receipt,

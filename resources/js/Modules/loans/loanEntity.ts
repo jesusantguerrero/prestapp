@@ -13,7 +13,7 @@ export interface ILoan {
     // payment details
     frequency: string,
     disbursement_date: string | Date;
-    first_installment_date: string | Date;
+    first_repayment_date: string | Date;
     grace_days: number;
     payment_status: string;
 }

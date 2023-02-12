@@ -18,9 +18,11 @@ import { ILoan } from "@/Modules/loans/loanEntity";
 import { useToggle } from "@vueuse/shared";
 import AgreementFormModal from "./AgreementFormModal.vue";
 import { formatDate } from "@/utils";
+import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
+import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
 
 const [isAgreementModalOpen, toggleAgreementModal] = useToggle();
-
+const { openModal: openPaymentModal } = usePaymentModal();
 interface ILoanStats {
   outstandingFees: number;
   outstandingInterest: number;
@@ -47,30 +49,36 @@ const tabs = {
 };
 
 const onMultiplePayment = () => {
-  selectedPayment.value = {
+  const paymentData = {
     // @ts-ignore solve backend sending decimals as strings
     amount: 0,
     id: undefined,
     documents: props.loans.installments
-      .map((installment) => ({
-        name: `Pago ${installment.id}`,
+      .map((installment: ILoanInstallment) => ({
+        name: `Cuota #${installment.number}`,
         ...installment,
         // @ts-ignore solve backend sending decimals as strings
         amount: parseFloat(installment.amount_due),
         payment: 0,
       }))
       .filter((doc) => {
-        console.log(doc);
         // @ts-ignore solve backend sending decimals as strings
         return parseFloat(doc.amount || 0);
       }),
   };
 
-  isPaymentModalOpen.value = true;
-};
-
-const onUpdateStatus = () => {
-  router.post(`/loans/${props.loans.id}/update-status`);
+  openPaymentModal({
+    data: {
+      title: `Pagar cuotas multiples`,
+      endpoint: `/loans/${props.loans.id}/pay`,
+      due: paymentData.amount,
+      account_id: "",
+      payment: paymentData,
+      defaultConcept: "Pago cuotas multiples",
+      accountsEndpoint: "/loan-accounts",
+    },
+    isOpen: true,
+  });
 };
 </script>
 

@@ -1,5 +1,7 @@
+import IconMarkerVue from "@/Components/icons/IconMarker.vue";
 import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
 import { formatMoney , formatDate } from "@/utils";
+import { Link } from "@inertiajs/vue3";
 import { h } from "vue";
 
 export default [
@@ -12,8 +14,25 @@ export default [
     }
   },
   {
+    name: 'loan_id',
+    minWidth: 170,
+    label: 'Prestamo',
+    align: 'center',
+    render(row: ILoanInstallment) {
+      return h(Link, { class: 'px-4 cursor-pointer', href: `/loans/${row.loan_id}` }, [
+        h('div', { class: 'flex items-start space-x-2 text-primary font-bold'}, [
+          h(IconMarkerVue, { class: 'text-primary font-bold mt-1'}),
+          h('span', row.client?.fullName)
+        ]),
+        h('span',{ class: 'text-body-1 text-sm'}, `${formatMoney(row.total)} (${formatMoney(row.amount)})`)
+      ]);
+    }
+  },
+  {
     name: 'amount',
-    label: 'Monto',
+    label: 'Cuota',
+    align: 'right',
+    class: 'text-right',
     minWidth: 100,
     render(row: ILoanInstallment) {
       return formatMoney(row.amount)
@@ -22,6 +41,8 @@ export default [
   {
     name: 'capital',
     label: 'Capital',
+    align: 'right',
+    class: 'text-right',
     minWidth: 100,
     render(row: ILoanInstallment) {
       return formatMoney(row.principal)
@@ -30,12 +51,16 @@ export default [
   {
     name: 'interest',
     label: 'Interés',
+    align: 'right',
+    class: 'text-right',
     minWidth: 100,
     render(row: ILoanInstallment) {
       return h('div', {class: 'text-right'}, [
         h('span', { class: 'text-primary'}, formatMoney(row.interest)),
-         ' + ',
-        h('span', { class: 'text-error'},  formatMoney(row.late_fee))
+        row.late_fee > 0 ? h('span', [
+          ' + ',
+          h('span', { class: 'text-error'},  formatMoney(row.late_fee))
+        ]): null
       ]);
     }
   },
@@ -43,7 +68,7 @@ export default [
     name: 'balance',
     label: 'Balance pendiente',
     width: 200,
-    headerClass: 'text-right',
+    align: 'right',
     class: "text-right",
     render(row: ILoanInstallment) {
       return h('div', {class: 'flex space-x-4 w-full justify-end'}, [
@@ -54,6 +79,7 @@ export default [
   },
   {
     name: 'actions',
+    align: 'center',
     label: 'Acciones',
   }
 ]

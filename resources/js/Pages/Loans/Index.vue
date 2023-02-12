@@ -11,7 +11,7 @@ import LoanSectionNav from "./Partials/LoanSectionNav.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 // @ts-ignore
 import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
-import { useServerSearch } from "@/utils/useServerSearch";
+import { IServerSearchData, useServerSearch } from "@/utils/useServerSearch";
 
 import { ILoan } from "@/Modules/loans/loanEntity";
 import cols from "./cols";
@@ -28,7 +28,7 @@ interface IPaginatedData {
 
 const props = defineProps<{
   loans: ILoan[] | IPaginatedData;
-  serverSearchOptions: Object;
+  serverSearchOptions: IServerSearchData;
 }>();
 
 const listData = computed(() => {
@@ -72,8 +72,6 @@ const { isMobile } = useResponsive();
       <section class="flex space-x-4">
         <AppSearch
           v-model.lazy="state.search"
-          v-model:filters="state.filters"
-          v-model:sorts="state.sorts"
           class="w-full md:flex"
           :has-filters="true"
           @clear="reset()"

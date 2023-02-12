@@ -2,13 +2,12 @@
 import { router } from "@inertiajs/core";
 // @ts-ignore
 import { AtButton, AtField, AtInput, AtSimpleSelect } from "atmosphere-ui";
-import { ref, reactive, computed, watch, watchEffect } from "vue";
+import { ref, reactive, computed, watch, watchEffect, nextTick } from "vue";
 import { addMonths } from "date-fns";
 // @ts-ignore
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import InstallmentTable from "./Partials/InstallmentTable.vue";
-import IconCoins from "@/Components/icons/IconCoins.vue";
 // @ts-ignore: its my template
 import LoanSectionNav from "./Partials/LoanSectionNav.vue";
 
@@ -22,6 +21,7 @@ import FormSection from "../Rents/Partials/FormSection.vue";
 import LoanSummary from "./Partials/LoanSummary.vue";
 import AccountSelect from "@/Components/shared/Selects/AccountSelect.vue";
 import AppFormField from "@/Components/shared/AppFormField.vue";
+import { getNextDate } from "@/Modules/loans/nextDate";
 
 interface Props {
   loans: ILoan;
@@ -39,7 +39,7 @@ const loanForm = reactive<Record<string, any>>({
   interest_rate: 0,
   frequency: "MONTHLY",
   disbursement_date: new Date(),
-  first_installment_date: addMonths(new Date(), 1),
+  first_repayment_date: addMonths(new Date(), 1),
   // advanced
   grace_days: 0,
   late_fee: 0,
@@ -65,6 +65,18 @@ watch(
   { immediate: true, deep: true }
 );
 
+watchEffect(() => {
+  if (loanForm.disbursement_date && loanForm.frequency) {
+    nextTick(() => {
+      loanForm.first_repayment_date = getNextDate(
+        loanForm.disbursement_date,
+        loanForm.frequency,
+        false
+      );
+    });
+  }
+});
+
 const formTitle = computed(() => {
   return props.loans?.id ? `Prestamo ${props.loans.client?.fullName}` : "Crear Prestamo";
 });
@@ -76,14 +88,14 @@ const saveButtonLabel = computed(() => {
 const installments = ref(null);
 
 watchEffect(() => {
-  const date = formatDate(loanForm.first_installment_date, "yyyy-MM-dd");
+  const date = formatDate(loanForm.first_repayment_date, "yyyy-MM-dd");
 
   if (loanForm.amount && loanForm.interest_rate && loanForm.repayment_count) {
     installments.value = generateInstallments({
       interest_rate: loanForm.interest_rate,
       amount: loanForm.amount,
       repayment_count: loanForm.repayment_count,
-      first_installment_date: date,
+      first_repayment_date: date,
       frequency: loanForm.frequency,
     });
   }
@@ -99,7 +111,7 @@ const onSubmit = () => {
     ...loanForm,
     date: formatDate(loanForm.disbursement_date, "yyyy-MM-dd"),
     disbursement_date: formatDate(loanForm.disbursement_date, "yyyy-MM-dd"),
-    first_installment_date: formatDate(loanForm.first_installment_date, "y-M-d"),
+    first_repayment_date: formatDate(loanForm.first_repayment_date, "y-M-d"),
     client_id: loanForm.client.id,
     source_type: loanForm.sourceType?.id,
     source_account_id: loanForm.sourceAccount?.id,
@@ -145,7 +157,7 @@ const goToList = () => {
     <main class="flex flex-col md:flex-row w-full pb-10 mt-24 md:mt-16 md:space-x-4">
       <section class="w-full md:w-8/12 p-4 bg-white rounded-md shadow-md text-body-1">
         <FormSection title="Datos del cliente" class="w-full" section-class="w-full">
-          <AppFormField label="Cliente" class="w-full">
+          <AppFormField label="Cliente" class="w-full" required>
             <BaseSelect
               v-model="loanForm.client"
               track-by="id"
@@ -153,15 +165,16 @@ const goToList = () => {
               placeholder="Selecciona un cliente"
               label="display_name"
               class="w-full"
+              required
             />
           </AppFormField>
         </FormSection>
         <FormSection title="Terminos de prestamo" section-class="w-full">
           <section class="flex flex-col md:flex-row md:space-x-4">
-            <AppFormField label="Monto a prestar" class="w-full">
+            <AppFormField label="Monto a prestar" class="w-full" required>
               <AtInput v-model="loanForm.amount" number-format rounded />
             </AppFormField>
-            <AppFormField label="Interés mensual" class="w-full">
+            <AppFormField label="Interés mensual" class="w-full" required>
               <AtInput v-model="loanForm.interest_rate" number-format max="100" rounded>
                 <template #suffix>
                   <div>
@@ -170,26 +183,26 @@ const goToList = () => {
                 </template>
               </AtInput>
             </AppFormField>
-            <AppFormField label="Cuotas" class="w-full">
+            <AppFormField label="Cuotas" class="w-full" required>
               <AtInput v-model="loanForm.repayment_count" rounded />
             </AppFormField>
           </section>
           <section class="flex flex-col md:flex-row md:space-x-4">
-            <AppFormField label="Fecha de desembolso">
+            <AppFormField label="Fecha de desembolso" required>
               <ElDatePicker
                 v-model="loanForm.disbursement_date"
                 size="large"
                 class="w-full"
               />
             </AppFormField>
-            <AppFormField label="Fecha de primer pago">
+            <AppFormField label="Fecha de primer pago" required>
               <ElDatePicker
-                v-model="loanForm.first_installment_date"
+                v-model="loanForm.first_repayment_date"
                 size="large"
                 class="w-full"
               />
             </AppFormField>
-            <AppFormField label="Frecuencia" class="w-full">
+            <AppFormField label="Frecuencia" class="w-full" required>
               <AtSimpleSelect :options="loanFrequencies" v-model="loanForm.frequency" />
             </AppFormField>
           </section>
@@ -243,7 +256,12 @@ const goToList = () => {
                 placeholder="Selecciona una cartera"
               />
             </AtField> -->
-            <AppFormField label="Cuenta origen" field="sourceAccount" class="w-full">
+            <AppFormField
+              label="Cuenta origen"
+              field="sourceAccount"
+              class="w-full"
+              required
+            >
               <AccountSelect v-model="loanForm.sourceAccount" />
             </AppFormField>
           </section>

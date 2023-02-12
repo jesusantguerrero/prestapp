@@ -15,9 +15,12 @@ interface Props {
   actionLabel?: string;
   actionLink?: string;
   sectionClass?: string;
+  borderless?: boolean;
+  rounded: boolean;
 }
 
 withDefaults(defineProps<Props>(), {
+  rounded: true,
   sectionClass:
     "flex flex-col md:flex-row py-4 space-y-2 md:space-y-0 md:space-x-4 divide-x-2 rounded-md divide-base-lvl-2 bg-base-lvl-3",
 });
@@ -25,12 +28,15 @@ withDefaults(defineProps<Props>(), {
 
 <template>
   <article
-    class="px-5 pt-3 transition border divide-y rounded-lg divide-base border-base bg-base-lvl-3"
+    class="px-5 pt-3 transition divide-y divide-base bg-base-lvl-3"
+    :class="[!borderless && 'border-base border', rounded && 'rounded-lg ']"
   >
-    <section class="items-center pb-2 justify-between flex">
-      <h1 class="font-bold text-body-1">
-        {{ message }} <span class="text-primary">{{ username }}</span>
-      </h1>
+    <section class="items-center justify-between flex" :class="!$slots.title && 'pb-2'">
+      <slot name="title">
+        <h1 class="font-bold text-body-1">
+          {{ message }} <span class="text-primary">{{ username }}</span>
+        </h1>
+      </slot>
 
       <div>
         <slot name="actions">

@@ -12,6 +12,7 @@ import PaymentsCard from "@/Components/PaymentsCard.vue";
 import { ref } from "vue";
 import { config } from "@/config";
 import { formatDate } from "@/utils";
+import RepaymentWidget from "./Partials/RepaymentWidget.vue";
 
 const props = defineProps({
   revenue: {
@@ -189,8 +190,10 @@ const summaryType = ref("cash-flow");
             />
           </template>
         </WelcomeWidget>
-        <NextPaymentsWidget />
+
+        <RepaymentWidget class="mt-4" />
       </article>
+
       <article class="order-1 space-y-5 lg:w-5/12 lg:order-2">
         <AtBackgroundIconCard
           class="text-white bg-secondary h-36"
@@ -213,6 +216,7 @@ const summaryType = ref("cash-flow");
           method="back"
           default-range="7D"
           date-field="payment_date"
+          class="rounded-md border"
           :ranges="[
             { label: '1D', value: [1, 1] },
             { label: '7D', value: [7, 0] },
@@ -221,7 +225,7 @@ const summaryType = ref("cash-flow");
           ]"
         >
           <template v-slot:content="{ list }">
-            <div class="pt-4">
+            <div class="py-4 my-2 h-[380px] overflow-auto ic-scroller">
               <PaymentsCard v-for="payment in list" :payment="payment" />
             </div>
           </template>

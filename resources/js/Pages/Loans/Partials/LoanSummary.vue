@@ -15,7 +15,11 @@ interface Props {
   totalDebt: number;
 }
 
-defineProps<Props>();
+withDefaults(defineProps<Props>(), {
+  payment: 0,
+  totalDebt: 0,
+  totalInterest: 0,
+});
 
 const containerRef = ref();
 const { width } = useElementBounding(containerRef);

@@ -200,24 +200,6 @@ const isPickerOpen = ref(false);
         <div class="mt-2">
           <slot name="content">
             <div>
-              <header v-if="fullHeight" class="flex justify-between py-3 px-4">
-                <CategoryPicker
-                  class="w-full"
-                  v-model="form[categoryField]"
-                  v-model:isPickerOpen="isPickerOpen"
-                  :placeholder="`Choose ${categoryLabel}`"
-                  :options="categoryOptions"
-                />
-
-                <AtField v-if="!isPickerOpen">
-                  <AtInput :number-format="true" v-model="form.total">
-                    <template #prefix>
-                      <span class="flex items-center pl-2"> RD$ </span>
-                    </template>
-                  </AtInput>
-                </AtField>
-              </header>
-
               <div class="md:flex md:space-x-2 md:px-0 px-4">
                 <AppFormField
                   label="Fecha"

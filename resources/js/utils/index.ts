@@ -45,9 +45,12 @@ export const dateToIso = (date: Date | null) => {
 };
 
 
-export const getRangeParams = (field: string, range: number[], direction = 'back') => {
+export const getRangeParams = (field: string, range: number[]|null, direction = 'back') => {
     const date = new Date();
     const method = direction == 'back' ? subDays : addDays;
+    
+    if (!range) return '';
+    
     const rangeString = range
       .map((dateCount) => dateToIso(method(date, dateCount)))
       .join("~");

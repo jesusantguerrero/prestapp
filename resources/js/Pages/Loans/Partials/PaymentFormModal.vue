@@ -2,7 +2,7 @@
 import { AtButton, AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { format as formatDate } from "date-fns";
 import { ElDatePicker, ElDialog, ElNotification } from "element-plus";
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, nextTick } from "vue";
 
 import AppButton from "@/Components/shared/AppButton.vue";
 import PaymentGrid from "./PaymentGrid.vue";
@@ -25,6 +25,7 @@ const props = withDefaults(
     payment: Record<string, any> | null;
     due: Number;
     endpoint: string;
+    title?: string;
     accountsEndpoint: string;
   }>(),
   {
@@ -48,6 +49,7 @@ function generatePaymentData() {
     payment_method_id: paymentMethods[0].id,
     paymentMethod: paymentMethods[0],
     payment_date: new Date(),
+    documents: props.payment?.documents ?? [],
     ...(props.payment?.id ? props.payment : {}),
   };
 }
@@ -88,9 +90,24 @@ watch(
 );
 
 const documentTotal = computed(() => {
-  return paymentForm.value.documents?.reduce((total, payment) => {
-    return MathHelper.sum(total, payment.payment);
-  }, 0);
+  return paymentForm.value.documents?.reduce(
+    (total: number, payment: Record<string, any>) => {
+      return MathHelper.sum(total, payment.payment);
+    },
+    0
+  );
+});
+
+watch(
+  () => documentTotal.value,
+  (total) => {
+    nextTick(() => {
+      paymentForm.value.amount = total;
+    });
+  }
+);
+const isMultiple = computed(() => {
+  return paymentForm.value?.documents?.length;
 });
 
 const isLoading = ref(false);
@@ -165,7 +182,7 @@ function createPayment() {
     })
     .catch((err) => {
       console.log(err);
-      notify({
+      ElNotification({
         type: "error",
         message: err.response ? err.response.data.status.message : "Ha ocurrido un error",
       });
@@ -245,11 +262,12 @@ function emitChange(value) {
           <AtInput
             class="form-control"
             number-format
-            v-model="paymentForm.amount"
+            @update:model-value="paymentForm.amount = $event"
+            :model-value="paymentForm.amount"
             rounded
+            :disabled="documentTotal"
             required
           />
-          {{ documentTotal }}
         </AppFormField>
       </section>
 
@@ -293,14 +311,14 @@ function emitChange(value) {
       </AppFormField>
 
       <PaymentGrid
-        v-if="paymentForm.documents"
+        v-if="isMultiple"
         :table-data="paymentForm.documents"
         :available-taxes="[]"
       />
     </div>
 
     <template #footer>
-      <div class="space-x-2 dialog-footer">
+      <div class="space-x-2 dialog-footer flex justify-end">
         <AtButton
           :disabled="isLoading"
           @click="emitChange(false)"
