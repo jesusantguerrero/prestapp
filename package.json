@@ -27,6 +27,7 @@
         "vue": "^3.2.47"
     },
     "dependencies": {
+        "@formkit/auto-animate": "^1.0.0-beta.6",
         "@headlessui/vue": "^1.7.9",
         "@inertiajs/vue3": "^1.0.0",
         "apexcharts": "^3.37.0",

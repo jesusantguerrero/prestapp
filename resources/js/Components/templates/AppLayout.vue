@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
 import { Head, Link } from "@inertiajs/vue3";
 // @ts-ignore
@@ -96,6 +96,15 @@ const handleActions = (action) => {
   // };
   // actions[action]?.handler();
 };
+
+function refresh() {
+  nextTick(() => {
+    router.reload({
+      preserveScroll: true,
+      preserveState: true,
+    });
+  });
+}
 </script>
 
 <template>
@@ -110,7 +119,7 @@ const handleActions = (action) => {
         >
           <div class="flex items-center">
             <AppButton @click="$emit('back')" v-if="showBackButton">
-              <IconBack />
+              <IMdiChevronLeft />
             </AppButton>
             <h4
               :class="[showBackButton ? 'lg:ml-2' : 'lg:ml-6']"
@@ -242,7 +251,7 @@ const handleActions = (action) => {
         <MobileMenuBar :menu="mobileMenu" @action="handleActions" />
       </template>
     </AppShell>
-    <TheGlobals />
+    <TheGlobals @reload="refresh" />
   </div>
 </template>
 

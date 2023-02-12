@@ -4,7 +4,7 @@ import FastAccessOptions from "@/Pages/Dashboard/Partials/FastAccessOptions.vue"
 </script>
 
 <template>
-  <JetDropdown align="right" width="500" v-model:open="isOpen">
+  <JetDropdown align="right" width="500">
     <template #trigger>
       <slot> </slot>
     </template>

@@ -12,12 +12,13 @@ interface Props {
   show: boolean;
   maxWidth?: string;
   closeable?: boolean;
-  formData: Object | null;
+  formData?: Object | null;
   type?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   type: "lender",
+  formData: null,
 });
 
 const emit = defineEmits(["close", "saved", "update:show"]);
