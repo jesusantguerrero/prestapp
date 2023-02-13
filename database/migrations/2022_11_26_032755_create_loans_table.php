@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('team_id');
             $table->foreignId('user_id');
             $table->foreignId('client_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('original_loan_id')->nullable();
             // accounts
             $table->foreignId('category_id')->nullable();
             $table->foreignId('source_account_id')->nullable();

@@ -22,8 +22,8 @@ class LoanController extends InertiaController
         $this->searchable = ['client_name', 'amount', 'total', 'repayment'];
         $this->templates = [
             "index" => 'Loans/Index',
-            "create" => 'Loans/LoanForm',
-            "edit" => 'Loans/LoanForm',
+            "create" => 'Loans/EditForm',
+            "edit" => 'Loans/EditForm',
             "show" => 'Loans/Show'
         ];
         $this->validationRules = [
@@ -57,18 +57,21 @@ class LoanController extends InertiaController
     }
 
     public function refinance(Loan $loan) {
-      $teamId = request()->user()->current_team_id;
-
-      return inertia($this->templates['create'], [
+      $stats = LoanService::getStats($loan);
+      return inertia('Loans/Refinance', [
           'loans' => array_merge(
           $loan->toArray(),
           [
+            'repayment_count' => 0,
+            'amount' => $stats->outstandingPrincipal,
             'sourceAccount' => $loan->sourceAccount,
             'client' => $loan->client,
-            'installments' => $loan->installments,
-            'paymentDocuments' => $loan->paymentDocuments
+            'installments' => [],
+            'paymentDocuments' => $loan->paymentDocuments,
+            "stats" => $stats,
+            "source_account_id" => $loan->client_account_id,
+            "sourceAccount" => Account::find($loan->client_account_id)
           ]),
-          "stats" => LoanService::getStats($loan)
       ]);
     }
 

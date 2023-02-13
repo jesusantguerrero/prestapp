@@ -54,7 +54,7 @@ class LoanService {
                     "team_id" => $loan->team_id,
                     "user_id" => $loan->user_id,
                     "client_id" => $loan->client_id,
-                    'original_loan' => $loan->id,
+                    'original_loan_id' => $loan->id,
                     'type' => Loan::TYPE_REFINANCE,
                     'status' => Loan::STATUS_DISPOSED,
                     'source_account_id' => $loan->account_id

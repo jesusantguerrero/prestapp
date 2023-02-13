@@ -90,7 +90,7 @@ const installments = ref(null);
 watchEffect(() => {
   const date = formatDate(loanForm.first_repayment_date, "yyyy-MM-dd");
 
-  if (loanForm.amount && loanForm.interest_rate && loanForm.repayment_count) {
+  if (loanForm.amount && loanForm.repayment_count) {
     installments.value = generateInstallments({
       interest_rate: loanForm.interest_rate,
       amount: loanForm.amount,
@@ -281,7 +281,10 @@ const goToList = () => {
 
           <section v-if="hasInstallments" class="mt-4">
             <h4 class="text-xl font-bold">Tabla de amortización</h4>
-            <InstallmentTable :installments="installments?.payments" />
+            <InstallmentTable
+              :installments="installments?.payments"
+              :hidden-cols="['loan_id', 'actions']"
+            />
           </section>
         </section>
         <footer class="flex justify-between w-full px-4 py-1">

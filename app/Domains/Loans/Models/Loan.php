@@ -47,6 +47,7 @@ class Loan extends Transactionable implements IPayableDocument {
         'team_id',
         'user_id',
         'client_id',
+        'original_loan_id',
         'client_name',
         'client_address',
         'date',
@@ -189,10 +190,6 @@ class Loan extends Transactionable implements IPayableDocument {
 
     public static function checkStatus($payable) {
       $debt = $payable->total - $payable->amount_paid;
-      echo $debt . " debt" . "ID: $payable->id" . PHP_EOL;
-      echo $payable->total . " Total" . PHP_EOL;
-      echo $payable->amount_paid . " Paid" . PHP_EOL;
-
       if ($debt <= 0 && !$payable->cancelled_at) {
           $status = self::STATUS_PAID;
       } elseif ($debt > 0 && $debt < $payable->amount) {
