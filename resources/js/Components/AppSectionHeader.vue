@@ -1,6 +1,6 @@
 <template>
   <header
-    class="flex items-center justify-between w-full px-5 py-2 border rounded-lg bg-gray-50 no-print"
+    class="flex items-center justify-between w-full px-5 py-2 border rounded-lg bg-base-lvl-3 border-base-lvl-3 no-print"
   >
     <h2
       class="flex items-center text-sm md:text-xl font-semibold leading-tight text-gray-500"

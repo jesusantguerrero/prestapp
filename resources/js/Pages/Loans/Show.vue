@@ -42,6 +42,7 @@ const onPayment = (installment: ILoanInstallment) => {
         class="mt-0"
         :installments="loans.installments"
         accept-payment
+        :hidden-cols="['loan_id']"
         @pay="onPayment"
       />
     </section>

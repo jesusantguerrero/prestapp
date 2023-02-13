@@ -11,7 +11,6 @@ import AppButton from "@/Components/shared/AppButton.vue";
 
 import { formatDate, formatMoney } from "@/utils";
 import { getInvoiceTypeUrl } from "./utils";
-import Modal from "@/Components/Modal.vue";
 import { ref } from "vue";
 
 defineProps({

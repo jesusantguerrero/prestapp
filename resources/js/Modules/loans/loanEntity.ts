@@ -6,16 +6,22 @@ export interface ILoan {
     client?: IClient;
     client_id: number;
     total?: number;
+    payment?: number;
     // loan details
     interest_rate: number;
     amount: number;
+    amount_paid?: number;
     repayment_count: number;
     // payment details
     frequency: string,
+    date: string | Date;
     disbursement_date: string | Date;
     first_repayment_date: string | Date;
     grace_days: number;
     payment_status: string;
+    // cancel optons
+    cancelled_at: Date;
+    cancel_reason: string;
 }
 
 

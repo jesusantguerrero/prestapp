@@ -6,20 +6,21 @@ import { computed } from "vue";
 import { AtBackgroundIconCard } from "atmosphere-ui";
 // @ts-ignore
 import AppLayout from "@/Components/templates/AppLayout.vue";
+import LoanOptions from "@/Components/templates/LoanOptions.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 // @ts-ignore
 import AppSectionHeader from "@/Components/AppSectionHeader.vue";
 // @ts-ignore: its my template
 import LoanSectionNav from "./LoanSectionNav.vue";
-// @ts-ignore
+import AgreementFormModal from "./AgreementFormModal.vue";
 
 import { formatMoney } from "@/utils/formatMoney";
-import { ILoan } from "@/Modules/loans/loanEntity";
+import { ILoanWithInstallments } from "@/Modules/loans/loanEntity";
 import { useToggle } from "@vueuse/shared";
-import AgreementFormModal from "./AgreementFormModal.vue";
 import { formatDate } from "@/utils";
 import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
 import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
+import { usePrint } from "@/utils/usePrint";
 
 const [isAgreementModalOpen, toggleAgreementModal] = useToggle();
 const { openModal: openPaymentModal } = usePaymentModal();
@@ -31,7 +32,7 @@ interface ILoanStats {
 }
 
 interface Props {
-  loans: ILoan;
+  loans: ILoanWithInstallments;
   currentTab: string;
   stats: ILoanStats;
 }
@@ -80,6 +81,8 @@ const onMultiplePayment = () => {
     isOpen: true,
   });
 };
+
+const { customPrint } = usePrint("section-info");
 </script>
 
 <template>
@@ -87,9 +90,13 @@ const onMultiplePayment = () => {
     <template #header>
       <LoanSectionNav>
         <template #actions>
-          <AppButton variant="inverse" @click="router.visit(`/loans/${loans.id}/edit`)">
-            Editar prestamo
+          <AppButton variant="neutral" @click="router.visit(`/loans/${loans.id}/edit`)">
+            Editar
           </AppButton>
+          <AppButton variant="neutral" @click="customPrint()">
+            <IMdiPrinter />
+          </AppButton>
+          <LoanOptions :loan="loans" class="py-2" />
         </template>
       </LoanSectionNav>
     </template>
@@ -97,7 +104,7 @@ const onMultiplePayment = () => {
     <main class="mt-16">
       <AppSectionHeader
         name="Prestamo a"
-        class="px-5 border-2 border-white rounded-md rounded-b-none shadow-md"
+        class="px-5 border-2 rounded-md rounded-b-none shadow-md"
         :resource="loans"
         :title="clientName"
         hide-action
@@ -119,7 +126,7 @@ const onMultiplePayment = () => {
             <p class="flex justify-between w-full">
               <span> Monto Prestado/Total a pagar: </span>
               <span class="font-bold">
-                {{ formatMoney(loans.amount) }} / {{ formatMoney(loans.total) }}
+                {{ formatMoney(loans.amount) }} / {{ formatMoney(loans.total ?? 0) }}
               </span>
             </p>
           </section>
@@ -139,7 +146,7 @@ const onMultiplePayment = () => {
             <p class="flex justify-between w-full">
               <span> Monto pagado: </span>
               <span class="font-bold">
-                {{ formatMoney(loans.amount_paid) }}
+                {{ formatMoney(loans.amount_paid ?? 0) }}
               </span>
             </p>
           </section>
@@ -161,6 +168,7 @@ const onMultiplePayment = () => {
         class="flex flex-col md:flex-row w-full space-x-8 rounded-t-none border-t-none"
       >
         <article
+          id="section-info"
           class="w-full space-y-2 overflow-auto"
           :class="[loans.payment_status == 'PAID' ? 'w-full' : ' md:w-9/12']"
         >
