@@ -22,8 +22,8 @@ class LoanController extends InertiaController
         $this->searchable = ['client_name', 'amount', 'total', 'repayment'];
         $this->templates = [
             "index" => 'Loans/Index',
-            "create" => 'Loans/LoanForm',
-            "edit" => 'Loans/LoanForm',
+            "create" => 'Loans/EditForm',
+            "edit" => 'Loans/EditForm',
             "show" => 'Loans/Show'
         ];
         $this->validationRules = [
@@ -50,18 +50,29 @@ class LoanController extends InertiaController
     public function create(Request $request) {
         $teamId = $request->user()->current_team_id;
 
-        try {
-          return inertia($this->templates['create'], [
-              'loans' => null,
-              'clients' => ClientService::ofTeam($teamId),
-          ]);
-        } catch (Exception $e) {
-          return response([
-            "errors" => [
-              "message" => $e->getMessage()
-            ]
-            ], 404);
-        }
+        return inertia($this->templates['create'], [
+            'loans' => null,
+            'clients' => ClientService::ofTeam($teamId),
+        ]);
+    }
+
+    public function refinance(Loan $loan) {
+      $stats = LoanService::getStats($loan);
+      return inertia('Loans/Refinance', [
+          'loans' => array_merge(
+          $loan->toArray(),
+          [
+            'repayment_count' => 0,
+            'amount' => $stats->outstandingPrincipal,
+            'sourceAccount' => $loan->sourceAccount,
+            'client' => $loan->client,
+            'installments' => [],
+            'paymentDocuments' => $loan->paymentDocuments,
+            "stats" => $stats,
+            "source_account_id" => $loan->client_account_id,
+            "sourceAccount" => Account::find($loan->client_account_id)
+          ]),
+      ]);
     }
 
     protected function getEditProps(Request $request, $loan)
@@ -103,7 +114,6 @@ class LoanController extends InertiaController
       $postData = $this->getPostData();
       LoanTransactionsService::close($loan, $postData);
     }
-
 
     // payable document related
     public function pay(Loan $loan) {

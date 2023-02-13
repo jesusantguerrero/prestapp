@@ -41,4 +41,24 @@ class LoanAgreementController extends Controller
         }
     }
   }
+
+  public function refinance(Loan $loan) {
+    $postData = request()->post();
+    if ($postData && $loan->team_id == request()->user()->current_team_id) {
+        if ($loan->payment_status !== Loan::STATUS_PAID) {
+          LoanService::refinance(
+            $loan,
+            $postData
+          );
+        } else {
+            return back()->withErrors([
+              "message" => [
+                "type" => "error",
+                "text" => "El contrato debe estar en estado suspendido $loan->payment_status"
+              ],
+              "data" => []
+            ]);
+        }
+    }
+  }
 }

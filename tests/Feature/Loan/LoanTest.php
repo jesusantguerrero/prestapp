@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Loan;
 
+use App\Domains\CRM\Models\Client;
 use App\Domains\Loans\Models\Loan;
 use Tests\Feature\Loan\Helpers\LoanBase;
 
@@ -46,5 +47,27 @@ class LoanTest extends LoanBase
     $response = $this->post('/loans', $this->loanData);
     $response->assertStatus(302);
     $this->assertCount(1, Loan::all());
+  }
+
+  public function testLoanShouldHaveStatusPending() {
+    $this->actingAs($this->user);
+    $this->fundAccount('daily_box', $this->loanData['amount'], $this->lender->team_id);
+    
+    $response = $this->post('/loans', $this->loanData);
+    $response->assertStatus(302);
+    $loan = Loan::query()->first();
+
+    $this->assertEquals($loan->payment_status, Loan::STATUS_PENDING);
+  }
+
+  public function testClientShouldHaveStatusActive() {
+    $this->actingAs($this->user);
+    $this->fundAccount('daily_box', $this->loanData['amount'], $this->lender->team_id);
+    
+    $response = $this->post('/loans', $this->loanData);
+    $response->assertStatus(302);
+    $loan = Loan::query()->first();
+
+    $this->assertEquals($loan->client->status, Client::STATUS_ACTIVE);
   }
 }

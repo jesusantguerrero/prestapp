@@ -3,6 +3,7 @@
 namespace Tests\Feature\Loan;
 
 use App\Domains\Accounting\Helpers\InvoiceHelper;
+use App\Domains\Loans\Helpers\RepaymentSchedule;
 use App\Domains\Loans\Models\Loan;
 use Insane\Journal\Models\Core\Account;
 use Tests\Feature\Loan\Helpers\LoanBase;
@@ -36,7 +37,42 @@ class LoanOptionsTest extends LoanBase
   }
 
   public function testItShouldRefinanceLoan() {
-    // #TODO Allow refinance a loan
+    $loan = $this->createLoan([
+      'amount' => 5000
+    ]);
+
+    $firstPaymentDate = date('Y-m-d');
+    $loanData = [
+      'installment_agreement' => false,
+      'compulsory' => false,
+      'first_repayment_date' => date('Y-m-d'),
+      'date' => date('Y-m-d'),
+      'due_date' => InvoiceHelper::getNextDate(date('Y-m-d')),
+      'amount' => 4000,
+      'interest_rate' => 10,
+      'frequency' => 'MONTHLY',
+      'repayment_count' => 2
+    ];
+
+    $schedule = new RepaymentSchedule([
+      "startDate" => $firstPaymentDate,
+      "frequency" => $loanData['frequency'],
+      "capital" => $loanData['amount'],
+      "interestMonthlyRate" => $loanData['interest_rate'],
+      "count" => $loanData['repayment_count']
+    ]);
+
+    $loanData['installments'] = array_map(function($repayment) {
+      return (array) $repayment;
+    }, $schedule->payments);
+    
+    $response = $this->post("/loans/$loan->id/refinance", $loanData);
+
+    $agreement = Loan::refinance()->first();
+
+    $response->assertStatus(200);
+    $this->assertEquals(Loan::STATUS_CANCELLED, $loan->fresh()->payment_status);
+    $this->assertEquals(Loan::STATUS_PENDING, $agreement->payment_status);
   }
 
   public function testItShouldWriteOffLoan() {

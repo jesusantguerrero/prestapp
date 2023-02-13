@@ -35,3 +35,18 @@ export const saveLoan = (loanData: ILoan, installments: ILoanInstallment[]) => {
         });
     })
 }
+export const refinanceLoan = (loanId: number, loanData: Record<string, any>) => {
+    return new Promise((resolve, reject) => {
+        return router.post(`/loans/${loanId}/refinance`, {
+            ...loanData,
+        }, {
+            onSuccess(data: any) {
+                resolve(data)
+            },
+            onError(reason: any) {
+                console.log(reason)
+                reject(reason)
+            }
+        });
+    })
+}
