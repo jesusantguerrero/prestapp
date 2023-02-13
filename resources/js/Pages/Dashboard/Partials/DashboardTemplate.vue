@@ -20,13 +20,13 @@ const sections = {
     label: "General",
     link: "/dashboard",
   },
-  realState: {
-    label: "Inmobiliaria",
-    link: "/dashboard/property",
-  },
   loans: {
     label: "Prestamos",
     link: "/dashboard/loan",
+  },
+  realState: {
+    label: "Inmobiliaria",
+    link: "/dashboard/property",
   },
 };
 const handleChange = (sectionName: string) => {
