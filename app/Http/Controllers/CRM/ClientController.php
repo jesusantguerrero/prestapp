@@ -33,6 +33,7 @@ class ClientController extends InertiaController
         'dni' => 'required',
         'email' => 'required',
         'cellphone' => 'required',
+        'work_name' => 'required',
       ];
   }
 

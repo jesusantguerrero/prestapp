@@ -37,6 +37,10 @@ export const PROPERTY_STATUS = {
     AVAILABLE: {
       label : 'Disponible'
     },
+    RENTED: {
+      label : 'Rentada',
+      color: 'success'
+    },
     PARTIALLY_PAID: {
       label: 'Parcialmente pagado'
     },
@@ -52,6 +56,11 @@ export const STATUS = Object.keys(PROPERTY_STATUS).reduce((keys, key: string) =>
   keys[key] = PROPERTY_STATUS[key]?.label;
   return keys;
 }, { })
+
+export const propertyStatus = Object.entries(PROPERTY_STATUS).map(([name, value]) => ({
+  name,
+  label: value.label
+}));
 
 export const getPropertyStatus = (status: string): string => {
     return STATUS[status] || status;

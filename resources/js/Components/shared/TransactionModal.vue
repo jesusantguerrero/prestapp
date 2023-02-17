@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { reactive, toRefs, watch, computed, inject, ref } from "vue";
 import { useForm } from "@inertiajs/vue3";
 // @ts-ignore
-import { AtField, AtButton, AtInput } from "atmosphere-ui";
+import { AtButton, AtInput } from "atmosphere-ui";
 
 import Modal from "@/Components/Modal.vue";
 import TransactionTypesPicker from "./TransactionTypesPicker.vue";
@@ -190,12 +190,12 @@ const isPickerOpen = ref(false);
     :max-width="maxWidth"
     :full-height="fullHeight"
     :closeable="closeable"
-    v-slot:default="{ close }"
     @close="$emit('update:show', false)"
   >
     <div class="pb-4 bg-base-lvl-3 sm:p-6 sm:pb-4 text-body flex-1">
       <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
         <TransactionTypesPicker v-model="form.direction" />
+        {{ form.direction }}
 
         <div class="mt-2">
           <slot name="content">
@@ -247,7 +247,7 @@ const isPickerOpen = ref(false);
       class="px-6 py-4 space-x-3 items-center justify-end flex w-full bg-base-lvl-2"
     >
       <div>
-        <AtButton @click="close" rounded class="h-10 text-body"> Cancel </AtButton>
+        <AtButton @click="close()" rounded class="h-10 text-body"> Cancel </AtButton>
         <AtButton
           class="h-10 text-white bg-primary"
           :disabled="!form.total || form.processing"

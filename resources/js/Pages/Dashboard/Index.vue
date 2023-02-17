@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { router } from "@inertiajs/core";
-
-import AppLayout from "@/Components/templates/AppLayout.vue";
 // @ts-ignore
 import { AtBackgroundIconCard, AtButton } from "atmosphere-ui";
 import AppButton from "@/Components/shared/AppButton.vue";
@@ -222,7 +220,15 @@ const { openTransactionModal } = useTransactionModal();
           :value="formatMoney(props.realState.balance | 0)"
           title="Cuenta Inmobiliaria"
         />
-        <AppButton variant="secondary" class="w-full" @click="openTransactionModal()">
+        <AppButton
+          variant="secondary"
+          class="w-full"
+          @click="
+            openTransactionModal({
+              mode: 'TRANSFER',
+            })
+          "
+        >
           Agregar fondos
         </AppButton>
       </article>

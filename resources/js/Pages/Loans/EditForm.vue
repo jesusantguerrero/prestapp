@@ -223,7 +223,7 @@ const goToList = () => {
             <AppFormField label="Interes de mora" class="w-full">
               <AtInput v-model="loanForm.late_fee" rounded />
             </AppFormField>
-            <AppFormField label="Cuotas cobradas" class="w-full">
+            <AppFormField label="Cuotas cobradas" class="w-full" v-if="false">
               <AtInput v-model="loanForm.paid_installments" rounded />
             </AppFormField>
           </section>

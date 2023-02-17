@@ -210,7 +210,11 @@ const { customPrint } = usePrint("section-info");
               <IIcSharpPayment class="mr-2" />
               Recibo Multiple
             </AppButton>
-            <AppButton variant="primary" class="flex items-center justify-center text-sm">
+            <AppButton
+              variant="primary"
+              class="flex items-center justify-center text-sm"
+              v-if="false"
+            >
               <IIcSharpPayment class="mr-2" />
               Saldar prestamo
             </AppButton>
@@ -227,7 +231,7 @@ const { customPrint } = usePrint("section-info");
             <AppButton
               variant="secondary"
               class="flex items-center justify-center w-full text-sm"
-              v-if="loans.payment_status !== 'PAID'"
+              v-if="false && loans.payment_status !== 'PAID'"
             >
               <IMdiHandshakeOutline class="mr-1" />
               Finalizar

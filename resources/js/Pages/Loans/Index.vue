@@ -15,10 +15,8 @@ import { IServerSearchData, useServerSearch } from "@/utils/useServerSearch";
 
 import { ILoan } from "@/Modules/loans/loanEntity";
 import cols from "./cols";
-import { formatMoney } from "@/utils";
 import { ElMessageBox } from "element-plus";
 import LoanCard from "./Partials/LoanCard.vue";
-import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
 import ButtonCircle from "@/Components/mobile/ButtonCircle.vue";
 import { useResponsive } from "@/utils/useResponsive";
 

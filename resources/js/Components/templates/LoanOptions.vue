@@ -36,7 +36,6 @@ const actions = {
 const handleActions = (actionName: string, loan: ILoan) => {
   switch (actionName) {
     case "refinance":
-      debugger;
       router.visit(`/loans/${props.loan?.id}/refinance`);
       break;
     case "delete":

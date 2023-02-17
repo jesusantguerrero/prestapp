@@ -64,12 +64,37 @@ const documentType = computed(() => {
   return documentTypes.find((doc) => doc.name == clientForm.dni_type).label;
 });
 
+const clientTypes = [
+  {
+    value: "lender",
+    label: "Cliente de Prestamos",
+  },
+  {
+    value: "owner",
+    label: "Propierario",
+  },
+  {
+    value: "tenant",
+    label: "Inquilino",
+  },
+];
+const clientTypeId = ref(props.type);
+
+const selectedClientType = computed({
+  set(type: Record<string, any>) {
+    clientTypeId.value = type.value;
+  },
+  get() {
+    return clientTypes.filter((type) => clientTypeId.value == type.value);
+  },
+});
+
 const onSubmit = () => {
   emit("update:isLoading", true);
   clientInteractions
     .create({
       ...clientForm,
-      [`is_${props.type}`]: true,
+      [`is_${clientTypeId.value}`]: true,
     })
     .then(() => {
       emit("success");
@@ -123,6 +148,15 @@ watch(
         <AtTextarea
           v-model="clientForm.address_details"
           class="border px-4 py-2 bg-neutral/20 shadow-none border-neutral hover:border-secondary/60 focus:border-secondary/60"
+        />
+      </AppFormField>
+      <AppFormField label="Tipo de cliente " required>
+        <BaseSelect
+          v-model="selectedClientType"
+          :options="clientTypes"
+          track-by="value"
+          label="label"
+          placeholder="Tipo de cliente"
         />
       </AppFormField>
       <section class="flex flex-col md:flex-row md:space-x-2">

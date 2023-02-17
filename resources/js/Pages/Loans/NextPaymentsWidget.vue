@@ -80,12 +80,14 @@ onMounted(() => {
     </template>
     <template #actions>
       <section class="flex text-xs space-x-2 text-body-1">
+        <slot name="beforeRange" />
         <span
           v-for="option in ranges"
           role="button"
           class="rounded-3xl bg-base-lvl-2 py-1 px-4"
           @click="onRangeChanged(option.label)"
           :class="isSelected(option.label) && 'text-primary font-bold bg-primary/10'"
+          :title="option.tooltip"
         >
           {{ option.label }}</span
         >

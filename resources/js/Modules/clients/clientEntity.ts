@@ -10,6 +10,7 @@ export interface IClient {
 export interface IClientSaved extends IClient {
   id: number;
   is_owner: boolean;
+  display_name: string;
   invoices: any[];
   leases: any[];
   properties: IProperty[];
