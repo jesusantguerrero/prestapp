@@ -1,15 +1,14 @@
-<script setup>
+<script lang="ts" setup>
 import { reactive, computed, watch } from "vue";
-import { AtButton, AtTable, AtBackgroundIconCard } from "atmosphere-ui";
-import { Link, router } from "@inertiajs/vue3";
+import { AtBackgroundIconCard } from "atmosphere-ui";
+import { router } from "@inertiajs/vue3";
 
-import AppSectionHeader from "@/Components/AppSectionHeader.vue";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import InvoiceTable from "@/Components/templates/InvoiceTable";
-import PropertySectionNav from "./Partials/PropertySectionNav.vue";
+import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.vue";
 
-import { formatMoney, formatDate } from "@/utils";
+import { formatMoney } from "@/utils";
 import AppButton from "@/Components/shared/AppButton.vue";
 
 const props = defineProps({

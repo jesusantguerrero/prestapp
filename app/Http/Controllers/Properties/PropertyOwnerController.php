@@ -36,7 +36,7 @@ class PropertyOwnerController extends InertiaController
       $filters = $request->query('filters');
       $ownerId = $filters ? $filters['owner'] : null;
 
-      return inertia('Properties/OwnerDraws', [
+      return inertia('Properties/Transactions/OwnerDraws', [
         "invoices" => OwnerService::pendingDraws($teamId, $ownerId),
       ]);
     }

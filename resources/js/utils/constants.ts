@@ -4,5 +4,6 @@ export const PANEL_SIZES = {
 }
 
 export interface IPaginatedData<T> {
-  data: T[]
+  data: T[];
+  total: number
 }

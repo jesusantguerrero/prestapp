@@ -3,12 +3,12 @@
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import { router } from "@inertiajs/core";
 import { computed, toRefs, reactive, ref } from "vue";
-import cols from "./unitCols";
+import cols from "./Partials/unitCols";
 import AtTable from "@/Components/shared/BaseTable.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import PropertySectionNav from "./Partials/PropertySectionNav.vue";
 import { IPaginatedData } from "@/utils/constants";
-import { IProperty } from "@/Modules/properties/propertyEntity";
+import { IProperty, IUnit } from "@/Modules/properties/propertyEntity";
 import { useServerSearch, IServerSearchData } from "@/utils/useServerSearch";
 import { Link } from "@inertiajs/vue3";
 import UnitTag from "@/Components/realState/UnitTag.vue";
@@ -65,7 +65,7 @@ const tableConfig = {
   pagination: true,
 };
 
-const deleteUnit = () => {};
+const deleteUnit = (unit: IUnit) => {};
 
 const section = ref("units");
 const sections: Record<string, any> = {

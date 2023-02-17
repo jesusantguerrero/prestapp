@@ -1,4 +1,4 @@
-import { formatMoney } from './../../utils/formatMoney';
+import { formatMoney } from '../../../utils/formatMoney';
 import { h } from "vue";
 import {  ElTag } from "element-plus"
 // @ts-ignore
@@ -25,7 +25,7 @@ export default [
                 tenantName: row.contract?.client?.display_name,
               }),
           ]);
-      }
+        }
     },
 
     {
