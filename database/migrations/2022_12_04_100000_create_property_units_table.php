@@ -23,6 +23,8 @@ return new class extends Migration
 
             // terms
             $table->string('name')->nullable();
+            $table->string('owner_name')->nullable();
+            $table->string('property_name')->nullable();
             $table->text('description')->nullable();
             $table->integer('index');
 
