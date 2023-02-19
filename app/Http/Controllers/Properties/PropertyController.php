@@ -3,14 +3,11 @@
 namespace App\Http\Controllers\Properties;
 
 use App\Domains\CRM\Services\ClientService;
-use App\Domains\Loans\Services\LoanService;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Services\PropertyService;
 use App\Domains\Properties\Services\RentService;
 use App\Http\Controllers\InertiaController;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Insane\Journal\Helpers\ReportHelper;
 
 class PropertyController extends InertiaController
 {
@@ -76,7 +73,7 @@ class PropertyController extends InertiaController
       ? RentService::invoices($teamId)->get()
       : ClientService::invoices($teamId, $ownerId)->get();
 
-      return inertia('Properties/ManagementTools',
+      return inertia('Properties/Transactions/ManagementTools',
       [
           'invoices' => $invoices,
           'outstanding' => $invoices->sum('debt'),

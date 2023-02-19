@@ -5,7 +5,7 @@ import { router } from "@inertiajs/vue3";
 
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
-import PropertySectionNav from "./Partials/PropertySectionNav.vue";
+import PropertySectionNav from "../Partials/PropertySectionNav.vue";
 
 import { formatMoney, formatDate } from "@/utils";
 import BaseTable from "@/Components/shared/BaseTable.vue";

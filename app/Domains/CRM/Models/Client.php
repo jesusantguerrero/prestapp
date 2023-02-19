@@ -97,8 +97,6 @@ class Client extends Model {
 
     /**
      * Determine the full name of the client
-     *
-     * @return \Illuminate\Database\Eloquent\Casts\Attribute
      */
 
     protected function fullName(): Attribute {

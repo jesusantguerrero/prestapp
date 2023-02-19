@@ -20,6 +20,8 @@ import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
 import { IProperty } from "@/Modules/properties/propertyEntity";
 import { ElTag } from "element-plus";
 import { clientInteractions } from "@/Modules/clients/clientInteractions";
+import UnitTitle from "@/Components/realState/UnitTitle.vue";
+import UnitTag from "@/Components/realState/UnitTag.vue";
 
 export interface Props {
   properties: IProperty;
@@ -172,15 +174,20 @@ const addUnit = () => {
               class="flex w-full rounded-md px-4 py-2 justify-between"
             >
               <h4>
-                <IMdiHome />
-                {{ unit.name || "Sin nombre" }}
-                <p>
-                  {{ formatMoney(unit.price) }}
-                </p>
+                <UnitTitle
+                  :title="unit.name"
+                  :owner-name="properties.owner.display_name"
+                  :tenant-name="unit.contract?.client.display_name"
+                  :price="formatMoney(unit.price)"
+                />
               </h4>
-              <div>
-                {{ unit.status }}
-                <p></p>
+              <div class="flex items-center space-x-2">
+                <UnitTag :status="unit.status" />
+                <div class="flex">
+                  <AppButton variant="neutral"><IMdiFile /></AppButton>
+                  <!-- <AppButton variant="neutral"><IMdiFile /></AppButton>
+                  <AppButton variant="neutral"><IMdiFile /></AppButton> -->
+                </div>
               </div>
             </div>
           </section>

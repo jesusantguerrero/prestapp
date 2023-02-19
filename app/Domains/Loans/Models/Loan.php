@@ -203,7 +203,6 @@ class Loan extends Transactionable implements IPayableDocument {
       } else {
           $status = $payable->payment_status;
       }
-      echo $status. " -> Tha status " . PHP_EOL;
       $payable->payment_status = $status;
     }
 

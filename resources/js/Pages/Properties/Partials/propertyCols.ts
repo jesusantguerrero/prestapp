@@ -1,4 +1,5 @@
-import { formatMoney } from './../../utils/formatMoney';
+import UnitTitle  from '@/Components/realState/UnitTitle.vue';
+import { formatMoney } from '../../../utils/formatMoney';
 import { h } from "vue";
 import { ElAvatar, ElTag } from "element-plus"
 // @ts-ignore
@@ -14,39 +15,22 @@ export default [
         name: 'address',
         label: 'Dirección',
         class: "text-left",
-        headerClass: "text-left",
+        width: 600,
         render(row: IProperty) {
-          const ownerName = row.owner.names + ' ' + row.owner.lastnames
-          const initials = row.owner.names[0] + row.owner.lastnames[0];
-
           return h('div', { class: 'justify-center' }, [
-              h('div', { class: 'flex items-center text-primary font-bold'}, [
-                h(IconMarker, { class: 'text-primary font-bold'}),
-                h('span', row.short_name)
-              ]),
-              h('span',{ class: 'text-body-1 text-sm'}, row.address)
+              h(UnitTitle, {
+                title:  row.short_name,
+                ownerName: row.owner?.display_name,
+                tenantName: row.contract?.client?.display_name,
+              }),
           ]);
-      }
-    },
-    {
-      name: 'owner',
-      label: 'Dueño',
-      class: "text-left",
-      headerClass: "text-left",
-      minWidth: 200,
-      render(row: IProperty) {
-          const ownerName = row.owner.names + ' ' + row.owner.lastnames
-          const initials = row.owner.names[0] + row.owner.lastnames[0];
-
-          return h('div', { class: 'flex items-center space-x-2' }, [
-              h(ElAvatar, { shape: 'circle' }, initials),
-              h('span', ownerName)
-          ]);
-      }
+        }
     },
     {
         name: 'balance',
         label: 'Balance Pendiente',
+        align: 'right',
+        class: 'text-right pr-4',
         render(row: IProperty) {
             // @ts-ignore: got the right types
             return formatMoney(row.balance)
@@ -62,6 +46,6 @@ export default [
     },
     {
         name: 'actions',
-        label: 'Acciones'
+        label: ' '
     }
 ]

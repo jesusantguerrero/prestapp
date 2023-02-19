@@ -87,7 +87,7 @@ class PropertyBase extends TestCase
       'client_id' => $rent->client_id,
       'account_id' => Account::guessAccount($rent, ['Property Expenses', 'expenses']),
       'amount' => $formData['amount'] ?? 1000,
-      'date' => $formData['date'] ?? '2023-01-30',
+      'date' => $formData['date'] ?? date('Y-m-d'),
       'details' => 'Fix front door',
       'concept' => 'fix front door',
     ]));

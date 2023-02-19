@@ -13,6 +13,8 @@ import { ref } from "vue";
 import { config } from "@/config";
 import { formatDate } from "@/utils";
 import RepaymentWidget from "./Partials/RepaymentWidget.vue";
+import { useTransactionModal } from "@/Modules/transactions/useTransactionModal";
+import { Link } from "@inertiajs/vue3";
 
 const props = defineProps({
   revenue: {
@@ -141,6 +143,7 @@ const interestPerformance = {
 };
 
 const summaryType = ref("cash-flow");
+const { openTransactionModal } = useTransactionModal();
 </script>
 
 <template>
@@ -204,7 +207,11 @@ const summaryType = ref("cash-flow");
           <template #action>
             <AtButton
               class="bg-secondary/60 rounded-md"
-              @click="isTransferModalOpen = true"
+              @click="
+                openTransactionModal({
+                  mode: 'TRANSFER',
+                })
+              "
             >
               Agregar fondos
             </AtButton>
@@ -218,16 +225,28 @@ const summaryType = ref("cash-flow");
           date-field="payment_date"
           class="rounded-md border"
           :ranges="[
-            { label: '1D', value: [1, 1] },
-            { label: '7D', value: [7, 0] },
-            { label: '30D', value: [30, 0] },
-            { label: '90D', value: [90, 0] },
+            { label: '1D', value: [1, 1], tooltip: 'Hoy' },
+            { label: '7D', value: [7, 0], tooltip: '7 Dias' },
+            { label: '1M', value: [30, 0], tooltip: '30 Dias' },
+            { label: '3M', value: [90, 0], tooltip: '3 Meses' },
           ]"
         >
+          <template #beforeRange>
+            <Link href="/payment-center?tab=payments">Todos</Link>
+          </template>
           <template v-slot:content="{ list }">
-            <div class="py-4 my-2 h-[380px] overflow-auto ic-scroller">
-              <PaymentsCard v-for="payment in list" :payment="payment" />
-            </div>
+            <article class="py-4 my-2 h-[380px] overflow-auto ic-scroller">
+              <template v-if="list.length">
+                <PaymentsCard v-for="payment in list" :payment="payment" />
+              </template>
+              <section
+                v-else
+                class="flex text-body-1 flex-col justify-center items-center w-full"
+              >
+                <IMdiNoteOff class="text-8xl" />
+                <p class="mt-8">No hay pagos realizados en este rango de fechas</p>
+              </section>
+            </article>
           </template>
         </NextPaymentsWidget>
       </article>

@@ -64,7 +64,9 @@ const onError = (message: string) => {
       @error="onError"
     />
 
-    <footer class="px-6 py-4 space-x-3 text-gray-600 text-right bg-neutral">
+    <footer
+      class="px-6 py-4 flex justify-end space-x-3 text-gray-600 text-right bg-neutral"
+    >
       <AtButton :disabled="isLoading" @click="close()" class="text-gray">
         Cancelar
       </AtButton>

@@ -123,8 +123,8 @@ const submit = () => {
 const showAdvancedOptions = ref(false);
 
 defineExpose({
-  submit
-})
+  submit,
+});
 </script>
 
 <template>
@@ -149,7 +149,13 @@ defineExpose({
             <AtInput v-model="loanForm.amount" number-format rounded />
           </AppFormField>
           <AppFormField label="Interés mensual" class="w-full" required>
-            <AtInput v-model="loanForm.interest_rate" number-format max="100" min="0" rounded>
+            <AtInput
+              v-model="loanForm.interest_rate"
+              number-format
+              max="100"
+              min="0"
+              rounded
+            >
               <template #suffix>
                 <div>
                   <!-- <IMdiPercentage /> -->
@@ -197,7 +203,7 @@ defineExpose({
           <AppFormField label="Interes de mora" class="w-full">
             <AtInput v-model="loanForm.late_fee" rounded />
           </AppFormField>
-          <AppFormField label="Cuotas cobradas" class="w-full">
+          <AppFormField label="Cuotas cobradas" class="w-full" v-if="false">
             <AtInput v-model="loanForm.paid_installments" rounded />
           </AppFormField>
         </section>

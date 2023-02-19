@@ -15,7 +15,6 @@ class ClientInteractions {
                     resolve(data)
                 },
                 onError(reason: String) {
-                    debugger
                     reject(reason)
                 }
             });

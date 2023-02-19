@@ -25,7 +25,7 @@ export const useTransactionModal = () => {
         transactionModalState.mode = 'EXPENSE'
         transactionModalState.recurrence = false
     }
-    
+
     const openTransactionModal = (config: TransactionConfig = {}) => {
         transactionModalState.automatic = config.automatic ?? false
         transactionModalState.transactionData = config.transactionData ?? null

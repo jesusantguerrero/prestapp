@@ -1,4 +1,4 @@
-import { IClient } from './../../Modules/clients/clientEntity';
+import { IClient } from '../../../Modules/clients/clientEntity';
 import { h } from "vue";
 import { ElAvatar, ElTag } from "element-plus"
 // @ts-ignore
@@ -25,27 +25,7 @@ export default [
             ]);
         }
     },
-    {
-            name: 'number',
-            label: 'No. Contrato',
-            class: "text-right",
-            headerClass: "text-right",
-    },
-    {
-            name: 'address',
-            label: 'Dirección',
-            class: "text-right",
-            headerClass: "text-right",
-    },
-    {
-        name: 'commission',
-        label: 'Comisión',
-        class: "text-right",
-        headerClass: "text-right",
-        render(row) {
-            return row.commission + ' %'
-        }
-    }, {
+ {
         name: 'total',
         class: "text-center",
         type: 'money',
@@ -60,6 +40,6 @@ export default [
     },
     {
         name: 'actions',
-        label: 'Acciones'
+        label: ' '
     }
 ]

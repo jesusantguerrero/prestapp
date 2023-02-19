@@ -156,7 +156,7 @@ class LoanService {
       $startDate = Carbon::now()->startOfYear()->format('Y-m-d');
 
       $results = ReportHelper::getTransactionsByAccount($teamId, ['expected_interest_loans'], $startDate, $endDate);
-      $results =  collect($results["expected_interest_loans"] ?? []);
+      $results =  collect($results["expected_interest_loans"] ?? [[]]);
       
       return [
         "year" => $results->sum('outcome'),

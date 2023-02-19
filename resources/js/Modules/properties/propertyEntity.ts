@@ -1,3 +1,4 @@
+import { IClientSaved } from './../clients/clientEntity';
 import { IClient } from "../clients/clientEntity";
 
 export interface IProperty {
@@ -12,5 +13,10 @@ export interface IProperty {
 
 export interface IUnit {
   property_id: number;
-  status: string
+  name: string;
+  status: string;
+  price: string;
+  owner: IClientSaved;
+  client: IClientSaved;
+  contract: Record<string, any>
 }
