@@ -44,7 +44,7 @@ const onSubmit = (formData: Record<string, any>) => {
 </template>
 
 <style scoped>
-@screen sm {
+@media (max-width: 640px) {
   .rent-form {
     height: calc(100vh - 100px);
     overflow: auto;

@@ -13,7 +13,7 @@ import IconPersonSafe from "@/Components/icons/IconPersonSafe.vue";
 import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.vue";
 import ContractCard from "./Partials/ContractCard.vue";
 import EmptyAddTool from "./Partials/EmptyAddTool.vue";
-import UnitForm from "./Partials/UnitForm.vue";
+import UnitForm from "./Partials/UnitFormModal.vue";
 
 import { formatMoney } from "@/utils";
 import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
