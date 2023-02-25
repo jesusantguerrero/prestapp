@@ -13,7 +13,7 @@ import { getPropertyStatus, getPropertyStatusColor } from "@/Modules/properties/
 export default [
     {
         name: 'property',
-        label: 'Propiedad',
+        label: 'Propiedad/Unidad',
         class: "text-left",
         headerClass: "text-left",
         width: 550,

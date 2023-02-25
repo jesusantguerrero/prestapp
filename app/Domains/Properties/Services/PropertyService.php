@@ -3,6 +3,7 @@
 namespace App\Domains\Properties\Services;
 
 use App\Domains\Properties\Models\Property;
+use App\Domains\Properties\Models\PropertyUnit;
 use Illuminate\Support\Facades\DB;
 
 class PropertyService {
@@ -52,5 +53,9 @@ class PropertyService {
               "status" => $state,
           ];
       }, $status);
+    }
+
+    public static function hintUnit($unitId) {
+      return PropertyUnit::find($unitId);
     }
 }

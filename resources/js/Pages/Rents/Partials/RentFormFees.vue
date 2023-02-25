@@ -18,7 +18,7 @@ const { modelValue } = toRefs(props);
 const { formData } = useReactiveForm(
   {
     late_fee: 10,
-    late_fee_type: "",
+    late_fee_type: "PERCENTAGE",
     grace_days: 0,
     additional_fees: [],
   },

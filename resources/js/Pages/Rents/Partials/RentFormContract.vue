@@ -33,7 +33,7 @@ const { formData } = useReactiveForm(
     next_invoice_date: addMonths(new Date(), 1),
     end_date: null,
     commission: 10,
-    commission_type: "",
+    commission_type: "PERCENTAGE",
     frequency: "MONTHLY",
   },
   modelValue,
@@ -43,7 +43,10 @@ const { formData } = useReactiveForm(
 
 <template>
   <section>
-    <FormSection title="Datos de deposito" section-class="flex flex-col md:flex-row">
+    <FormSection
+      title="Datos de deposito"
+      section-class="flex flex-col md:space-x-4 md:flex-row"
+    >
       <AppFormField label="Deposito" class="w-full">
         <AtInput
           :number-format="true"
@@ -112,15 +115,13 @@ const { formData } = useReactiveForm(
         :number-format="true"
         v-model="formData.amount"
       />
-      <AppFormField label="Comisión" class="w-full">
-        <AtInput v-model="formData.commission">
-          <template #suffix>
-            <TaxTypeSelector
-              :model-value="formData.commission_type"
-              @update:modelValue="formData.commission_type = $event"
-            />
-          </template>
-        </AtInput>
+      <AppFormField label="Comisión" class="w-full" v-model="formData.commission">
+        <template #suffix>
+          <TaxTypeSelector
+            :model-value="formData.commission_type"
+            @update:modelValue="formData.commission_type = $event"
+          />
+        </template>
       </AppFormField>
       <AppFormField label="Fecha de Inicio" class="flex flex-col">
         <ElDatePicker v-model="formData.date" size="large" />
