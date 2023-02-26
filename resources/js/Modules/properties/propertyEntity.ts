@@ -23,3 +23,9 @@ export interface IUnit {
   bedrooms: number;
   area: number;
 }
+
+export interface IRent {
+  id: number;
+  property_id: number;
+  unit_id: number;
+}

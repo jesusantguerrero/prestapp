@@ -123,7 +123,7 @@ const handleChange = (sectionName: string) => {
         :table-data="listData.data"
         :cols="cols"
         :pagination="searchState"
-        :total="listData.total"
+        :total="units.total"
         @search="executeSearch"
         @paginate="paginate"
         @size-change="changeSize"

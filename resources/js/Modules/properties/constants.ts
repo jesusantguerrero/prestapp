@@ -52,6 +52,25 @@ export const PROPERTY_STATUS = {
     }
 }
 
+export const RENT_STATUS = {
+  ACTIVE: {
+    label : 'Activo'
+  },
+  LATE: {
+    label : 'en mora',
+    color: 'success'
+  },
+  PARTIALLY_PAID: {
+    label: 'Parcialmente pagado'
+  },
+  PAID: {
+    label: 'Pagado'
+  },
+  PENDING: {
+    label: 'Pendiente'
+  }
+}
+
 export const STATUS = Object.keys(PROPERTY_STATUS).reduce((keys, key: string) => {
   keys[key] = PROPERTY_STATUS[key]?.label;
   return keys;
@@ -62,13 +81,21 @@ export const propertyStatus = Object.entries(PROPERTY_STATUS).map(([name, value]
   label: value.label
 }));
 
+export  type stateTypes =  'info'| 'danger'|'warning'|'primary'
 export const getPropertyStatus = (status: string): string => {
     return STATUS[status] || status;
 }
 
-export  type stateTypes =  'info'| 'danger'|'warning'|'primary'
 export const getPropertyStatusColor = (status: string): stateTypes => {
     return PROPERTY_STATUS[status] ? PROPERTY_STATUS[status].color as stateTypes : 'info' as stateTypes;
+}
+
+export const getRentStatus = (status: string): string => {
+  return RENT_STATUS[status]?.label  ?? status;
+}
+
+export const getRentStatusColor = (status: string): stateTypes => {
+  return RENT_STATUS[status] ? RENT_STATUS[status].color as stateTypes : 'info' as stateTypes;
 }
 
 

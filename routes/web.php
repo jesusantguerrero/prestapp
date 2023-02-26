@@ -123,3 +123,4 @@ Route::middleware([
 
 // Loans
 Route::group([],  app_path('/Domains/Loans/routes.php'));
+Route::group([],  app_path('/Domains/Admin/routes.php'));
