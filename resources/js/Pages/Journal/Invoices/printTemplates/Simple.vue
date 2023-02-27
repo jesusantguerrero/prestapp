@@ -2,29 +2,29 @@
   <section class="w-full py-2 rounded-md section">
     <div class="section-body">
       <div class="pt-8 invoice__header">
-        <div
-          class="flex w-full invoice-header-details"
-          :class="[imageUrl ? 'justify-between' : '']"
-        >
-          <div v-if="imageUrl" class="bg-gray-500 rounded-md avatar-uploader w-28 h-28">
-            <img :src="imageUrl" class="avatar" />
-          </div>
+        <div class="flex w-full invoice-header-details">
+          <div class="flex justify-between px-4 w-full space-y-4 invoice-details">
+            <section class="flex items-center">
+              <div v-if="imageUrl" class="rounded-md">
+                <img :src="imageUrl" class="w-96" />
+              </div>
+              <BusinessCard :business="businessData" class="w-full text-left" />
+            </section>
 
-          <div class="flex justify-between w-full space-y-4 text-right invoice-details">
-            <h4 class="w-full px-5 text-2xl font-bold text-left">
-              INVOICE {{ invoice.series }}-{{ invoice.number }}
-            </h4>
-            <div class="w-full">
+            <div class="w-full text-right">
+              <h4 class="px-5 text-primary text-2xl font-bold">
+                Factura {{ invoice.series }}-{{ invoice.number }}
+              </h4>
               <h5 class="text-md">
-                <span class="font-bold">Concept:</span> {{ invoice.concept }}
+                <span class="font-bold">Concepto:</span> {{ invoice.concept }}
               </h5>
               <div>
                 <p>
-                  <span class="font-bold">Invoice Date</span>
+                  <span class="font-bold">Fecha</span>
                   {{ formatDate(invoice.date) }}
                 </p>
                 <p>
-                  <span class="font-bold">Due Date</span>
+                  <span class="font-bold">Fecha Limite</span>
                   {{ formatDate(invoice.due_date) }}
                 </p>
               </div>
@@ -34,28 +34,7 @@
 
         <div class="flex px-4 mt-4 space-x-4">
           <div class="w-8/12 text-left">
-            <div class="">
-              <p class="font-bold">Billing To:</p>
-              <div>
-                {{ client.fullName }}
-                <span v-if="client.phone">- {{ client.phone || "000-000-0000" }}</span>
-              </div>
-              <div v-if="client.address || client.address_details">
-                {{ client.address || client.address_details }}
-              </div>
-              <div v-if="client.email">{{ client.email }}</div>
-            </div>
-          </div>
-          <div class="w-8/12 text-left">
-            <div class="">
-              <p class="font-bold">From:</p>
-              <div>{{ businessData.business_name }}</div>
-              <div v-if="businessAddress">{{ businessAddress }}</div>
-            </div>
-            <div class="mt-5">
-              <p class="font-bold">Total due:</p>
-              <div>{{ formatMoney(invoice.debt, "USD") }}</div>
-            </div>
+            <ClientCard label="Cliente" :client="client" />
           </div>
         </div>
       </div>
@@ -64,7 +43,8 @@
         :tableData="tableData"
         :products="products"
         :is-editing="false"
-        class="px-4 mt-10"
+        :hidden-cols="['quantity', 'discount']"
+        class="mt-10 main-grid"
       />
 
       <div class="flex justify-end px-4 mt-10 text-gray-600">
@@ -78,7 +58,6 @@
           :subtotalFormula="totals.subtotalFormula"
           :discountFormula="totals.discountFormula"
           :totalFormula="totals.totalFormula"
-          @edit-payment="editPayment"
         />
       </div>
 
@@ -89,7 +68,7 @@
           <div>Payment is due within {{ dueDays }} days</div>
         </div>
 
-        <div class="w-full text-right" v-if="showSign">
+        <div class="w-full text-right">
           <div class="font-serif invoice__firm">Jesus Guerrero</div>
           <div class="font-bold">Jesus Antonio Guerrero Alvarez</div>
           <div>Software Engineer</div>
@@ -99,31 +78,37 @@
   </section>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { format, toDate, differenceInDays } from "date-fns";
 import { reactive, computed, watch, toRefs } from "vue";
-import { formatMoney } from "@/utils";
 import parseISO from "date-fns/esm/fp/parseISO/index.js";
 
 import InvoiceTotals from "../Partials/InvoiceTotals.vue";
 import InvoiceGrid from "../Partials/InvoiceGrid.vue";
+import ClientCard from "./ClientCard.vue";
+import BusinessCard from "./BusinessCard.vue";
+import { IClient } from "@/Modules/clients/clientEntity";
 
-const defaultInvoice = {
-  concept: "Invoice",
-  lineItems: [],
-};
+const props = withDefaults(
+  defineProps<{
+    imageUrl: string;
+    type: string;
+    user: Record<string, string>;
+    businessData: Record<string, string>;
+    products: Record<string, string>[];
+    clients: IClient[];
+    invoiceData: Record<string, string>;
+  }>(),
+  {
+    type: "INVOICE",
+    imageUrl: "/logo.png",
+  }
+);
 
-const props = defineProps({
-  type: {
-    type: String,
-    default: "INVOICE",
-  },
-  user: Object,
-  businessData: Object,
-  products: Array,
-  clients: Array,
-  invoiceData: [Object, null],
-});
+interface ILineItem {
+  quantity: number;
+  price: number;
+}
 
 const state = reactive({
   totalValues: {},
@@ -131,13 +116,13 @@ const state = reactive({
     subtotalField: "subtotal",
     totalField: "amount",
     discountField: "discountTotal",
-    subtotalFormula(row) {
+    subtotalFormula(row: ILineItem) {
       return row.quantity * row.price;
     },
-    totalFormula(row) {
+    totalFormula(row: ILineItem) {
       return row.quantity * row.price;
     },
-    discountFormula(row) {
+    discountFormula(row: ILineItem) {
       return row.quantity * row.price;
     },
   },
@@ -155,16 +140,13 @@ const state = reactive({
   dueDays: computed(() => {
     return differenceInDays(state.invoice.due_date, state.invoice.date);
   }),
-  businessAddress: computed(() => {
-    return `${props.businessData.business_street}, ${props.businessData.business_city}, ${props.businessData.business_state}, ${props.businessData.business_country}`;
-  }),
 });
 
-const formatDate = (date) => {
+const formatDate = (date: Date) => {
   return format(date, "MMM dd, yyyy");
 };
 
-const setInvoiceData = (data) => {
+const setInvoiceData = (data: Record<string, any>) => {
   if (data) {
     data.date = toDate(parseISO(data.date) || new Date());
     data.due_date = toDate(parseISO(data.due_date) || new Date());
@@ -182,15 +164,7 @@ watch(
   { immediate: true }
 );
 
-const {
-  tableData,
-  client,
-  invoice,
-  totals,
-  totalValues,
-  dueDays,
-  businessAddress,
-} = toRefs(state);
+const { tableData, client, invoice, totals, totalValues, dueDays } = toRefs(state);
 </script>
 
 <style lang="scss" scoped>
@@ -235,6 +209,15 @@ const {
 
   .btn-primary {
     background: dodgerblue;
+  }
+}
+
+.main-grid {
+  thead th {
+    @apply bg-secondary text-white;
+  }
+  .el-table__body-wrapper td {
+    font-size: 1.5em !important;
   }
 }
 
@@ -289,28 +272,15 @@ section {
   padding-bottom: 25px;
   background: white;
 }
+</style>
 
-.avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.avatar-uploader .el-upload:hover {
-  border-color: #409eff;
-}
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  line-height: 178px;
-  text-align: center;
-}
-.avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
+<style lang="scss">
+.main-grid {
+  thead th.el-table__cell {
+    @apply bg-secondary text-white;
+  }
+  .el-table__body-wrapper td {
+    font-size: 1.2em !important;
+  }
 }
 </style>

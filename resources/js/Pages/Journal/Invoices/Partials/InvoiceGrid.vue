@@ -1,6 +1,132 @@
+<script lang="ts" setup>
+import { AtInput, AtSimpleSelect, AtTable } from "atmosphere-ui";
+import { computed, reactive, toRefs, onMounted } from "vue";
+
+import IconTrash from "@/Components/icons/IconTrash.vue";
+
+import cols from "./cols";
+import BaseTable from "@/Components/shared/BaseTable.vue";
+
+const props = defineProps({
+  tableData: {
+    type: Array,
+    default() {
+      return [];
+    },
+  },
+  availableTaxes: {
+    type: Array,
+    default() {
+      return [];
+    },
+  },
+  products: {
+    type: Array,
+    default() {
+      return [];
+    },
+  },
+  resourceUrl: {
+    type: String,
+    default: "/services?filter[name]=%${query}%&relationships=stock",
+  },
+  isEditing: {
+    type: Boolean,
+    default: true,
+  },
+  taxes: {
+    type: Array,
+    default() {
+      return [];
+    },
+  },
+  hiddenCols: {
+    type: Array,
+    default() {
+      return [];
+    },
+  },
+});
+
+const emit = defineEmits(["taxes-updated"]);
+
+const state = reactive({
+  cleaveOptions: {
+    percent: {
+      numericOnly: true,
+      blocks: [3],
+    },
+    money: {
+      decimal: ".",
+      thousands: ",",
+      precision: 2,
+      masked: false,
+    },
+  },
+  services: [],
+  isLoading: false,
+  rowToAdd: {},
+  addMode: false,
+  renderedCols: computed(() => {
+    return props.isEditing ? cols : cols.filter((col) => col.name != "actions");
+  }),
+});
+
+const addRow = () => {
+  const itemTaxes = state.rowToAdd.taxes?.length ? state.rowToAdd.taxes : [];
+  if (props.isEditing && (!props.tableData.length || props.tableData.at(-1).concept))
+    props.tableData.push({
+      product_name: state.rowToAdd?.name,
+      concept: state.rowToAdd?.name,
+      product_id: state.rowToAdd.id,
+      quantity: 1,
+      discount: 0,
+      price: state.rowToAdd.price?.value || 0,
+      amount: 0,
+      taxes: [...itemTaxes, { id: "new" }],
+    });
+};
+
+const removeRow = (index, row) => {
+  const isConfirmed = confirm("Do you want to delete this?");
+  if (!isConfirmed) {
+    return;
+  }
+  const deleted = { ...row };
+  props.tableData.splice(index, 1);
+  emit("deleted", deleted);
+};
+
+const setTax = (rowIndex, taxIndex, taxName) => {
+  const itemRow = props.tableData[rowIndex];
+  const tax = props.availableTaxes.find((availableTax) => taxName == availableTax.name);
+  itemRow.taxes[taxIndex] = tax;
+  emit("taxes-updated", { rowIndex, taxes: itemRow.taxes });
+};
+
+const removeTax = (rowIndex, taxIndex) => {
+  const itemRow = props.tableData[rowIndex];
+  if (itemRow.taxes.length > 1) {
+    const taxes = itemRow.taxes.filter((_tax, index) => index !== taxIndex);
+    emit("taxes-updated", { rowIndex, taxes });
+  }
+};
+
+onMounted(() => {
+  addRow();
+});
+
+const { renderedCols, cleaveOptions } = toRefs(state);
+</script>
+
 <template>
   <div class="w-full">
-    <AtTable :cols="renderedCols" :tableData="tableData" :hide-empty-text="true">
+    <BaseTable
+      :hidden-cols="hiddenCols"
+      :cols="renderedCols"
+      :tableData="tableData"
+      :hide-empty-text="true"
+    >
       <template v-slot:item="{ scope }">
         <div class="d-flex">
           <AtInput
@@ -89,123 +215,10 @@
       <template v-slot:append v-if="isEditing">
         <button @click="addRow()" class="invoice-grid__add-row">Add Row</button>
       </template>
-    </AtTable>
+    </BaseTable>
   </div>
 </template>
-
-<script setup>
-import { AtInput, AtSimpleSelect, AtTable } from "atmosphere-ui";
-import { computed, reactive, toRefs, onMounted } from "vue";
-
-import IconTrash from "@/Components/icons/IconTrash.vue";
-
-import cols from "./cols";
-
-const props = defineProps({
-  tableData: {
-    type: Array,
-    default() {
-      return [];
-    },
-  },
-  availableTaxes: {
-    type: Array,
-    default() {
-      return [];
-    },
-  },
-  products: {
-    type: Array,
-    default() {
-      return [];
-    },
-  },
-  resourceUrl: {
-    type: String,
-    default: "/services?filter[name]=%${query}%&relationships=stock",
-  },
-  isEditing: {
-    type: Boolean,
-    default: true,
-  },
-  taxes: {
-    type: Array,
-    default() {
-      return [];
-    },
-  },
-});
-
-const emit = defineEmits(["taxes-updated"]);
-
-const state = reactive({
-  cleaveOptions: {
-    percent: {
-      numericOnly: true,
-      blocks: [3],
-    },
-    money: {
-      decimal: ".",
-      thousands: ",",
-      precision: 2,
-      masked: false,
-    },
-  },
-  services: [],
-  isLoading: false,
-  rowToAdd: {},
-  addMode: false,
-  renderedCols: computed(() => {
-    return props.isEditing ? cols : cols.filter((col) => col.name != "actions");
-  }),
-});
-
-const addRow = () => {
-  const itemTaxes = state.rowToAdd.taxes?.length ? state.rowToAdd.taxes : [];
-  if (props.isEditing && (!props.tableData.length || props.tableData.at(-1).concept))
-    props.tableData.push({
-      product_name: state.rowToAdd?.name,
-      concept: state.rowToAdd?.name,
-      product_id: state.rowToAdd.id,
-      quantity: 1,
-      discount: 0,
-      price: state.rowToAdd.price?.value || 0,
-      amount: 0,
-      taxes: [...itemTaxes, { id: "new" }],
-    });
-};
-
-const removeRow = (index, row) => {
-  const isConfirmed = confirm("Do you want to delete this?");
-  if (!isConfirmed) {
-    return;
-  }
-  const deleted = { ...row };
-  props.tableData.splice(index, 1);
-  emit("deleted", deleted);
-};
-
-const setTax = (rowIndex, taxIndex, taxName) => {
-  const itemRow = props.tableData[rowIndex];
-  const tax = props.availableTaxes.find((availableTax) => taxName == availableTax.name);
-  itemRow.taxes[taxIndex] = tax;
-  emit("taxes-updated", { rowIndex, taxes: itemRow.taxes });
-};
-
-const removeTax = (rowIndex, taxIndex) => {
-  const itemRow = props.tableData[rowIndex];
-  if (itemRow.taxes.length > 1) {
-    const taxes = itemRow.taxes.filter((_tax, index) => index !== taxIndex);
-    emit("taxes-updated", { rowIndex, taxes });
-  }
-};
-
-onMounted(() => {
-  addRow();
-});
-
-const { renderedCols, cleaveOptions } = toRefs(state);
-</script>
+>
 
 <style lang="scss">
 .el-table,

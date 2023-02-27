@@ -2,19 +2,19 @@ import { formatMoney } from "@/utils";
 
 export default [
   {
-    label: "Items",
+    label: "Descripción",
     name: "item",
     type: "custom",
     fixed: "true",
-    class: "text-primary text-left",
+    class: "text-left",
     headerClass: 'text-left'
   },
   {
-    label: "Quantity",
+    label: "Cant.",
     name: "quantity",
     width: "100",
     type: "custom",
-    class: "text-primary text-right",
+    class: "text-right text-normal",
     headerClass: 'text-right'
   },
   {
@@ -22,34 +22,34 @@ export default [
     name: "discount",
     width: "100",
     type: "custom",
-    class: "text-primary text-right",
+    class: "text-right",
     headerClass: 'text-right'
   },
   {
-    label: "Price",
+    label: "Monto",
     name: "price",
     width: "150",
     type: "custom",
-    class: "text-primary text-right",
+    class: "text-right",
     headerClass: 'text-right'
   },
   {
-    label: "Taxes",
+    label: "Descuento",
     name: "taxes",
     width: "150",
     type: "custom",
-    class: "text-primary text-center",
+    class: "text-center",
     headerClass: 'text-center',
     render(row) {
-      return row.taxes.map(row => row.label + ' ' + row.rate + '%').join(', ')
+      return row.taxes?.map(row => row.label + ' ' + row.rate + '%').join(', ')
     }
   },
   {
-    label: "Amount",
+    label: "Total",
     name: "amount",
     width: "120",
     type: "calc",
-    class: "text-primary text-right",
+    class: "text-right",
     headerClass: 'text-right',
     formula(row) {
       const discount = Number(row.discount, 0);
