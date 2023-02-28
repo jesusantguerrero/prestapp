@@ -115,6 +115,8 @@ Route::middleware([
     // Tenant
     Route::get('/clients/{client}/rents/{rent}/end', [TenantRentController::class, 'endRent'])->name('tenant.end-rent');;
     Route::put('/clients/{client}/rents/{rent}/end', [TenantRentController::class, 'endRentAction'])->name('tenant.end-rent-action');
+    Route::get('/contacts/{client}/tenants/rents/{rent}/renew', [TenantRentController::class, 'renewRent'])->name('tenant.renew-rent');;
+    Route::put('/contacts/{client}/tenants/rents/{rent}/renew', [TenantRentController::class, 'renewRentAction'])->name('tenant.renew-rent-action');
 
     // Reports
     Route::get('/statements/{category}', [ReportController::class, 'statements'])->name('statements.category');

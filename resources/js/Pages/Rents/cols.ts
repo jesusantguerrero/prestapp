@@ -7,6 +7,7 @@ import { ElAvatar, ElTag } from "element-plus"
 // @ts-ignore
 import IconMarker from '@/Components/icons/IconMarker.vue';
 import { differenceInCalendarDays, parseISO } from 'date-fns';
+import { Link } from '@inertiajs/vue3';
 
 interface IRent {
     client: IClient,
@@ -62,7 +63,7 @@ export default [
             if (row.end_date) {
               daysLeft = differenceInCalendarDays(parseISO(row.end_date), new Date())
             }
-            return h(ElTag, { type: getRentStatusColor(row.status) }, daysLeft)
+            return h(Link, {href: `/contacts/${row.client?.id}/tenants/rents/${row.id}/renew`} , h(ElTag, { type: getRentStatusColor(row.status) }, daysLeft))
         }
     }, {
         name: 'status',
