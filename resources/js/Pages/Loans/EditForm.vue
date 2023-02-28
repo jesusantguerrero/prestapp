@@ -130,7 +130,7 @@ const onSubmit = () => {
     });
 };
 
-const showAdvancedOptions = ref(false);
+const showAdvancedOptions = ref(true);
 
 const goToList = () => {
   router.visit("/loans");
@@ -207,7 +207,10 @@ const goToList = () => {
             </AppFormField>
           </section>
         </FormSection>
-        <AppButton class="w-full" @click="showAdvancedOptions = !showAdvancedOptions">
+        <AppButton
+          class="w-full justify-center text-center"
+          @click="showAdvancedOptions = !showAdvancedOptions"
+        >
           Opciones Avanzadas</AppButton
         >
         <FormSection

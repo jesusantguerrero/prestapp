@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Properties;
 
 use App\Domains\Properties\Models\Rent;
+use App\Domains\Properties\Services\PropertyService;
 use App\Domains\Properties\Services\RentService;
 use App\Http\Controllers\InertiaController;
 use Illuminate\Http\Request;
@@ -31,12 +32,21 @@ class RentController extends InertiaController
         $this->sorts = ['created_at'];
         $this->includes = ['client', 'property'];
         $this->filters = [];
-        $this->resourceName= "loans";
+        $this->page = 1;
+        $this->limit = 10;
     }
 
     public function create(Request $request) {
+      $client = $request->query('client');
+      $unitId = $request->query('unit');
+
+      $unit = PropertyService::hintUnit($unitId);
+
       return inertia($this->templates['create'], [
         'rents' => null,
+        'client' => null,
+        'property' => $unit?->property,
+        'unit' => $unit
       ]);
     }
 

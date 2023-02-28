@@ -1,73 +1,55 @@
-<script setup>
-import { watch } from "vue";
-import { AtButton, AtField, AtInput, AtSelect, AtTextarea } from "atmosphere-ui";
-import { useForm } from "@inertiajs/vue3";
-import { ElNotification } from "element-plus";
+<script setup lang="ts">
+import { AtInput, AtTextarea } from "atmosphere-ui";
 
-import AppLayout from "@/Components/templates/AppLayout.vue";
-import AppButton from "@/Components/shared/AppButton.vue";
+import AppFormField from "@/Components/shared/AppFormField.vue";
 
-import { propertyTypes } from "@/Modules/properties/constants";
+import { IUnit } from "@/Modules/properties/propertyEntity";
 
-const props = defineProps({
-  property: {
-    type: Object,
-  },
-});
-
-const emit = defineEmits(["close"]);
-
-const formData = useForm({
-  index: 0,
-  description: "",
-  price: 0,
-  name: "",
-});
-
-// api calls
-const onSubmit = () => {
-  if (!formData.name || !formData.price) {
-    ElNotification({
-      type: "Error",
-      message: "Debe llenar los campos de nombre y precio de renta al menos",
-      title: "Campos requeridos",
-    });
-    return;
-  }
-  formData.post(`/properties/${props.property.id}/units/`, {
-    onsuccess() {
-      emit("close");
-    },
-  });
-};
+defineProps<{
+  unit: IUnit;
+}>();
 </script>
 
 <template>
-  <main class="mx-auto text-gray-500 sm:px-6 lg:px-8">
-    <header class="font-bold py-4 text-xl flex">
-      <h4>Agregar unidad</h4>
-      <Button>
-        <IMdiClose />
-      </Button>
-    </header>
-    <AtField class="w-full" label="Nombre">
-      <AtInput v-model="formData.name" class="w-full" rounded required />
-    </AtField>
-    <section class="space-x-4 grid grid-cols-[196px,1fr]">
-      <AtField class="w-full" label="Precio de Renta">
-        <AtInput v-model="formData.price" class="w-full" rounded number-format required />
-      </AtField>
-      <AtField label="Descripción">
-        <AtTextarea
-          v-model="formData.description"
-          class="w-full p-2 border focus:outline-none"
-          placeholder="Descripcion de la propiedad"
-        />
-      </AtField>
+  <section>
+    <section class="grid grid-cols-4 gap-4">
+      <AppFormField class="w-full" label="Precio de Renta">
+        <AtInput v-model="unit.price" class="w-full" rounded number-format />
+      </AppFormField>
+      <AppFormField class="w-full" label="Area" v-model="unit.area" rounded>
+        <template #prefix>
+          <span class="inline-blocks h-full flex items-center px-2">
+            <i-ic-sharp-photo-size-select-small />
+          </span>
+        </template>
+      </AppFormField>
+      <AppFormField class="w-full" label="Habitaciones" v-model="unit.bedrooms" rounded>
+        <template #prefix>
+          <span class="inline-blocks h-full flex items-center px-2">
+            <IIcTwotoneBed />
+          </span>
+        </template>
+      </AppFormField>
+      <AppFormField
+        class="w-full"
+        label="Baños"
+        v-model="unit.bathrooms"
+        rounded
+        placeholder="0"
+      >
+        <template #prefix>
+          <span class="inline-blocks h-full flex items-center px-2">
+            <IIcTwotoneBathtub />
+          </span>
+        </template>
+      </AppFormField>
     </section>
-    <footer class="justify-end w-full flex space-x-4 py-1">
-      <AppButton variant="error" @click="$emit('close')"> Cerrar </AppButton>
-      <AppButton @click="onSubmit()"> Guardar </AppButton>
-    </footer>
-  </main>
+    <AppFormField label="Notas/Detalles">
+      <AtTextarea
+        v-model="unit.description"
+        class="w-full p-2 border focus:outline-none"
+        placeholder="Descripcion de la propiedad"
+      />
+    </AppFormField>
+  </section>
 </template>

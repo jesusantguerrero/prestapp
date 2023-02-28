@@ -11,31 +11,36 @@ import RentFormContract from "./RentFormContract.vue";
 import RentFormFees from "./RentFormFees.vue";
 
 import { dateToIso, formatDate } from "@/utils";
+import { IClient } from "@/Modules/clients/clientEntity";
+import { IProperty, IUnit } from "@/Modules/properties/propertyEntity";
 
-defineProps<{
+const props = defineProps<{
   data: Record<string, any>;
   isProcessing: boolean;
+  client: IClient;
+  unit: IUnit;
+  property: IProperty;
 }>();
 
 const emit = defineEmits(["submit"]);
 
 const rentForm = reactive({
-  property_id: null,
-  property: null,
-  unit_id: null,
-  unit: null,
+  property_id: props.property?.id,
+  property: props.property,
+  unit_id: props.unit?.id,
+  unit: props.unit,
   is_new_client: false,
   client_id: null,
   client_name: "",
   client: null,
   date: new Date(),
-  deposit: 0,
+  deposit: props.unit?.price,
   deposit_due: new Date(),
   is_deposit_received: false,
   deposit_reference: "",
   payment_account_id: null,
   payment_method: "",
-  amount: 0,
+  amount: props.unit?.price,
   first_invoice_date: addMonths(new Date(), 1),
   next_invoice_date: addMonths(new Date(), 1),
   end_date: null,

@@ -19,4 +19,13 @@ export interface IUnit {
   owner: IClientSaved;
   client: IClientSaved;
   contract: Record<string, any>
+  bathrooms: number;
+  bedrooms: number;
+  area: number;
+}
+
+export interface IRent {
+  id: number;
+  property_id: number;
+  unit_id: number;
 }

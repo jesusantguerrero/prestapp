@@ -1,48 +1,5 @@
 /* eslint-disable vue/valid-v-on */
-<template>
-  <div class="invoice-totals">
-    <p class="total-labels">
-      <span class="label">Subtotal: </span>
-      <span class="value">{{ formatMoney(totals.subtotal) }}</span>
-    </p>
-    <template v-if="hasTaxes">
-      <p class="total-labels" v-for="(tax, taxName) in totals.taxes">
-        <span class="label">{{ taxName }}: </span>
-        <span class="value">{{ formatMoney(tax) }}</span>
-      </p>
-    </template>
-
-    <p class="total-labels">
-      <span class="label">Discount:</span>
-      <span class="value">{{ formatMoney(totals.discount) }}</span>
-    </p>
-
-    <p class="total-labels total-remark">
-      <span class="label"> Total: </span>
-      <span class="value">{{ formatMoney(totals.total) }}</span>
-    </p>
-
-    <div v-if="payments && payments.length">
-      <i
-        class="text-green-500 total-labels payment-label"
-        v-for="payment in payments"
-        :key="payment.id"
-        @click.stop="$emit('edit-payment', payment)"
-      >
-        <span class="label"> Pagado en {{ formatDate(payment.payment_date) }} </span>
-        <span class="value">- {{ formatMoney(payment.amount) }}</span>
-      </i>
-    </div>
-
-    <p class="total-labels total-remark">
-      <span class="label"> Debt: </span>
-      <span class="value">{{ formatMoney(debt) }}</span>
-    </p>
-    <slot name="add-payment" v-if="debt" :slot-scope:scope="{ debt }"> </slot>
-  </div>
-</template>
-
-<script setup>
+<script lang="ts" setup>
 import { formatMoney, formatDate } from "@/utils";
 import { computed, reactive, watch, toRefs } from "vue";
 import ExactMath from "exact-math";
@@ -170,6 +127,49 @@ watch(
 const { totals, debt, hasTaxes, paymentTotal } = toRefs(state);
 </script>
 
+<template>
+  <div class="invoice-totals">
+    <p class="total-labels">
+      <span class="label">Subtotal: </span>
+      <span class="value">{{ formatMoney(totals.subtotal) }}</span>
+    </p>
+    <template v-if="hasTaxes">
+      <p class="total-labels" v-for="(tax, taxName) in totals.taxes">
+        <span class="label">{{ taxName }}: </span>
+        <span class="value">{{ formatMoney(tax) }}</span>
+      </p>
+    </template>
+
+    <p class="total-labels">
+      <span class="label">Descuento:</span>
+      <span class="value">{{ formatMoney(totals.discount) }}</span>
+    </p>
+
+    <p class="total-labels total-remark">
+      <span class="label"> Total: </span>
+      <span class="value">{{ formatMoney(totals.total) }}</span>
+    </p>
+
+    <div v-if="payments && payments.length">
+      <i
+        class="text-green-500 total-labels payment-label"
+        v-for="payment in payments"
+        :key="payment.id"
+        @click.stop="$emit('edit-payment', payment)"
+      >
+        <span class="label"> Pagado en {{ formatDate(payment.payment_date) }} </span>
+        <span class="value">- {{ formatMoney(payment.amount) }}</span>
+      </i>
+    </div>
+
+    <p class="total-labels total-remark">
+      <span class="label"> Deuda: </span>
+      <span class="value">{{ formatMoney(debt) }}</span>
+    </p>
+    <slot name="add-payment" v-if="debt" :slot-scope:scope="{ debt }"> </slot>
+  </div>
+</template>
+
 <style lang="scss">
 .total-labels {
   color: #909399;
@@ -178,11 +178,10 @@ const { totals, debt, hasTaxes, paymentTotal } = toRefs(state);
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-column-gap: 5px;
-  font-size: 13px;
 
   &.payment-label {
     cursor: pointer;
-    @apply text-green-500 mr-5;
+    @apply text-green-500;
   }
 
   .value {

@@ -7,6 +7,7 @@ withDefaults(
     label: string;
     modelValue?: any;
     required?: boolean;
+    placeholder?: string;
   }>(),
   {
     required: false,
@@ -22,6 +23,7 @@ withDefaults(
         @update:modelValue="$emit('update:modelValue', $event)"
         rounded
         :required="required"
+        :placeholder="placeholder"
         class="bg-neutral/20 shadow-none border-neutral hover:border-secondary/60 focus:border-secondary/60"
       >
         <template #suffix>

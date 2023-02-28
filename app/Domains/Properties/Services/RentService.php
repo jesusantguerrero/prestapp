@@ -64,6 +64,14 @@ class RentService {
       throw new Exception('Rent is already cancelled');
     }
 
+    public static function extend(Rent $rent, $formData) {
+      if ($rent->status == Rent::STATUS_ACTIVE) {
+        $rent->update($formData);
+        return;
+      }
+      throw new Exception('Rent is cant be extended/ ');
+    }
+
     public static function getForEdit(int $id) {
       return Rent::where('id', $id)
       ->with(['client', 'invoices', 'transaction', 'property.owner', 'property'])->first();

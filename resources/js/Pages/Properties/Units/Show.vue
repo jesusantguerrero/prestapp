@@ -6,11 +6,12 @@ import { AtBackgroundIconCard } from "atmosphere-ui";
 import Modal from "@/Components/Modal.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
-import AppSectionHeader from "../../Components/AppSectionHeader.vue";
+import AppSectionHeader from "@/Components/AppSectionHeader.vue";
 import IconMarker from "@/Components/icons/IconMarker.vue";
 import IconCoins from "@/Components/icons/IconCoins.vue";
 import IconPersonSafe from "@/Components/icons/IconPersonSafe.vue";
 import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.vue";
+
 import ContractCard from "./Partials/ContractCard.vue";
 import EmptyAddTool from "./Partials/EmptyAddTool.vue";
 import UnitForm from "./Partials/UnitFormModal.vue";

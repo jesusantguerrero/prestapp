@@ -109,9 +109,6 @@ const print = () => {
             <Link :href="`/transactions/${invoice.transaction.id}`" class="underline cursor-pointer text-primary underline-offset-1">Asiento Contable</Link>
           </section>
           <section>
-            Detalles de envio
-          </section>
-          <section>
             Detalles de cobro
             <p>
               <span>Deuda: {{ formatMoney(invoice.debt) }} — Recibir pago manual </span>

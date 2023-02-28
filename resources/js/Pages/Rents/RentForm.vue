@@ -4,14 +4,16 @@ import { useForm, router } from "@inertiajs/vue3";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 
 import { ILoan } from "@/Modules/loans/loanEntity";
-import { IProperty } from "@/Modules/properties/propertyEntity";
+import { IProperty, IUnit } from "@/Modules/properties/propertyEntity";
 import { IClient } from "@/Modules/clients/clientEntity";
 import RentFormTemplate from "./Partials/RentFormTemplate.vue";
 
 defineProps<{
-  rentData: ILoan[];
+  rentData: IProperty[];
   properties: IProperty[];
-  clients: IClient[];
+  client: IClient;
+  unit: IUnit;
+  property: IProperty;
 }>();
 
 const rentForm = useForm({});
@@ -35,6 +37,9 @@ const onSubmit = (formData: Record<string, any>) => {
     >
       <RentFormTemplate
         :data="rentForm"
+        :client="client"
+        :property="property"
+        :unit="unit"
         :current-step="step"
         :is-processing="rentForm.processing"
         @submit="onSubmit"
@@ -44,7 +49,7 @@ const onSubmit = (formData: Record<string, any>) => {
 </template>
 
 <style scoped>
-@screen sm {
+@media (max-width: 640px) {
   .rent-form {
     height: calc(100vh - 100px);
     overflow: auto;

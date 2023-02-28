@@ -10,7 +10,7 @@ class PropertyUnitController extends InertiaController
   public function __construct(PropertyUnit $unit)
   {
       $this->model = $unit;
-      $this->searchable = ['name'];
+      $this->searchable  = ['name'];
       $this->templates = [
           "index" => 'Properties/UnitList',
           "create" => 'Properties/PropertyForm',
@@ -19,7 +19,7 @@ class PropertyUnitController extends InertiaController
       ];
       $this->validationRules = [
           'owner_id' => 'numeric',
-          'address' => 'string',
+                                                                                    'address' => 'string',
           'price' => 'required'
       ];
       $this->sorts = ['created_at'];
@@ -30,3 +30,4 @@ class PropertyUnitController extends InertiaController
       $this->resourceName= "units";
   }
 }
+                             

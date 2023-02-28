@@ -10,6 +10,7 @@ import AppButton from "../../Components/shared/AppButton.vue";
 import { propertyTypes } from "@/Modules/properties/constants";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import { IClient } from "@/Modules/clients/clientEntity";
+import AppFormField from "@/Components/shared/AppFormField.vue";
 
 const props = defineProps(["properties", "clients"]);
 
@@ -104,15 +105,14 @@ const addUnit = () => {
     <main class="mx-auto mt-8 text-gray-500 sm:px-6 lg:px-8">
       <div class="w-full px-5 py-4 space-y-4 text-gray-600 bg-white rounded-md shadow-md">
         <div class="flex space-x-5">
-          <AtField class="w-full" label="Dirección">
-            <AtInput
-              v-model="formData.address"
-              class="w-full border-b focus:outline-none"
-              placeholder="Dirección"
-              rounded
-            />
-          </AtField>
-          <AtField class="w-4/12" label="Dueño de propiedad">
+          <AppFormField
+            label="Dirección"
+            v-model="formData.address"
+            class="w-full border-b focus:outline-none"
+            placeholder="Dirección"
+            rounded
+          />
+          <AppFormField class="w-4/12" label="Dueño de propiedad">
             <BaseSelect
               v-model="formData.owner"
               endpoint="/api/clients?filter[is_owner]=1"
@@ -120,44 +120,74 @@ const addUnit = () => {
               label="display_name"
               track-by="id"
             />
-          </AtField>
+          </AppFormField>
         </div>
-        <div class="md:flex md:space-y-0 md:space-x-2 space-y-4">
-          <AtField class="w-full" label="Nombre de propiedad">
-            <AtInput
-              v-model="formData.name"
-              class="w-full"
-              placeholder="Nombre de propiedad"
-              rounded
-            />
-          </AtField>
-          <AtField class="w-full" label="Tipo de propiedad">
-            <AtSelect
-              v-model="formData.property_type"
-              v-model:selected="formData.type"
+        <div class="md:flex md:space-x-2 space-y-4">
+          <AppFormField
+            label="Nombre de propiedad"
+            v-model="formData.name"
+            class="w-full"
+            placeholder="Nombre de propiedad"
+            rounded
+          />
+          <AppFormField class="w-full" label="Tipo de propiedad">
+            <BaseSelect
+              v-model="formData.type"
+              @update:model-value="formData.property_type = $event.name"
               :options="propertyTypes"
               placeholder="Selecciona un tipo"
               label="label"
-              key-track="value"
+              track-by="name"
             />
-          </AtField>
+          </AppFormField>
         </div>
 
         <!-- Units -->
-        <section
-          class="space-x-4 grid grid-cols-[196px,1fr]"
-          v-for="unit in formData.units"
-        >
-          <AtField class="w-full" label="Precio de Renta">
-            <AtInput v-model="unit.price" class="w-full" rounded number-format />
-          </AtField>
-          <AtField label="Descripción">
+        <section v-for="unit in formData.units">
+          <section class="grid grid-cols-4 gap-4">
+            <AppFormField class="w-full" label="Precio de Renta">
+              <AtInput v-model="unit.price" class="w-full" rounded number-format />
+            </AppFormField>
+            <AppFormField class="w-full" label="Area" v-model="unit.area" rounded>
+              <template #prefix>
+                <span class="inline-blocks h-full flex items-center px-2">
+                  <i-ic-sharp-photo-size-select-small />
+                </span>
+              </template>
+            </AppFormField>
+            <AppFormField
+              class="w-full"
+              label="Habitaciones"
+              v-model="unit.bedrooms"
+              rounded
+            >
+              <template #prefix>
+                <span class="inline-blocks h-full flex items-center px-2">
+                  <IIcTwotoneBed />
+                </span>
+              </template>
+            </AppFormField>
+            <AppFormField
+              class="w-full"
+              label="Baños"
+              v-model="unit.bathrooms"
+              rounded
+              placeholder="0"
+            >
+              <template #prefix>
+                <span class="inline-blocks h-full flex items-center px-2">
+                  <IIcTwotoneBathtub />
+                </span>
+              </template>
+            </AppFormField>
+          </section>
+          <AppFormField label="Notas/Detalles">
             <AtTextarea
               v-model="unit.description"
               class="w-full p-2 border focus:outline-none"
               placeholder="Descripcion de la propiedad"
             />
-          </AtField>
+          </AppFormField>
         </section>
         <AtButton class="text-gray-400" @click="addUnit()">
           <i class="mr-2 fa fa-plus-circle"></i>

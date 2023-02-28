@@ -3,19 +3,21 @@
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import { router } from "@inertiajs/core";
 import { computed, toRefs, reactive, ref } from "vue";
-import cols from "./Partials/unitCols";
+
 import AtTable from "@/Components/shared/BaseTable.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import PropertySectionNav from "./Partials/PropertySectionNav.vue";
+import ButtonGroup from "@/Components/ButtonGroup.vue";
+import UnitTag from "@/Components/realState/UnitTag.vue";
+import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
+
+import cols from "./Partials/unitCols";
 import { IPaginatedData } from "@/utils/constants";
 import { IProperty, IUnit } from "@/Modules/properties/propertyEntity";
 import { useServerSearch, IServerSearchData } from "@/utils/useServerSearch";
 import { Link } from "@inertiajs/vue3";
-import UnitTag from "@/Components/realState/UnitTag.vue";
-import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
-import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import { propertyStatus } from "@/Modules/properties/constants";
-import ButtonGroup from "@/Components/ButtonGroup.vue";
+import BaseSelect from "@/Components/shared/BaseSelect.vue";
 
 const props = defineProps<{
   units: IProperty[] | IPaginatedData<IProperty>;
@@ -121,14 +123,14 @@ const handleChange = (sectionName: string) => {
         :table-data="listData.data"
         :cols="cols"
         :pagination="searchState"
-        :total="listData.total"
+        :total="units.total"
         @search="executeSearch"
         @paginate="paginate"
         @size-change="changeSize"
         :config="tableConfig"
       >
         <template v-slot:actions="{ scope: { row } }">
-          <div class="flex justify-end">
+          <div class="flex justify-end items-center">
             <UnitTag :status="row.status" />
 
             <Link
@@ -143,6 +145,14 @@ const handleChange = (sectionName: string) => {
                 variant="neutral"
                 v-if="row.contract"
                 @click="router.visit(`/rents/${row.contract.id}`)"
+              >
+                <IMdiFile />
+              </AppButton>
+              <AppButton
+                class="hover:text-primary transition items-center flex flex-col justify-center hover:border-primary-400"
+                variant="neutral"
+                v-else
+                @click="router.visit(`/rents/create?unit=${row.id}`)"
               >
                 <IMdiFile />
               </AppButton>

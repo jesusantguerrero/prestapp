@@ -166,13 +166,11 @@ class Rent extends Transactionable implements IPayableDocument {
 
     public static function checkStatus($payable) {
       $debt = $payable->total - $payable->amount_paid;
-      if ($debt == 0 && !$payable->move_out_at) {
-          $status = self::STATUS_ACTIVE;
-      } elseif ($debt > 0 && $debt < $payable->amount) {
+      if ($debt > 0 && $debt < $payable->amount) {
           $status = self::STATUS_PARTIALLY_PAID;
       } elseif ($debt && $payable->hasLateInvoices()) {
           $status = self::STATUS_LATE;
-      } elseif ($debt) {
+      } elseif ($debt == 0 && !$payable->move_out_at) {
           $status = self::STATUS_ACTIVE;
       } elseif ($payable->move_out_at) {
           $status = self::STATUS_CANCELLED;

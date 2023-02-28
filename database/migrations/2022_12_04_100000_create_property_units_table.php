@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreignId('owner_id');
             $table->foreignId('property_id')->nullable();
 
-            // terms
+            // Data
             $table->string('name')->nullable();
             $table->string('owner_name')->nullable();
             $table->string('property_name')->nullable();
@@ -31,6 +31,12 @@ return new class extends Migration
             $table->decimal('price', 14, 4)->default(0.00);
             $table->decimal('commission', 14, 4)->default(0.00);
             $table->enum('commission_type', ['PERCENTAGE', 'FIXED'])->default('PERCENTAGE');
+
+            // amenities
+            $table->string('area')->nullable();
+            $table->string('bathrooms')->nullable();
+            $table->string('bedrooms')->nullable();
+            $table->json('amenities')->default('[]');
 
             // state
             $table->enum('status', [

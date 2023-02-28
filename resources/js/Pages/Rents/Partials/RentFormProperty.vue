@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { watch, computed, toRefs } from "vue";
-// @ts-expect-error
-import { AtField } from "atmosphere-ui";
+import { computed, toRefs } from "vue";
 
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import FormSection from "./FormSection.vue";
@@ -37,7 +35,7 @@ const availableUnits = computed(() => {
 
 <template>
   <section>
-    <FormSection section-class="flex flex-col md:flex-row">
+    <FormSection section-class="flex flex-col md:space-x-4 md:flex-row">
       <AppFormField class="w-full" label="Propiedad">
         <BaseSelect
           v-model="formData.property"

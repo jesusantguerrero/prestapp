@@ -64,7 +64,10 @@ const menus = {
     },
     {
         label: 'Inquilinos',
-        url: '/contacts/tenant?filter[status]=active&relationships=rent,rent.property'
+        url: '/contacts/tenant?filter[status]=active&relationships=rent,rent.property',
+        isActiveFunction(currentPath: string) {
+          return /tenant/.test(currentPath)
+        },
     },
     {
       label: 'Dueños',

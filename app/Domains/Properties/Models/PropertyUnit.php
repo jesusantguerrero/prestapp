@@ -28,6 +28,10 @@ class PropertyUnit extends Model {
         'index',
         'description',
         'price',
+        'area',
+        'bedrooms',
+        'bathrooms',
+        'amenities',
         'status'
     ];
 
