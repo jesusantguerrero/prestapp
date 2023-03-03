@@ -10,6 +10,7 @@ import PropertySectionNav from "../Partials/PropertySectionNav.vue";
 import { formatMoney, formatDate } from "@/utils";
 import BaseTable from "@/Components/shared/BaseTable.vue";
 import { TableColumnCtx } from "element-plus";
+import AppButton from "@/Components/shared/AppButton.vue";
 
 const props = defineProps({
   invoices: {
@@ -62,6 +63,7 @@ interface SummaryMethodProps<T = IInvoice> {
   columns: TableColumnCtx<T>[];
   data: T[];
 }
+
 const getSummaries = (param: SummaryMethodProps) => {
   const { columns, data } = param;
   const sums: string[] = [];
@@ -89,6 +91,47 @@ const getSummaries = (param: SummaryMethodProps) => {
 
   return sums;
 };
+
+const drawCols = [
+  {
+    name: "description",
+    label: "Descripcion / Cliente",
+    width: 300,
+  },
+  {
+    name: "due_date",
+    label: "Fecha",
+    render(row: any) {
+      return formatDate(row.due_date);
+    },
+  },
+  {
+    name: "property_name",
+    label: "Propiedad",
+  },
+
+  {
+    name: "total",
+    label: "Disponible para pago",
+    render(row: any) {
+      return formatMoney(row.total);
+    },
+  },
+  {
+    name: "Debt",
+    label: "Pago pendiente",
+    render(row: any) {
+      return formatMoney(row.debt);
+    },
+  },
+  {
+    name: "total",
+    label: "Monto a pagar",
+    render(row: any) {
+      return formatMoney(row.total);
+    },
+  },
+];
 </script>
 
 <template>
@@ -133,48 +176,12 @@ const getSummaries = (param: SummaryMethodProps) => {
           show-summary
           selectable
           :summary-method="getSummaries"
-          :cols="[
-                {
-                  name: 'description',
-                  label: 'Descripcion / Cliente',
-                  width: 300
-                },
-                {
-                  name: 'due_date',
-                  label: 'Fecha',
-                  render(row: any) {
-                    return formatDate(row.due_date)
-                  }
-                },
-                {
-                  name: 'property_name',
-                  label: 'Propiedad',
-                },
-
-                {
-                  name: 'total',
-                  label: 'Disponible para pago',
-                  render(row: any) {
-                    return formatMoney(row.total)
-                  }
-                },
-                {
-                  name: 'Debt',
-                  label: 'Pago pendiente',
-                  render(row: any) {
-                    return formatMoney(row.debt)
-                  }
-                },
-                {
-                  name: 'total',
-                  label: 'Monto a pagar',
-                  render(row: any) {
-                    return formatMoney(row.total)
-                  }
-                },
-              ]"
+          :cols="drawCols"
           :table-data="client.invoices"
         />
+        <footer class="flex justify-end px-4 py-2">
+          <AppButton variant="secondary">Crear Factura de distribucion</AppButton>
+        </footer>
       </div>
     </div>
   </AppLayout>

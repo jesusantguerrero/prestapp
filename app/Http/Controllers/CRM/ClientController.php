@@ -10,7 +10,6 @@ class ClientController extends InertiaController
 {
   use ClientTabs;
   use ClientTenant;
-  use OwnerTrait;
 
   public function __construct(Client $client)
   {
