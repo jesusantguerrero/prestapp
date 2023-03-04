@@ -111,9 +111,9 @@ Route::middleware([
     Route::controller(PropertyOwnerController::class)->group(function() {
       Route::post('/clients/{client}/owner-distributions', 'generateDraw');
       Route::put('/clients/{client}/owner-distributions/{invoice}', 'generateDraw');
-      Route::get('/owner/draws', '__invoke')->name('owners.draw');
-      Route::post('/owner/{client}/draws', 'storeDraws')->name('owners.draw.store');
-      Route::post('/owner/{client}/draws/{drawId}', 'updateDraws')->name('owners.draw.update');
+      Route::get('/owners/draws', '__invoke')->name('owners.draw');
+      Route::post('/owners/{client}/draws', 'storeDraws')->name('owners.draw.store');
+      Route::post('/owners/{client}/draws/{drawId}', 'updateDraws')->name('owners.draw.update');
     });
 
     // Tenant

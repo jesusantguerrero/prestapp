@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { reactive, watch } from "vue";
+import { reactive, watch, Ref } from "vue";
 import { AtBackgroundIconCard } from "atmosphere-ui";
-import { router } from "@inertiajs/vue3";
+import { router, useForm } from "@inertiajs/vue3";
 
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
@@ -9,7 +9,7 @@ import PropertySectionNav from "../Partials/PropertySectionNav.vue";
 
 import { formatMoney, formatDate } from "@/utils";
 import BaseTable from "@/Components/shared/BaseTable.vue";
-import { TableColumnCtx } from "element-plus";
+import { ElNotification, TableColumnCtx } from "element-plus";
 import AppButton from "@/Components/shared/AppButton.vue";
 
 const props = defineProps({
@@ -57,7 +57,10 @@ watch(
   { deep: true }
 );
 
-interface IInvoice {}
+interface IInvoice {
+  id: number;
+  total: number;
+}
 
 interface SummaryMethodProps<T = IInvoice> {
   columns: TableColumnCtx<T>[];
@@ -132,6 +135,31 @@ const drawCols = [
     },
   },
 ];
+
+const formData = useForm({
+  client: null,
+  invoices: [] as IInvoice[],
+});
+
+function handleSelection(selectedInvoices: IInvoice[]) {
+  console.log(selectedInvoices);
+  formData.invoices = selectedInvoices.map((invoice) => ({
+    id: invoice.id,
+    total: invoice.total,
+  }));
+}
+
+function createOwnerDistribution() {
+  formData.post(`/owners/${filters.owner?.id}/draws`, {
+    onSuccess() {
+      ElNotification({
+        title: "Creada",
+        message: "Factura de propiedad creada con exito",
+        type: "success",
+      });
+    },
+  });
+}
 </script>
 
 <template>
@@ -140,9 +168,11 @@ const drawCols = [
       <PropertySectionNav>
         <template #actions>
           <BaseSelect
-            :options="owners"
-            placeholder="Filtrar por dueño"
             v-model="filters.owner"
+            endpoint="/api/clients?filter[is_owner]=1"
+            placeholder="Selecciona un dueño"
+            label="display_name"
+            track-by="id"
           />
         </template>
       </PropertySectionNav>
@@ -175,12 +205,15 @@ const drawCols = [
           table-class="px-0"
           show-summary
           selectable
+          @selection-change="handleSelection"
           :summary-method="getSummaries"
           :cols="drawCols"
           :table-data="client.invoices"
         />
         <footer class="flex justify-end px-4 py-2">
-          <AppButton variant="secondary">Crear Factura de distribucion</AppButton>
+          <AppButton variant="secondary" @click="createOwnerDistribution">
+            Crear Factura de distribucion
+          </AppButton>
         </footer>
       </div>
     </div>

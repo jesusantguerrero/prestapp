@@ -130,6 +130,7 @@ const visibleCols = computed(() => {
         :header-cell-class-name="getHeaderClass"
         @sort-change="$emit('sort', $event)"
         @row-click="$emit('row-click', $event)"
+        @selection-change="$emit('selection-change', $event)"
       >
         <ElTableColumn type="selection" width="55" v-if="selectable" />
         <ElTableColumn type="expand" v-if="$slots.expand">

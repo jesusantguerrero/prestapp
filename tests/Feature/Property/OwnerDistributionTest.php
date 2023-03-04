@@ -101,4 +101,18 @@ class OwnerDistributionTest extends PropertyBase
           [$rent->user], InvoiceGenerated::class
       );
     }
+
+    public function testItShouldCreateOwnerDistributionManually()
+    {
+      $rent = $this->generateInvoices();
+      $this->payInvoices($rent);
+
+
+      return $this->post("/owners/{$this->owner->id}/draws", [
+          'invoices' => $this->owner->fresh()->getPropertyInvoices()
+        ]
+      );
+
+      $this->assertEquals('owner_distribution', $rent->owner->fresh()->invoices()->first()->category_type);
+    }
 }

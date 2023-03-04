@@ -34,8 +34,8 @@ class OwnerDistributionService {
     }
 
     public function fromRequest(mixed $formData) {
-      $selectedInvoices = collect($formData['selectedInvoices']);
-      $invoices = Invoice::whereIn($selectedInvoices->pluck('id'));
+      $selectedInvoices = collect($formData['invoices']);
+      $invoices = Invoice::whereIn('id', $selectedInvoices->pluck('id')->toArray())->get();
       $this->storeOwnerDistribution($this->client, $invoices);
     }
 
