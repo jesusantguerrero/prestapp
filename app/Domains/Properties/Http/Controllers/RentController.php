@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Properties;
+namespace App\Domains\Properties\Http\Controllers;
 
 use App\Domains\Properties\Models\Rent;
 use App\Domains\Properties\Services\PropertyService;

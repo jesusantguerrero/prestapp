@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Properties;
+namespace App\Domains\Properties\Http\Controllers;
 
 use App\Domains\CRM\Services\ClientService;
 use App\Domains\Properties\Models\Property;
@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 class PropertyController extends InertiaController
 {
-  
+
   public function __construct(Property $property)
   {
       $this->model = $property;

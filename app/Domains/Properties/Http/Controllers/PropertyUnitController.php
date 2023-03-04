@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Properties;
+namespace App\Domains\Properties\Http\Controllers;
 
 use App\Domains\Properties\Models\PropertyUnit;
 use App\Http\Controllers\InertiaController;
@@ -30,4 +30,3 @@ class PropertyUnitController extends InertiaController
       $this->resourceName= "units";
   }
 }
-                             

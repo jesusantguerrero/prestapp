@@ -11,12 +11,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SettingsController;
 
 use App\Http\Controllers\CRM\ClientController;
-use App\Http\Controllers\Properties\PropertyController;
-use App\Http\Controllers\Properties\PropertyOwnerController;
-use App\Http\Controllers\Properties\PropertyTransactionController;
-use App\Http\Controllers\Properties\PropertyUnitController;
-use App\Http\Controllers\Properties\RentController;
-use App\Http\Controllers\Properties\TenantRentController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SearchController;
 use Illuminate\Foundation\Application;
@@ -88,45 +82,15 @@ Route::middleware([
     Route::get('/contacts/{type}', [ClientController::class, 'byTypes']);
     Route::get('/contacts/{client}/{type}', [ClientController::class, 'showByType']);
     Route::get('/clients/{client}/{section}', [ClientController::class, 'getSection']);
-    // Business
-
-
-    // Properties
-    Route::get('properties/management-tools', [PropertyController::class, 'managementTools']);
-    Route::resource('properties', PropertyController::class);
-    Route::post('properties/{property}/units', [PropertyController::class, 'addUnit']);
-    Route::get('units', [PropertyUnitController::class, 'index']);
-
-    // rents
-    Route::resource('rents', RentController::class);
-    // property transactions
-    Route::get('/properties/transactions/{category}', PropertyTransactionController::class);
-    Route::post('/rents/{rent}/invoices/{invoice}/pay', [RentController::class, 'payInvoice']);
-    Route::post('/rents/{rent}/generate-next-invoice', [RentController::class, 'generateNextInvoice']);
-    Route::post('/rents/{rent}/transactions/{invoice}', [ClientController::class, 'generateOwnerDistribution']);
-    Route::post('/properties/{rent}/transactions/{type}', [PropertyTransactionController::class, 'store']);
-    Route::post('/properties/{rent}/transactions/{type}/{invoiceId}', [PropertyTransactionController::class, 'store']);
-
-    // Owner
-    Route::controller(PropertyOwnerController::class)->group(function() {
-      Route::post('/clients/{client}/owner-distributions', 'generateDraw');
-      Route::put('/clients/{client}/owner-distributions/{invoice}', 'generateDraw');
-      Route::get('/owners/draws', '__invoke')->name('owners.draw');
-      Route::post('/owners/{client}/draws', 'storeDraws')->name('owners.draw.store');
-      Route::post('/owners/{client}/draws/{drawId}', 'updateDraws')->name('owners.draw.update');
-    });
-
-    // Tenant
-    Route::get('/clients/{client}/rents/{rent}/end', [TenantRentController::class, 'endRent'])->name('tenant.end-rent');;
-    Route::put('/clients/{client}/rents/{rent}/end', [TenantRentController::class, 'endRentAction'])->name('tenant.end-rent-action');
-    Route::get('/contacts/{client}/tenants/rents/{rent}/renew', [TenantRentController::class, 'renewRent'])->name('tenant.renew-rent');;
-    Route::put('/contacts/{client}/tenants/rents/{rent}/renew', [TenantRentController::class, 'renewRentAction'])->name('tenant.renew-rent-action');
 
     // Reports
     Route::get('/statements/{category}', [ReportController::class, 'statements'])->name('statements.category');
     Route::get('/reports/{category}', [ReportController::class, 'category'])->name('report.category');
   });
 
+// Admin
+  Route::group([],  app_path('/Domains/Admin/routes.php'));
 // Loans
 Route::group([],  app_path('/Domains/Loans/routes.php'));
-Route::group([],  app_path('/Domains/Admin/routes.php'));
+// properties
+Route::group([],  app_path('/Domains/Properties/routes.php'));
