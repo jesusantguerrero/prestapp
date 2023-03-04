@@ -108,9 +108,13 @@ Route::middleware([
     Route::post('/properties/{rent}/transactions/{type}/{invoiceId}', [PropertyTransactionController::class, 'store']);
 
     // Owner
-    Route::post('/clients/{client}/owner-distributions', [ClientController::class, 'generateOwnerDistribution']);
-    Route::put('/clients/{client}/owner-distributions/{invoice}', [ClientController::class, 'generateOwnerDistribution']);
-    Route::get('/owner/draws', PropertyOwnerController::class)->name('owners.draw');
+    Route::controller(PropertyOwnerController::class)->group(function() {
+      Route::post('/clients/{client}/owner-distributions', 'generateDraw');
+      Route::put('/clients/{client}/owner-distributions/{invoice}', 'generateDraw');
+      Route::get('/owners/draws', '__invoke')->name('owners.draw');
+      Route::post('/owners/{client}/draws', 'storeDraws')->name('owners.draw.store');
+      Route::post('/owners/{client}/draws/{drawId}', 'updateDraws')->name('owners.draw.update');
+    });
 
     // Tenant
     Route::get('/clients/{client}/rents/{rent}/end', [TenantRentController::class, 'endRent'])->name('tenant.end-rent');;
