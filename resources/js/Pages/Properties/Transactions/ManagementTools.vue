@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { reactive, computed, watch } from "vue";
+// @ts-ignore
 import { AtBackgroundIconCard } from "atmosphere-ui";
 import { router } from "@inertiajs/vue3";
 
@@ -42,10 +43,14 @@ const props = defineProps({
 });
 
 const sectionName = computed(() => {
-  return `${props.type.toLowerCase()}s`;
+  return `${props.type?.toLowerCase()}s`;
 });
 
-const filters = reactive({
+interface IFilter {
+  [key: string]: null | Record<string, string>;
+}
+
+const filters = reactive<IFilter>({
   owner: null,
   property: null,
 });
@@ -54,7 +59,7 @@ watch(
   () => filters,
   () => {
     const selectedFilters = Object.entries(filters).reduce(
-      (acc, [filterName, filter]) => {
+      (acc: Record<string, string | undefined>, [filterName, filter]) => {
         acc[filterName] = filter?.value;
         return acc;
       },
@@ -64,6 +69,7 @@ watch(
     router.get(
       location.pathname,
       {
+        // @ts-ignore
         filters: selectedFilters,
       },
       { preserveState: true }
@@ -99,13 +105,12 @@ watch(
         <AtBackgroundIconCard
           class="w-full bg-white border h-28 text-body-1"
           title="Pagado"
-          :value="formatMoney(paid)"
+          :value="formatMoney(paid ?? 0)"
         />
-        <button v-if="deposits">Renbolsar Deposito</button>
         <AtBackgroundIconCard
           class="w-full bg-white border h-28 text-body-1"
           title="Balance de Pendiente"
-          :value="formatMoney(outstanding)"
+          :value="formatMoney(outstanding ?? 0)"
         />
         <AtBackgroundIconCard
           class="w-full bg-white border h-28 text-body-1"
@@ -113,7 +118,10 @@ watch(
           :value="lateDays || 0"
         />
       </section>
-      <InvoiceTable :invoice-data="invoices" class="mt-10 rounded-md bg-base-lvl-3" />
+      <InvoiceTable
+        :invoice-data="invoices"
+        class="mt-10 rounded-md bg-base-lvl-3"
+      />
     </div>
   </AppLayout>
 </template>

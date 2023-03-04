@@ -32,7 +32,7 @@ import axios from "axios";
 import { debounce } from "lodash";
 import { ref } from "vue";
 
-type SelectOption = Object | any[] | string | number;
+type SelectOption = Object | any[] | string | number | null;
 
 interface Props {
   modelValue: SelectOption;

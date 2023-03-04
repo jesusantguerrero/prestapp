@@ -42,7 +42,7 @@ class ClientService {
         invoices.number,
         invoices.status,
         invoices.total,
-        categories.name category,
+        invoices.category_type category,
         accounts.name account_name")
         ->where([
           'invoices.team_id' => $teamId,

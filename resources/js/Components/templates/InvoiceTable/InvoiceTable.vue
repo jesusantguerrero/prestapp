@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { AtTable } from "atmosphere-ui";
+// @ts-ignore
+import BaseTable from "@/Components/shared/BaseTable.vue";
 import InvoicePaymentOptions from "@/Components/templates/InvoicePaymentOptions.vue";
 
 import cols from "./cols";
@@ -18,7 +19,7 @@ defineProps({
 </script>
 
 <template>
-  <AtTable
+  <BaseTable
     :cols="cols"
     :tableData="invoiceData"
     :show-prepend="true"
@@ -31,20 +32,28 @@ defineProps({
     </template>
 
     <template v-slot:concept="{ scope: { row } }">
-      <Link
-        :href="`/${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}`"
-        class="text-blue-400 capitalize border-b border-blue-400 border-dashed cursor-pointer text-sm"
-      >
-        {{ row.concept }}
-        <span class="font-bold text-gray-300"> {{ row.series }} #{{ row.number }} </span>
-      </Link>
-      <Link
-        class="text-sm text-body-1 mt-2"
-        :href="`/clients/${row.client_id || row.contact_id}`"
-      >
-        <i class="fa fa-user text-xs" />
-        {{ row.client_name }}
-      </Link>
+      <section>
+        <p>
+          <Link
+            :href="`/${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}`"
+            class="text-blue-400 capitalize border-b border-blue-400 border-dashed cursor-pointer text-sm"
+          >
+            {{ row.concept }}
+            <span class="font-bold text-gray-300">
+              {{ row.series }} #{{ row.number }}
+            </span>
+          </Link>
+        </p>
+        <p>
+          <Link
+            class="text-sm text-body-1 mt-2"
+            :href="`/clients/${row.client_id || row.contact_id}`"
+          >
+            <i class="fa fa-user text-xs" />
+            {{ row.client_name }}
+          </Link>
+        </p>
+      </section>
     </template>
 
     <template v-slot:status="{ scope: { row } }">
@@ -77,5 +86,5 @@ defineProps({
         <InvoicePaymentOptions :invoice="row" :accounts-endpoint="accountsEndpoint" />
       </div>
     </template>
-  </AtTable>
+  </BaseTable>
 </template>
