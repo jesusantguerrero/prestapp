@@ -4,35 +4,37 @@ export default [
     {
         label: "Concept",
         name: "concept",
-        width: 300,
+        width: 240,
     },
     {
-      label: "Date",
+      label: "Fecha",
       name: "date",
-      width: 200,
+      align: 'center',
+      class: 'text-center',
+      width: 90,
       render(row) {
-          return format(row.date);
+          return formatDate(row.date);
       },
     },
     {
         label: "Categoria / Propiedad",
         name: "category",
-        width: 100,
+        width: 300,
     },
     {
       label: "Total / Deuda",
       name: "total",
-      type: 'money'
+      type: 'money',
+      width: 150,
     },
     {
         label: "Status",
         name: "status",
-        width: 200,
+        width: 150,
     },
     {
         label: "",
         name: "actions",
-        width: 300,
         type: "custom",
     },
 ];

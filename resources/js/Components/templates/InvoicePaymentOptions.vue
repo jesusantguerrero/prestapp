@@ -11,7 +11,9 @@ interface Props {
   accountsEndpoint: string;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  accountsEndpoint: "/api/accounts",
+});
 const actions = {
   payment: {
     label: "Registrar Pago",
