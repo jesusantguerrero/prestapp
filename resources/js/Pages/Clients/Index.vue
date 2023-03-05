@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, toRefs } from "vue";
+import { computed, toRefs, reactive } from "vue";
 import { router } from "@inertiajs/vue3";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
@@ -13,10 +13,12 @@ import { useToggleModal } from "@/Modules/_app/useToggleModal";
 import ButtonCircle from "@/Components/mobile/ButtonCircle.vue";
 
 import { IClient } from "@/Modules/clients/clientEntity";
+import { clientStatus } from "@/Modules/clients/constants";
 import { IPaginatedData } from "@/utils/constants";
 import { IServerSearchData, useServerSearch } from "@/utils/useServerSearch";
 import { useResponsive } from "@/utils/useResponsive";
 import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
+import BaseSelect from "@/Components/shared/BaseSelect.vue";
 
 const props = withDefaults(
   defineProps<{
@@ -76,6 +78,17 @@ const {
 );
 
 const { isMobile } = useResponsive();
+
+const filters = reactive({
+  status:
+    clientStatus.find((status) => status.name === searchState.filters.status) ??
+    clientStatus[0],
+});
+
+const onStateSelected = (status: Record<string, string>) => {
+  searchState.filters.status = status.name;
+  executeSearch();
+};
 </script>
 
 <template>
@@ -152,6 +165,17 @@ const { isMobile } = useResponsive();
           >
             Nuevo cliente
           </AppButton>
+        </article>
+        <article v-if="type == 'tenant'">
+          <BaseSelect
+            placeholder="Filtrar"
+            :options="clientStatus"
+            v-model="filters.status"
+            label="label"
+            track-by="name"
+            size="large"
+            @update:model-value="onStateSelected"
+          />
         </article>
       </section>
 

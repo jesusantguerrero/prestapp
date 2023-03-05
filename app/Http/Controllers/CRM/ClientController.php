@@ -75,11 +75,24 @@ class ClientController extends InertiaController
       "unit_count" => $client->units()->count()
     ]);
 
-    return inertia($this->templates['show'],[
+    $templates = [
+      "tenant" => "Clients/TenantDetail",
+      "owner" => "Clients/OwnerDetail",
+      "lender" => $this->templates['show']
+    ];
+    $template = $templates[$type] ??  $this->templates['show'];
+
+    return inertia($template,[
       $this->model->getTable() => $resource,
       "outstanding" => $client->outstandingBalance(),
       "deposits" => $client->deposits(),
       "credits" => $client->credits,
+      "contract" => function() use ($client, $type) {
+        return $type == 'tenant' ? $client->rent : null;
+      },
+      "leases" => function() use ($client, $type) {
+        return $type == 'owner' ? $client->leases : null;
+      },
       "type" => $type,
       "currentTab" => $section
     ]);

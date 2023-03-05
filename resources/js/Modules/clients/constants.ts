@@ -10,3 +10,19 @@ export const documentTypes = [{
     name: 'PASSPORT',
     label: 'Pasaporte'
 }];
+
+
+export const CLIENT_STATUS = {
+  ACTIVE: {
+    label : 'Activo'
+  },
+  INACTIVE: {
+    label : 'Inactivo',
+    color: 'success'
+  }
+}
+
+export const clientStatus = Object.entries(CLIENT_STATUS).map(([name, value]) => ({
+  name,
+  label: value.label
+}));

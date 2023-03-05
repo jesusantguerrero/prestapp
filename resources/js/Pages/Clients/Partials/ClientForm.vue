@@ -8,12 +8,13 @@ import SectionNav from "@/Components/SectionNav.vue";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 
 import { clientInteractions } from "@/Modules/clients/clientInteractions";
-import { documentTypes, DOCUMENT_TYPES } from "@/Modules/clients/constants";
+import { documentTypes } from "@/Modules/clients/constants";
 import { useForm } from "@inertiajs/vue3";
 
 interface Props {
   formData: Object | null;
   type: string;
+  disabled: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -141,22 +142,35 @@ watch(
     </h1>
     <article v-if="selectedTab == 'general'" class="px-2 md:px-0">
       <section class="flex flex-col md:flex-row md:space-x-2">
-        <AppFormField label="Nombres" v-model="clientForm.names" required />
-        <AppFormField label="Apellidos" v-model="clientForm.lastnames" rounded required />
+        <AppFormField
+          label="Nombres"
+          v-model="clientForm.names"
+          required
+          :disabled="disabled"
+        />
+        <AppFormField
+          label="Apellidos"
+          v-model="clientForm.lastnames"
+          rounded
+          required
+          :disabled="disabled"
+        />
       </section>
       <AppFormField label="Dirección" required>
         <AtTextarea
           v-model="clientForm.address_details"
           class="border px-4 py-2 bg-neutral/20 shadow-none border-neutral hover:border-secondary/60 focus:border-secondary/60"
+          :disabled="disabled"
         />
       </AppFormField>
-      <AppFormField label="Tipo de cliente " required>
+      <AppFormField label="Tipo de cliente " required :disabled="disabled">
         <BaseSelect
           v-model="selectedClientType"
           :options="clientTypes"
           track-by="value"
           label="label"
           placeholder="Tipo de cliente"
+          :disabled="disabled"
         />
       </AppFormField>
       <section class="flex flex-col md:flex-row md:space-x-2">
@@ -165,27 +179,43 @@ watch(
             :options="documentTypes"
             track-by="name"
             v-model="clientForm.dniType"
+            :disabled="disabled"
           />
         </AppFormField>
         <AppFormField :label="documentType" v-model="clientForm.dni" rounded required />
       </section>
       <section class="flex flex-col md:flex-row md:space-x-2">
-        <AppFormField label="Email" v-model="clientForm.email" rounded type="email" />
+        <AppFormField
+          label="Email"
+          v-model="clientForm.email"
+          rounded
+          type="email"
+          :disabled="disabled"
+        />
         <AppFormField
           required
           label="Telefono"
           v-model="clientForm.cellphone"
           type="tel"
           rounded
+          :disabled="disabled"
         />
       </section>
     </article>
     <article v-else-if="selectedTab == 'work'" class="px-2 md:px-0">
       <section class="flex space-x-2">
-        <AppFormField label="Lugar de trabajo" v-model="clientForm.work_name" />
+        <AppFormField
+          label="Lugar de trabajo"
+          v-model="clientForm.work_name"
+          :disabled="disabled"
+        />
       </section>
       <AppFormField label="Dirección de trabajo">
-        <AtTextarea v-model="clientForm.work_address_details" class="border" />
+        <AtTextarea
+          v-model="clientForm.work_address_details"
+          class="border"
+          :disabled="disabled"
+        />
       </AppFormField>
       <section class="flex flex-col md:flex-row md:space-x-2">
         <AppFormField
@@ -193,24 +223,31 @@ watch(
           v-model="clientForm.work_email"
           rounded
           type="email"
+          :disabled="disabled"
         />
         <AppFormField
           label="Telefono"
           v-model="clientForm.work_cellphone"
           type="tel"
           rounded
+          :disabled="disabled"
         />
       </section>
     </article>
     <article v-else-if="selectedTab == 'accounting'">
       <section class="flex space-x-2">
-        <AppFormField label="Banco" v-model="clientForm.bank_name" />
-        <AppFormField label="No. de cuenta" v-model="clientForm.bank_account_number" />
+        <AppFormField label="Banco" v-model="clientForm.bank_name" :disabled="disabled" />
+        <AppFormField
+          label="No. de cuenta"
+          v-model="clientForm.bank_account_number"
+          :disabled="disabled"
+        />
       </section>
       <section class="flex space-x-2">
         <AppFormField
           label="Dia de generacion de factura"
           v-model="clientForm.owner_distribution_date"
+          :disabled="disabled"
         />
       </section>
     </article>

@@ -21,6 +21,10 @@ trait OwnerTrait {
       return $this->hasManyThrough(PropertyUnit::class, Property::class, 'owner_id');
     }
 
+    public function leases() {
+      return $this->hasMany(Rent::class, 'owner_id')->active();
+    }
+
     public function getPropertyInvoices($invoiceId = null) {
       return Invoice::select('invoices.*')->where([
         'rents.owner_id' => $this->id,
