@@ -20,18 +20,20 @@ export interface Props {
   currentTab: string;
   hideStatistics: boolean;
   type: string;
+  contract?: Record<string, any>;
+  tabs: Record<string, string>;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   currentTab: "summary",
   hideStatistics: false,
+  tabs: {
+    // @ts-ignore;
+    "": "Detalles",
+    contracts: "Contratos",
+    transactions: "Transacciones",
+  },
 });
-
-const tabs = {
-  "": "Detalles",
-  contracts: "Contratos",
-  transactions: "Transacciones",
-};
 
 const getTabUrl = (tab: string = "") => {
   return `/contacts/${props.clients.id}/${props.type}?section=${tab}`;
@@ -164,10 +166,12 @@ const { openModal } = useToggleModal("contact");
                   Generar de propiedades
                 </AppButton>
               </section>
-              <EmptyAddTool> Personas de contacto </EmptyAddTool>
-              <EmptyAddTool> Imagenes </EmptyAddTool>
-              <EmptyAddTool> Notas </EmptyAddTool>
-              <EmptyAddTool> Informacion de entrada </EmptyAddTool>
+              <slot name="options">
+                <EmptyAddTool> Personas de contacto </EmptyAddTool>
+                <EmptyAddTool> Imagenes </EmptyAddTool>
+                <EmptyAddTool> Notas </EmptyAddTool>
+                <EmptyAddTool> Informacion de entrada </EmptyAddTool>
+              </slot>
             </div>
           </div>
         </article>
