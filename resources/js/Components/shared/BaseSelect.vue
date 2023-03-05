@@ -15,6 +15,7 @@
       :allowCreate="allowCreate"
       :customLabel="customLabel"
       :options="localOptions"
+      :size="size"
       v-on="multiselectListeners"
     >
       <template v-slot:singleLabel="{ option }">
@@ -45,6 +46,7 @@ interface Props {
   hideSelected?: boolean;
   showLabels?: boolean;
   endpoint?: string;
+  size?: string;
   allowCreate?: boolean;
   customLabel?: Function;
 }
@@ -55,6 +57,7 @@ const props = withDefaults(defineProps<Props>(), {
   placeholder: "Type and select option…",
   hideSelected: false,
   showLabels: false,
+  size: "large",
 });
 
 const emit = defineEmits([
