@@ -73,7 +73,6 @@ class Loan extends Transactionable implements IPayableDocument {
         'cancelled_at'
     ];
 
-
     // protected
     protected $creditCategory = 'expected_payments_customers';
     protected $creditAccount = 'Customer Demand Deposits';
@@ -86,7 +85,7 @@ class Loan extends Transactionable implements IPayableDocument {
           $loan->late_fee_account_id = $loan->fees_account_id;
           $loan->client_name = $loan->client->fullName;
           $loan->client_address = $loan->client->address ?? $loan->client->address_details;
-       
+
       });
 
       static::saving(function ($loan) {

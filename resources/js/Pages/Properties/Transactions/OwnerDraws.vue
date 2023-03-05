@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, watch, Ref } from "vue";
 import { AtBackgroundIconCard } from "atmosphere-ui";
-import { router, useForm } from "@inertiajs/vue3";
+import { Link, router, useForm } from "@inertiajs/vue3";
 
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
@@ -27,6 +27,15 @@ const props = defineProps({
     default() {
       return [];
     },
+  },
+  outstanding: {
+    type: Number,
+  },
+  paid: {
+    type: Number,
+  },
+  lateDays: {
+    type: Number,
   },
 });
 
@@ -99,11 +108,14 @@ const drawCols = [
   {
     name: "description",
     label: "Descripcion / Cliente",
-    width: 300,
+    width: 380,
   },
   {
     name: "due_date",
     label: "Fecha",
+    align: "center",
+    class: "text-center",
+    width: 120,
     render(row: any) {
       return formatDate(row.due_date);
     },
@@ -120,20 +132,6 @@ const drawCols = [
       return formatMoney(row.total);
     },
   },
-  {
-    name: "Debt",
-    label: "Pago pendiente",
-    render(row: any) {
-      return formatMoney(row.debt);
-    },
-  },
-  {
-    name: "total",
-    label: "Monto a pagar",
-    render(row: any) {
-      return formatMoney(row.total);
-    },
-  },
 ];
 
 const formData = useForm({
@@ -142,7 +140,6 @@ const formData = useForm({
 });
 
 function handleSelection(selectedInvoices: IInvoice[]) {
-  console.log(selectedInvoices);
   formData.invoices = selectedInvoices.map((invoice) => ({
     id: invoice.id,
     total: invoice.total,
@@ -183,13 +180,12 @@ function createOwnerDistribution() {
         <AtBackgroundIconCard
           class="w-full bg-white border h-28 text-body-1"
           title="Pagado"
-          :value="formatMoney(paid)"
+          :value="formatMoney(paid ?? 0)"
         />
-        <button v-if="deposits">Renbolsar Deposito</button>
         <AtBackgroundIconCard
           class="w-full bg-white border h-28 text-body-1"
           title="Balance de Pendiente"
-          :value="formatMoney(outstanding)"
+          :value="formatMoney(outstanding ?? 0)"
         />
         <AtBackgroundIconCard
           class="w-full bg-white border h-28 text-body-1"
@@ -209,7 +205,32 @@ function createOwnerDistribution() {
           :summary-method="getSummaries"
           :cols="drawCols"
           :table-data="client.invoices"
-        />
+        >
+          <template v-slot:description="{ scope: { row } }">
+            <section>
+              <p>
+                <Link
+                  :href="`/${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}`"
+                  class="text-blue-400 capitalize border-b border-blue-400 border-dashed cursor-pointer text-sm"
+                >
+                  {{ row.description }}
+                  <span class="font-bold text-gray-300">
+                    {{ row.series }} #{{ row.number }}
+                  </span>
+                </Link>
+              </p>
+              <p>
+                <Link
+                  class="text-sm text-body-1 mt-2"
+                  :href="`/clients/${row.client_id || row.contact_id}`"
+                >
+                  <i class="fa fa-user text-xs" />
+                  {{ row.owner_name }}
+                </Link>
+              </p>
+            </section>
+          </template>
+        </BaseTable>
         <footer class="flex justify-end px-4 py-2">
           <AppButton variant="secondary" @click="createOwnerDistribution">
             Crear Factura de distribucion

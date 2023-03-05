@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, computed, watch } from "vue";
+import { reactive, computed, watch, nextTick } from "vue";
 // @ts-ignore
 import { AtBackgroundIconCard } from "atmosphere-ui";
 import { router } from "@inertiajs/vue3";
@@ -11,6 +11,8 @@ import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.v
 
 import { formatMoney } from "@/utils";
 import AppButton from "@/Components/shared/AppButton.vue";
+import { IInvoice } from "@/Modules/loans/loanEntity";
+import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
 
 const props = defineProps({
   invoices: {
@@ -77,6 +79,33 @@ watch(
   },
   { deep: true }
 );
+
+function deleteInvoice(invoice: IInvoice) {}
+
+const { openModal } = usePaymentModal();
+
+const handlePayment = (invoice: IInvoice) => {
+  const payment = {
+    ...invoice,
+    // @ts-ignore solve backend sending decimals as strings
+    amount: parseFloat(invoice.debt) || invoice.total,
+    id: undefined,
+    invoice_id: invoice.id,
+  };
+
+  nextTick(() => {
+    openModal({
+      data: {
+        title: `Pagar ${invoice.concept}`,
+        payment: payment,
+        endpoint: `/owners/${invoice.client_id}/draws/${invoice?.id}/payments`,
+        due: payment?.amount,
+        defaultConcept: "Pago de " + invoice.concept,
+        accountsEndpoint: "/invoices",
+      },
+    });
+  });
+};
 </script>
 
 <template>
@@ -118,10 +147,53 @@ watch(
           :value="lateDays || 0"
         />
       </section>
-      <InvoiceTable
-        :invoice-data="invoices"
-        class="mt-10 rounded-md bg-base-lvl-3"
-      />
+      <InvoiceTable :invoice-data="invoices" class="mt-10 rounded-md bg-base-lvl-3">
+        <template v-slot:actions="{ row }">
+          <div class="flex justify-end items-center">
+            <Link
+              class="relative inline-block cursor-pointer ml-4 hover:bg-primary hover:text-white px-5 py-2 overflow-hidden font-bold text-body transition rounded-md focus:outline-none hover:bg-opacity-80 min-w-max"
+              :href="`/properties/${row.property_id}?unit=${row.id}`"
+            >
+              <IMdiChevronRight />
+            </Link>
+            <AppButton
+              @click="handlePayment(row)"
+              variant="inverse-secondary"
+              class="flex items-center justify-center"
+              v-if="row?.payment_status !== 'PAID' || loanId"
+            >
+              <IIcSharpPayment />
+            </AppButton>
+            <div class="flex">
+              <AppButton
+                class="hover:text-primary transition items-center flex flex-col justify-center hover:border-primary-400"
+                variant="neutral"
+                v-if="row.contract"
+                @click="router.visit(`/rents/${row.contract.id}`)"
+              >
+                <IMdiFile />
+              </AppButton>
+              <AppButton
+                class="hover:text-primary transition items-center flex flex-col justify-center hover:border-primary-400"
+                variant="neutral"
+                v-else
+                @click="router.visit(`/rents/create?unit=${row.id}`)"
+              >
+                <IMdiFile />
+              </AppButton>
+              <!-- <AppButton variant="neutral"><IMdiFile /></AppButton>
+            <AppButton variant="neutral"><IMdiFile /></AppButton> -->
+            </div>
+            <AppButton
+              variant="neutral"
+              class="hover:text-error transition items-center flex flex-col justify-center hover:border-red-400"
+              @click="deleteInvoice(row)"
+            >
+              <IMdiTrash />
+            </AppButton>
+          </div>
+        </template>
+      </InvoiceTable>
     </div>
   </AppLayout>
 </template>

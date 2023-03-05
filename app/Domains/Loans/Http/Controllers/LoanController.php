@@ -10,7 +10,6 @@ use App\Http\Controllers\InertiaController;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Insane\Journal\Helpers\ReportHelper;
 use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Core\PaymentDocument;
 

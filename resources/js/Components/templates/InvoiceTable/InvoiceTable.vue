@@ -82,9 +82,11 @@ defineProps({
     </template>
 
     <template v-slot:actions="{ scope: { row } }">
-      <div class="flex items-center justify-end space-x-2">
-        <InvoicePaymentOptions :invoice="row" :accounts-endpoint="accountsEndpoint" />
-      </div>
+      <slot name="actions" :row="row">
+        <div class="flex items-center justify-end space-x-2">
+          <InvoicePaymentOptions :invoice="row" :accounts-endpoint="accountsEndpoint" />
+        </div>
+      </slot>
     </template>
   </BaseTable>
 </template>

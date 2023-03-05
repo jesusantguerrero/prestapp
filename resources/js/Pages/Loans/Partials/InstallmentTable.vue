@@ -47,10 +47,6 @@ const handlePayment = (installment: ILoanInstallment) => {
   });
   emit("pay", installment);
 };
-
-const onUpdateRepayment = (repayment: ILoanInstallmentSaved) => {
-  router.post(`/loans/${repayment.loan_id}/installments/${repayment.id}/update-status`);
-};
 </script>
 
 <template>

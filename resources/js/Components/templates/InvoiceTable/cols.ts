@@ -33,7 +33,7 @@ export default [
         width: 150,
     },
     {
-        label: "",
+        label: " ",
         name: "actions",
         type: "custom",
     },
