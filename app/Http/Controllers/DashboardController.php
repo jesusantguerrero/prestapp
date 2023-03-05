@@ -7,6 +7,7 @@ use App\Domains\CRM\Services\ClientService;
 use App\Domains\Loans\Models\LoanInstallment;
 use App\Domains\Loans\Services\LoanService;
 use App\Domains\Properties\Models\Property;
+use App\Domains\Properties\Services\OwnerService;
 use App\Domains\Properties\Services\PropertyService;
 use App\Domains\Properties\Services\RentService;
 use Illuminate\Http\Request;
@@ -36,7 +37,8 @@ class DashboardController extends Controller
           'dailyBox' => $reportHelper->smallBoxRevenue('daily_box', $teamId),
           'realState' => Account::where(['team_id' => $teamId, 'display_id' => 'real_state'])->first(),
           'logs' => Activity::all()->last(),
-          'section' => "general"
+          'section' => "general",
+          'pendingDraws' => OwnerService::pendingDrawsCount($teamId),
       ]);
     }
 

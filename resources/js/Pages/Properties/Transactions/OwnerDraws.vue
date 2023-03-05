@@ -48,8 +48,8 @@ watch(
   () => filters,
   () => {
     const selectedFilters = Object.entries(filters).reduce(
-      (acc, [filterName, filter]) => {
-        acc[filterName] = filter?.value;
+      (acc: Record<string, string | undefined>, [filterName, filter]) => {
+        acc[filterName] = filter?.id;
         return acc;
       },
       {}
@@ -58,6 +58,7 @@ watch(
     router.get(
       location.pathname,
       {
+        // @ts-ignore
         filters: selectedFilters,
       },
       { preserveState: true }
@@ -147,6 +148,14 @@ function handleSelection(selectedInvoices: IInvoice[]) {
 }
 
 function createOwnerDistribution() {
+  if (!filters.owner?.id) {
+    ElNotification({
+      title: "Sin Propietario",
+      message: "Por favor seleccione el propietario para generar la factura",
+      type: "error",
+    });
+    return;
+  }
   formData.post(`/owners/${filters.owner?.id}/draws`, {
     onSuccess() {
       ElNotification({
@@ -195,47 +204,58 @@ function createOwnerDistribution() {
       </section>
 
       <div class="mt-4 bg-base-lvl-3 rounded-md overflow-hidden px-1">
-        <BaseTable
-          v-for="client in invoices"
-          class="mt-0"
-          table-class="px-0"
-          show-summary
-          selectable
-          @selection-change="handleSelection"
-          :summary-method="getSummaries"
-          :cols="drawCols"
-          :table-data="client.invoices"
-        >
-          <template v-slot:description="{ scope: { row } }">
-            <section>
-              <p>
-                <Link
-                  :href="`/${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}`"
-                  class="text-blue-400 capitalize border-b border-blue-400 border-dashed cursor-pointer text-sm"
-                >
-                  {{ row.description }}
-                  <span class="font-bold text-gray-300">
-                    {{ row.series }} #{{ row.number }}
-                  </span>
-                </Link>
-              </p>
-              <p>
-                <Link
-                  class="text-sm text-body-1 mt-2"
-                  :href="`/clients/${row.client_id || row.contact_id}`"
-                >
-                  <i class="fa fa-user text-xs" />
-                  {{ row.owner_name }}
-                </Link>
-              </p>
-            </section>
-          </template>
-        </BaseTable>
-        <footer class="flex justify-end px-4 py-2">
-          <AppButton variant="secondary" @click="createOwnerDistribution">
-            Crear Factura de distribucion
-          </AppButton>
-        </footer>
+        <template v-if="invoices?.length">
+          <BaseTable
+            v-for="client in invoices"
+            class="mt-0"
+            table-class="px-0"
+            show-summary
+            selectable
+            @selection-change="handleSelection"
+            :summary-method="getSummaries"
+            :cols="drawCols"
+            :table-data="client.invoices"
+          >
+            <template v-slot:description="{ scope: { row } }">
+              <section>
+                <p>
+                  <Link
+                    :href="`/${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}`"
+                    class="text-blue-400 capitalize border-b border-blue-400 border-dashed cursor-pointer text-sm"
+                  >
+                    {{ row.description }}
+                    <span class="font-bold text-gray-300">
+                      {{ row.series }} #{{ row.number }}
+                    </span>
+                  </Link>
+                </p>
+                <p>
+                  <Link
+                    class="text-sm text-body-1 mt-2"
+                    :href="`/clients/${row.client_id || row.contact_id}`"
+                  >
+                    <i class="fa fa-user text-xs" />
+                    {{ row.owner_name }}
+                  </Link>
+                </p>
+              </section>
+            </template>
+          </BaseTable>
+
+          <footer class="flex justify-end px-4 py-2">
+            <AppButton
+              variant="secondary"
+              @click="createOwnerDistribution"
+              :processing="formData.processing"
+              :disabled="!filters.owner?.id ?? formData.processing"
+            >
+              Crear Factura de distribucion
+            </AppButton>
+          </footer>
+        </template>
+        <p class="h-48 flex items-center justify-center" v-else>
+          No hay facturas para pagar al propietario
+        </p>
       </div>
     </div>
   </AppLayout>

@@ -3,6 +3,7 @@
 namespace App\Domains\Properties\Services;
 
 use App\Domains\CRM\Models\Client;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Rent;
 use Illuminate\Support\Facades\DB;
 use Insane\Journal\Models\Invoice\Invoice;
@@ -60,6 +61,9 @@ class OwnerService {
             $query->orWhere('invoice_relations.invoice_id', $invoiceId);
           }
         })
+      ->when($ownerId, function($query) use ($ownerId) {
+        $query->where('rents.owner_id', $ownerId);
+      })
       ->join('rents', 'invoiceable_id', 'rents.id')
       ->join('properties', 'rents.property_id', 'properties.id')
       ->join('clients', 'rents.owner_id', 'clients.id')
@@ -73,6 +77,14 @@ class OwnerService {
           "invoices" => $byClient,
         ];
       })->values();
+    }
+
+    public static function pendingDrawsCount($teamId) {
+      return Invoice::where('team_id', $teamId)
+      ->where('invoiceable_type', Client::class)
+      ->where('category_type', PropertyInvoiceTypes::OwnerDistribution->value)
+      ->unpaid()
+      ->count();
     }
 
 }

@@ -12,6 +12,7 @@ import { useTransactionModal } from "@/Modules/transactions/useTransactionModal"
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
 import DashboardTemplate from "./Partials/DashboardTemplate.vue";
 import FastAccessOptions from "./Partials/FastAccessOptions.vue";
+import { Link } from "@inertiajs/vue3";
 
 const props = defineProps({
   revenue: {
@@ -54,42 +55,10 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  pendingDraws: {
+    type: Number,
+  },
 });
-
-const { openModal } = useToggleModal("contact");
-const welcomeCards = [
-  {
-    label: "Crear un contacto",
-    icon: "contact",
-    action() {
-      openModal({
-        data: { type: "lender " },
-        isOpen: true,
-      });
-    },
-  },
-  {
-    label: "Crear un prestamo",
-    icon: "money",
-    action() {
-      router.visit("/loans/create");
-    },
-  },
-  {
-    label: "Agregar propiedad",
-    icon: "home",
-    action() {
-      router.visit("/properties/create");
-    },
-  },
-  {
-    label: "Crear un contrato",
-    icon: "document",
-    action() {
-      router.visit("/rents/create");
-    },
-  },
-];
 
 interface IStatDetails {
   total: number;
@@ -143,7 +112,7 @@ const { openTransactionModal } = useTransactionModal();
             >
               <SectionFooterCard
                 title="Ganancias netas"
-                :value="formatMoney(accounts.assets.total + accounts.liabilities?.total)"
+                :value="formatMoney(accounts.assets.income - accounts.assets.outcome)"
               >
                 <template #footer>
                   <p class="flex items-center text-xs text-success md:text-base" rounded>
@@ -186,11 +155,14 @@ const { openTransactionModal } = useTransactionModal();
             </section>
           </template>
         </WelcomeWidget>
-        <div
-          class="flex flex-col items-center justify-center w-full h-10 mt-4 rounded-md shadow-sm bg-base-lvl-3 md:mt-4"
+        <Link
+          href="/properties/management-tools"
+          class="flex items-center hover:text-primary hover:font-bold transition-all justify-center w-full h-10 mt-4 rounded-md shadow-sm bg-base-lvl-3 md:mt-4"
         >
           Distribución a propietarios pendientes
-        </div>
+          <IMdiChevronRight />
+          <span> {{ pendingDraws }} </span>
+        </Link>
       </div>
       <WelcomeWidget
         message="Accesos Rapidos"
