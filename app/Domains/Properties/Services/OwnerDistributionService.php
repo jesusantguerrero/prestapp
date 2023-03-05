@@ -31,7 +31,7 @@ class OwnerDistributionService {
 
     public function updateFromAutomation(int $invoiceId) {
       $ownerDrawBill = $this->client->invoices()->where('id', $invoiceId)->with(['relatedChilds'])->first();
-      $invoices = $this->client->getPropertyInvoices($$ownerDrawBill->id);
+      $invoices = $this->client->getPropertyInvoices($ownerDrawBill->id);
 
       $this->storeOwnerDistribution($this->client, $invoices, $ownerDrawBill);
     }
@@ -89,10 +89,10 @@ class OwnerDistributionService {
         if (isset($ownerDrawBill)) {
           $ownerDrawBill->updateDocument($documentData);
         } else {
-          $invoice = Invoice::createDocument($documentData);
+          $ownerDrawBill = Invoice::createDocument($documentData);
         }
 
-        User::find($invoice->user_id)->notify(new InvoiceGenerated($invoice));
+        User::find($ownerDrawBill->user_id)->notify(new InvoiceGenerated($ownerDrawBill));
 
         $client->update([
           'generated_distribution_dates' => array_merge($client->generated_distribution_dates?? [], [$today])
@@ -100,7 +100,6 @@ class OwnerDistributionService {
 
       }
     }
-
 
     public function recordPayment($drawBillId, $paymentData) {
       $invoice = Invoice::find($drawBillId);

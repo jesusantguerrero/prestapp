@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { router } from "@inertiajs/vue3";
-
-import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
 import { IClientSaved } from "@/Modules/clients/clientEntity";
 import ClientTemplate from "./Partials/ClientTemplate.vue";
 import { clientInteractions } from "@/Modules/clients/clientInteractions";
+import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 
 export interface Props {
   clients: IClientSaved;
@@ -30,7 +27,6 @@ const props = withDefaults(defineProps<Props>(), {
       <InvoiceCard v-for="invoice in props.clients.invoices" :invoice="invoice">
         <template #header-actions>
           <button
-            v-if="invoice.status !== 'paid'"
             class="mr-2"
             @click="clientInteractions.generateOwnerDistribution(clients.id, invoice.id)"
           >
