@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Link } from "@inertiajs/vue3";
+// @ts-ignore
 import { AtBackgroundIconCard } from "atmosphere-ui";
 import { ElTag } from "element-plus";
 
@@ -11,12 +12,12 @@ import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.v
 import LoanSectionNav from "@/Pages/Loans/Partials/LoanSectionNav.vue";
 
 import { formatMoney } from "@/utils";
-import { IClient } from "@/Modules/clients/clientEntity";
+import { IClient, IClientSaved } from "@/Modules/clients/clientEntity";
 import { clientInteractions } from "@/Modules/clients/clientInteractions";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
 
 export interface Props {
-  clients: IClient;
+  clients: IClientSaved;
   currentTab: string;
   hideStatistics: boolean;
   type: string;
@@ -40,29 +41,13 @@ const getTabUrl = (tab: string = "") => {
 };
 
 const { openModal } = useToggleModal("contact");
+const { openModal: openInvoiceModal } = useToggleModal("invoice");
 </script>
 
 <template>
   <AppLayout :title="`Clientes / ${clients.fullName}`">
     <template #header>
-      <PropertySectionNav v-if="!clients.is_lender">
-        <template #actions>
-          <AppButton
-            @click="
-              openModal({
-                data: {
-                  formData: clients,
-                },
-                isOpen: true,
-              })
-            "
-            variant="inverse"
-          >
-            Editar
-          </AppButton>
-          <AppButton @click="" variant="inverse"> Nueva Propiedad </AppButton>
-        </template>
-      </PropertySectionNav>
+      <PropertySectionNav v-if="!clients.is_lender" />
       <LoanSectionNav v-else />
     </template>
 
@@ -73,7 +58,46 @@ const { openModal } = useToggleModal("contact");
         :resource="clients"
         :title="clients?.fullName"
         hide-action
-      />
+      >
+        <template #actions v-if="clients.is_tenant">
+          <section class="flex space-x-2">
+            <AppButton @click="" variant="secondary" title="Reembolsar deposito">
+              Ret. Deposito
+            </AppButton>
+            <AppButton
+              @click="
+                openInvoiceModal({
+                  data: {
+                    type: 'lender',
+                    clientId: clients.id,
+                    rentId: contract?.id,
+                    hideClientOptions: true,
+                  },
+                  isOpen: true,
+                })
+              "
+              variant="secondary"
+              title="Registrar gasto"
+            >
+              Registrar Gasto
+            </AppButton>
+            <AppButton
+              title="Editar Inquilino"
+              @click="
+                openModal({
+                  data: {
+                    formData: clients,
+                  },
+                  isOpen: true,
+                })
+              "
+              variant="neutral"
+            >
+              <IMdiEdit />
+            </AppButton>
+          </section>
+        </template>
+      </AppSectionHeader>
       <header
         class="w-full px-5 pb-2 mb-5 space-y-5 text-gray-600 bg-white border-gray-200 shadow-md rounded-b-md"
       >

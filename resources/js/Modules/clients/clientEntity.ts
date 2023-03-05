@@ -5,11 +5,13 @@ export interface IClient {
     lastnames: string;
     fullName?: string;
     dni: string;
+
 }
 
 export interface IClientSaved extends IClient {
   id: number;
   is_owner: boolean;
+  is_lender: boolean;
   display_name: string;
   invoices: any[];
   leases: any[];

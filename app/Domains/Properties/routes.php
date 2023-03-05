@@ -36,8 +36,8 @@ Route::middleware([
 
     // Owner
     Route::controller(PropertyOwnerController::class)->group(function() {
-      Route::post('/clients/{client}/owner-distributions', 'generateDraw');
-      Route::put('/clients/{client}/owner-distributions/{invoice}', 'generateDraw');
+      Route::post('/clients/{client}/owner-distributions', 'generateDraw')->name('owners.draw.generate');
+      Route::put('/clients/{client}/owner-distributions/{invoice}', 'generateDraw')->name('owners.draw.update-generation');
       Route::get('/owners/draws', '__invoke')->name('owners.draw');
       Route::post('/owners/{client}/draws', 'storeDraws')->name('owners.draw.store');
       Route::post('/owners/{client}/draws/{drawId}', 'updateDraws')->name('owners.draw.update');

@@ -2,7 +2,7 @@
 import { AtButton, AtField, AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { format as formatDate } from "date-fns";
 import { ElDatePicker, ElDialog, ElNotification } from "element-plus";
-import { inject, ref, watch, computed } from "vue";
+import { ref, watch, computed } from "vue";
 
 import AppButton from "@/Components/shared/AppButton.vue";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
@@ -17,34 +17,24 @@ const defaultFormData = {
   account_id: "",
 };
 
-const props = defineProps({
-  modelValue: {
-    type: Boolean,
-  },
-  defaultConcept: {
-    type: String,
-    required: true,
-  },
-  defaultAmount: {
-    type: Number,
-    required: true,
-  },
-  payment: {
-    type: [Object, null],
-  },
-  due: {
-    type: Number,
-    default: 0,
-  },
-  endpoint: {
-    type: String,
-    required: true,
-  },
-  title: {
-    type: String,
-    default: "Crear factura",
-  },
-});
+const props = withDefaults(
+  defineProps<{
+    modelValue: boolean;
+    defaultConcept: string;
+    defaultAmount: number;
+    payment?: Record<string, any>;
+    due: number;
+    endpoint?: string;
+    title: string;
+    hideClientOptions?: boolean;
+    clientId: string;
+    rentId: string;
+  }>(),
+  {
+    title: "Crear factura",
+    due: 0,
+  }
+);
 
 const emit = defineEmits(["update:modelValue", "saved"]);
 
@@ -125,14 +115,14 @@ function onSubmit() {
     amount: formData.value.amount,
     concept: formData.value.concept,
     account_id: formData.value.account_id,
-    client_id: formData.value.client.id,
-    rent_id: formData.value.rent.id,
+    client_id: formData.value.client?.id ?? props.clientId,
+    rent_id: formData.value.rent?.id ?? props.rentId,
     details: formData.value.notes,
   };
 
   isLoading.value = true;
   axios
-    .post(`properties/${data.rent_id}/transactions/expense`, data)
+    .post(`/properties/${data.rent_id}/transactions/expense`, data)
     .then(() => {
       resetForm(true);
       emit("saved");
@@ -145,22 +135,6 @@ function onSubmit() {
     })
     .finally(() => {
       isLoading.value = false;
-    });
-}
-
-function deletePayment() {
-  axios
-    .delete(`${props.endpoint}/${formData.id}`)
-    .then(() => {
-      emit("update:modelValue", false);
-      emit("saved");
-      resetForm(true);
-    })
-    .catch((err) => {
-      notify({
-        type: "error",
-        message: err.response ? err.response.data.status.message : "Ha ocurrido un error",
-      });
     });
 }
 
@@ -211,13 +185,6 @@ function emitChange(value) {
       </section>
 
       <section>
-        <!-- <AtField class="w-full mb-5 text-left" label="Categoría">
-          <AccountSelect
-            v-model="formData.account"
-            placeholder="Selecciona una categoria"
-            class="w-full"
-          />
-        </AtField> -->
         <section class="flex">
           <AppFormField label="Fecha limite" class="w-6/12">
             <ElDatePicker v-model="formData.date" size="large" class="w-full" rounded />
@@ -235,7 +202,7 @@ function emitChange(value) {
         </section>
       </section>
 
-      <section class="mt-4 flex space-x-4">
+      <section class="mt-4 flex space-x-4" v-if="!hideClientOptions">
         <AppFormField label="Cliente">
           <BaseSelect
             v-model="formData.client"
@@ -267,7 +234,7 @@ function emitChange(value) {
     </div>
 
     <template #footer>
-      <div class="space-x-2 dialog-footer">
+      <div class="space-x-2 flex justify-end">
         <AtButton
           :disabled="isLoading"
           @click="emitChange(false)"
@@ -276,18 +243,9 @@ function emitChange(value) {
           Cancel
         </AtButton>
         <AppButton
-          class="text-white bg-blue-500"
-          v-if="formData.id"
-          @click="deletePayment()"
-          :disabled="isLoading"
-        >
-          Delete
-        </AppButton>
-        <AppButton
           :processing="isLoading"
           :disabled="isLoading"
           variant="secondary"
-          v-else
           @click="onSubmit()"
         >
           Guardar

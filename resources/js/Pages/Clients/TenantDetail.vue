@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { IClientSaved } from "@/Modules/clients/clientEntity";
 import ClientTemplate from "./Partials/ClientTemplate.vue";
-import { clientInteractions } from "@/Modules/clients/clientInteractions";
 import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 import UnitTitle from "@/Components/realState/UnitTitle.vue";
 import { formatDate, formatMoney } from "@/utils";
