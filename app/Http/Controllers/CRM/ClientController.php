@@ -77,7 +77,7 @@ class ClientController extends InertiaController
 
     $templates = [
       "tenant" => "Clients/TenantDetail",
-      "owner" => $this->templates['show'],
+      "owner" => "Clients/OwnerDetail",
       "lender" => $this->templates['show']
     ];
     $template = $templates[$type] ??  $this->templates['show'];
@@ -89,6 +89,9 @@ class ClientController extends InertiaController
       "credits" => $client->credits,
       "contract" => function() use ($client, $type) {
         return $type == 'tenant' ? $client->rent : null;
+      },
+      "leases" => function() use ($client, $type) {
+        return $type == 'owner' ? $client->leases : null;
       },
       "type" => $type,
       "currentTab" => $section

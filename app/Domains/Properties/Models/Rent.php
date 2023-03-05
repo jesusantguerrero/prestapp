@@ -126,7 +126,18 @@ class Rent extends Transactionable implements IPayableDocument {
      */
     public function scopeLate($query)
     {
-        return $query->where('payment_status', self::STATUS_LATE);
+        return $query->where('status', self::STATUS_LATE);
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeActive($query)
+    {
+        return $query->whereNotIn('status', [self::STATUS_CANCELLED, self::STATUS_PAID]);
     }
 
     public function hasLateInvoices() {
