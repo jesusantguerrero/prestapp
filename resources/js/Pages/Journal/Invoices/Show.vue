@@ -26,6 +26,9 @@ defineProps({
         type: String,
         required: true
     },
+    user: {
+      type: Object
+    },
     invoiceTemplate: {
         type: String,
         default: 'invoice-simple'
@@ -121,6 +124,7 @@ const print = () => {
 
         <component
             :is="InvoiceSimple"
+            :user="user"
             :type="type"
             :business-data="businessData"
             :invoice-data="invoice"

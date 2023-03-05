@@ -61,18 +61,20 @@
         />
       </div>
 
-      <div class="flex text-left invoice-footer-details mt-14" v-if="invoice.id">
+      <div class="flex text-center invoice-footer-details mt-14" v-if="invoice.id">
         <div class="w-full text-gray-600">
           <p class="font-bold text-gray-600">Thanks For your business!</p>
           <div class="mt-5 font-bold text-gray-600">Terms and conditions</div>
           <div>Payment is due within {{ dueDays }} days</div>
         </div>
 
-        <div class="w-full text-right">
-          <div class="font-serif invoice__firm">Jesus Guerrero</div>
-          <div class="font-bold">Jesus Antonio Guerrero Alvarez</div>
-          <div>Software Engineer</div>
-        </div>
+        <section class="w-full text-right justify-center flex flex-col items-end">
+          <div class="font-serif invoice__signature w-96 border-b-2 mb-2 mx-auto" />
+          <article class="text-center w-full justify-center">
+            <div class="font-bold">{{ user?.name }}</div>
+            <div>Firma</div>
+          </article>
+        </section>
       </div>
     </div>
   </section>
