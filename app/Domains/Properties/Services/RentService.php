@@ -3,6 +3,7 @@
 namespace App\Domains\Properties\Services;
 
 use App\Domains\Accounting\Helpers\InvoiceHelper;
+use App\Domains\CRM\Models\Client;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Properties\Models\Rent;
@@ -31,6 +32,8 @@ class RentService {
           ]);
           $rent = Rent::create($rentData);
           $rent->unit->update(['status' => PropertyUnit::STATUS_RENTED]);
+          $rent->client->update(['status' => Client::STATUS_ACTIVE]);
+          $rent->owner->checkStatus();
           PropertyTransactionService::createDepositTransaction($rent->fresh(), $rentData);
           return PropertyTransactionService::generateFirstInvoice($rent);
         });

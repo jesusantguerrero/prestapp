@@ -207,5 +207,19 @@ class RentTest extends TestCase
     RentService::generateUpToDate($rent);
     $this->assertCount(12, $rent->invoices()->get());
   }
+
+  public function testRentClientShouldHaveStatusActive() {
+    $this->actingAs($this->user);
+    $rent = $this->createRent();
+
+    $this->assertEquals($rent->client->status, Client::STATUS_ACTIVE);
+  }
+
+  public function testRentOwnerShouldHaveStatusActive() {
+    $this->actingAs($this->user);
+    $rent = $this->createRent();
+
+    $this->assertEquals($rent->owner->status, Client::STATUS_ACTIVE);
+  }
 }
 
