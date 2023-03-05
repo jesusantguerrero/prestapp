@@ -36,7 +36,9 @@ export interface IPayment {
 }
 
 export interface IInvoice {
-
+  id: number;
+  client_id: number;
+  concept: string;
 }
 export interface ILoanWithPayments extends ILoan {
   payment_documents: IPayment[]

@@ -7,8 +7,11 @@ use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Property;
 use App\Models\User;
 use App\Notifications\InvoiceGenerated;
+use Exception;
+use Illuminate\Support\Facades\DB;
 use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Core\Tax;
+use Insane\Journal\Models\Core\Transaction;
 use Insane\Journal\Models\Invoice\Invoice;
 
 class OwnerDistributionService {
@@ -95,6 +98,34 @@ class OwnerDistributionService {
           'generated_distribution_dates' => array_merge($client->generated_distribution_dates?? [], [$today])
         ]);
 
+      }
+    }
+
+
+    public function recordPayment($drawBillId, $paymentData) {
+      $invoice = Invoice::find($drawBillId);
+      $realStateAccountId =  Account::guessAccount($invoice, ['real_state', 'cash_and_bank']);
+      $error = "";
+
+      if (!$invoice) {
+          $error = "resource not found";
+      }
+
+      if ($invoice && $invoice->debt <= 0) {
+          $error = "This invoice is already paid";
+      }
+
+      if ($error) {
+          throw new Exception($error);
+      } else {
+        $invoice->createPayment(array_merge(
+          $paymentData,
+          [
+            'account_id' => $realStateAccountId,
+          ]
+        ));
+
+        $invoice->save();
       }
     }
 

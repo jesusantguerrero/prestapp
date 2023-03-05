@@ -41,6 +41,7 @@ Route::middleware([
       Route::get('/owners/draws', '__invoke')->name('owners.draw');
       Route::post('/owners/{client}/draws', 'storeDraws')->name('owners.draw.store');
       Route::post('/owners/{client}/draws/{drawId}', 'updateDraws')->name('owners.draw.update');
+      Route::post('/owners/{client}/draws/{drawId}/payments', 'payDraw')->name('owners.draw.pay');
     });
 
     // Tenant
