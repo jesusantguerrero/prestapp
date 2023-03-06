@@ -40,7 +40,8 @@ class DashboardController extends Controller
           'dailyBox' => $reportHelper->smallBoxRevenue('daily_box', $teamId),
           'realState' => Account::where(['team_id' => $teamId, 'display_id' => 'real_state'])->first(),
           'logs' => Activity::all()->last(),
-          'section' => "general"
+          'section' => "general",
+          'pendingDraws' => OwnerService::pendingDrawsCount($teamId),
       ]);
     }
 
