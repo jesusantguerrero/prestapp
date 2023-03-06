@@ -3,7 +3,9 @@
 namespace App\Domains\Accounting\Widget;
 
 use App\Domains\Loans\Models\LoanInstallment;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Insane\Journal\Helpers\ReportHelper;
 
 class AccountStatWidget {
 
@@ -48,5 +50,19 @@ class AccountStatWidget {
       ]);
 
       return $stats;
+  }
+
+  public static function accountNetByPeriod($teamId, $accountDisplayId, $timeUnit = 'month', $timeUnitDiff = 2 , $type = 'expenses') {
+    $endDate = Carbon::now()->endOfMonth()->format('Y-m-d');
+    $startDate = Carbon::now()->startOfYear()->format('Y-m-d');
+
+    $results = ReportHelper::getTransactionsByAccount($teamId, [$accountDisplayId], $startDate, $endDate, "accountName");
+    $results =  collect($results[$accountDisplayId] ?? [[]]);
+
+    return [
+      "year" => $results->sum('income'),
+      "months" => $results->values(),
+      "avg" => $results->avg('income')
+    ];
   }
 }

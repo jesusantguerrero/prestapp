@@ -9,6 +9,8 @@ import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
 import DashboardTemplate from "./Partials/DashboardTemplate.vue";
 
 import { formatMoney } from "@/utils/formatMoney";
+import ChartBar from "./Partials/ChartBar.vue";
+import { config } from "@/config";
 
 const props = defineProps({
   user: {
@@ -29,6 +31,12 @@ const props = defineProps({
   },
   stats: {
     type: Object,
+  },
+  ownerStats: {
+    type: Object,
+  },
+  paidInterest: {
+    type: Array,
   },
   cashOnHand: {
     type: Object,
@@ -51,7 +59,6 @@ const propertyStats = [
   {
     label: "Total propiedades",
     value: props.stats?.total || 0,
-    icon: "fa-users",
   },
   {
     label: "Alquiladas/Libres",
@@ -62,6 +69,17 @@ const propertyStats = [
     label: "Comisiones pagadas/mes",
     value: formatMoney(props.paidCommissions || 0),
     accent: true,
+  },
+];
+
+const ownerStats = [
+  {
+    label: "Total de propietarios",
+    value: props.ownerStats?.total || 0,
+  },
+  {
+    label: "Pagado mes",
+    value: formatMoney(props.ownerStats?.paid || 0),
   },
 ];
 
@@ -99,6 +117,47 @@ const comparisonRevenue = {
       data: props.revenue.currentYear.values.map(
         (item: Record<string, any>) => item.total
       ),
+    },
+  ],
+};
+
+const interestPerformance = {
+  headers: {
+    gapName: "Year",
+    month: props.paidCommissions.months.at(-1).income,
+    avg: props.paidCommissions.avg,
+    current: props.paidCommissions?.year,
+  },
+  options: {
+    chart: {
+      id: "commissions",
+      type: "bar",
+    },
+    stroke: {
+      curve: "smooth",
+    },
+    xaxis: {
+      categories: [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ],
+    },
+    colors: [config.colors.highlight, config.colors.info],
+  },
+  series: [
+    {
+      name: "Ganancias intereses",
+      data: props.paidCommissions.months.map((item) => item.income),
     },
   ],
 };
@@ -159,63 +218,64 @@ const comparisonRevenue = {
       </WelcomeWidget>
     </header>
 
-    <section class="flex flex-col mt-8 lg:space-x-4 lg:flex-row">
-      <section class="lg:w-7/12 space-y-4">
-        <IncomeSummaryWidget
-          class="order-2 mt-4 lg:w-full lg:mt-0 lg:order-1 shadow-md"
-          :style="{ height: '350px' }"
-          :chart="comparisonRevenue"
-          :headerInfo="comparisonRevenue.headers"
-          :sections="accounts"
-        />
+    <section class="mt-8">
+      <section class="flex lg:space-x-4 flex-col w-full lg:flex-row">
+        <section class="lg:w-7/12 space-y-4">
+          <IncomeSummaryWidget
+            title="Flujo de efectivo"
+            description="Movimiento de efectivo del año por mes"
+            class="order-2 mt-4 lg:w-full lg:mt-0 lg:order-1 shadow-md"
+            :style="{ height: '350px' }"
+            :chart="comparisonRevenue"
+            :headerInfo="comparisonRevenue.headers"
+            :sections="accounts"
+          />
+        </section>
 
-        <article class="rounded-md bg-base-lvl-3 shadow-md">
-          <header class="flex justify-between px-5 py-2 text-body-1">
-            <h4 class="text-xl font-bold">Proximos pagos</h4>
-            <AppButton
-              variant="inverse"
-              @click="router.visit(route('properties.create'))"
-            >
-              Agregar Contrato
-            </AppButton>
-          </header>
-          <section class="px-5 space-y-4">
-            <InvoiceCard v-for="invoice in nextInvoices" :invoice="invoice" />
-          </section>
+        <article class="order-1 space-y-5 lg:w-5/12 lg:order-2">
+          <WelcomeWidget
+            message="Distribucion a propierarios"
+            class="text-body-1 w-full shadow-md"
+            size="small"
+            :cards="ownerStats"
+          />
+
+          <ChartBar
+            class="bg-white shadow-md rounded-lg overflow-hidden"
+            title="Ganancias"
+            description="Ganancias por comisiones en el año"
+            :chart="interestPerformance"
+            :headerInfo="interestPerformance.headers"
+          />
         </article>
       </section>
-
-      <article class="order-1 space-y-5 lg:w-5/12 lg:order-2">
-        <WelcomeWidget
-          message="Distribucion a propierarios"
-          class="text-body-1 w-full shadow-md"
-          :cards="propertyStats"
-        />
-
-        <IncomeSummaryWidget
-          class="order-2 mt-4 lg:w-full lg:mt-0 lg:order-1 shadow-md"
-          :style="{ height: '350px' }"
-          :chart="comparisonRevenue"
-          :headerInfo="comparisonRevenue.headers"
-        />
-
-        <WelcomeWidget
-          message="Unidades recientes"
-          class="text-body-1 w-full shadow-md"
-          :cards="propertyStats"
-          v-if="false"
-        >
-          <template #content>
-            <div class="rounded-md h-44 w-full bg-base-lvl-2 p-4 mb-4">
-              <h4 class="font-bold">DOP 5000</h4>
-              <p class="mt-4"><IconMarker /> <span>Address</span></p>
-              <p class="space-x-4 mt-2">
-                <span>3 Dormitorios</span><span>1 Baño</span><span>300 mts</span>
-              </p>
-            </div>
-          </template>
-        </WelcomeWidget>
+      <article class="rounded-md bg-base-lvl-3 shadow-md">
+        <header class="flex justify-between px-5 py-2 text-body-1">
+          <h4 class="text-xl font-bold">Proximos pagos</h4>
+          <AppButton variant="inverse" @click="router.visit(route('properties.create'))">
+            Agregar Contrato
+          </AppButton>
+        </header>
+        <section class="px-5 space-y-4">
+          <InvoiceCard v-for="invoice in nextInvoices" :invoice="invoice" />
+        </section>
       </article>
+      <WelcomeWidget
+        message="Unidades recientes"
+        class="text-body-1 w-full shadow-md"
+        :cards="propertyStats"
+        v-if="false"
+      >
+        <template #content>
+          <div class="rounded-md h-44 w-full bg-base-lvl-2 p-4 mb-4">
+            <h4 class="font-bold">DOP 5000</h4>
+            <p class="mt-4"><IconMarker /> <span>Address</span></p>
+            <p class="space-x-4 mt-2">
+              <span>3 Dormitorios</span><span>1 Baño</span><span>300 mts</span>
+            </p>
+          </div>
+        </template>
+      </WelcomeWidget>
     </section>
   </DashboardTemplate>
 </template>

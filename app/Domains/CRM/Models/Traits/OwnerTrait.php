@@ -12,6 +12,10 @@ use Insane\Journal\Models\Core\Transaction;
 use Insane\Journal\Models\Invoice\Invoice;
 
 trait OwnerTrait {
+    public function scopeOwner($query)
+    {
+      return $query->where('is_owner', 1);
+    }
     // As property owner
     public function properties() {
       return $this->hasMany(Property::class, 'owner_id');

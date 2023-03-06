@@ -110,6 +110,11 @@ class Client extends Model {
       return $this->names . ' ' . $this->lastnames;
     }
 
+    public function scopeActive($query)
+    {
+      return $query->where('status', Client::STATUS_ACTIVE);
+    }
+
     /**
      * Create a new factory instance for the model.
      *
