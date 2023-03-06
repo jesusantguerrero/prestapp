@@ -218,10 +218,10 @@ const tableCols = [
         </header>
         <article class="px-4">
           <BaseTable :cols="tableCols" :table-data="payments">
-            <template v-slot:item="{ scope: { row } }">
+            <template v-slot:id="{ scope: { row } }">
               <div class="items-center space-x-2 d-flex">
                 <ElCheckbox @change="handleChange($event, row)" />
-                <span> {{ row.name }}</span>
+                <span> {{ row.concept }} #{{ row.id }}</span>
               </div>
             </template>
 
