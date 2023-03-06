@@ -68,7 +68,6 @@ const propertyStats = [
   {
     label: "Comisiones pagadas/mes",
     value: formatMoney(props.paidCommissions || 0),
-    accent: true,
   },
 ];
 
@@ -164,22 +163,15 @@ const interestPerformance = {
 </script>
 
 <template>
-  <DashboardTemplate :user="user">
+  <DashboardTemplate :user="user" class="pb-10">
     <header class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
       <WelcomeWidget
         message="Estadisticas de propiedades"
         class="text-body-1 w-full md:w-7/12 shadow-md"
+        size="small"
         :cards="propertyStats"
-      />
-
-      <WelcomeWidget
-        message="Pagos de renta"
-        class="text-body-1 w-full md:w-5/12 shadow-md"
-        :cards="propertyStats"
-        action-label="Ver estado de rentas"
-        action-link="/rents"
       >
-        <template #content>
+        <template #append>
           <section class="py-4">
             <BudgetProgress
               :goal="totals?.total"
@@ -216,9 +208,21 @@ const interestPerformance = {
           </section>
         </template>
       </WelcomeWidget>
+
+      <div class="text-body-1 w-full md:w-5/12">
+        <WelcomeWidget
+          message="Distribucion a propierarios"
+          class="text-body-1 w-full shadow-md"
+          size="small"
+          :cards="ownerStats"
+        />
+        <div class="text-body-1 w-full shadow-md bg-white mt-4 px-4 py-7 rounded-lg">
+          Hola mundo
+        </div>
+      </div>
     </header>
 
-    <section class="mt-8">
+    <section class="mt-8 mb-24">
       <section class="flex lg:space-x-4 flex-col w-full lg:flex-row">
         <section class="lg:w-7/12 space-y-4">
           <IncomeSummaryWidget
@@ -233,13 +237,6 @@ const interestPerformance = {
         </section>
 
         <article class="order-1 space-y-5 lg:w-5/12 lg:order-2">
-          <WelcomeWidget
-            message="Distribucion a propierarios"
-            class="text-body-1 w-full shadow-md"
-            size="small"
-            :cards="ownerStats"
-          />
-
           <ChartBar
             class="bg-white shadow-md rounded-lg overflow-hidden"
             title="Ganancias"
@@ -249,7 +246,7 @@ const interestPerformance = {
           />
         </article>
       </section>
-      <article class="rounded-md bg-base-lvl-3 shadow-md">
+      <article class="rounded-md bg-base-lvl-3 shadow-md mt-8">
         <header class="flex justify-between px-5 py-2 text-body-1">
           <h4 class="text-xl font-bold">Proximos pagos</h4>
           <AppButton variant="inverse" @click="router.visit(route('properties.create'))">

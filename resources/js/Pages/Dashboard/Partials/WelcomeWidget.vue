@@ -81,5 +81,6 @@ const cardSize = computed(() => {
         />
       </section>
     </slot>
+    <slot name="append" />
   </article>
 </template>
