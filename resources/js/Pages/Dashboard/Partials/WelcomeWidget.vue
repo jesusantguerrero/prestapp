@@ -2,11 +2,13 @@
 import { router } from "@inertiajs/vue3";
 // @ts-ignore: my lib
 import { AtBackgroundIconCard, AtButton } from "atmosphere-ui";
+import { computed } from "vue";
+
 interface ICard {
   label: string;
   value: [string, number];
-  accent: boolean;
-  icon: string;
+  accent?: boolean;
+  icon?: string;
 }
 interface Props {
   message: string;
@@ -17,12 +19,23 @@ interface Props {
   sectionClass?: string;
   borderless?: boolean;
   rounded: boolean;
+  size: string;
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   rounded: true,
+  size: "large",
   sectionClass:
     "flex flex-col md:flex-row py-4 space-y-2 md:space-y-0 md:space-x-4 divide-x-2 rounded-md divide-base-lvl-2 bg-base-lvl-3",
+});
+
+const cardSize = computed(() => {
+  const sizes: Record<string, string> = {
+    large: "h-24",
+    normal: "h-16",
+    small: "h-14",
+  };
+  return sizes[props.size] ?? sizes["large"];
 });
 </script>
 
@@ -57,9 +70,10 @@ withDefaults(defineProps<Props>(), {
       <section :class="sectionClass">
         <AtBackgroundIconCard
           v-for="card in cards"
-          class="w-full h-24 shadow-none"
+          class="w-full shadow-none"
           :class="[
             card.accent ? 'bg-primary-shade-2 text-white' : 'bg-white text-primary',
+            cardSize,
           ]"
           :icon="`fas ${card.icon}`"
           :value="card.value"
@@ -67,5 +81,6 @@ withDefaults(defineProps<Props>(), {
         />
       </section>
     </slot>
+    <slot name="append" />
   </article>
 </template>

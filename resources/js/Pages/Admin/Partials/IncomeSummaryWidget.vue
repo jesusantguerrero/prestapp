@@ -36,8 +36,8 @@ defineProps<Props>();
     </article>
     <article class="p-5 lg:w-3/12" v-if="sections">
       <header>
-        <h4 class="font-bold">Report</h4>
-        <small>Monthly Avg.</small>
+        <h4 class="font-bold">Reports</h4>
+        <small>Avg.</small>
       </header>
       <section class="mt-4 space-y-2">
         <div v-for="section in sections" class="p-2 bg-gray-100 rounded-md">

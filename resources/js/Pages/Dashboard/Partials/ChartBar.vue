@@ -2,7 +2,7 @@
   <div class="w-full comparison-card">
     <div class="px-5 pb-10">
       <h5 class="p-4 text-left card-title flex flex-col">
-        <span>
+        <span class="font-bold">
           {{ title }}
         </span>
         <small>{{ description }}</small>
@@ -33,7 +33,7 @@
           </div>
         </div>
         <div style="height: 240px; background: white; width: 100%">
-          <apexchart
+          <VueApexCharts
             ref="apexchart"
             width="100%"
             height="100%"
@@ -49,6 +49,7 @@
 
 <script lang="ts">
 import formatMoney from "@/utils/formatMoney";
+import VueApexCharts from "vue3-apexcharts";
 
 export default {
   props: {
@@ -82,6 +83,7 @@ export default {
       formatMoney,
     };
   },
+  components: { VueApexCharts },
 };
 </script>
 
