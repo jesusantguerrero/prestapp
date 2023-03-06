@@ -1,41 +1,4 @@
-<template>
-  <header
-    class="flex items-center justify-between w-full px-5 py-2 border rounded-lg bg-base-lvl-3 border-base-lvl-3 no-print"
-  >
-    <h2
-      class="flex items-center text-sm md:text-xl font-semibold leading-tight text-gray-500"
-    >
-      <span class="mr-2 font-bold text-primary capitalize"> {{ name }} </span>
-      <span v-if="resource && resource.id">
-        {{ sectionTitle }}
-      </span>
-      <span
-        class="px-2 py-1 ml-2 text-xs font-bold text-green-600 capitalize bg-green-100 rounded-3xl"
-        v-if="isEditing"
-        >editing</span
-      >
-    </h2>
-    <div>
-      <slot name="actions" v-if="!hideAction">
-        <div class="button-container">
-          <div v-if="!resource || resource.id" class="flex">
-            <AppButton @click="$emit('saved')" v-if="!showEdit">
-              {{ saveButtonTitle }}
-            </AppButton>
-            <AppButton @click="$emit('edit')" v-if="showEdit">
-              {{ editButtonTitle }}
-            </AppButton>
-          </div>
-          <AppButton v-else @click="$emit('create')">
-            {{ createButtonTitle }}
-          </AppButton>
-        </div>
-      </slot>
-    </div>
-  </header>
-</template>
-
-<script setup>
+<script lang="ts" setup>
 import { computed } from "vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 
@@ -90,7 +53,41 @@ const editButtonTitle = computed(() => {
 const createButtonTitle = computed(() => {
   return `Create ${props.name}`;
 });
-const backUrl = computed(() => {
-  return "/dashboards";
-});
 </script>
+
+<template>
+  <header
+    class="flex items-center justify-between w-full px-5 py-2 border rounded-lg bg-base-lvl-3 border-base-lvl-3 no-print"
+  >
+    <h2
+      class="flex items-center text-sm md:text-xl font-semibold leading-tight text-gray-500"
+    >
+      <span class="mr-2 font-bold text-primary capitalize"> {{ name }} </span>
+      <span v-if="resource && resource.id">
+        {{ sectionTitle }}
+      </span>
+      <span
+        class="px-2 py-1 ml-2 text-xs font-bold text-green-600 capitalize bg-green-100 rounded-3xl"
+        v-if="isEditing"
+        >editing</span
+      >
+    </h2>
+    <div>
+      <slot name="actions" v-if="$slots.actions || !hideAction">
+        <div class="button-container">
+          <div v-if="!resource || resource.id" class="flex">
+            <AppButton @click="$emit('saved')" v-if="!showEdit">
+              {{ saveButtonTitle }}
+            </AppButton>
+            <AppButton @click="$emit('edit')" v-if="showEdit">
+              {{ editButtonTitle }}
+            </AppButton>
+          </div>
+          <AppButton v-else @click="$emit('create')">
+            {{ createButtonTitle }}
+          </AppButton>
+        </div>
+      </slot>
+    </div>
+  </header>
+</template>

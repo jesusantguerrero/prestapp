@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { IClientSaved } from "@/Modules/clients/clientEntity";
 import ClientTemplate from "./Partials/ClientTemplate.vue";
-import { clientInteractions } from "@/Modules/clients/clientInteractions";
 import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 import UnitTitle from "@/Components/realState/UnitTitle.vue";
 import { formatDate, formatMoney } from "@/utils";
@@ -15,6 +14,7 @@ export interface Props {
   deposits: number;
   daysLate: number;
   type: string;
+  stats: Record<string, string>;
   contract: Record<string, any>;
 }
 
@@ -29,6 +29,7 @@ const props = withDefaults(defineProps<Props>(), {
     :type="type"
     :current-tab="currentTab"
     :contract="contract"
+    :stats="stats"
     :tabs="{
       '': 'Detalles',
       transactions: 'Transacciones',

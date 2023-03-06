@@ -26,18 +26,21 @@ Route::middleware([
 
     // rents
     Route::resource('rents', RentController::class);
-
-    // property transactions
     Route::post('/rents/{rent}/invoices/{invoice}/pay', [RentController::class, 'payInvoice']);
     Route::post('/rents/{rent}/generate-next-invoice', [RentController::class, 'generateNextInvoice']);
-    Route::get('/properties/transactions/{category}', PropertyTransactionController::class);
-    Route::post('/properties/{rent}/transactions/{type}', [PropertyTransactionController::class, 'store']);
-    Route::post('/properties/{rent}/transactions/{type}/{invoiceId}', [PropertyTransactionController::class, 'store']);
+
+    // property transactions
+    Route::controller(PropertyTransactionController::class)->group(function () {
+      Route::get('/properties/transactions/{category}', '__invoke');
+      Route::get('/rents/{rent}/transactions/deposit-refund/create',  'createDepositRefund')->name('property.transactions.create-refund');
+      Route::post('/properties/{rent}/transactions/{type}',  'store');
+      Route::post('/properties/{rent}/transactions/{type}/{invoiceId}', 'store');
+    });
 
     // Owner
     Route::controller(PropertyOwnerController::class)->group(function() {
-      Route::post('/clients/{client}/owner-distributions', 'generateDraw');
-      Route::put('/clients/{client}/owner-distributions/{invoice}', 'generateDraw');
+      Route::post('/clients/{client}/owner-distributions', 'generateDraw')->name('owners.draw.generate');
+      Route::put('/clients/{client}/owner-distributions/{invoice}', 'generateDraw')->name('owners.draw.update-generation');
       Route::get('/owners/draws', '__invoke')->name('owners.draw');
       Route::post('/owners/{client}/draws', 'storeDraws')->name('owners.draw.store');
       Route::post('/owners/{client}/draws/{drawId}', 'updateDraws')->name('owners.draw.update');

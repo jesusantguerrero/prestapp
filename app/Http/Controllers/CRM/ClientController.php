@@ -90,6 +90,13 @@ class ClientController extends InertiaController
       "contract" => function() use ($client, $type) {
         return $type == 'tenant' ? $client->rent : null;
       },
+      "stats" => function() use ($type, $client) {
+        if ($type == 'tenant') {
+          return [
+            "balance" => $client->invoices()->paid()->noRefunded()->invoiceAccount($client->rent->property->deposit_account_id)->sum('total')
+          ];
+        }
+      },
       "leases" => function() use ($client, $type) {
         return $type == 'owner' ? $client->leases : null;
       },

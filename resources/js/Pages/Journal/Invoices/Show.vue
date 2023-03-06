@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { Link, router } from "@inertiajs/vue3";
+// @ts-ignore
 import { AtField } from "atmosphere-ui";
 import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
 
+import AccountingSectionNav from "../Partials/AccountingSectionNav.vue";
 import InvoiceSimple from "./printTemplates/Simple.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import InvoicePaymentOptions from "@/Components/templates/InvoicePaymentOptions.vue";
-import AccountingSectionNav from "../Partials/AccountingSectionNav.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 
 import { formatDate, formatMoney } from "@/utils";
