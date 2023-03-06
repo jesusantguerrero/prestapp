@@ -96,20 +96,23 @@ class PropertyTransactionService {
 
       //todo:  validate not to return more than owed
       $refundAccountId = Account::guessAccount($rent, ['General Prepayments', 'customer_prepayments']);
+      $concept = "Devolucion de deposito $rent->client_name";
+
       $invoiceData = [
         "date" => $formData['date'] ?? date('Y-m-d'),
         "due_date" => $formData['date'] ?? date('Y-m-d'),
         "concept" => "Factura reembolso de deposito",
         'category_type' => PropertyInvoiceTypes::DepositRefund,
-        "description" => "Devolucion de deposito $rent->client_name",
+        "description" => $concept,
         "amount" => $formData['total'],
         "total" => $formData['total'],
         "invoice_account_id" => $formData['account_id'],
         "account_id" => $refundAccountId,
         "items" => [],
-        "relatedInvoices" => [
-          "name" => PropertyInvoiceTypes::DepositRefund,
-          "items" => []
+        'payment_details' => [
+          'account_id' => $rent->property->deposit_account_id,
+          'concept' => "Pago $concept",
+          'payment_method' => $formData['payment_method'] ?? 'cash'
         ]
       ];
 

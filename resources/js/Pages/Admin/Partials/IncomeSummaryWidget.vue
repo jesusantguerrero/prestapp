@@ -6,8 +6,8 @@ interface Props {
     series: any[];
     options: Record<string, any>;
   };
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   sections?: any[];
 }
 defineProps<Props>();

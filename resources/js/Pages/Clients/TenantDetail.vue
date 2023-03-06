@@ -14,6 +14,7 @@ export interface Props {
   deposits: number;
   daysLate: number;
   type: string;
+  stats: Record<string, string>;
   contract: Record<string, any>;
 }
 
@@ -28,6 +29,7 @@ const props = withDefaults(defineProps<Props>(), {
     :type="type"
     :current-tab="currentTab"
     :contract="contract"
+    :stats="stats"
     :tabs="{
       '': 'Detalles',
       transactions: 'Transacciones',

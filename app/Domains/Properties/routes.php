@@ -26,13 +26,16 @@ Route::middleware([
 
     // rents
     Route::resource('rents', RentController::class);
-
-    // property transactions
     Route::post('/rents/{rent}/invoices/{invoice}/pay', [RentController::class, 'payInvoice']);
     Route::post('/rents/{rent}/generate-next-invoice', [RentController::class, 'generateNextInvoice']);
-    Route::get('/properties/transactions/{category}', PropertyTransactionController::class);
-    Route::post('/properties/{rent}/transactions/{type}', [PropertyTransactionController::class, 'store']);
-    Route::post('/properties/{rent}/transactions/{type}/{invoiceId}', [PropertyTransactionController::class, 'store']);
+
+    // property transactions
+    Route::controller(PropertyTransactionController::class)->group(function () {
+      Route::get('/properties/transactions/{category}', '__invoke');
+      Route::get('/rents/{rent}/transactions/deposit-refund/create',  'createDepositRefund')->name('property.transactions.create-refund');
+      Route::post('/properties/{rent}/transactions/{type}',  'store');
+      Route::post('/properties/{rent}/transactions/{type}/{invoiceId}', 'store');
+    });
 
     // Owner
     Route::controller(PropertyOwnerController::class)->group(function() {

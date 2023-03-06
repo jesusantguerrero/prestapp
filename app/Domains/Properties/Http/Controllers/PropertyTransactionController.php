@@ -32,8 +32,16 @@ class PropertyTransactionController extends Controller
       return response()->json($invoice);
     }
 
+    public function createDepositRefund(Rent $rent) {
+      return inertia("Properties/Transactions/DepositRefund", [
+        "category" => 'security_deposits',
+        "client" => $rent->client,
+        "refunds" => $rent->refunds
+      ]);
+    }
+
     public function refund($rent, $postData) {
-      $invoice = PropertyTransactionService::createDepositRefund($rent, $postData);
-      return response()->json($invoice);
+      PropertyTransactionService::createDepositRefund($rent, $postData);
+      return back();
     }
 }

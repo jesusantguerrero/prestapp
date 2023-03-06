@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Link } from "@inertiajs/vue3";
+import { Link, router } from "@inertiajs/vue3";
 // @ts-ignore
 import { AtBackgroundIconCard } from "atmosphere-ui";
 import { ElTag } from "element-plus";
@@ -21,6 +21,7 @@ export interface Props {
   currentTab: string;
   hideStatistics: boolean;
   type: string;
+  stats?: Record<string, string>;
   contract?: Record<string, any>;
   tabs: Record<string, string>;
 }
@@ -61,7 +62,13 @@ const { openModal: openInvoiceModal } = useToggleModal("invoice");
       >
         <template #actions v-if="clients.is_tenant">
           <section class="flex space-x-2">
-            <AppButton @click="" variant="secondary" title="Reembolsar deposito">
+            <AppButton
+              @click="
+                router.visit(`/rents/${contract?.id}/transactions/deposit-refund/create`)
+              "
+              variant="secondary"
+              title="Reembolsar deposito"
+            >
               Ret. Deposito
             </AppButton>
             <AppButton
@@ -154,7 +161,7 @@ const { openModal: openInvoiceModal } = useToggleModal("invoice");
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
               title="Balance de Cuenta"
-              :value="formatMoney(0)"
+              :value="formatMoney(stats?.balance)"
             />
             <AtBackgroundIconCard
               class="w-full bg-white border h-28 text-body-1"
