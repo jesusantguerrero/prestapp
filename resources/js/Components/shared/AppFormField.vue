@@ -9,6 +9,7 @@ withDefaults(
     required?: boolean;
     placeholder?: string;
     disabled?: boolean;
+    numberFormat?: boolean;
   }>(),
   {
     required: false,
@@ -26,6 +27,7 @@ withDefaults(
         :required="required"
         :placeholder="placeholder"
         :disabled="disabled"
+        :number-format="numberFormat"
         class="bg-neutral/20 shadow-none border-neutral hover:border-secondary/60 focus:border-secondary/60"
       >
         <template #suffix>

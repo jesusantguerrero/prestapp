@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useForm } from "@inertiajs/vue3";
+import { router, useForm } from "@inertiajs/vue3";
 // @ts-ignore
 import { AtField, AtInput } from "atmosphere-ui";
-import { watch, ref } from "vue";
+import { watch, ref, nextTick } from "vue";
 import { ElNotification } from "element-plus";
 import axios from "axios";
 
@@ -112,7 +112,7 @@ const depositForm = useForm({});
 const submit = () => {
   const relatedPayments: Record<string, any>[] = payments.value?.reduce(
     (selectedPayments: IRelatedPayments[], doc: any) => {
-      if (doc.amount) {
+      if (doc.payment) {
         selectedPayments.push({
           id: doc.id,
           // @ts-ignore
@@ -150,12 +150,14 @@ const submit = () => {
       ...data,
     }))
     .post(`/properties/${rentId}/transactions/refund`, {
-      onSuccess() {
+      async onSuccess() {
         ElNotification({
           type: "success",
           message: "Reembolso de deposito creado y pagado correctamente",
           title: "Reembolso creado",
         });
+        categories.value = await getDepositBalance(formData.client.id, props.category);
+        formData.account = categories.value.length ? categories.value[0] : null;
       },
     });
 };

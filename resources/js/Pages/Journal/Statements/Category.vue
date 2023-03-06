@@ -144,7 +144,7 @@ const { customPrint } = usePrint("report");
 
       <div class="flex items-center justify-end space-x-2 print:hidden">
         <section>{{ ledger.assets[0].total }} =</section>
-        <section>
+        <section class="flex space-x-2">
           <AppButton variant="secondary" @click="isSummary = true"> Summary </AppButton>
           <AppButton variant="secondary" @click="isSummary = false"> Details </AppButton>
         </section>
