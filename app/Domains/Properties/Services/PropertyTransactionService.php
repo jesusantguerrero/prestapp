@@ -92,11 +92,10 @@ class PropertyTransactionService {
       ]);
     }
 
-    public static function createDepositRefund($rent, $formData) {
+    public static function createDepositRefund($rent, $formData, $storedInvoice = null) {
 
       //todo:  validate not to return more than owed
       $refundAccountId = Account::guessAccount($rent, ['real_state', 'cash_and_bank']);
-      $expenseAccountId = Account::guessAccount($rent, ['Refunds', 'expenses']);
       $concept = "Devolucion de deposito $rent->client_name";
 
       $invoiceData = [
@@ -124,7 +123,7 @@ class PropertyTransactionService {
             "concept" => "Reembolso de depositos de {$rent->client->display_name}",
             "quantity" => 1,
             "account_id" => $rent->property->deposit_account_id,
-            "category_id" => $expenseAccountId,
+            "category_id" => $rent->client_account_id ,
             "price" => $payment['amount'],
             "amount" => $payment['amount'],
           ];
@@ -144,7 +143,12 @@ class PropertyTransactionService {
         ]);
       }
 
-      $invoice = self::createInvoice($invoiceData, $rent, false);
+      if (!$storedInvoice) {
+        $invoice = self::createInvoice($invoiceData, $rent, false);
+      } else {
+        $invoice = $storedInvoice->updateDocument($invoiceData);
+
+      }
 
 
       return $invoice;
