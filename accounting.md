@@ -1,5 +1,6 @@
-- [ ] Recoleccion de rentas I
+- [x] Recoleccion de rentas I
 - [x] Recoleccion de depositos I
 - [x] Devolucion de depositos E
+- [x] Distribucion de propietarios con depositos y Devolucion de depositos
 - [ ] Gastos E
 - [ ] Owner Draw E
