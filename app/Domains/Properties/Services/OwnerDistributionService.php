@@ -8,10 +8,8 @@ use App\Domains\Properties\Models\Property;
 use App\Models\User;
 use App\Notifications\InvoiceGenerated;
 use Exception;
-use Illuminate\Support\Facades\DB;
 use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Core\Tax;
-use Insane\Journal\Models\Core\Transaction;
 use Insane\Journal\Models\Invoice\Invoice;
 
 class OwnerDistributionService {
@@ -139,7 +137,9 @@ class OwnerDistributionService {
             "concept" => "$invoice->description $invoice->date",
             "quantity" => 1,
             "category_id" => $property->owner_account_id, // payment account
-            "account_id" => $invoice->type == Invoice::DOCUMENT_TYPE_BILL ? Account::guessAccount($property, ['real_state_reserve', 'cash_and_bank']) : $invoice->invoice_account_id, // debit account
+            "account_id" => $invoice->type == Invoice::DOCUMENT_TYPE_BILL || $invoice->category_type == PropertyInvoiceTypes::Deposit->value
+              ? Account::guessAccount($property, ['real_state_reserve', 'cash_and_bank'])
+              : $invoice->invoice_account_id, // debit account
             "price" => $type * $invoice->total,
             "amount" => $type * $invoice->total,
           ];
