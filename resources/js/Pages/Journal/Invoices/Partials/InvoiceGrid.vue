@@ -1,11 +1,9 @@
 <script lang="ts" setup>
-import { AtInput, AtSimpleSelect, AtTable } from "atmosphere-ui";
+import { AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { computed, reactive, toRefs, onMounted } from "vue";
-
 import IconTrash from "@/Components/icons/IconTrash.vue";
-
+import AtTable from "@/Components/AtTable.vue";
 import cols from "./cols";
-import BaseTable from "@/Components/shared/BaseTable.vue";
 
 const props = defineProps({
   tableData: {
@@ -121,7 +119,7 @@ const { renderedCols, cleaveOptions } = toRefs(state);
 
 <template>
   <div class="w-full">
-    <BaseTable
+    <AtTable
       :hidden-cols="hiddenCols"
       :cols="renderedCols"
       :tableData="tableData"
@@ -215,7 +213,7 @@ const { renderedCols, cleaveOptions } = toRefs(state);
       <template v-slot:append v-if="isEditing">
         <button @click="addRow()" class="invoice-grid__add-row">Add Row</button>
       </template>
-    </BaseTable>
+    </AtTable>
   </div>
 </template>
 >

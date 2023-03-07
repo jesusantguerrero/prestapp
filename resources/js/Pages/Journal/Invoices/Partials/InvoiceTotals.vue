@@ -140,10 +140,10 @@ const { totals, debt, hasTaxes, paymentTotal } = toRefs(state);
       </p>
     </template>
 
-    <p class="total-labels">
+    <!-- <p class="total-labels">
       <span class="label">Descuento:</span>
       <span class="value">{{ formatMoney(totals.discount) }}</span>
-    </p>
+    </p> -->
 
     <p class="total-labels total-remark">
       <span class="label"> Total: </span>

@@ -1,3 +1,62 @@
+<script lang="ts" setup>
+import formatMoney from "@/utils/formatMoney";
+import CustomCell from "./customCell";
+import { computed } from "vue";
+
+const props = defineProps({
+  cols: {
+    type: Array,
+    required: true,
+  },
+  isLoading: {
+    type: Boolean,
+    default: false,
+  },
+  tableData: {
+    type: Array,
+  },
+  config: {
+    type: Object,
+    default() {
+      return {};
+    },
+  },
+  showPrepend: {
+    type: Boolean,
+    default: false,
+  },
+  showAppend: {
+    type: Boolean,
+    default: false,
+  },
+  emptyText: {
+    type: String,
+    default: "No data found",
+  },
+  hideEmptyText: {
+    type: Boolean,
+    default: false,
+  },
+  hideHeaders: {
+    type: Boolean,
+    default: false,
+  },
+  hiddenCols: {
+    type: [Array, null],
+  },
+});
+
+const getHeaderClass = ({ row }) => {
+  return row.headerClass;
+};
+
+const visibleCols = computed(() => {
+  return !props.hiddenCols
+    ? props.cols
+    : props.cols.filter((col) => !props.hiddenCols.includes(col.name));
+});
+</script>
+
 <template>
   <table
     class="table-fixed"
@@ -10,7 +69,7 @@
     <thead :class="{ hidden: hideHeaders }">
       <tr class="px-2 py-4 font-bold text-left border-b border-gray-200 text-body">
         <th
-          v-for="col in cols"
+          v-for="col in visibleCols"
           :key="col.name"
           class="px-2 py-4"
           :class="[col.headerClass]"
@@ -22,7 +81,7 @@
 
     <tbody v-if="tableData.length">
       <tr v-if="showPrepend">
-        <td :colspan="cols.length">
+        <td :colspan="visibleCols.length">
           <slot name="prepend"> </slot>
         </td>
       </tr>
@@ -33,7 +92,7 @@
         :class="{ 'bg-base-lvl-2': index % 2 }"
       >
         <td
-          v-for="col in cols"
+          v-for="col in visibleCols"
           :key="col.name"
           class="h-full align-baseline"
           :style="{ width: col.width, maxWidth: col.maxWidth }"
@@ -74,12 +133,12 @@
     </tbody>
     <tbody v-else>
       <tr v-if="showAppend">
-        <td :colspan="cols.length">
+        <td :colspan="visibleCols.length">
           <slot name="append" />
         </td>
       </tr>
       <tr>
-        <td :colspan="cols.length" class="flex flex-col w-full">
+        <td :colspan="visibleCols.length" class="flex flex-col w-full">
           <slot name="empty" v-if="!hideEmptyText">
             <div class="w-full py-5 text-center text-base-200">
               {{ emptyText }}
@@ -90,59 +149,10 @@
     </tbody>
     <tfoot>
       <tr>
-        <td :colspan="cols.length">
+        <td :colspan="visibleCols.length">
           <slot name="append"> </slot>
         </td>
       </tr>
     </tfoot>
   </table>
 </template>
-
-<script setup>
-import formatMoney from "@/utils/formatMoney";
-import CustomCell from "./customCell";
-
-defineProps({
-  cols: {
-    type: Array,
-    required: true,
-  },
-  isLoading: {
-    type: Boolean,
-    default: false,
-  },
-  tableData: {
-    type: Array,
-  },
-  config: {
-    type: Object,
-    default() {
-      return {};
-    },
-  },
-  showPrepend: {
-    type: Boolean,
-    default: false,
-  },
-  showAppend: {
-    type: Boolean,
-    default: false,
-  },
-  emptyText: {
-    type: String,
-    default: "No data found",
-  },
-  hideEmptyText: {
-    type: Boolean,
-    default: false,
-  },
-  hideHeaders: {
-    type: Boolean,
-    default: false,
-  },
-});
-
-const getHeaderClass = ({ row }) => {
-  return row.headerClass;
-};
-</script>
