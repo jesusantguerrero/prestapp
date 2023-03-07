@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div class="client-card">
     <p class="font-bold">{{ label }}</p>
     <div>
       {{ client.fullName }}

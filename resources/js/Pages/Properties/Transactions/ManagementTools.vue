@@ -116,17 +116,25 @@ const handlePayment = (invoice: IInvoice) => {
   });
 };
 
-const selectedInvoice = ref<IInvoice | null>(null);
+interface InvoiceResponse {
+  invoice: IInvoice;
+  businessData: Record<string, string>;
+}
 
-const { customPrint } = usePrint("invoice-content");
+const selectedInvoice = ref<InvoiceResponse | null>(null);
+
+const { customPrint } = usePrint();
 
 function printExternal(invoice: IInvoice) {
   axios.get(`/invoices/${invoice.id}/preview?json=true`).then(({ data }) => {
     selectedInvoice.value = data;
-    nextTick(() => {
-      customPrint();
-      selectedInvoice.value = null;
+    customPrint("invoice-content", {
+      beforePrint() {
+        selectedInvoice.value = null;
+      },
+      delay: 200,
     });
+    // selectedInvoice.value = null;
   });
 }
 </script>
@@ -219,14 +227,14 @@ function printExternal(invoice: IInvoice) {
       </InvoiceTable>
     </div>
 
-    <Simple
-      v-if="selectedInvoice"
-      :user="user"
-      :type="type"
-      :business-data="selectedInvoice.businessData"
-      :invoice-data="selectedInvoice.invoice"
-      id="invoice-content"
-    />
+    <div id="invoice-content" v-if="selectedInvoice">
+      <Simple
+        :user="user"
+        :type="type"
+        :business-data="selectedInvoice.businessData"
+        :invoice-data="selectedInvoice.invoice"
+      />
+    </div>
   </AppLayout>
 </template>
 

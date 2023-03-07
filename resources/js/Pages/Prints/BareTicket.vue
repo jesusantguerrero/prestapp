@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, toRefs } from "vue";
+import { computed } from "vue";
 import PrintContainer from "./Partials/PrintTemplate.vue";
-import { formatDate, formatMoney } from "@/utils";
+import { formatMoney } from "@/utils";
 import MetaLine from "./Partials/MetaLine.vue";
 
 interface Props {

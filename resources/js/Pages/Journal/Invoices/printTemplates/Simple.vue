@@ -41,10 +41,9 @@
 
       <InvoiceGrid
         :tableData="tableData"
-        :products="products"
         :is-editing="false"
         :hidden-cols="['quantity', 'discount']"
-        class="mt-10 main-grid"
+        class="mt-10 main-grid w-full"
       />
 
       <div class="flex justify-end px-4 mt-10 text-gray-600">
@@ -97,8 +96,8 @@ const props = withDefaults(
     type: string;
     user: Record<string, string>;
     businessData: Record<string, string>;
-    products: Record<string, string>[];
-    clients: IClient[];
+    products?: Record<string, string>[];
+    clients?: IClient[];
     invoiceData: Record<string, string>;
   }>(),
   {
@@ -160,8 +159,10 @@ const setInvoiceData = (data: Record<string, any>) => {
 
 watch(
   () => props.invoiceData,
-  () => {
-    setInvoiceData(props.invoiceData);
+  (data) => {
+    if (data) {
+      setInvoiceData(data);
+    }
   },
   { immediate: true }
 );
@@ -285,4 +286,22 @@ section {
     font-size: 1.2em !important;
   }
 }
+
+@media print {
+  .section-body {
+    width: 210mm;
+    display: block;
+    font-size: 12px;
+  }
+  @page {
+    marks: cross;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  tbody,
+  .client-card {
+    font-size: 12px;
+  }
+} ;
 </style>
