@@ -3,12 +3,7 @@
 namespace Tests\Feature\Property;
 
 use App\Domains\Accounting\Helpers\InvoiceHelper;
-use App\Domains\CRM\Models\Client;
-use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\Rent;
-use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Carbon;
 use Tests\Feature\Property\Helpers\PropertyBase;
 

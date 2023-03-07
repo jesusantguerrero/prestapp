@@ -3,6 +3,7 @@
 namespace App\Domains\Properties\Services;
 
 use App\Domains\Accounting\Helpers\InvoiceHelper;
+use App\Domains\Properties\Actions\PropertyTransactionsValidator;
 use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Rent;
 use Illuminate\Support\Carbon;
@@ -92,10 +93,10 @@ class PropertyTransactionService {
       ]);
     }
 
-    public static function createDepositRefund($rent, $formData) {
+    public static function createDepositRefund($rent, $formData, $storedInvoice = null) {
+      (new PropertyTransactionsValidator())->canRefund($rent->client, $formData['total']);
 
-      //todo:  validate not to return more than owed
-      $refundAccountId = Account::guessAccount($rent, ['General Prepayments', 'customer_prepayments']);
+      $refundAccountId = Account::guessAccount($rent, ['real_state', 'cash_and_bank']);
       $concept = "Devolucion de deposito $rent->client_name";
 
       $invoiceData = [
@@ -103,14 +104,15 @@ class PropertyTransactionService {
         "due_date" => $formData['date'] ?? date('Y-m-d'),
         "concept" => "Factura reembolso de deposito",
         'category_type' => PropertyInvoiceTypes::DepositRefund,
+        "type" => Invoice::DOCUMENT_TYPE_BILL,
         "description" => $concept,
         "amount" => $formData['total'],
         "total" => $formData['total'],
-        "invoice_account_id" => $formData['account_id'],
-        "account_id" => $refundAccountId,
+        "account_id" => $rent->property->deposit_account_id,
+        "invoice_account_id" => $rent->client_account_id,
         "items" => [],
         'payment_details' => [
-          'account_id' => $rent->property->deposit_account_id,
+          'account_id' => $refundAccountId,
           'concept' => "Pago $concept",
           'payment_method' => $formData['payment_method'] ?? 'cash'
         ]
@@ -118,13 +120,15 @@ class PropertyTransactionService {
 
       foreach ($formData['payments'] as $payment) {
           $invoiceData['items'][] = [
-            "name" => "Rembolso de depositos de {$rent->client->display_name}",
-            "concept" => "Rembolso de depositos de {$rent->client->display_name}",
+            "name" => "Reembolso de depositos de {$rent->client->display_name}",
+            "concept" => "Reembolso de depositos de {$rent->client->display_name}",
             "quantity" => 1,
-            "account_id" => $refundAccountId,
+            "account_id" => $rent->property->deposit_account_id,
+            "category_id" => $rent->client_account_id ,
             "price" => $payment['amount'],
             "amount" => $payment['amount'],
           ];
+
           $invoiceData["relatedInvoices"]['items'][] =[
             "id" => $payment['id'],
             "description" => PropertyInvoiceTypes::Deposit
@@ -140,9 +144,12 @@ class PropertyTransactionService {
         ]);
       }
 
-      $invoice = self::createInvoice($invoiceData, $rent, false);
+      if (!$storedInvoice) {
+        $invoice = self::createInvoice($invoiceData, $rent, false);
+      } else {
+        $invoice = $storedInvoice->updateDocument($invoiceData);
 
-
+      }
 
       return $invoice;
     }

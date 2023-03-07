@@ -93,7 +93,7 @@ class ClientController extends InertiaController
       "stats" => function() use ($type, $client) {
         if ($type == 'tenant') {
           return [
-            "balance" => $client->invoices()->paid()->noRefunded()->invoiceAccount($client->rent->property->deposit_account_id)->sum('total')
+            "balance" => $client->depositBalance()
           ];
         }
       },

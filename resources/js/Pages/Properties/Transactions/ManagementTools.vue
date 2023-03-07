@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, computed, watch, nextTick } from "vue";
+import { reactive, computed, watch, nextTick, ref } from "vue";
 // @ts-ignore
 import { AtBackgroundIconCard } from "atmosphere-ui";
 import { router } from "@inertiajs/vue3";
@@ -13,6 +13,8 @@ import { formatMoney } from "@/utils";
 import AppButton from "@/Components/shared/AppButton.vue";
 import { IInvoice } from "@/Modules/loans/loanEntity";
 import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
+import { usePrint } from "@/utils/usePrint";
+import Simple from "@/Pages/Journal/Invoices/printTemplates/Simple.vue";
 
 const props = defineProps({
   invoices: {
@@ -41,6 +43,13 @@ const props = defineProps({
     default() {
       return [];
     },
+  },
+  businessData: {
+    type: Object,
+    required: true,
+  },
+  user: {
+    type: Object,
   },
 });
 
@@ -106,6 +115,20 @@ const handlePayment = (invoice: IInvoice) => {
     });
   });
 };
+
+const selectedInvoice = ref<IInvoice | null>(null);
+
+const { customPrint } = usePrint("invoice-content");
+
+function printExternal(invoice: IInvoice) {
+  axios.get(`/invoices/${invoice.id}/preview?json=true`).then(({ data }) => {
+    selectedInvoice.value = data;
+    nextTick(() => {
+      customPrint();
+      selectedInvoice.value = null;
+    });
+  });
+}
 </script>
 
 <template>
@@ -177,7 +200,7 @@ const handlePayment = (invoice: IInvoice) => {
                 class="hover:text-primary transition items-center flex flex-col justify-center hover:border-primary-400"
                 variant="neutral"
                 v-else
-                @click="router.visit(`/rents/create?unit=${row.id}`)"
+                @click="printExternal(row)"
               >
                 <IMdiFile />
               </AppButton>
@@ -195,6 +218,15 @@ const handlePayment = (invoice: IInvoice) => {
         </template>
       </InvoiceTable>
     </div>
+
+    <Simple
+      v-if="selectedInvoice"
+      :user="user"
+      :type="type"
+      :business-data="selectedInvoice.businessData"
+      :invoice-data="selectedInvoice.invoice"
+      id="invoice-content"
+    />
   </AppLayout>
 </template>
 
