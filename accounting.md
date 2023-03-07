@@ -1,0 +1,5 @@
+- [ ] Recoleccion de rentas I
+- [x] Recoleccion de depositos I
+- [x] Devolucion de depositos E
+- [ ] Gastos E
+- [ ] Owner Draw E

@@ -3,6 +3,7 @@
 namespace App\Domains\Properties\Services;
 
 use App\Domains\Accounting\Helpers\InvoiceHelper;
+use App\Domains\Properties\Actions\PropertyTransactionsValidator;
 use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Rent;
 use Illuminate\Support\Carbon;
@@ -93,8 +94,8 @@ class PropertyTransactionService {
     }
 
     public static function createDepositRefund($rent, $formData, $storedInvoice = null) {
+      (new PropertyTransactionsValidator())->canRefund($rent->client, $formData['total']);
 
-      //todo:  validate not to return more than owed
       $refundAccountId = Account::guessAccount($rent, ['real_state', 'cash_and_bank']);
       $concept = "Devolucion de deposito $rent->client_name";
 
@@ -149,7 +150,6 @@ class PropertyTransactionService {
         $invoice = $storedInvoice->updateDocument($invoiceData);
 
       }
-
 
       return $invoice;
     }

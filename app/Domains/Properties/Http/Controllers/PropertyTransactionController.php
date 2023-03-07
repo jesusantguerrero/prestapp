@@ -5,6 +5,7 @@ namespace App\Domains\Properties\Http\Controllers;
 use App\Domains\Properties\Models\Rent;
 use App\Domains\Properties\Services\PropertyTransactionService;
 use App\Http\Controllers\Controller;
+use Exception;
 
 class PropertyTransactionController extends Controller
 {
@@ -41,7 +42,11 @@ class PropertyTransactionController extends Controller
     }
 
     public function refund($rent, $postData) {
-      PropertyTransactionService::createDepositRefund($rent, $postData);
-      return back();
+      try {
+        PropertyTransactionService::createDepositRefund($rent, $postData);
+        return back();
+      } catch (Exception $e) {
+        back()->withErrors(["error" => $e->getMessage()]);
+      }
     }
 }

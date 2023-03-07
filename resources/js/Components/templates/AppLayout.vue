@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from "vue";
+import { ref, computed, onUnmounted, nextTick, onMounted } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
 import { Head, Link } from "@inertiajs/vue3";
 // @ts-ignore
@@ -71,22 +71,26 @@ transformCategoryOptions(
   }
 );
 
-watch(
-  () => pageProps.errors,
-  (errors) => {
-    Object.keys(errors).forEach((error) => {
-      ElNotification({
-        message: errors[error],
-        title: "Ha ocurrido un error",
-        type: "error",
-      });
+const catchErrors = (errors: Record<string, string>) => {
+  Object.keys(errors).forEach((error) => {
+    ElNotification({
+      message: errors[error],
+      title: "Ha ocurrido un error",
+      type: "error",
     });
-  },
-  {
-    deep: true,
-    immediate: true,
-  }
-);
+  });
+};
+
+const routerEvent = ref<null|Function>(null)
+onMounted(() => {
+  routerEvent.value = router.on("error", (event) => {
+    if (event.detail.errors) catchErrors(event.detail.errors);
+  });
+});
+
+onUnmounted(() => {
+  routerEvent.value && routerEvent.value()
+})
 
 const handleActions = (action) => {
   // const actions = {

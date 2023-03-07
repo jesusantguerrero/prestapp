@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { router, useForm } from "@inertiajs/vue3";
+import {  useForm } from "@inertiajs/vue3";
 // @ts-ignore
 import { AtField, AtInput } from "atmosphere-ui";
-import { watch, ref, nextTick } from "vue";
+import { watch, ref } from "vue";
 import { ElNotification } from "element-plus";
 import axios from "axios";
 
@@ -161,6 +161,10 @@ const submit = () => {
       },
     });
 };
+
+watch(depositForm.errors, (errors) => {
+  displayErrors(errors)
+})
 
 const tableCols = [
   {
