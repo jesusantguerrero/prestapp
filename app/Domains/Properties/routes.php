@@ -1,5 +1,7 @@
 <?php
 
+use App\Domains\Properties\Http\Controllers\Api\InvoiceApiController;
+use App\Domains\Properties\Http\Controllers\Api\PaymentApiController;
 use App\Domains\Properties\Http\Controllers\PropertyController;
 use App\Domains\Properties\Http\Controllers\PropertyOwnerController;
 use App\Domains\Properties\Http\Controllers\PropertyTransactionController;
@@ -10,7 +12,8 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->name('api.')->group(function () {
-
+  Route::apiResource('invoices', InvoiceApiController::class);
+  Route::apiResource('rent-payments', PaymentApiController::class);
 });
 
 Route::middleware([

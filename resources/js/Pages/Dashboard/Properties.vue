@@ -11,6 +11,9 @@ import DashboardTemplate from "./Partials/DashboardTemplate.vue";
 import { formatMoney } from "@/utils/formatMoney";
 import ChartBar from "./Partials/ChartBar.vue";
 import { config } from "@/config";
+import PropertyInvoiceWidget from "./Partials/PropertyInvoiceWidget.vue";
+import NextPaymentsWidget from "../Loans/NextPaymentsWidget.vue";
+import PaymentsCard from "@/Components/PaymentsCard.vue";
 
 const props = defineProps({
   user: {
@@ -246,17 +249,41 @@ const interestPerformance = {
           />
         </article>
       </section>
-      <article class="rounded-md bg-base-lvl-3 shadow-md mt-8">
-        <header class="flex justify-between px-5 py-2 text-body-1">
-          <h4 class="text-xl font-bold">Proximos pagos</h4>
-          <AppButton variant="inverse" @click="router.visit(route('properties.create'))">
-            Agregar Contrato
-          </AppButton>
-        </header>
-        <section class="px-5 space-y-4">
-          <InvoiceCard v-for="invoice in nextInvoices" :invoice="invoice" />
-        </section>
-      </article>
+      <section class="flex mt-4 space-x-4">
+        <PropertyInvoiceWidget class="w-full md:w-7/12" />
+        <NextPaymentsWidget
+          title="Pagos por periodo"
+          endpoint="/api/rent-payments?"
+          method="back"
+          default-range="7D"
+          date-field="payment_date"
+          class="rounded-md border w-full md:w-5/12"
+          :ranges="[
+            { label: '1D', value: [1, 1], tooltip: 'Hoy' },
+            { label: '7D', value: [7, 0], tooltip: '7 Dias' },
+            { label: '1M', value: [30, 0], tooltip: '30 Dias' },
+            { label: '3M', value: [90, 0], tooltip: '3 Meses' },
+          ]"
+        >
+          <template #beforeRange>
+            <Link href="/payment-center?tab=payments">Todos</Link>
+          </template>
+          <template v-slot:content="{ list }">
+            <article class="py-4 my-2 h-[380px] overflow-auto ic-scroller">
+              <template v-if="list.length">
+                <PaymentsCard v-for="payment in list" :payment="payment" />
+              </template>
+              <section
+                v-else
+                class="flex text-body-1 flex-col justify-center items-center w-full"
+              >
+                <IMdiNoteOff class="text-8xl" />
+                <p class="mt-8">No hay pagos realizados en este rango de fechas</p>
+              </section>
+            </article>
+          </template>
+        </NextPaymentsWidget>
+      </section>
       <WelcomeWidget
         message="Unidades recientes"
         class="text-body-1 w-full shadow-md"
