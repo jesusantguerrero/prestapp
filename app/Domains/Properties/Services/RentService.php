@@ -9,7 +9,10 @@ use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Properties\Models\Rent;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Insane\Journal\Models\Core\Account;
+use Insane\Journal\Models\Core\Tax;
 use Insane\Journal\Models\Invoice\Invoice;
+use Insane\Journal\Models\Invoice\InvoiceLineTax;
 
 class RentService {
     public static function createRent(mixed $rentData, mixed $schedule = null) {
@@ -107,6 +110,40 @@ class RentService {
         }
 
         $query
+        ->join('clients', 'clients.id', '=', 'invoices.client_id')
+        ->groupBy(['clients.names', 'clients.id', 'invoices.debt', 'invoices.due_date', 'invoices.id', 'invoices.concept'])
+        ->take(5);
+
+        return $query;
+    }
+
+    public static function commissions($teamId, $statuses = []) {
+      $query = InvoiceLineTax::selectRaw('
+          clients.names client_name,
+          clients.id contact_id,
+          invoices.debt,
+          invoices.date,
+          invoice_line_taxes.concept category,
+          invoice_lines.concept account_name,
+          invoices.due_date,
+          invoice_line_taxes.amount total,
+          invoices.id id,
+          invoices.series,
+          invoices.number,
+          invoices.status,
+          invoices.concept concept'
+        )->where([
+          'invoices.team_id' => $teamId,
+          'invoiceable_type' => Client::class
+        ]);
+
+        if (count($statuses)) {
+          $query->whereIn('invoices.status', $statuses);
+        }
+
+        $query
+        ->join('invoices', 'invoices.id', '=', 'invoice_line_taxes.invoice_id')
+        ->join('invoice_lines', 'invoice_lines.id', '=', 'invoice_line_taxes.invoice_line_id')
         ->join('clients', 'clients.id', '=', 'invoices.client_id')
         ->groupBy(['clients.names', 'clients.id', 'invoices.debt', 'invoices.due_date', 'invoices.id', 'invoices.concept'])
         ->take(5);
