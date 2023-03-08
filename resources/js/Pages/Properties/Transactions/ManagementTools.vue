@@ -15,6 +15,8 @@ import { IInvoice } from "@/Modules/loans/loanEntity";
 import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
 import { usePrint } from "@/utils/usePrint";
 import Simple from "@/Pages/Journal/Invoices/printTemplates/Simple.vue";
+import ButtonGroup from "@/Components/ButtonGroup.vue";
+import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
 
 const props = defineProps({
   invoices: {
@@ -58,12 +60,13 @@ const sectionName = computed(() => {
 });
 
 interface IFilter {
-  [key: string]: null | Record<string, string>;
+  [key: string]: null | string | Record<string, string>;
 }
 
 const filters = reactive<IFilter>({
   owner: null,
   property: null,
+  section: "bills",
 });
 
 watch(
@@ -71,7 +74,7 @@ watch(
   () => {
     const selectedFilters = Object.entries(filters).reduce(
       (acc: Record<string, string | undefined>, [filterName, filter]) => {
-        acc[filterName] = filter?.value;
+        acc[filterName] = filter?.value ?? filter;
         return acc;
       },
       {}
@@ -137,27 +140,26 @@ function printExternal(invoice: IInvoice) {
     // selectedInvoice.value = null;
   });
 }
+
+const handleChange = () => {};
+
+const sections: Record<string, any> = {
+  commissions: {
+    label: "Comisiones",
+  },
+  invoices: {
+    label: "Facturas",
+  },
+  bills: {
+    label: "Gastos",
+  },
+};
 </script>
 
 <template>
   <AppLayout title="Centro de pago">
     <template #header>
-      <PropertySectionNav>
-        <template #actions>
-          <BaseSelect
-            :options="owners"
-            placeholder="Filtrar por dueño"
-            v-model="filters.owner"
-          />
-
-          <AppButton @click="router.visit(`/${sectionName}/create`)" variant="inverse"
-            >Ingreso</AppButton
-          >
-          <AppButton @click="router.visit(`/${sectionName}/create`)" variant="inverse"
-            >Egreso</AppButton
-          >
-        </template>
-      </PropertySectionNav>
+      <PropertySectionNav />
     </template>
 
     <div class="py-10 mx-auto sm:px-6 lg:px-8">
@@ -178,6 +180,33 @@ function printExternal(invoice: IInvoice) {
           :value="lateDays || 0"
         />
       </section>
+      <section class="flex space-x-4 mt-4">
+        <AppSearch
+          v-model.lazy="filters.search"
+          class="w-full md:flex"
+          :has-filters="true"
+        />
+        <BaseSelect
+          class="min-w-max"
+          :size="large"
+          :options="owners"
+          placeholder="Filtrar por dueño"
+          v-model="filters.owner"
+        />
+        <BaseSelect
+          placeholder="Filtrar"
+          :options="[]"
+          v-model="filters.status"
+          label="label"
+          track-by="name"
+        />
+        <ButtonGroup
+          class="w-full md:w-fit"
+          @update:modelValue="handleChange"
+          :values="sections"
+          v-model="filters.section"
+        />
+      </section>
       <InvoiceTable :invoice-data="invoices" class="mt-10 rounded-md bg-base-lvl-3">
         <template v-slot:actions="{ row }">
           <div class="flex justify-end items-center">
@@ -191,7 +220,7 @@ function printExternal(invoice: IInvoice) {
               @click="handlePayment(row)"
               variant="inverse-secondary"
               class="flex items-center justify-center"
-              v-if="row?.payment_status !== 'PAID' || loanId"
+              v-if="row?.status !== 'paid'"
             >
               <IIcSharpPayment />
             </AppButton>
@@ -199,15 +228,6 @@ function printExternal(invoice: IInvoice) {
               <AppButton
                 class="hover:text-primary transition items-center flex flex-col justify-center hover:border-primary-400"
                 variant="neutral"
-                v-if="row.contract"
-                @click="router.visit(`/rents/${row.contract.id}`)"
-              >
-                <IMdiFile />
-              </AppButton>
-              <AppButton
-                class="hover:text-primary transition items-center flex flex-col justify-center hover:border-primary-400"
-                variant="neutral"
-                v-else
                 @click="printExternal(row)"
               >
                 <IMdiFile />

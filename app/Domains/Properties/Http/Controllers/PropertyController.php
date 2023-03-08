@@ -65,13 +65,18 @@ class PropertyController extends InertiaController
 
     public function managementTools(Request $request) {
       $teamId = $request->user()->current_team_id;
-      $tab = $request->query('tab', 'rents');
       $filters = $request->query('filters');
       $ownerId = $filters ? $filters['owner'] : null;
+      $section = $filters ? $filters['section'] : 'bills';
 
-      $invoices = $tab == 'fees'
-      ? RentService::invoices($teamId)->get()
-      : ClientService::invoices($teamId, $ownerId)->get();
+      $methods = [
+        "bills" => fn() => ClientService::invoices($teamId, $ownerId)->get(),
+        "invoices" => fn() => RentService::invoices($teamId)->get(),
+        "commissions" => fn() => RentService::commissions($teamId)->get()
+      ];
+
+      $method = $methods[$section];
+      $invoices = $method();
 
       return inertia('Properties/Transactions/ManagementTools',
       [

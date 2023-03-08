@@ -44,8 +44,9 @@ const props = defineProps({
       return {};
     },
   },
-  bank: {
-    type: Number,
+  paidCommissions: {
+    type: Object,
+    required: true,
   },
   dailyBox: {
     type: Object,
@@ -112,7 +113,7 @@ const { openTransactionModal } = useTransactionModal();
             >
               <SectionFooterCard
                 title="Ganancias netas"
-                :value="formatMoney(accounts.assets.income - accounts.assets.outcome)"
+                :value="formatMoney(paidCommissions.balance)"
               >
                 <template #footer>
                   <p class="flex items-center text-xs text-success md:text-base" rounded>
