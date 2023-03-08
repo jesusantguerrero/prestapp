@@ -86,7 +86,6 @@ const sectionName = computed(() => {
               @click="
                 openInvoiceModal({
                   data: {
-                    type: 'lender',
                     clientId: clients.id,
                     rentId: contract?.id,
                     hideClientOptions: true,
