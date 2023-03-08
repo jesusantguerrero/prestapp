@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { router } from "@inertiajs/vue3";
+import { Link, router } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
 import { AtBackgroundIconCard } from "atmosphere-ui";
 
@@ -78,27 +78,20 @@ const isUnitFormOpen = ref(false);
 const addUnit = () => {
   isUnitFormOpen.value = true;
 };
+
+const isLoading = ref(false);
+const generateOwnerDistribution = () => {
+  isLoading.value = false;
+  clientInteractions.generateOwnerDistribution(props.properties.owner_id).finally(() => {
+    isLoading.value = false;
+  });
+};
 </script>
 
 <template>
   <AppLayout :title="`Propiedades / ${propertyTitle}`">
     <template #header>
-      <PropertySectionNav>
-        <template #actions>
-          <AppButton
-            @click="router.visit(route('properties.edit', properties))"
-            variant="inverse"
-          >
-            Editar
-          </AppButton>
-          <AppButton
-            @click="router.visit(route('rents.create', { propertyId: properties.id }))"
-            variant="inverse"
-          >
-            Nuevo Contrato
-          </AppButton>
-        </template>
-      </PropertySectionNav>
+      <PropertySectionNav />
     </template>
 
     <main class="p-5 mt-8">
@@ -109,7 +102,24 @@ const addUnit = () => {
         :title="propertyTitle"
         @create="router.visit('/properties/create')"
         hide-action
-      />
+      >
+        <template #actions>
+          <section class="flex space-x-2">
+            <AppButton
+              @click="router.visit(route('properties.edit', properties))"
+              variant="neutral"
+            >
+              <IMdiEdit />
+            </AppButton>
+            <AppButton
+              @click="router.visit(route('rents.create', { propertyId: properties.id }))"
+              variant="secondary"
+            >
+              Nuevo Contrato
+            </AppButton>
+          </section>
+        </template>
+      </AppSectionHeader>
       <header
         class="w-full px-5 pb-2 mb-5 space-y-5 text-gray-600 bg-white border-gray-200 shadow-md rounded-b-md"
       >
@@ -121,15 +131,15 @@ const addUnit = () => {
                 {{ properties.address }}
               </span>
             </p>
-            <p
+            <Link
               class="flex items-center space-x-2 cursor-pointer text-primary group"
-              @click="router.visit(route('clients.show', properties.owner))"
+              :href="`/contacts/${properties.owner_id}/owners`"
             >
               <IconPersonSafe />
               <span class="group-hover:underline underline-offset-4">
                 {{ properties.owner.fullName }}
               </span>
-            </p>
+            </Link>
           </article>
           <article class="flex space-x-5">
             <section>
@@ -212,11 +222,14 @@ const addUnit = () => {
               <section class="flex space-x-4">
                 <AppButton
                   class="w-full"
+                  variant="secondary"
+                  :disabled="isLoading"
+                  :processing="isLoading"
                   @click="
-                    clientInteractions.generateOwnerDistribution(properties.owner_id)
+                    router.visit(`/owners/draws?filters[owner_id]=${properties.owner_id}`)
                   "
                 >
-                  Generar Pago a Dueño
+                  Generar Pago a {{ properties.owner.names }}
                 </AppButton>
               </section>
               <EmptyAddTool> Notes </EmptyAddTool>

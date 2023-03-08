@@ -81,7 +81,7 @@ const catchErrors = (errors: Record<string, string>) => {
   });
 };
 
-const routerEvent = ref<null|Function>(null)
+const routerEvent = ref<null | Function>(null);
 onMounted(() => {
   routerEvent.value = router.on("error", (event) => {
     if (event.detail.errors) catchErrors(event.detail.errors);
@@ -89,8 +89,8 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  routerEvent.value && routerEvent.value()
-})
+  routerEvent.value && routerEvent.value();
+});
 
 const handleActions = (action) => {
   // const actions = {
@@ -135,7 +135,7 @@ function refresh() {
 
           <div class="flex justify-end h-16">
             <div class="flex items-center sm:ml-6">
-              <AppResourceSearch class="hidden md:block mr-2" />
+              <!-- <AppResourceSearch class="hidden md:block mr-2" /> -->
 
               <AddNewButton class="hidden mr-2 md:inline-block" v-if="!isOnboarding">
                 <AppButton class="hidden md:flex px-1 items-center mr-4 ml-2">
@@ -147,6 +147,31 @@ function refresh() {
                 :notifications="pageProps.unreadNotifications"
                 @click="$router.visit('/notifications')"
               />
+              <!-- Settings Dropdown -->
+              <div class="relative ml-3">
+                <Dropdown align="right" width="48">
+                  <template #trigger>
+                    <button
+                      class="flex text-sm w-8 h-8 bg-base-lvl-3 items-center justify-center transition border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300"
+                    >
+                      <IMdiQuestionMark />
+                    </button>
+                  </template>
+
+                  <template #content>
+                    <!-- Account Management -->
+                    <div class="block px-4 py-2 text-xs text-gray-400">
+                      Manage Account
+                    </div>
+
+                    <DropdownLink href="/docs/guide"> Guia de inicio </DropdownLink>
+
+                    <DropdownLink href="/docs/help"> Ayuda </DropdownLink>
+                    =
+                    <div class="border-t border-gray-100" />
+                  </template>
+                </Dropdown>
+              </div>
               <!-- Settings Dropdown -->
               <div class="relative ml-3">
                 <Dropdown align="right" width="48">

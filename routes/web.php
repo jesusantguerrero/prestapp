@@ -29,7 +29,8 @@ use Inertia\Inertia;
 */
 
 Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->name('api.')->group(function () {
-  //  accounts and transactions
+    //  accounts and transactions
+
 
     Route::apiResource('/settings', SettingsController::class, [
      "only" => ['index', 'store', 'update', 'delete']
@@ -50,14 +51,6 @@ Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->name('api.')->g
     Route::apiResource('rents', RentApiController::class);
 });
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
 
 Route::get('/background/run', BackgroundController::class);
 Route::get('/background/update-late-payments', [BackgroundController::class, 'updateLatePayments']);
@@ -68,6 +61,8 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
+    Route::get('/', fn () => redirect("/dashboard"));
+
     Route::get('/dashboard/{section?}', DashboardController::class)->name('dashboard');
 
      // settings

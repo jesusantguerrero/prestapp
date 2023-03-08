@@ -51,7 +51,7 @@ const { toggleModal } = useToggleModal("contact");
 
 const sectionTitle = computed(() => {
   const titles = {
-    owner: "Dueños de propiedades",
+    owner: "Propietarios",
     tenant: "Inquilinos",
     lender: "Clientes de prestamos",
   };
