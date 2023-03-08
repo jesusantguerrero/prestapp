@@ -70,7 +70,7 @@ const menus = {
         },
     },
     {
-      label: 'Dueños',
+      label: 'Propietarios',
       url: '/contacts/owner'
     },
     {

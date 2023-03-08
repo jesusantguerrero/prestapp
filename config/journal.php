@@ -97,7 +97,7 @@ return [
                 [
                   "resource_type" => "categories",
                   "display_id" => "rent",
-                  "alias" => "Rentas por pagar a dueños",
+                  "alias" => "Rentas por pagar a propietarios",
                   "number" => 2200,
                   "name" => "Last Month's Rent",
                   "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
@@ -122,7 +122,7 @@ return [
                 [
                   "resource_type" => "categories",
                   "display_id" => "owner_held_security_deposits",
-                  "alias" => "Depositos en mano de dueños",
+                  "alias" => "Depositos en mano de propietarios",
                   "number" => 2500,
                   "name" => "Owner held security deposits",
                   "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
@@ -130,7 +130,7 @@ return [
                 [
                     "resource_type" => "categories",
                     "display_id" => "expected_payments_owners",
-                    "alias" => "Cuentas por pagar a dueños",
+                    "alias" => "Cuentas por pagar a propietarios",
                     "number" => 2600,
                     "name" => "Expected Payments to Owners",
                     "Description" => "Use this to track the balance of what you owe owners (i.e. suppliers, online subscriptions providers) after you accepted their service or receive items for which you have not yet paid. Journal in Wave are already tracked in the Accounts Payable category",
@@ -178,7 +178,7 @@ return [
               [
                   "resource_type" => "categories",
                   "display_id" => "business_owner_contribution",
-                  "alias" => "Contribucion de dueños",
+                  "alias" => "Contribucion de propietarios",
                   "number" => 3100,
                   "name" => "Business Owner Contribution and Drawing",
                   "Description" => "Use this to track money you or others have invested into the business. For example, when you first start a business you usually invest start-up money into it",
@@ -472,7 +472,7 @@ return [
             "display_id" => "owner_investment",
             "number" => 3101,
             "name" => "Owner Investment / Drawings",
-            "alias" => "inversiones de dueños",
+            "alias" => "inversiones de propietarios",
             "index" => 1,
             "balance_type" => "CREDIT",
             "type" => -1
@@ -500,7 +500,7 @@ return [
         [
             "category_id" => "retained_earnings",
             "display_id" => "owner_equity",
-            "alias" => "Ganancias de dueños",
+            "alias" => "Ganancias de propietarios",
             "number" => 3201,
             "name" => "Owner's Equity",
             "index" => 1,

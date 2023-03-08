@@ -12,9 +12,10 @@ import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.v
 import LoanSectionNav from "@/Pages/Loans/Partials/LoanSectionNav.vue";
 
 import { formatMoney } from "@/utils";
-import { IClient, IClientSaved } from "@/Modules/clients/clientEntity";
+import { IClientSaved } from "@/Modules/clients/clientEntity";
 import { clientInteractions } from "@/Modules/clients/clientInteractions";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
+import { computed } from "vue";
 
 export interface Props {
   clients: IClientSaved;
@@ -43,10 +44,20 @@ const getTabUrl = (tab: string = "") => {
 
 const { openModal } = useToggleModal("contact");
 const { openModal: openInvoiceModal } = useToggleModal("invoice");
+
+const sectionName = computed(() => {
+  const clientTypes: Record<string, string> = {
+    owners: "Propietarios",
+    tenants: "Inquilino",
+    lenders: "Cliente",
+  };
+
+  return clientTypes[props.type] ?? clientTypes.lender;
+});
 </script>
 
 <template>
-  <AppLayout :title="`Clientes / ${clients.fullName}`">
+  <AppLayout :title="`${sectionName} / ${clients.fullName}`">
     <template #header>
       <PropertySectionNav v-if="!clients.is_lender" />
       <LoanSectionNav v-else />
