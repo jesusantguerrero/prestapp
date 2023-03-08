@@ -30,7 +30,7 @@ class RentController extends InertiaController
             'installments' => 'array'
         ];
         $this->sorts = ['created_at'];
-        $this->includes = ['client', 'property'];
+        $this->includes = ['client', 'property', 'unit'];
         $this->filters = [];
         $this->page = 1;
         $this->limit = 10;

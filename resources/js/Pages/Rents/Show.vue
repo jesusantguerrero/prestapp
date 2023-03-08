@@ -1,20 +1,24 @@
 <script setup lang="ts">
 import { Link, router } from "@inertiajs/vue3";
 import { ref, computed, nextTick } from "vue";
-import { ILoanWithInstallments } from "../../Modules/loans/loanEntity";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
-import AppSectionHeader from "../../Components/AppSectionHeader.vue";
-import { formatMoney, formatDate } from "@/utils";
-import { ILoanInstallment } from "../../Modules/loans/loanInstallmentEntity";
+import AppSectionHeader from "@/Components/AppSectionHeader.vue";
 import PropertySectionNav from "../Properties/Partials/PropertySectionNav.vue";
-import { AtButton } from "atmosphere-ui";
-import InvoiceCard from "../../Components/templates/InvoiceCard.vue";
-import PaymentFormModal from "../Loans/Partials/PaymentFormModal.vue";
-import WelcomeWidget from "../Dashboard/Partials/WelcomeWidget.vue";
+import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
+import PaymentFormModal from "@/Pages/Loans/Partials/PaymentFormModal.vue";
+import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
 
-export interface Props {
+import { formatMoney, formatDate } from "@/utils";
+import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
+import { ILoanWithInstallments } from "@/Modules/loans/loanEntity";
+import { useToggleModal } from "@/Modules/_app/useToggleModal";
+import UnitTitle from "@/Components/realState/UnitTitle.vue";
+
+const { openModal: openInvoiceModal } = useToggleModal("invoice");
+
+interface Props {
   rents: ILoanWithInstallments;
   currentTab: string;
 }
@@ -26,6 +30,8 @@ const props = withDefaults(defineProps<Props>(), {
 const tabs = {
   summary: "Detalles",
   transactions: "Pagos",
+  invoices: "Facturas",
+  expenses: "Gastos",
 };
 
 const clientName = computed(
@@ -100,22 +106,7 @@ const generateNextInvoice = () => {
 <template>
   <AppLayout :title="sectionTitle">
     <template #header>
-      <PropertySectionNav>
-        <template #actions>
-          <AppButton variant="neutral" @click="router.visit(route('rents.create'))">
-            Crear Gasto
-          </AppButton>
-          <AppButton variant="neutral" @click="router.visit(route('rents.create'))">
-            Crear Mora
-          </AppButton>
-          <AppButton
-            variant="inverse-secondary"
-            @click="router.visit(route('rents.create'))"
-          >
-            Crear Cargo Extra
-          </AppButton>
-        </template>
-      </PropertySectionNav>
+      <PropertySectionNav />
     </template>
 
     <main class="p-5 mt-16 md:mt-8">
@@ -126,7 +117,39 @@ const generateNextInvoice = () => {
         :title="`${clientName}`"
         hide-action
         @create="router.visit('/loans/create')"
-      />
+      >
+        <template #actions>
+          <section class="flex space-x-2">
+            <AppButton
+              variant="error"
+              @click="
+                openInvoiceModal({
+                  data: {
+                    type: 'lender',
+                    clientId: rents.client_id,
+                    rentId: rents.id,
+                    hideClientOptions: true,
+                  },
+                  isOpen: true,
+                })
+              "
+            >
+              <IMdiBankMinus class="mr-2" />
+              Crear Gasto
+            </AppButton>
+            <AppButton variant="success" @click="router.visit(route('rents.create'))">
+              <IMdiCashPlus class="mr-2" />
+              Crear Mora
+            </AppButton>
+            <AppButton
+              variant="neutral"
+              @click="router.visit(route('rents.edit', rents))"
+            >
+              <IMdiEdit />
+            </AppButton>
+          </section>
+        </template>
+      </AppSectionHeader>
       <div
         class="w-full px-5 pt-10 pb-2 mb-5 space-y-5 text-gray-600 bg-white rounded-b-md"
       >
@@ -176,18 +199,13 @@ const generateNextInvoice = () => {
 
           <WelcomeWidget message="Detalles de propiedad" class="w-full text-body-1">
             <template #content>
-              <section>
-                <article>
-                  <button>
-                    {{ rents.property.owner.display_name }}
-                  </button>
-                </article>
-                <article>
-                  <button>
-                    {{ rents.property.name }}
-                  </button>
-                </article>
-              </section>
+              <UnitTitle
+                class="mt-4 hover:bg-white cursor-pointer px-4 py-2 bg-white rounded-md"
+                :title="rents.address + ' ' + rents.unit?.name"
+                :owner-name="rents.owner_name"
+                :owner-link="`/contacts/${rents.property.owner_id}/owners`"
+                :tenant-name="formatMoney(rents.amount)"
+              />
             </template>
           </WelcomeWidget>
         </article>

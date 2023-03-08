@@ -77,7 +77,13 @@ class RentService {
 
     public static function getForEdit(int $id) {
       return Rent::where('id', $id)
-      ->with(['client', 'invoices', 'transaction', 'property.owner', 'property'])->first();
+      ->with([
+        'client',
+        'invoices',
+        'transaction',
+        'property',
+        'unit'
+      ])->first();
     }
 
     //  payments / invoices

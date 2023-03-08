@@ -226,7 +226,7 @@ const generateOwnerDistribution = () => {
                   :disabled="isLoading"
                   :processing="isLoading"
                   @click="
-                    router.visit(`/owners/draws?filters[owner_id]=${properties.owner_id}`)
+                    router.visit(`/owners/draws?filters[owner]=${properties.owner_id}`)
                   "
                 >
                   Generar Pago a {{ properties.owner.names }}

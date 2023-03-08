@@ -11,6 +11,7 @@ import { formatMoney, formatDate } from "@/utils";
 import BaseTable from "@/Components/shared/BaseTable.vue";
 import { ElNotification, TableColumnCtx } from "element-plus";
 import AppButton from "@/Components/shared/AppButton.vue";
+import { useToggleModal } from "@/Modules/_app/useToggleModal";
 
 const props = defineProps({
   invoices: {
@@ -109,7 +110,7 @@ const drawCols = [
   {
     name: "description",
     label: "Descripcion / Cliente",
-    width: 380,
+    width: 400,
   },
   {
     name: "due_date",
@@ -166,6 +167,8 @@ function createOwnerDistribution() {
     },
   });
 }
+
+const { openModal: openInvoiceModal } = useToggleModal("invoice");
 </script>
 
 <template>
@@ -242,7 +245,21 @@ function createOwnerDistribution() {
             </template>
           </BaseTable>
 
-          <footer class="flex justify-end px-4 py-2">
+          <footer class="flex justify-end px-4 py-2 space-x-2">
+            <AppButton
+              variant="error"
+              @click="
+                !formData.processing &&
+                  openInvoiceModal({
+                    data: {},
+                    isOpen: true,
+                  })
+              "
+              :disabled="formData.processing"
+            >
+              <IMdiBankMinus class="mr-2" />
+              Crear Gasto
+            </AppButton>
             <AppButton
               variant="secondary"
               @click="createOwnerDistribution"
