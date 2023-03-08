@@ -48,11 +48,12 @@ const { openModal: openInvoiceModal } = useToggleModal("invoice");
 const sectionName = computed(() => {
   const clientTypes: Record<string, string> = {
     owners: "Propietarios",
+    owner: "Propietarios",
     tenants: "Inquilino",
     lenders: "Cliente",
   };
 
-  return clientTypes[props.type] ?? clientTypes.lender;
+  return clientTypes[props.type] ?? clientTypes.lenders;
 });
 </script>
 
