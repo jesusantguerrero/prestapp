@@ -17,6 +17,10 @@ import { usePrint } from "@/utils/usePrint";
 import Simple from "@/Pages/Journal/Invoices/printTemplates/Simple.vue";
 import ButtonGroup from "@/Components/ButtonGroup.vue";
 import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
+import {
+  clientInteractions,
+  InteractionsState,
+} from "@/Modules/clients/clientInteractions";
 
 const props = defineProps({
   invoices: {
@@ -209,7 +213,7 @@ const sections: Record<string, any> = {
       </section>
       <InvoiceTable :invoice-data="invoices" class="mt-10 rounded-md bg-base-lvl-3">
         <template v-slot:actions="{ row }">
-          <div class="flex justify-end items-center">
+          <div class="flex justify-end items-center space-x-2s">
             <Link
               class="relative inline-block cursor-pointer ml-4 hover:bg-primary hover:text-white px-5 py-2 overflow-hidden font-bold text-body transition rounded-md focus:outline-none hover:bg-opacity-80 min-w-max"
               :href="`/properties/${row.property_id}?unit=${row.id}`"
@@ -224,7 +228,7 @@ const sections: Record<string, any> = {
             >
               <IIcSharpPayment />
             </AppButton>
-            <div class="flex">
+            <div class="flex space-x-2">
               <AppButton
                 class="hover:text-primary transition items-center flex flex-col justify-center hover:border-primary-400"
                 variant="neutral"
@@ -232,8 +236,17 @@ const sections: Record<string, any> = {
               >
                 <IMdiFile />
               </AppButton>
-              <!-- <AppButton variant="neutral"><IMdiFile /></AppButton>
-            <AppButton variant="neutral"><IMdiFile /></AppButton> -->
+              <AppButton
+                v-if="filters.section == 'bills' && row.status != 'paid'"
+                class="mr-2"
+                variant="neutral"
+                :process="InteractionsState.isGeneratingDistribution"
+                @click="
+                  clientInteractions.generateOwnerDistribution(row.contact_id, row.id)
+                "
+              >
+                Re-generar
+              </AppButton>
             </div>
             <AppButton
               variant="neutral"

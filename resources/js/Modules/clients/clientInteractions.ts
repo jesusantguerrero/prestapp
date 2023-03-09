@@ -1,9 +1,12 @@
 import { IClient } from './clientEntity';
 // @ts-ignore: unexported from inertia
 import { router } from "@inertiajs/vue3";
+import { reactive, toRefs } from "vue";
 
+export const InteractionsState = reactive({
+  isGeneratingDistribution: false
+})
 class ClientInteractions {
-    isGeneratingDistribution = false
     create(clientData: IClient, type: string = 'lender') {
         const formData = {
             ...clientData,
@@ -22,7 +25,7 @@ class ClientInteractions {
     }
 
     generateOwnerDistribution(ownerId: number, invoiceId?: number) {
-      this.isGeneratingDistribution = true;
+      InteractionsState.isGeneratingDistribution = true;
       const url = `/clients/${ownerId}/owner-distributions`
       if (invoiceId) {
         router.put(`${url}/${invoiceId}`);

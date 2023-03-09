@@ -84,6 +84,18 @@ const welcomeCards = computed(() => {
       },
       extended: true,
     },
+    {
+      label: "Otros",
+      extended: true,
+    },
+    {
+      label: "Distribucion a propietario",
+      icon: "document",
+      action() {
+        router.visit("/rents/create");
+      },
+      extended: true,
+    },
   ];
 
   return options.filter((option) => props.extended || !option.extended);

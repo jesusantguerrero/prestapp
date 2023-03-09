@@ -31,9 +31,10 @@ export default [
         label: "Status",
         name: "status",
         width: 150,
-    },
-    {
+      },
+      {
         label: " ",
+        width: 300,
         name: "actions",
         type: "custom",
     },
