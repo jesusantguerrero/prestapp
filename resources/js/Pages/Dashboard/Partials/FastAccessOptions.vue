@@ -84,6 +84,14 @@ const welcomeCards = computed(() => {
       },
       extended: true,
     },
+    {
+      label: "Distribucion a propietario",
+      icon: "users",
+      action() {
+        router.visit("/owners/draws");
+      },
+      extended: true,
+    },
   ];
 
   return options.filter((option) => props.extended || !option.extended);
@@ -106,6 +114,7 @@ const { openTransactionModal } = useTransactionModal();
         <IMdiHomeCityOutline class="text-4xl" v-if="card.icon == 'home'" />
         <IMdiFileDocument class="text-4xl" v-if="card.icon == 'document'" />
         <IMdiCalculator class="text-4xl" v-if="card.icon == 'calculator'" />
+        <IMdiUsers class="text-4xl" v-if="card.icon == 'users'" />
 
         <p class="text-sm font-bold text-body-1/50 group-hover:text-primary">
           {{ card.label }}

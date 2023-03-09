@@ -136,12 +136,13 @@ class OwnerDistributionService {
             "name" => "$invoice->description $invoice->date",
             "concept" => "$invoice->description $invoice->date",
             "quantity" => 1,
+            "type" => $type,
             "category_id" => $property->owner_account_id, // payment account
             "account_id" => $invoice->type == Invoice::DOCUMENT_TYPE_BILL || $invoice->category_type == PropertyInvoiceTypes::Deposit->value
               ? Account::guessAccount($property, ['real_state_reserve', 'cash_and_bank'])
               : $invoice->invoice_account_id, // debit account
-            "price" => $type * $invoice->total,
-            "amount" => $type * $invoice->total,
+            "price" => $invoice->total,
+            "amount" => $invoice->total,
           ];
 
           if ($invoice->category_type == PropertyInvoiceTypes::Rent->value) {
