@@ -233,6 +233,47 @@ class PropertyTransactionService {
       }
     }
 
+    public static function createLateFee(Rent $rent, $formData = [], $invoice = null) {
+          $penaltyAmount = 0;
+
+          if ($rent->late_fee_type == 'PERCENTAGE') {
+              $penaltyAmount = ($rent->late_fee / 100) * $rent->total;
+          } else if ($rent->late_fee_type == 'PERCENTAGE_OUTSTANDING') {
+              $penaltyAmount = $rent->debt;
+          } else {
+              $penaltyAmount = $rent->late_fee;
+          }
+
+          if ($invoice) {
+            $invoice->update([
+              'status' => 'overdue'
+            ]);
+
+            $invoice->invoiceable->update([
+              'status' => Rent::STATUS_LATE
+            ]);
+          }
+
+          $amount =  $formData['amount'] ?? $penaltyAmount;
+
+          PropertyTransactionService::createInvoice([
+            "name" => "Factura de mora",
+            "concept" => $formData['concept'] ?? "Factura de mora {$rent->client->fullName}",
+            'invoice_account_id' => $rent->late_fee_account_id,
+            'amount' => $amount,
+            'due_date' => $formData['due_date'] ?? null,
+            "items" => [[
+                "name" => "mora de renta",
+                "concept" => $formData['concept'] ?? "mora de {$rent->client->fullName}",
+                "quantity" => 1,
+                "price" => $amount,
+                "amount" => $amount,
+            ]]
+          ], $rent);
+
+          $rent->client->checkStatus();
+    }
+
     public static function createOwnerDistribution($client, $invoiceId = null) {
       $ownerService = new OwnerDistributionService($client);
       if (!$invoiceId) {

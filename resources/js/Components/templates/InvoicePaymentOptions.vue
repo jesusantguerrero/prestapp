@@ -3,6 +3,9 @@ import { router } from "@inertiajs/vue3";
 import { ref, computed, nextTick } from "vue";
 
 import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
+import { IInvoice } from "@/Modules/loans/loanEntity";
+import { ElMessageBox } from "element-plus";
+import { formatMoney } from "@/utils";
 
 const { openModal } = usePaymentModal();
 
@@ -62,12 +65,32 @@ const onPayment = (invoice: Object) => {
 
 const linkToPrint = ref("");
 const invoiceLink = ref();
-const onDownload = (invoice) => {
+const onDownload = (invoice: Iinvoice) => {
   linkToPrint.value = `/invoices/${invoice.id}/print`;
   nextTick(() => {
     invoiceLink.value.click();
     linkToPrint.value = "";
   });
+};
+
+const onDelete = async (invoice: IInvoice) => {
+  const isValid = await ElMessageBox.confirm(
+    `Estas seguro de eliminar la factura ${invoice.concept} por ${formatMoney(
+      invoice.total
+    )}?`,
+    "Eliminar factura"
+  );
+
+  if (isValid) {
+    router.delete(`/invoices/${invoice.id}`, {
+      onSuccess() {
+        router.reload({
+          preserveState: true,
+          preserveScroll: true,
+        });
+      },
+    });
+  }
 };
 
 const handleActions = (actionName, invoice) => {
@@ -78,8 +101,9 @@ const handleActions = (actionName, invoice) => {
     case "download":
       onDownload(invoice);
       break;
-  }
-  if (actionName == "payment") {
+    case "delete":
+      onDelete(invoice);
+      break;
   }
 };
 

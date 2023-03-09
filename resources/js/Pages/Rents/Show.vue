@@ -125,7 +125,7 @@ const generateNextInvoice = () => {
               @click="
                 openInvoiceModal({
                   data: {
-                    type: 'lender',
+                    type: 'expense',
                     clientId: rents.client_id,
                     rentId: rents.id,
                     hideClientOptions: true,
@@ -137,7 +137,21 @@ const generateNextInvoice = () => {
               <IMdiBankMinus class="mr-2" />
               Crear Gasto
             </AppButton>
-            <AppButton variant="success" @click="router.visit(route('rents.create'))">
+            <AppButton
+              variant="success"
+              @click="
+                openInvoiceModal({
+                  data: {
+                    type: 'fee',
+                    clientId: rents.client_id,
+                    rentId: rents.id,
+                    hideClientOptions: true,
+                    title: 'Crear cargo de mora',
+                  },
+                  isOpen: true,
+                })
+              "
+            >
               <IMdiCashPlus class="mr-2" />
               Crear Mora
             </AppButton>

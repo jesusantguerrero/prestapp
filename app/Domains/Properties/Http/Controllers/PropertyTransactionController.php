@@ -33,6 +33,11 @@ class PropertyTransactionController extends Controller
       return response()->json($invoice);
     }
 
+    public function fee($rent, $postData, int $invoiceId = null) {
+      $invoice = PropertyTransactionService::createLateFee($rent, $postData);
+      return response()->json($invoice);
+    }
+
     public function createDepositRefund(Rent $rent) {
       return inertia("Properties/Transactions/DepositRefund", [
         "category" => 'security_deposits',
