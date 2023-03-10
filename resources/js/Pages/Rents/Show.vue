@@ -121,6 +121,7 @@ const generateNextInvoice = () => {
         <template #actions>
           <section class="flex space-x-2">
             <AppButton
+              v-if="rents.status !== 'CANCELLED'"
               variant="error"
               @click="
                 openInvoiceModal({
@@ -138,6 +139,7 @@ const generateNextInvoice = () => {
               Crear Gasto
             </AppButton>
             <AppButton
+              v-if="rents.status !== 'CANCELLED'"
               variant="success"
               @click="
                 openInvoiceModal({
@@ -208,6 +210,17 @@ const generateNextInvoice = () => {
                   Deposito {{ formatMoney(rents.deposit) }}
                 </p>
               </section>
+            </template>
+            <template #actions>
+              <AppButton
+                variant="neutral"
+                class="hover:bg-error hover:text-white"
+                v-if="rents.status !== 'CANCELLED'"
+                @click="router.visit(`/clients/${rents.client_id}/rents/${rents.id}/end`)"
+              >
+                <IMdiFileDocumentRemove class="mr-2" />
+                Terminar Contrato
+              </AppButton>
             </template>
           </WelcomeWidget>
 

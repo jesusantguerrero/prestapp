@@ -3,20 +3,20 @@ import { useForm, router } from "@inertiajs/vue3";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
 
-import { ILoan } from "@/Modules/loans/loanEntity";
-import { IProperty, IUnit } from "@/Modules/properties/propertyEntity";
+import { IProperty, IRent, IUnit } from "@/Modules/properties/propertyEntity";
 import { IClient } from "@/Modules/clients/clientEntity";
 import RentFormTemplate from "./Partials/RentFormTemplate.vue";
 
-defineProps<{
-  rentData: IProperty[];
+const props = defineProps<{
+  rents: IRent[];
   properties: IProperty[];
   client: IClient;
   unit: IUnit;
   property: IProperty;
 }>();
 
-const rentForm = useForm({});
+const rentForm = useForm({ ...(props.rents ?? {}) });
+
 const onSubmit = (formData: Record<string, any>) => {
   rentForm
     .transform(() => ({

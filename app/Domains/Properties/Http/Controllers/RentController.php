@@ -19,6 +19,7 @@ class RentController extends InertiaController
         $this->templates = [
             "index" => 'Rents/Index',
             "create" => 'Rents/RentForm',
+            "edit" => 'Rents/RentForm',
             "show" => 'Rents/Show'
         ];
         $this->validationRules = [
@@ -38,16 +39,18 @@ class RentController extends InertiaController
     }
 
     public function create(Request $request) {
-      $client = $request->query('client');
+      $clientId = $request->query('client');
       $unitId = $request->query('unit');
 
       $unit = PropertyService::hintUnit($unitId);
+      $client = PropertyService::hintClient($clientId);
 
       return inertia($this->templates['create'], [
         'rents' => null,
         'paymentAccount' => Account::findByDisplayId('real_state', request()->user()->current_team_id),
         'property' => $unit?->property,
-        'unit' => $unit
+        'unit' => $unit,
+        "client" => $client
       ]);
     }
 

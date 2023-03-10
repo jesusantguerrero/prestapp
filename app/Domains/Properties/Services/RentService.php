@@ -88,7 +88,6 @@ class RentService {
         'unit'
       ])->first();
     }
-
     //  payments / invoices
     public static function invoices($teamId, $statuses = []) {
       $query = Invoice::selectRaw('

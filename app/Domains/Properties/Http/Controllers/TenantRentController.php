@@ -15,14 +15,15 @@ class TenantRentController extends Controller
   public function endRent(Client $client, Rent $rent) {
     $resource = $client->toArray();
 
-    return inertia('Clients/RentEnd',
+    return inertia('Clients/Properties/RentEnd',
     [
         'clients' => $resource,
         "rent" => $rent,
         "property" => $rent->property,
         "currentTab" => 'contracts',
         "pendingInvoices" => $client->invoices()->unpaid()->get(),
-        "depositsToReturn" => $client->invoices()->paid()->noRefunded()->invoiceAccount($rent->property->deposit_account_id)->get()
+        "depositsToReturn" => $client->invoices()->paid()->noRefunded()->invoiceAccount($rent->property->deposit_account_id)->get(),
+        "contract" => $rent
         // I should get the balance I have in liabilities of the deposit account instead
     ]);
   }

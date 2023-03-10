@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { watch, computed, ref, reactive } from "vue";
-import { addMonths } from "date-fns";
+import { addMonths, parseISO } from "date-fns";
 import { AtSteps, AtStep, Atbutton } from "atmosphere-ui";
 
 import AppButton from "@/Components/shared/AppButton.vue";
@@ -25,6 +25,7 @@ const props = defineProps<{
 const emit = defineEmits(["submit"]);
 
 const rentForm = reactive({
+  id: null,
   property_id: props.property?.id,
   property: props.property,
   unit_id: props.unit?.id,
@@ -78,6 +79,25 @@ watch(
   { immediate: true }
 );
 
+watch(
+  () => props.data,
+  (newValue) => {
+    if (!newValue) return;
+    Object.keys(rentForm).forEach((field: string) => {
+      if (field == "client") {
+        rentForm.client = newValue.client;
+      } else if (newValue[field]?.split && newValue[field]?.split("-").length == 3) {
+        // @ts-ignore
+        rentForm[field] = parseISO(newValue[field]);
+      } else if (newValue) {
+        // @ts-ignore
+        rentForm[field] = newValue[field];
+      }
+    });
+  },
+  { deep: true, immediate: true }
+);
+
 // Wizard
 const validations = [
   {
@@ -100,7 +120,6 @@ const nextButtonLabel = computed(() => {
 });
 
 const handleUpdate = (data: Record<string, any>) => {
-  console.log(data, "updating");
   Object.keys(rentForm).forEach((field) => {
     if (data[field]) {
       rentForm[field] = data[field];

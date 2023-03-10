@@ -2,6 +2,7 @@
 
 namespace App\Domains\Properties\Services;
 
+use App\Domains\CRM\Models\Client;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Properties\Models\Rent;
@@ -77,5 +78,9 @@ class PropertyService {
 
     public static function hintUnit($unitId) {
       return PropertyUnit::find($unitId);
+    }
+
+    public static function hintClient($clientId) {
+      return Client::find($clientId);
     }
 }
