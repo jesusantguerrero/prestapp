@@ -25,6 +25,8 @@ Route::middleware([
     Route::get('properties/management-tools', [PropertyController::class, 'managementTools']);
     Route::resource('properties', PropertyController::class);
     Route::post('properties/{property}/units', [PropertyController::class, 'addUnit']);
+    Route::delete('properties/{property}/units/{propertyUnit}', [PropertyController::class, 'removeUnit']);
+    Route::put('properties/{property}/units/{propertyUnit}', [PropertyController::class, 'updateUnit']);
     Route::get('units', [PropertyUnitController::class, 'index']);
 
     // rents

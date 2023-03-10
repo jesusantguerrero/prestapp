@@ -5,9 +5,13 @@ import { ElNotification } from "element-plus";
 
 import AppButton from "@/Components/shared/AppButton.vue";
 import UnitForm from "./UnitForm.vue";
+import { watch } from "vue";
 
 const props = defineProps({
   property: {
+    type: Object,
+  },
+  unit: {
     type: Object,
   },
 });
@@ -34,12 +38,50 @@ const onSubmit = () => {
     });
     return;
   }
-  formData.post(`/properties/${props.property.id}/units/`, {
+  if (props.unit?.id) {
+    updateUnit();
+  } else {
+    formData.post(`/properties/${props.property.id}/units/`, {
+      onSuccess() {
+        ElNotification({
+          message: `Unidad ${formData.name} agregada con exito`,
+          title: "Unidad agregada",
+          type: "success",
+        });
+        emit("close");
+      },
+    });
+  }
+};
+const updateUnit = () => {
+  formData.put(`/properties/${props.property.id}/units/${props.unit?.id}`, {
     onSuccess() {
+      ElNotification({
+        message: `Unidad ${formData.name} actualizada con exito`,
+        title: "Unidad agregada",
+        type: "success",
+      });
       emit("close");
     },
   });
 };
+
+watch(
+  () => props.unit,
+  (newValue) => {
+    if (!newValue) return;
+    Object.keys(formData.data()).forEach((field: string) => {
+      if (field == "date") {
+        // @ts-ignore
+        formData[field] = new Date(newValue[field]);
+      } else if (newValue) {
+        // @ts-ignore
+        formData[field] = newValue[field];
+      }
+    });
+  },
+  { deep: true, immediate: true }
+);
 </script>
 
 <template>

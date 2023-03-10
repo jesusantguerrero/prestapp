@@ -102,7 +102,8 @@ class InertiaController extends Controller {
     }
 
     protected function updateResource($resource, $postData) {
-      return $resource->update($postData);
+      $resource->update($postData);
+      return $resource;
     }
 
     public function destroy(Request $request, int $id) {
