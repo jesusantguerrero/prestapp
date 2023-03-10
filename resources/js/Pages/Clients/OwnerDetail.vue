@@ -3,7 +3,6 @@ import { IClientSaved } from "@/Modules/clients/clientEntity";
 import ClientTemplate from "./Partials/ClientTemplate.vue";
 import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 import UnitTitle from "@/Components/realState/UnitTitle.vue";
-import { formatDate, formatMoney } from "@/utils";
 import { ClientProfile } from "./Partials/ClientProfile";
 import ClientForm from "./Partials/ClientForm.vue";
 
@@ -40,7 +39,7 @@ const props = withDefaults(defineProps<Props>(), {
       <InvoiceCard v-for="invoice in props.clients.invoices" :invoice="invoice" />
     </article>
 
-    <article v-else>
+    <article v-else class="shadow-md rounded-md overflow-hidden">
       <ClientForm :form-data="clients" :disabled="true" type="owner" />
     </article>
 
@@ -56,6 +55,7 @@ const props = withDefaults(defineProps<Props>(), {
             />
           </EmptyAddTool>
           <UnitTitle
+            tenant-name=" "
             v-for="lease in leases"
             class="mt-4 hover:bg-white cursor-pointer px-4 py-2 bg-white rounded-md flex-col"
             :title="lease.address"

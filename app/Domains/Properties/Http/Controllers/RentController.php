@@ -7,6 +7,7 @@ use App\Domains\Properties\Services\PropertyService;
 use App\Domains\Properties\Services\RentService;
 use App\Http\Controllers\InertiaController;
 use Illuminate\Http\Request;
+use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Invoice\Invoice;
 
 class RentController extends InertiaController
@@ -44,7 +45,7 @@ class RentController extends InertiaController
 
       return inertia($this->templates['create'], [
         'rents' => null,
-        'client' => null,
+        'paymentAccount' => Account::findByDisplayId('real_state', request()->user()->current_team_id),
         'property' => $unit?->property,
         'unit' => $unit
       ]);

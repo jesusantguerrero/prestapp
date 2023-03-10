@@ -262,6 +262,7 @@ class PropertyTransactionService {
             'invoice_account_id' => $rent->late_fee_account_id,
             'amount' => $amount,
             'due_date' => $formData['due_date'] ?? null,
+            'category_type' => PropertyInvoiceTypes::LateFee,
             "items" => [[
                 "name" => "mora de renta",
                 "concept" => $formData['concept'] ?? "mora de {$rent->client->fullName}",
