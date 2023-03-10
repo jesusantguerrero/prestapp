@@ -27,6 +27,7 @@ const props = withDefaults(
     endpoint: string;
     title?: string;
     accountsEndpoint: string;
+    hideAccountSelector?: boolean;
   }>(),
   {
     accountsEndpoint: "/api/accounts",
@@ -272,7 +273,11 @@ function emitChange(value) {
       </section>
 
       <section class="flex space-x-4">
-        <AppFormField class="w-5/12 mb-5 text-left" label="Cuenta de Pago">
+        <AppFormField
+          v-if="!hideAccountSelector"
+          class="w-5/12 mb-5 text-left"
+          label="Cuenta de Pago"
+        >
           <AccountSelect
             :endpoint="accountsEndpoint"
             v-model="paymentForm.paymentAccount"

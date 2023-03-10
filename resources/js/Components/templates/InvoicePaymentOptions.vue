@@ -49,6 +49,9 @@ const onPayment = (invoice: Object) => {
     invoice_id: invoice.id,
   };
 
+  const invoiceEndpoints = {
+    ''
+  }
   nextTick(() => {
     openModal({
       data: {
@@ -65,7 +68,7 @@ const onPayment = (invoice: Object) => {
 
 const linkToPrint = ref("");
 const invoiceLink = ref();
-const onDownload = (invoice: Iinvoice) => {
+const onDownload = (invoice: IInvoice) => {
   linkToPrint.value = `/invoices/${invoice.id}/print`;
   nextTick(() => {
     invoiceLink.value.click();

@@ -52,11 +52,12 @@ class DashboardController extends Controller
       $propertyTotals = PropertyService::totalByStatusFor($teamId);
 
       $invoices = RentService::invoices($teamId);
-      $qInvoices = RentService::invoices($teamId);
+     
 
+      
       return inertia('Dashboard/Properties',
       [
-          "revenue" => $reportHelper->revenueReport($teamId),
+          "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId, ['real_state'] ,null, null, null)->all(), now()->format('Y')),
           "stats" => [
             "total" => $propertyTotals->sum(),
             "available" => $propertyTotals->get(Property::STATUS_AVAILABLE),
@@ -74,8 +75,7 @@ class DashboardController extends Controller
             WHEN invoices.debt > 0 THEN 1
             ELSE 0
           END) outstandingInvoices"))->first(),
-          'accounts' => $reportHelper->getAccountTransactionsByPeriod($teamId, ['rent', 'security_deposits', 'operating_expense']),
-          'nextInvoices' => $qInvoices->unpaid()->take(4)->get(),
+          'pendingDraws' => OwnerService::pendingDrawsCount($teamId) ?? 0,
           "paidCommissions" => AccountStatWidget::accountNetByPeriod($teamId, 'real_state_operative'),
           'section' => "realState"
       ]);

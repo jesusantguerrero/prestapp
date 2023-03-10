@@ -53,7 +53,7 @@ class PropertyService {
     }
 
     public static function totalByStatusFor(int $teamId) {
-        $properties = Property::where('team_id', $teamId)
+        $properties = PropertyUnit::where('team_id', $teamId)
         ->select(DB::raw('count(*) as total, status'))
         ->groupBy('status')
         ->get();

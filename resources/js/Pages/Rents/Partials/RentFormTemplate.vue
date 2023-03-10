@@ -37,7 +37,6 @@ const rentForm = reactive({
   date: new Date(),
   deposit: props.unit?.price,
   deposit_due: new Date(),
-  is_deposit_received: false,
   deposit_reference: "",
   payment_account_id: null,
   payment_method: "",

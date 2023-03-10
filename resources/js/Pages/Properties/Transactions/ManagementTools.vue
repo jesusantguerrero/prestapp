@@ -118,6 +118,7 @@ const handlePayment = (invoice: IInvoice) => {
         due: payment?.amount,
         defaultConcept: "Pago de " + invoice.concept,
         accountsEndpoint: "/invoices",
+        hideAccountSelector: true,
       },
     });
   });

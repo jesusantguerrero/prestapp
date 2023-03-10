@@ -11,6 +11,7 @@ use App\Domains\Properties\Services\RentService;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Insane\Journal\Models\Invoice\Invoice;
 use Tests\TestCase;
 
 class RentTest extends TestCase
@@ -57,7 +58,6 @@ class RentTest extends TestCase
       "date" => $date,
       "deposit" => 5000,
       "deposit_due" => $date,
-      "is_deposit_received" => true,
       "deposit_reference" => "",
       "payment_account_id" => null,
       "payment_method" => "",
@@ -119,6 +119,25 @@ class RentTest extends TestCase
     $rent = Rent::first();
     $this->assertCount(1, $rent->depositInvoices);
     $this->assertEquals(12000, $rent->depositInvoices[0]->total);
+  }
+
+  public function testItShouldCreatePaidDepositInvoice() {
+    $this->seed();
+    $this->actingAs($this->user);
+
+    $response = $this->post('/rents', array_merge($this->rentData, [
+      'deposit' => 12000,
+      'amount' => 6000,
+      'is_deposit_received' => true,
+      'payment_method_id' => 'cash',
+      'date' => '2023-01-15',
+      'deposit_due' => '2023-01-15',
+      'first_invoice_date' => '2023-01-30',
+    ]));
+    
+    $response->assertStatus(302);
+    $rent = Rent::first();
+    $this->assertEquals($rent->depositInvoices()->first()->status, Invoice::STATUS_PAID);
   }
 
   public function testItShouldCreateRentWithProratedAmount() {

@@ -1,8 +1,4 @@
 <script lang="ts" setup>
-import { router } from "@inertiajs/core";
-
-import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
-import AppButton from "@/Components/shared/AppButton.vue";
 import BudgetProgress from "@/Components/BudgetProgress.vue";
 import IncomeSummaryWidget from "@/Pages/Dashboard/Partials/IncomeSummaryWidget.vue";
 import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
@@ -14,6 +10,7 @@ import { config } from "@/config";
 import PropertyInvoiceWidget from "./Partials/PropertyInvoiceWidget.vue";
 import NextPaymentsWidget from "../Loans/NextPaymentsWidget.vue";
 import PaymentsCard from "@/Components/PaymentsCard.vue";
+import { Link } from "@inertiajs/vue3";
 
 const props = defineProps({
   user: {
@@ -41,20 +38,11 @@ const props = defineProps({
   paidInterest: {
     type: Array,
   },
-  cashOnHand: {
-    type: Object,
-  },
-  totals: {
-    type: Object,
-  },
-  accounts: {
-    type: Array,
-  },
-  nextInvoices: {
-    type: Array,
-  },
   paidCommissions: {
-    type: Number,
+    type: Object,
+  },
+  pendingDraws: {
+    type: Object,
   },
 });
 
@@ -88,8 +76,7 @@ const ownerStats = [
 const comparisonRevenue = {
   headers: {
     gapName: "Year",
-    previous: props.revenue.previousYear.total,
-    current: props.revenue.currentYear.total,
+    previous: props.revenue?.total,
   },
   options: {
     chart: {
@@ -109,25 +96,18 @@ const comparisonRevenue = {
   },
   series: [
     {
-      name: "previous year",
-      data: props.revenue.previousYear.values.map(
-        (item: Record<string, any>) => item.total
-      ),
-    },
-    {
       name: "current year",
-      data: props.revenue.currentYear.values.map(
-        (item: Record<string, any>) => item.total
-      ),
+      data: props.revenue.map((item: Record<string, any>) => item.income ?? 0),
     },
   ],
 };
 
+const currentMonth = new Date().getMonth();
 const interestPerformance = {
   headers: {
     gapName: "Year",
-    month: props.paidCommissions.months.at(-1).income,
-    avg: props.paidCommissions.avg,
+    month: props.paidCommissions?.months.at(currentMonth).income,
+    avg: props.paidCommissions?.avg,
     current: props.paidCommissions?.year,
   },
   options: {
@@ -159,7 +139,7 @@ const interestPerformance = {
   series: [
     {
       name: "Ganancias intereses",
-      data: props.paidCommissions.months.map((item) => item.income),
+      data: props.paidCommissions?.months.map((item) => item.income ?? 0),
     },
   ],
 };
@@ -191,22 +171,6 @@ const interestPerformance = {
                   <span class="text-primary">{{ progress }}% </span>
                 </header>
               </template>
-
-              <template v-slot:after="{ progress }">
-                <div class="justify-between w-full flex mt-1">
-                  <p v-if="totals?.outstandingInvoices">
-                    <span
-                      class="font-bold"
-                      :class="[
-                        totals?.outstandingInvoices ? 'text-success' : 'text-error',
-                      ]"
-                    >
-                      {{ totals?.outstandingInvoices }}
-                    </span>
-                    Pagos de renta atrasados
-                  </p>
-                </div>
-              </template>
             </BudgetProgress>
           </section>
         </template>
@@ -219,9 +183,14 @@ const interestPerformance = {
           size="small"
           :cards="ownerStats"
         />
-        <div class="text-body-1 w-full shadow-md bg-white mt-4 px-4 py-7 rounded-lg">
-          Hola mundo
-        </div>
+        <Link
+          href="/properties/management-tools"
+          class="flex items-center cursor-pointer h-14 hover:text-primary hover:font-bold transition-all justify-center w-full mt-4 rounded-md bg-white shadow-md md:mt-4"
+        >
+          Distribución a propietarios pendientes
+          <IMdiChevronRight />
+          <span> {{ pendingDraws }} </span>
+        </Link>
       </div>
     </header>
 
@@ -230,12 +199,11 @@ const interestPerformance = {
         <section class="lg:w-7/12 space-y-4">
           <IncomeSummaryWidget
             title="Flujo de efectivo"
-            description="Movimiento de efectivo del año por mes"
+            description="Movimiento de efectivo del año por mes en cuenta de inmobiliaria"
             class="order-2 mt-4 lg:w-full lg:mt-0 lg:order-1 shadow-md"
             :style="{ height: '350px' }"
             :chart="comparisonRevenue"
             :headerInfo="comparisonRevenue.headers"
-            :sections="accounts"
           />
         </section>
 

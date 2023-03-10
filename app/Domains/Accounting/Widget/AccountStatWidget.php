@@ -56,12 +56,12 @@ class AccountStatWidget {
     $endDate = Carbon::now()->endOfMonth()->format('Y-m-d');
     $startDate = Carbon::now()->startOfYear()->format('Y-m-d');
 
-    $results = ReportHelper::getTransactionsByAccount($teamId, [$accountDisplayId], $startDate, $endDate, "accountName");
+    $results = ReportHelper::getTransactionsByAccount($teamId, [$accountDisplayId], $startDate, $endDate, "account_display_id");
     $results =  collect($results[$accountDisplayId] ?? [[]]);
 
     return [
       "year" => $results->sum('income'),
-      "months" => $results->values(),
+      "months" => (new ReportHelper())->mapInMonths($results->all(), now()->format('Y')),
       "avg" => $results->avg('income')
     ];
   }

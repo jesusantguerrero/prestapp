@@ -58,7 +58,8 @@ export const useAppMenu = () => {
           as: Link,
           isActiveFunction(url: string, currentPath: string) {
             return /statements/.test(currentPath)
-         }
+         },
+         hidden: true,
       },
     ].filter(item => !item?.hidden);
 

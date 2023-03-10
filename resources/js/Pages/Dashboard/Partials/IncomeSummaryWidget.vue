@@ -9,8 +9,11 @@ interface Props {
   title: string;
   description: string;
   sections?: any[];
+  sectionTotalField: string;
 }
-defineProps<Props>();
+withDefaults(defineProps<Props>(), {
+  sectionTotalField: "total",
+});
 </script>
 
 <template>
@@ -42,7 +45,7 @@ defineProps<Props>();
       <section class="mt-4 space-y-2">
         <div v-for="section in sections" class="p-2 bg-gray-100 rounded-md">
           <h4 class="text-xs">{{ section.alias ?? section.display_id }}</h4>
-          <p class="font-bold">{{ formatMoney(section.total) }}</p>
+          <p class="font-bold">{{ formatMoney(section[sectionTotalField]) }}</p>
         </div>
       </section>
     </article>

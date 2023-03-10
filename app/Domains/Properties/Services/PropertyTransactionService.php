@@ -46,15 +46,21 @@ class PropertyTransactionService {
         "related_invoices" => $formData["related_invoices"] ?? []
       ]);
 
+      if (isset($formData['payment_details'])) {
+        $data['payment_details'] = $formData['payment_details'];
+      }
+
       return Invoice::createDocument($data);
     }
 
-    public static function createDepositTransaction($rent) {
+    public static function createDepositTransaction(Rent $rent, mixed $rentData) {
+      $description = "Déposito de {$rent->client->fullName}";
+
       $formData = [
         "date" => $rent->deposit_due,
         "due_date" => $rent->deposit_due,
         "concept" => "Factura Déposito",
-        "description" => "Déposito de {$rent->client->fullName}",
+        "description" => $description,
         "total" => $rent->deposit,
         'category_type' => PropertyInvoiceTypes::Deposit,
         "invoice_account_id" => $rent->property->deposit_account_id,
@@ -68,6 +74,14 @@ class PropertyTransactionService {
           "amount" => $rent->deposit,
         ]]
       ];
+
+      if (isset($rentData['is_deposit_received'])) {
+        $formData['payment_details'] = [
+          'account_id' => Account::findByDisplayId('real_state', $rent->team_id),
+          'concept' => "Pago $description",
+          'payment_method' => $formData['payment_method'] ?? 'cash'
+        ];
+      }
       self::createInvoice($formData, $rent, false);
     }
 
