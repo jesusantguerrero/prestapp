@@ -17,7 +17,7 @@ export default [
         label: 'Cliente',
         class: "text-center",
         headerClass: "text-center",
-        width: 270,
+        width: 300,
         render(row: IClient) {
             const clientName = row.names + ' ' + row.lastnames
             const initials = row.names ? row.names[0] + row.lastnames[0] : '';
@@ -62,6 +62,8 @@ export default [
     {
         name: 'status',
         label: 'Estado',
+        align: 'center',
+        class: 'text-center',
         render(row) {
             if (row.rent) {
               return h(ElTag, { type: getPropertyStatusColor(row.rent.status) }, getPropertyStatus(row.rent.status))

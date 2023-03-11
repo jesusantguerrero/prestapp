@@ -1,4 +1,11 @@
 {
+    "commons": {
+      "ACTIVE": "Activo",
+      "INACTIVE": "Inactivo"
+    },
+    "previous year": "Año anterior",
+    "current year": "Este año",
+    "Dashboard": "Inicio",
     "loans": {
         "errors": {
           "hasPayments": "Este prestamo ya tiene pagos y no puede borrarse"
