@@ -16,10 +16,8 @@ const { modelValue } = toRefs(props);
 
 const { formData } = useReactiveForm(
   {
-    property_id: null,
-    property: null,
-    unit_id: null,
-    unit: null,
+    client: null,
+    client_id: null,
   },
   modelValue,
   emit
@@ -36,12 +34,12 @@ const clientToggleText = computed(() => {
       <div class="w-full mt-8">
         <header class="flex justify-between">
           <label for="">Inquilino</label>
-          <button
+          <!-- <button
             @click.prevent.stop="formData.is_new_client = !formData.is_new_client"
             class="text-primary underline underline-offset-2"
           >
             {{ clientToggleText }}
-          </button>
+          </button> -->
         </header>
         <BaseSelect
           v-model="formData.client"

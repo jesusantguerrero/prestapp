@@ -66,7 +66,7 @@ class Rent extends Transactionable implements IPayableDocument {
         $rent->next_invoice_date = $rent->next_invoice_date ?? $rent->first_invoice_date;
         $rent->client_name = $rent->client->fullName;
         $rent->owner_name = $rent->owner->fullName;
-        $rent->address = $rent->property->address;
+        $rent->address = $rent->property->short_name . " " . $rent->unit->name;
       });
   }
 
@@ -200,6 +200,7 @@ class Rent extends Transactionable implements IPayableDocument {
     public function getTotalField($formData = []) {
       return 'total';
     }
+    
     public function getTotal($formData = []) {
       return $this->invoices()->sum('total');
     }

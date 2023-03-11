@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { watch, computed, ref, reactive } from "vue";
+import { watch, computed, ref, reactive, nextTick } from "vue";
 import { addMonths, parseISO } from "date-fns";
-import { AtSteps, AtStep, Atbutton } from "atmosphere-ui";
+import { AtSteps, AtStep } from "atmosphere-ui";
 
 import AppButton from "@/Components/shared/AppButton.vue";
 
@@ -31,9 +31,9 @@ const rentForm = reactive({
   unit_id: props.unit?.id,
   unit: props.unit,
   is_new_client: false,
-  client_id: null,
+  client_id: props.client?.id,
+  client: props.client,
   client_name: "",
-  client: null,
   date: new Date(),
   deposit: props.unit?.price,
   deposit_due: new Date(),
@@ -83,9 +83,7 @@ watch(
   (newValue) => {
     if (!newValue) return;
     Object.keys(rentForm).forEach((field: string) => {
-      if (field == "client") {
-        rentForm.client = newValue.client;
-      } else if (newValue[field]?.split && newValue[field]?.split("-").length == 3) {
+      if (newValue[field]?.split && newValue[field]?.split("-").length == 3) {
         // @ts-ignore
         rentForm[field] = parseISO(newValue[field]);
       } else if (newValue) {

@@ -204,7 +204,7 @@ const generateNextInvoice = () => {
                 </p>
                 <p>
                   Estatus:
-                  {{ rents.status }}
+                  {{ $t(`commons.${rents.status}`) }}
                 </p>
                 <p class="hover:bg-base-lvl-1 cursor-pointer py-2">
                   Deposito {{ formatMoney(rents.deposit) }}
