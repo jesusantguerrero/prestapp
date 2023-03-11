@@ -47,7 +47,7 @@ function setInitialForm(entry: Record<string, any>, formData: Record<string, any
     formData[field] = entry[field] || formData[field];
     if (field == "owner_id") {
       formData.owner = props.clients.find(
-        (client: IClient) => client.id == formData["owner_id"]
+        (client: IClient) => client?.id == formData["owner_id"]
       );
     }
   });
@@ -101,7 +101,7 @@ const onCancel = () => {
   <AppLayout title="Agregar propiedad">
     <template #header>
       <PropertySectionNav>
-        <template #actions v-if="!properties.id">
+        <template #actions v-if="!properties?.id">
           <section class="flex justify-end space-x-2">
             <AtButton
               class="font-bold text-red-400 bg-gray-100 rounded-md"
@@ -118,10 +118,11 @@ const onCancel = () => {
 
     <main class="mx-auto pt-5 mt-8 text-gray-500 sm:px-6 lg:px-8">
       <AppSectionHeader
+        v-if="properties?.id"
         name=""
         class="px-5 border-2 border-white rounded-md rounded-b-none shadow-md"
         :resource="properties"
-        :title="properties.name"
+        :title="properties?.name"
         @create="router.visit('/properties/create')"
         hide-action
       >
@@ -149,8 +150,9 @@ const onCancel = () => {
             class="w-full border-b focus:outline-none"
             placeholder="Dirección"
             rounded
+            required
           />
-          <AppFormField class="w-4/12" label="Dueño de propiedad">
+          <AppFormField class="w-4/12" label="Dueño de propiedad" required>
             <BaseSelect
               v-model="formData.owner"
               endpoint="/api/clients?filter[is_owner]=1"
@@ -168,7 +170,7 @@ const onCancel = () => {
             placeholder="Nombre de propiedad"
             rounded
           />
-          <AppFormField class="w-full" label="Tipo de propiedad">
+          <AppFormField class="w-full" label="Tipo de propiedad" required>
             <BaseSelect
               v-model="formData.type"
               @update:model-value="formData.property_type = $event.name"
@@ -181,11 +183,11 @@ const onCancel = () => {
         </div>
 
         <!-- Units -->
-        <template v-if="!properties.id">
+        <template v-if="!properties?.id">
           <section v-for="(unit, index) in formData.units" class="">
             <header class="flex space-x-4 items-center justify-between">
               <section class="grid grid-cols-4 gap-4 w-full">
-                <AppFormField class="w-full" label="Precio de Renta">
+                <AppFormField class="w-full" label="Precio de Renta" required>
                   <AtInput v-model="unit.price" class="w-full" rounded number-format />
                 </AppFormField>
                 <AppFormField class="w-full" label="Area" v-model="unit.area" rounded>

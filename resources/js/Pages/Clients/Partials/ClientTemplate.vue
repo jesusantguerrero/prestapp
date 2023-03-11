@@ -75,6 +75,16 @@ const sectionName = computed(() => {
         <template #actions v-if="clients.is_tenant">
           <section class="flex space-x-2">
             <AppButton
+              v-if="!contract"
+              @click="router.visit(`/rents/create?client=${clients.id}`)"
+              variant="success"
+              title="Reembolsar deposito"
+            >
+              <IMdiHomePlusOutline class="mr-2" />
+              Registrar mudanza
+            </AppButton>
+            <AppButton
+              v-if="contract"
               @click="
                 router.visit(`/rents/${contract?.id}/transactions/deposit-refund/create`)
               "
@@ -84,6 +94,7 @@ const sectionName = computed(() => {
               Ret. Deposito
             </AppButton>
             <AppButton
+              v-if="contract"
               @click="
                 openInvoiceModal({
                   data: {
