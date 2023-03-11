@@ -1,3 +1,287 @@
+<script lang="ts" setup>
+import { format as formatDate, toDate } from "date-fns";
+import parseISO from "date-fns/esm/fp/parseISO/index.js";
+import { useForm, router } from "@inertiajs/vue3";
+import {
+  AtInput,
+  AtButton,
+  AtField,
+  AtFieldCheck,
+  AtSelect,
+  AtSimpleSelect,
+} from "atmosphere-ui";
+import { computed, reactive, toRefs, watch, inject, toRaw } from "vue";
+
+import AppButton from "@/Components/shared/AppButton.vue";
+import InvoiceTotals from "./InvoiceTotals.vue";
+import InvoiceGrid from "./InvoiceGrid.vue";
+
+import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
+import { ElMessageBox } from "element-plus";
+
+const props = defineProps({
+  type: {
+    type: String,
+    default: "INVOICE",
+  },
+  user: Object,
+  products: Array,
+  clients: Array,
+  invoiceData: [Object, null],
+  availableTaxes: [Array, null],
+  isEditing: Boolean,
+});
+
+const labels = {
+  expense: {
+    contact: "Proveedor",
+    documentNumber: "Bill Number",
+    orderNumber: "P.O/S.O Number",
+  },
+  invoice: {
+    contact: "Cliente",
+    documentNumber: "No. factura",
+    orderNumber: "No. Orden",
+  },
+};
+
+const getLabel = (key) => labels[props.type.toLowerCase()][key];
+
+const state = reactive({
+  totalValues: {},
+  totals: {
+    subtotalField: "subtotal",
+    totalField: "amount",
+    discountField: "discountTotal",
+    subtotalFormula(row) {
+      return row.quantity * row.price;
+    },
+    totalFormula(row) {
+      return row.quantity * row.price;
+    },
+    discountFormula(row) {
+      return row.quantity * row.price;
+    },
+  },
+  invoice: useForm({
+    id: null,
+    number: null,
+    concept: null,
+    date: new Date(),
+    due_date: new Date(),
+    client_id: null,
+    footer: null,
+    notes: null,
+    payments: [],
+    debt: 0,
+    status: "DRAFT",
+    created_at: null,
+    updated_at: null,
+    taxes_included: false,
+  }),
+  selectedPayment: null,
+  isPaymentDialogVisible: false,
+  modals: {
+    email: {
+      value: false,
+    },
+  },
+  activeSections: [],
+  tableData: [],
+  client: null,
+  imageUrl: "",
+  isDraft: computed(() => {
+    return !state.invoice.status || state.invoice.status.toLowerCase() == "draft";
+  }),
+  section: computed(() => {
+    return props.type.toLowerCase();
+  }),
+});
+
+const setInvoiceData = (data) => {
+  if (data) {
+    data.date = parseISO(data.date) || new Date();
+    data.due_date = parseISO(data.due_date) || new Date();
+
+    Object.keys(data).forEach((key) => {
+      state.invoice[key] = data[key];
+    });
+
+    state.client = data.client;
+    state.tableData =
+      data.lines
+        .sort((a, b) => (a.index > b.index ? 1 : -1))
+        .map((line) => {
+          const itemTaxes = line.taxes?.length ? toRaw(line.taxes) : [];
+          line.taxes = [...itemTaxes, { id: "new" }];
+          return line;
+        }) || [];
+  }
+};
+
+watch(
+  () => props.invoiceData,
+  (invoiceData) => {
+    setInvoiceData(invoiceData);
+  },
+  { immediate: true }
+);
+
+const reload = () => {
+  setTimeout(() => {
+    router.reload();
+  }, 2000);
+};
+
+const { openModal } = usePaymentModal();
+const editPayment = (payment) => {
+  openModal({
+    data: {
+      title: `Pagar ${invoice.concept}`,
+      payment: payment,
+      endpoint: `/invoices/${payment.payable_id}/payment/${payment.id}`,
+      due: payment.amount,
+      account_id: payment.account_id,
+      defaultConcept: payment.concept,
+    },
+  });
+};
+
+const removePayment = async (payment: Record<string, string>) => {
+  const isConfirmed = await ElMessageBox.confirm(
+    `Estas seguro de eliminar el pago ${payment.concept}?`,
+    "Eliminar pago"
+  );
+
+  if (!isConfirmed) return;
+  router.delete(`/payments/${payment.id}`, {
+    onSuccess() {
+      ElNotification({
+        message: `Pago ${unit.name} borrada con exito`,
+        title: "Pago eliminada",
+        type: "success",
+      });
+    },
+  });
+};
+
+const setRequestData = (data) => {
+  const requestData = {
+    ...data,
+    items: state.tableData
+      .map((item, index) => {
+        item.index = index;
+        item.quantity = parseFloat(item.quantity);
+        item.price = parseFloat(item.price);
+        return item;
+      })
+      .filter((item) => item.concept),
+  };
+  requestData.date = formatDate(data.date || new Date(), "yyyy-MM-dd");
+  requestData.due_date = formatDate(data.due_date || requestData.date, "yyyy-MM-dd");
+
+  const type = props.type != "INVOICE" ? "EXPENSE" : props.type;
+  requestData.resource_type_id = type;
+  requestData.type = type;
+  requestData.concept = requestData.concept || state.section;
+
+  requestData.total = state.totalValues.total;
+  requestData.discount = state.totalValues.discountTotal;
+  requestData.subtotal = state.totalValues.subtotal;
+  requestData.taxes = state.totalValues.taxes;
+  delete requestData.lines;
+  delete requestData.paymentDocs;
+  delete requestData.client;
+
+  return requestData;
+};
+
+const sendRequest = (method, url, formData, message) => {
+  return router[method](url, formData, {
+    onSuccess() {
+      const section = formData.type == "EXPENSE" ? "bills" : "invoices";
+      router.replace(`/${section}/${formData.id}`);
+    },
+  });
+};
+
+const saveForm = (status) => {
+  const formData = setRequestData({
+    ...state.invoice,
+    type: props.type,
+  });
+  if (status) {
+    formData.status = 2;
+  }
+  let message = "Invoice created";
+  let method = "post";
+  let url = `/invoices`;
+
+  if (state.invoice.id) {
+    url = `/invoices/${state.invoice.id}`;
+    message = "Invoice updated";
+    method = "put";
+  }
+
+  sendRequest(method, url, formData, message);
+};
+
+const markAsPaid = () => {
+  const formData = setRequestData(state.invoice);
+  formData.status = 1;
+  sendRequest(
+    "post",
+    `/invoices/${state.invoice.id}/mark-as-paid`,
+    formData,
+    "Invoice marked as paid"
+  );
+};
+
+const cloneInvoice = (status) => {
+  const formData = setRequestData(state.invoice);
+  if (status) {
+    formData.status = 2;
+  }
+
+  let message = "Invoice created";
+  let method = "post";
+  let url = `/invoices/${state.invoice.id}/clone`;
+
+  sendRequest(method, url, formData, message)
+    .then((invoice) => {
+      getInvoice(invoice.id);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+const handleImageChange = (file) => {
+  state.imageUrl = URL.createObjectURL(file.raw);
+  state.invoice.logo = file;
+};
+
+const onTaxesUpdated = ({ rowIndex, taxes }) => {
+  state.tableData[rowIndex].taxes = taxes;
+};
+
+const {
+  invoice,
+  totals,
+  tableData,
+  totalValues,
+  isPaymentDialogVisible,
+  isDraft,
+} = toRefs(state);
+
+defineExpose({
+  saveForm,
+  cloneInvoice,
+});
+
+const accountsOptions = inject("accountsOptions", []);
+</script>
+
 <template>
   <section class="w-full py-2 rounded-md section">
     <div class="section-body">
@@ -153,8 +437,9 @@
           :invoice-taxes="invoiceTaxes"
           :is-tax-included="invoice.taxes_included"
           @edit-payment="editPayment"
+          @delete-payment="removePayment"
         >
-          <template v-slot:add-payment v-if="!isDraft">
+          <template v-slot:add-payment v-if="!state.isDraft">
             <div>
               <AppButton class="w-full" @click="isPaymentDialogVisible = true">
                 Add Payment
@@ -191,271 +476,6 @@
     </div>
   </section>
 </template>
-
-<script setup>
-import { format as formatDate, toDate } from "date-fns";
-import parseISO from "date-fns/esm/fp/parseISO/index.js";
-import { useForm, router } from "@inertiajs/vue3";
-import {
-  AtInput,
-  AtButton,
-  AtField,
-  AtFieldCheck,
-  AtSelect,
-  AtSimpleSelect,
-} from "atmosphere-ui";
-import { computed, reactive, toRefs, watch, inject, toRaw } from "vue";
-
-import AppButton from "@/Components/shared/AppButton.vue";
-import InvoiceTotals from "./InvoiceTotals.vue";
-import InvoiceGrid from "./InvoiceGrid.vue";
-
-import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
-
-const props = defineProps({
-  type: {
-    type: String,
-    default: "INVOICE",
-  },
-  user: Object,
-  products: Array,
-  clients: Array,
-  invoiceData: [Object, null],
-  availableTaxes: [Array, null],
-  isEditing: Boolean,
-});
-
-const labels = {
-  expense: {
-    contact: "Proveedor",
-    documentNumber: "Bill Number",
-    orderNumber: "P.O/S.O Number",
-  },
-  invoice: {
-    contact: "Cliente",
-    documentNumber: "No. factura",
-    orderNumber: "No. Orden",
-  },
-};
-
-const getLabel = (key) => labels[props.type.toLowerCase()][key];
-
-const state = reactive({
-  totalValues: {},
-  totals: {
-    subtotalField: "subtotal",
-    totalField: "amount",
-    discountField: "discountTotal",
-    subtotalFormula(row) {
-      return row.quantity * row.price;
-    },
-    totalFormula(row) {
-      return row.quantity * row.price;
-    },
-    discountFormula(row) {
-      return row.quantity * row.price;
-    },
-  },
-  invoice: useForm({
-    id: null,
-    number: null,
-    concept: null,
-    date: new Date(),
-    due_date: new Date(),
-    client_id: null,
-    footer: null,
-    notes: null,
-    payments: [],
-    debt: 0,
-    status: "DRAFT",
-    created_at: null,
-    updated_at: null,
-    taxes_included: false,
-  }),
-  selectedPayment: null,
-  isPaymentDialogVisible: false,
-  modals: {
-    email: {
-      value: false,
-    },
-  },
-  activeSections: [],
-  tableData: [],
-  client: null,
-  imageUrl: "",
-  isDraft: computed(() => {
-    return !state.invoice.status || state.invoice.status.toLowerCase() == "draft";
-  }),
-  section: computed(() => {
-    return props.type.toLowerCase();
-  }),
-});
-
-const setInvoiceData = (data) => {
-  if (data) {
-    data.date = parseISO(data.date) || new Date();
-    data.due_date = parseISO(data.due_date) || new Date();
-
-    Object.keys(data).forEach((key) => {
-      state.invoice[key] = data[key];
-    });
-
-    state.client = data.client;
-    state.tableData =
-      data.lines
-        .sort((a, b) => (a.index > b.index ? 1 : -1))
-        .map((line) => {
-          const itemTaxes = line.taxes?.length ? toRaw(line.taxes) : [];
-          line.taxes = [...itemTaxes, { id: "new" }];
-          return line;
-        }) || [];
-  }
-};
-
-watch(
-  () => props.invoiceData,
-  (invoiceData) => {
-    setInvoiceData(invoiceData);
-  },
-  { immediate: true }
-);
-
-const reload = () => {
-  setTimeout(() => {
-    router.reload();
-  }, 2000);
-};
-
-const { openModal } = usePaymentModal();
-const editPayment = (payment) => {
-  openModal({
-    data: {
-      title: `Pagar ${invoice.concept}`,
-      payment: payment,
-      endpoint: `/invoices/${payment.payable_id}/payment/${payment.id}`,
-      due: payment.amount,
-      account_id: payment.account_id,
-      defaultConcept: payment.concept,
-    },
-  });
-};
-
-const setRequestData = (data) => {
-  const requestData = {
-    ...data,
-    items: state.tableData
-      .map((item, index) => {
-        item.index = index;
-        item.quantity = parseFloat(item.quantity);
-        item.price = parseFloat(item.price);
-        return item;
-      })
-      .filter((item) => item.concept),
-  };
-  requestData.date = formatDate(data.date || new Date(), "yyyy-MM-dd");
-  requestData.due_date = formatDate(data.due_date || requestData.date, "yyyy-MM-dd");
-
-  const type = props.type != "INVOICE" ? "EXPENSE" : props.type;
-  requestData.resource_type_id = type;
-  requestData.type = type;
-  requestData.concept = requestData.concept || state.section;
-
-  requestData.total = state.totalValues.total;
-  requestData.discount = state.totalValues.discountTotal;
-  requestData.subtotal = state.totalValues.subtotal;
-  requestData.taxes = state.totalValues.taxes;
-  delete requestData.lines;
-  delete requestData.paymentDocs;
-  delete requestData.client;
-
-  return requestData;
-};
-
-const sendRequest = (method, url, formData, message) => {
-  return router[method](url, formData, {
-    onSuccess() {
-      const section = formData.type == "EXPENSE" ? "bills" : "invoices";
-      router.replace(`/${section}/${formData.id}`);
-    },
-  });
-};
-
-const saveForm = (status) => {
-  const formData = setRequestData({
-    ...state.invoice,
-    type: props.type,
-  });
-  if (status) {
-    formData.status = 2;
-  }
-  let message = "Invoice created";
-  let method = "post";
-  let url = `/invoices`;
-
-  if (state.invoice.id) {
-    url = `/invoices/${state.invoice.id}`;
-    message = "Invoice updated";
-    method = "put";
-  }
-
-  sendRequest(method, url, formData, message);
-};
-
-const markAsPaid = () => {
-  const formData = setRequestData(state.invoice);
-  formData.status = 1;
-  sendRequest(
-    "post",
-    `/invoices/${state.invoice.id}/mark-as-paid`,
-    formData,
-    "Invoice marked as paid"
-  );
-};
-
-const cloneInvoice = (status) => {
-  const formData = setRequestData(state.invoice);
-  if (status) {
-    formData.status = 2;
-  }
-
-  let message = "Invoice created";
-  let method = "post";
-  let url = `/invoices/${state.invoice.id}/clone`;
-
-  sendRequest(method, url, formData, message)
-    .then((invoice) => {
-      getInvoice(invoice.id);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
-
-const handleImageChange = (file) => {
-  state.imageUrl = URL.createObjectURL(file.raw);
-  state.invoice.logo = file;
-};
-
-const onTaxesUpdated = ({ rowIndex, taxes }) => {
-  state.tableData[rowIndex].taxes = taxes;
-};
-
-const {
-  invoice,
-  totals,
-  tableData,
-  totalValues,
-  isPaymentDialogVisible,
-  isDraft,
-} = toRefs(state);
-
-defineExpose({
-  saveForm,
-  cloneInvoice,
-});
-
-const accountsOptions = inject("accountsOptions", []);
-</script>
 
 <style lang="scss" scoped>
 .totals-container {

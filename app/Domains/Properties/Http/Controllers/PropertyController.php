@@ -114,12 +114,15 @@ class PropertyController extends InertiaController
     public function managementTools(Request $request) {
       $teamId = $request->user()->current_team_id;
       $filters = $request->query('filters');
-      $ownerId = $filters ? $filters['owner'] : null;
-      $section = $filters ? $filters['section'] : 'bills';
+      $ownerId = $filters['owner'] ?? null;
+      $section = $filters['section'] ?? 'bills';
+      $status = $filters['status'] ?? null;
+
+      $statuses = $status ? [$status] : [];
 
       $methods = [
         "bills" => fn() => ClientService::invoices($teamId, $ownerId)->get(),
-        "invoices" => fn() => RentService::invoices($teamId)->get(),
+        "invoices" => fn() => RentService::invoices($teamId, $statuses)->get(),
         "commissions" => fn() => RentService::commissions($teamId)->get()
       ];
 
@@ -144,7 +147,8 @@ class PropertyController extends InertiaController
                 "value" => $invoice->client_id,
                 "label" => $invoice->client_name,
               ];
-          })
+          }),
+          "section" => $section
       ]);
     }
 }

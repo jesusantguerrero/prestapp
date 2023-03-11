@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, computed, watch, nextTick, ref } from "vue";
+import { reactive, watch, nextTick, ref } from "vue";
 // @ts-ignore
 import { AtBackgroundIconCard } from "atmosphere-ui";
 import { router } from "@inertiajs/vue3";
@@ -57,6 +57,9 @@ const props = defineProps({
   user: {
     type: Object,
   },
+  section: {
+    type: String,
+  },
 });
 
 interface IFilter {
@@ -66,7 +69,7 @@ interface IFilter {
 const filters = reactive<IFilter>({
   owner: null,
   property: null,
-  section: "bills",
+  section: props.section,
 });
 
 watch(
@@ -105,12 +108,21 @@ const handlePayment = (invoice: IInvoice) => {
     invoice_id: invoice.id,
   };
 
+  debugger;
+
+  const urls: Record<string, string> = {
+    bills: `/owners/${invoice.client_id}/draws/${invoice?.id}/payments`,
+    invoices: `/rents/${invoice.invoiceable_id}/invoices/${invoice?.id}/payments`,
+  };
+
+  const url = urls[filters.section] ?? urls.invoices;
+
   nextTick(() => {
     openModal({
       data: {
         title: `Pagar ${invoice.concept}`,
         payment: payment,
-        endpoint: `/owners/${invoice.client_id}/draws/${invoice?.id}/payments`,
+        endpoint: url,
         due: payment?.amount,
         defaultConcept: "Pago de " + invoice.concept,
         accountsEndpoint: "/invoices",

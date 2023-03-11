@@ -3,6 +3,7 @@
 import { formatMoney, formatDate } from "@/utils";
 import { computed, reactive, watch, toRefs } from "vue";
 import ExactMath from "exact-math";
+import AppButton from "@/Components/shared/AppButton.vue";
 
 const props = defineProps({
   tableData: {
@@ -34,7 +35,7 @@ const props = defineProps({
   },
 });
 
-defineEmits(["edit-payment"]);
+const emit = defineEmits(["edit-payment", "delete-payment"]);
 
 const getRowTaxes = (row, taxFields) => {
   const taxes = {};
@@ -152,13 +153,21 @@ const { totals, debt, hasTaxes, paymentTotal } = toRefs(state);
 
     <div v-if="payments && payments.length">
       <i
-        class="text-green-500 total-labels payment-label"
+        class="text-green-500 total-labels payment-label group"
         v-for="payment in payments"
         :key="payment.id"
         @click.stop="$emit('edit-payment', payment)"
       >
-        <span class="label"> Pagado en {{ formatDate(payment.payment_date) }} </span>
-        <span class="value">- {{ formatMoney(payment.amount) }}</span>
+        <p class="label flex">Pagado en {{ formatDate(payment.payment_date) }}</p>
+        <p class="value flex items-center justify-end text-right">
+          - {{ formatMoney(payment.amount) }}
+          <AppButton
+            class="text-gray hover:text-error group-hover:flex hidden"
+            @click.stop="$emit('delete-payment', payment)"
+          >
+            <IMdiTrash class="ml-2" />
+          </AppButton>
+        </p>
       </i>
     </div>
 
