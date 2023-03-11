@@ -107,6 +107,13 @@ const generateOwnerDistribution = () => {
     isLoading.value = false;
   });
 };
+
+const handleContractClick = (unit: IUnit) => {
+  const url = unit.contract
+    ? `/rents/${unit.contract?.id}`
+    : `/rents/create?unit=${unit.id}`;
+  router.visit(url);
+};
 </script>
 
 <template>
@@ -216,7 +223,9 @@ const generateOwnerDistribution = () => {
               <div class="flex items-center space-x-2">
                 <UnitTag :status="unit.status" />
                 <div class="flex">
-                  <AppButton variant="neutral"><IMdiFile /></AppButton>
+                  <AppButton variant="neutral" @click="handleContractClick(unit)">
+                    <IMdiFile />
+                  </AppButton>
                   <AppButton variant="neutral" @click="addUnit(unit)">
                     <IMdiEdit />
                   </AppButton>

@@ -80,7 +80,7 @@ export const useAppMenu = () => {
         },
         {
             icon: 'fas fa-cogs',
-            label: 'Settings',
+            label: 'Configuración',
             name: 'settings',
             to: '/settings',
             as: Link

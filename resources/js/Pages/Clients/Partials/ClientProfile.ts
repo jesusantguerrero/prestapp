@@ -1,3 +1,4 @@
+import { getClientLink } from "@/Modules/clients/constants";
 import { Link } from "@inertiajs/vue3";
 import { ElAvatar } from "element-plus";
 import { defineComponent, h } from "vue";
@@ -30,14 +31,12 @@ export const ClientProfile = defineComponent({
           initials,
           type
         }
-
-
     },
     render() {
       return h('div', { class: 'flex items-center space-x-2 px-4' }, [
         h(ElAvatar, { shape: 'circle', width: 20, height: 20, maxWidth: 20, maxHeight: 20 }, this.initials),
         h('div', { class: 'ml-2 w-full text-left'},  [
-          h(Link, {class: 'font-bold text-primary', href: `/contacts/${this.id ?? this.client?.id}/${this.type}`}, this.name ?? this.client?.fullName),
+          h(Link, {class: 'font-bold text-primary', href: getClientLink(this.client)}, this.name ?? this.client?.fullName),
           h('p', { class: 'text-body-1/80 text-sm'}, this.client?.dni)
         ]),
     ]);

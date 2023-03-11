@@ -35,7 +35,7 @@ class DashboardController extends Controller
       [
           "revenue" => $reportHelper->revenueReport($teamId),
           "stats" => AccountStatWidget::stats($teamId),
-          'accounts' => $reportHelper->getChartTransactionsByPeriod($teamId, ['assets', 'liabilities']),
+          'accounts' => $reportHelper->getAccountTransactionsByPeriod($teamId, ['real_state', 'loans'] ,null, null, 'display_id'),
           'paidCommissions' => $reportHelper->smallBoxRevenue('real_state_operative', $teamId),
           'dailyBox' => $reportHelper->smallBoxRevenue('daily_box', $teamId),
           'realState' => Account::where(['team_id' => $teamId, 'display_id' => 'real_state'])->first(),

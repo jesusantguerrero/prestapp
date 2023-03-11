@@ -3,6 +3,7 @@
 namespace App\Domains\Accounting\Widget;
 
 use App\Domains\Loans\Models\LoanInstallment;
+use App\Domains\Properties\Models\Rent;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Insane\Journal\Helpers\ReportHelper;
@@ -22,7 +23,8 @@ class AccountStatWidget {
         END, 0)) overdue, team_id")
       )->first();
 
-      $stats = DB::table('invoices')->selectRaw('clients.names contact, clients.id contact_id, invoices.debt, invoices.due_date, invoices.id id, invoices.concept')
+      $stats = DB::table('invoices')
+      ->selectRaw('clients.names contact, clients.id contact_id, invoices.debt, invoices.due_date, invoices.id id, invoices.concept')
         ->where([
           'invoices.team_id' => $teamId,
           'invoices.type' => 'INVOICE',
@@ -33,7 +35,7 @@ class AccountStatWidget {
             COALESCE(sum(debt), 0) as outstanding,
             COALESCE(sum(
             CASE
-            WHEN now() > due_date THEN debt
+            WHEN date(now()) > due_date THEN debt
             ELSE 0
           END), 0) as overdue")
         )
