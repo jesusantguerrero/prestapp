@@ -49,9 +49,6 @@ const onPayment = (invoice: Object) => {
     invoice_id: invoice.id,
   };
 
-  const invoiceEndpoints = {
-    ''
-  }
   nextTick(() => {
     openModal({
       data: {

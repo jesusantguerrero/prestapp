@@ -62,9 +62,13 @@
 
       <div class="flex text-center invoice-footer-details mt-14" v-if="invoice.id">
         <div class="w-full text-gray-600">
-          <p class="font-bold text-gray-600">Thanks For your business!</p>
-          <div class="mt-5 font-bold text-gray-600">Terms and conditions</div>
-          <div>Payment is due within {{ dueDays }} days</div>
+          <p class="font-bold text-gray-600">Gracias por su preferencia!</p>
+          <div class="mt-5 font-bold text-gray-600" v-if="invoice.type == 'INVOICE'">
+            Terminos y condiciones
+          </div>
+          <div v-if="invoice.type == 'INVOICE'">
+            El pago debe ser dentro de {{ dueDays }} dias
+          </div>
         </div>
 
         <section class="w-full text-right justify-center flex flex-col items-end">
@@ -89,6 +93,7 @@ import InvoiceGrid from "../Partials/InvoiceGrid.vue";
 import ClientCard from "./ClientCard.vue";
 import BusinessCard from "./BusinessCard.vue";
 import { IClient } from "@/Modules/clients/clientEntity";
+import { formatDate } from "@/utils";
 
 const props = withDefaults(
   defineProps<{
@@ -143,10 +148,6 @@ const state = reactive({
   }),
 });
 
-const formatDate = (date: Date) => {
-  return format(date, "MMM dd, yyyy");
-};
-
 const setInvoiceData = (data: Record<string, any>) => {
   if (data) {
     data.date = toDate(parseISO(data.date) || new Date());
@@ -164,7 +165,7 @@ watch(
       setInvoiceData(data);
     }
   },
-  { immediate: true }
+  { immediate: true, deep: true }
 );
 
 const { tableData, client, invoice, totals, totalValues, dueDays } = toRefs(state);

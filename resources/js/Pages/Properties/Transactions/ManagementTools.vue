@@ -59,10 +59,6 @@ const props = defineProps({
   },
 });
 
-const sectionName = computed(() => {
-  return `${props.type?.toLowerCase()}s`;
-});
-
 interface IFilter {
   [key: string]: null | string | Record<string, string>;
 }
@@ -132,18 +128,25 @@ interface InvoiceResponse {
 const selectedInvoice = ref<InvoiceResponse | null>(null);
 
 const { customPrint } = usePrint();
-
+const isPrinting = ref(false);
 function printExternal(invoice: IInvoice) {
-  axios.get(`/invoices/${invoice.id}/preview?json=true`).then(({ data }) => {
-    selectedInvoice.value = data;
-    customPrint("invoice-content", {
-      beforePrint() {
-        selectedInvoice.value = null;
-      },
-      delay: 200,
+  isPrinting.value = invoice.id;
+  axios
+    .get(`/invoices/${invoice.id}/preview?json=true`)
+    .then(({ data }) => {
+      selectedInvoice.value = data;
+      nextTick(() => {
+        customPrint("invoice-content", {
+          beforePrint() {
+            selectedInvoice.value = null;
+          },
+          delay: 800,
+        });
+      });
+    })
+    .then(() => {
+      isPrinting.value = false;
     });
-    // selectedInvoice.value = null;
-  });
 }
 
 const handleChange = () => {};
@@ -233,6 +236,8 @@ const sections: Record<string, any> = {
               <AppButton
                 class="hover:text-primary transition items-center flex flex-col justify-center hover:border-primary-400"
                 variant="neutral"
+                :processing="isPrinting == row.id"
+                :disabled="isPrinting == row.id"
                 @click="printExternal(row)"
               >
                 <IMdiFile />
@@ -263,6 +268,7 @@ const sections: Record<string, any> = {
 
     <div id="invoice-content" v-if="selectedInvoice">
       <Simple
+        v-if="selectedInvoice?.invoice"
         :user="user"
         :type="type"
         :business-data="selectedInvoice.businessData"
