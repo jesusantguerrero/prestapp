@@ -121,13 +121,17 @@ const { openTransactionModal } = useTransactionModal();
                   <p class="flex items-center text-xs text-success md:text-base" rounded>
                     <IMdiArrowUpThick />
                     <span class="font-bold">
-                      {{ formatMoney(accounts.real_state?.income ?? 0) }} Recibido
+                      {{ formatMoney(accounts.cash_and_bank?.at(0)?.income ?? 0) }}
+                      Recibido
                     </span>
                   </p>
                   <p class="flex items-center text-xs text-error/70 md:text-base" rounded>
                     <IMdiArrowDownThick />
                     <span class="font-bold">
-                      {{ formatMoney(accounts.real_state?.outcome ?? 0) }} Gastado
+                      {{
+                        formatMoney(accounts.cash_and_bank?.at(0)?.outcome ?? 0)
+                      }}
+                      Gastado
                     </span>
                   </p>
                 </template>

@@ -35,7 +35,7 @@ class DashboardController extends Controller
       [
           "revenue" => $reportHelper->revenueReport($teamId),
           "stats" => AccountStatWidget::stats($teamId),
-          'accounts' => $reportHelper->getAccountTransactionsByPeriod($teamId, ['real_state', 'loans'] ,null, null, 'display_id'),
+          'accounts' => $reportHelper->getTransactionsByAccount($teamId, ['real_state', 'loans'] ,null, null, 'display_id'),
           'paidCommissions' => $reportHelper->smallBoxRevenue('real_state_operative', $teamId),
           'dailyBox' => $reportHelper->smallBoxRevenue('daily_box', $teamId),
           'realState' => Account::where(['team_id' => $teamId, 'display_id' => 'real_state'])->first(),
@@ -70,7 +70,7 @@ class DashboardController extends Controller
               ->paid()
               ->sum('total')
           ],
-          "totals" => $invoices->select(DB::raw("sum(total) total, sum(total-debt) paid, sum(debt) outstanding, sum(
+          "totals" => $invoices->select(DB::raw("sum(invoices.total) total, sum(invoices.total-debt) paid, sum(debt) outstanding, sum(
             CASE
             WHEN invoices.debt > 0 THEN 1
             ELSE 0

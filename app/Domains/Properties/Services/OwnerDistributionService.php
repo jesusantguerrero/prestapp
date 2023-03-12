@@ -142,7 +142,7 @@ class OwnerDistributionService {
               ? Account::guessAccount($property, ['real_state_reserve', 'cash_and_bank'])
               : $invoice->invoice_account_id, // debit account
             "price" => $invoice->total,
-            "amount" => $invoice->total,
+            "amount" => $type * $invoice->total,
           ];
 
           if ($invoice->category_type == PropertyInvoiceTypes::Rent->value) {

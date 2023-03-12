@@ -226,6 +226,7 @@ const interestPerformance = {
           default-range="7D"
           date-field="payment_date"
           class="rounded-md border w-full md:w-5/12"
+          section="invoices"
           :ranges="[
             { label: '1D', value: [1, 1], tooltip: 'Hoy' },
             { label: '7D', value: [7, 0], tooltip: '7 Dias' },
@@ -239,7 +240,11 @@ const interestPerformance = {
           <template v-slot:content="{ list }">
             <article class="py-4 my-2 h-[380px] overflow-auto ic-scroller">
               <template v-if="list.length">
-                <PaymentsCard v-for="payment in list" :payment="payment" />
+                <PaymentsCard
+                  v-for="payment in list"
+                  :payment="payment"
+                  type="invoices"
+                />
               </template>
               <section
                 v-else

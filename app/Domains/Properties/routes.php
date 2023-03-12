@@ -3,6 +3,7 @@
 use App\Domains\Properties\Http\Controllers\Api\InvoiceApiController;
 use App\Domains\Properties\Http\Controllers\Api\PaymentApiController;
 use App\Domains\Properties\Http\Controllers\PropertyController;
+use App\Domains\Properties\Http\Controllers\PropertyInvoiceController;
 use App\Domains\Properties\Http\Controllers\PropertyOwnerController;
 use App\Domains\Properties\Http\Controllers\PropertyTransactionController;
 use App\Domains\Properties\Http\Controllers\PropertyUnitController;
@@ -41,6 +42,8 @@ Route::middleware([
       Route::post('/properties/{rent}/transactions/{type}',  'store');
       Route::post('/properties/{rent}/transactions/{type}/{invoiceId}', 'store');
     });
+
+    Route::get('/invoices/{invoice}/payments/{payment}/print', [PropertyInvoiceController::class, 'printPayment']);
 
     // Owner
     Route::controller(PropertyOwnerController::class)->group(function() {
