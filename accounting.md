@@ -2,7 +2,7 @@
 - [x] Recoleccion de depositos I
 - [x] Devolucion de depositos E
 - [x] Distribucion de propietarios con depositos y Devolucion de depositos
-- [ ] Gastos E
+- [x] Gastos E
 - [ ] Owner Draw E
 - [ ] Moras
 
