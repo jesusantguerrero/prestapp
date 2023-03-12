@@ -64,7 +64,7 @@ jobs:
     needs: build
     environment:
       name: staging
-      url:  ${{ secrets.DO_APP_URL }}
+      url:  https://icloan.neatlancer.com
     steps:
       - uses: actions/checkout@v3
         with:
@@ -107,5 +107,5 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.DO_DOPLET_SECRET }}
           script: |
-            cd ${{ DO_APP_ROOT }}
+            cd ${{ secrets.DO_APP_ROOT }}
             composer update --ignore-platform-reqs
