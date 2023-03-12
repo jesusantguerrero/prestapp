@@ -1,4 +1,3 @@
-import { cloneDeep } from "lodash";
 import { Ref, reactive, watch } from "vue";
 
 export const useReactiveForm = (formData: Record<string, any>, modelValue: Ref, emit: (name: string, data: any) => {}) => {
@@ -10,9 +9,7 @@ export const useReactiveForm = (formData: Record<string, any>, modelValue: Ref, 
       Object.keys(form).map((field) => {
         if (data[field] && data[field] !== form[field]) {
           form[field] = data[field] || form[field];
-          console.log("applied")
         }
-        console.log("back but not applied")
       });
     },
     { immediate: true, deep: true }

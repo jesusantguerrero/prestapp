@@ -1,11 +1,23 @@
 <script setup lang="ts">
 import { formatDate, formatMoney } from "@/utils";
+import { computed } from "vue";
 
 export interface Props {
   payment: Record<string, any>;
+  type?: string;
 }
 
-defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  type: "loans",
+});
+
+const printUrl = computed(() => {
+  return props.type == "loans"
+    ? `/loans/${props.payment.resource?.id ?? props.payment.payable.loan_id}/payments/${
+        props.payment.id
+      }/print`
+    : `/invoices/${props.payment.payable.id}/payments/${props.payment.id}/print`;
+});
 </script>
 
 <template>
@@ -32,9 +44,7 @@ defineProps<Props>();
           {{ formatMoney(payment.amount) }}
         </span>
         <a
-          :href="`/loans/${payment.resource?.id ?? payment.payable.loan_id}/payments/${
-            payment.id
-          }/print`"
+          :href="printUrl"
           target="_blank"
           rel="noopener noreferrer"
           class="text-secondary px-3 py-1 rounded-md border border-base-lvl-1 flex text-sm bg-base-lvl-2"
@@ -43,8 +53,10 @@ defineProps<Props>();
           <p>Recibo</p>
         </a>
       </p>
-      <span class="w-full text-center inline-block md:inline">{{
-        payment.resource?.client_name ?? payment.payable.clientName
+      <span class="w-full text-right inline-block md:inline">{{
+        payment.resource?.client_name ??
+        payment.payable.client_name ??
+        payment.payable?.client?.fullName
       }}</span>
     </section>
   </article>

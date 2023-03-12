@@ -58,7 +58,8 @@ export const useAppMenu = () => {
           as: Link,
           isActiveFunction(url: string, currentPath: string) {
             return /statements/.test(currentPath)
-         }
+         },
+         hidden: true,
       },
     ].filter(item => !item?.hidden);
 
@@ -74,12 +75,12 @@ export const useAppMenu = () => {
         {
             icon: 'fas fa-question',
             label: 'Ayuda y Soporte',
-            to: '/settings/help',
+            to: '/help',
             as: Link
         },
         {
             icon: 'fas fa-cogs',
-            label: 'Settings',
+            label: 'Configuración',
             name: 'settings',
             to: '/settings',
             as: Link

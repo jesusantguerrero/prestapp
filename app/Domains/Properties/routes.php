@@ -3,6 +3,7 @@
 use App\Domains\Properties\Http\Controllers\Api\InvoiceApiController;
 use App\Domains\Properties\Http\Controllers\Api\PaymentApiController;
 use App\Domains\Properties\Http\Controllers\PropertyController;
+use App\Domains\Properties\Http\Controllers\PropertyInvoiceController;
 use App\Domains\Properties\Http\Controllers\PropertyOwnerController;
 use App\Domains\Properties\Http\Controllers\PropertyTransactionController;
 use App\Domains\Properties\Http\Controllers\PropertyUnitController;
@@ -25,11 +26,13 @@ Route::middleware([
     Route::get('properties/management-tools', [PropertyController::class, 'managementTools']);
     Route::resource('properties', PropertyController::class);
     Route::post('properties/{property}/units', [PropertyController::class, 'addUnit']);
+    Route::delete('properties/{property}/units/{propertyUnit}', [PropertyController::class, 'removeUnit']);
+    Route::put('properties/{property}/units/{propertyUnit}', [PropertyController::class, 'updateUnit']);
     Route::get('units', [PropertyUnitController::class, 'index']);
 
     // rents
     Route::resource('rents', RentController::class);
-    Route::post('/rents/{rent}/invoices/{invoice}/pay', [RentController::class, 'payInvoice']);
+    Route::post('/rents/{rent}/invoices/{invoice}/payments', [RentController::class, 'payInvoice']);
     Route::post('/rents/{rent}/generate-next-invoice', [RentController::class, 'generateNextInvoice']);
 
     // property transactions
@@ -39,6 +42,8 @@ Route::middleware([
       Route::post('/properties/{rent}/transactions/{type}',  'store');
       Route::post('/properties/{rent}/transactions/{type}/{invoiceId}', 'store');
     });
+
+    Route::get('/invoices/{invoice}/payments/{payment}/print', [PropertyInvoiceController::class, 'printPayment']);
 
     // Owner
     Route::controller(PropertyOwnerController::class)->group(function() {

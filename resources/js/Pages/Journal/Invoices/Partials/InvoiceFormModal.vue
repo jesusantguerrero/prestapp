@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { AtButton, AtField, AtInput, AtSimpleSelect } from "atmosphere-ui";
+import { AtButton, AtField, AtInput } from "atmosphere-ui";
 import { format as formatDate } from "date-fns";
 import { ElDatePicker, ElDialog, ElNotification } from "element-plus";
 import { ref, watch, computed } from "vue";
 
 import AppButton from "@/Components/shared/AppButton.vue";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
-import AccountSelect from "@/Components/shared/Selects/AccountSelect.vue";
 
 import { MathHelper } from "@/Modules/loans/mathHelper";
 import { paymentMethods } from "@/Modules/loans/constants";
@@ -29,8 +28,10 @@ const props = withDefaults(
     hideClientOptions?: boolean;
     clientId: string;
     rentId: string;
+    type: string;
   }>(),
   {
+    type: "expense",
     title: "Crear factura",
     due: 0,
   }
@@ -101,6 +102,10 @@ const rentsUrl = computed(() => {
 });
 
 const isLoading = ref(false);
+const endpoints: Record<string, string> = {
+  expense: "/properties/:rent_id/transactions/expense",
+  fee: "/properties/:rent_id/transactions/fee",
+};
 function onSubmit() {
   if (!formData.value.amount) {
     ElNotification({
@@ -121,8 +126,11 @@ function onSubmit() {
   };
 
   isLoading.value = true;
+  const endpoint = endpoints[props.type] ?? endpoints.expense;
+  const url = endpoint.replace(":rent_id", data.rent_id);
+
   axios
-    .post(`/properties/${data.rent_id}/transactions/expense`, data)
+    .post(url, data)
     .then(() => {
       resetForm(true);
       emit("saved");

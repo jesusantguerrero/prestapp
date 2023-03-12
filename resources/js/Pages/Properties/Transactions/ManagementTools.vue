@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, computed, watch, nextTick, ref } from "vue";
+import { reactive, watch, nextTick, ref } from "vue";
 // @ts-ignore
 import { AtBackgroundIconCard } from "atmosphere-ui";
 import { router } from "@inertiajs/vue3";
@@ -21,6 +21,7 @@ import {
   clientInteractions,
   InteractionsState,
 } from "@/Modules/clients/clientInteractions";
+import { ElMessageBox } from "element-plus";
 
 const props = defineProps({
   invoices: {
@@ -57,10 +58,9 @@ const props = defineProps({
   user: {
     type: Object,
   },
-});
-
-const sectionName = computed(() => {
-  return `${props.type?.toLowerCase()}s`;
+  section: {
+    type: String,
+  },
 });
 
 interface IFilter {
@@ -70,7 +70,7 @@ interface IFilter {
 const filters = reactive<IFilter>({
   owner: null,
   property: null,
-  section: "bills",
+  section: props.section,
 });
 
 watch(
@@ -96,8 +96,6 @@ watch(
   { deep: true }
 );
 
-function deleteInvoice(invoice: IInvoice) {}
-
 const { openModal } = usePaymentModal();
 
 const handlePayment = (invoice: IInvoice) => {
@@ -109,15 +107,23 @@ const handlePayment = (invoice: IInvoice) => {
     invoice_id: invoice.id,
   };
 
+  const urls: Record<string, string> = {
+    bills: `/owners/${invoice.client_id}/draws/${invoice?.id}/payments`,
+    invoices: `/rents/${invoice.invoiceable_id}/invoices/${invoice?.id}/payments`,
+  };
+
+  const url = urls[filters.section] ?? urls.invoices;
+
   nextTick(() => {
     openModal({
       data: {
         title: `Pagar ${invoice.concept}`,
         payment: payment,
-        endpoint: `/owners/${invoice.client_id}/draws/${invoice?.id}/payments`,
+        endpoint: url,
         due: payment?.amount,
         defaultConcept: "Pago de " + invoice.concept,
         accountsEndpoint: "/invoices",
+        hideAccountSelector: true,
       },
     });
   });
@@ -131,18 +137,25 @@ interface InvoiceResponse {
 const selectedInvoice = ref<InvoiceResponse | null>(null);
 
 const { customPrint } = usePrint();
-
+const isPrinting = ref(false);
 function printExternal(invoice: IInvoice) {
-  axios.get(`/invoices/${invoice.id}/preview?json=true`).then(({ data }) => {
-    selectedInvoice.value = data;
-    customPrint("invoice-content", {
-      beforePrint() {
-        selectedInvoice.value = null;
-      },
-      delay: 200,
+  isPrinting.value = invoice.id;
+  axios
+    .get(`/invoices/${invoice.id}/preview?json=true`)
+    .then(({ data }) => {
+      selectedInvoice.value = data;
+      nextTick(() => {
+        customPrint("invoice-content", {
+          beforePrint() {
+            selectedInvoice.value = null;
+          },
+          delay: 800,
+        });
+      });
+    })
+    .then(() => {
+      isPrinting.value = false;
     });
-    // selectedInvoice.value = null;
-  });
 }
 
 const handleChange = () => {};
@@ -157,6 +170,26 @@ const sections: Record<string, any> = {
   bills: {
     label: "Gastos",
   },
+};
+
+const onDelete = async (invoice: IInvoice) => {
+  const isValid = await ElMessageBox.confirm(
+    `Estas seguro de eliminar la factura ${invoice.concept} por ${formatMoney(
+      invoice.total
+    )}?`,
+    "Eliminar factura"
+  );
+
+  if (isValid) {
+    router.delete(`/invoices/${invoice.id}`, {
+      onSuccess() {
+        router.reload({
+          preserveState: true,
+          preserveScroll: true,
+        });
+      },
+    });
+  }
 };
 </script>
 
@@ -232,6 +265,8 @@ const sections: Record<string, any> = {
               <AppButton
                 class="hover:text-primary transition items-center flex flex-col justify-center hover:border-primary-400"
                 variant="neutral"
+                :processing="isPrinting == row.id"
+                :disabled="isPrinting == row.id"
                 @click="printExternal(row)"
               >
                 <IMdiFile />
@@ -251,7 +286,7 @@ const sections: Record<string, any> = {
             <AppButton
               variant="neutral"
               class="hover:text-error transition items-center flex flex-col justify-center hover:border-red-400"
-              @click="deleteInvoice(row)"
+              @click="onDelete(row)"
             >
               <IMdiTrash />
             </AppButton>
@@ -262,6 +297,7 @@ const sections: Record<string, any> = {
 
     <div id="invoice-content" v-if="selectedInvoice">
       <Simple
+        v-if="selectedInvoice?.invoice"
         :user="user"
         :type="type"
         :business-data="selectedInvoice.businessData"

@@ -55,6 +55,12 @@ class OwnerService {
       ->paid()
       ->byTeam($teamId)
       ->where('invoiceable_type', Rent::class)
+      ->whereIn('category_type', [
+        PropertyInvoiceTypes::Rent,
+        PropertyInvoiceTypes::Deposit->value,
+        PropertyInvoiceTypes::DepositRefund->value,
+        PropertyInvoiceTypes::UtilityExpense->value,
+      ])
       ->where(function ($query) use ($invoiceId) {
           $query->doesntHave('relatedParents');
           if ($invoiceId) {

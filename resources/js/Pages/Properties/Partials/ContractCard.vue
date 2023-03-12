@@ -1,13 +1,12 @@
-<script setup>
+<script lang="ts" setup>
 import { formatMoney, formatDate } from "@/utils";
 import { Link, router } from "@inertiajs/vue3";
 import AppButton from "../../../Components/shared/AppButton.vue";
+import { IRent } from "@/Modules/properties/propertyEntity";
 
-defineProps({
-  contract: {
-    type: Object,
-  },
-});
+defineProps<{
+  contract: IRent;
+}>();
 </script>
 
 <template>
@@ -32,8 +31,8 @@ defineProps({
     <article>
       <p>Fecha de inicio {{ formatDate(contract.date) }}</p>
       <p>Proximo Pago: {{ formatDate(contract?.next_invoice_date) }}</p>
-      <p>Renta recolectada: {{ formatMoney(contract?.paid) }}</p>
-      <p>Comision recolectada: {{ formatMoney(contract?.commission_paid) }}</p>
+      <p>Renta recolectada: {{ formatMoney(contract?.paid ?? 0) }}</p>
+      <p>Comision recolectada: {{ formatMoney(contract?.commission_paid ?? 0) }}</p>
       <p>Total: {{ contract?.total }}</p>
     </article>
   </section>

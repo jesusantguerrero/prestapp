@@ -2,6 +2,7 @@
 
 namespace App\Domains\CRM\Models\Traits;
 
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Properties\Models\Rent;
@@ -35,6 +36,12 @@ trait OwnerTrait {
         'invoices.status' => 'paid'
       ])
       ->where('invoiceable_type', Rent::class)
+      ->whereIn('category_type', [
+        PropertyInvoiceTypes::Rent,
+        PropertyInvoiceTypes::Deposit->value,
+        PropertyInvoiceTypes::DepositRefund->value,
+        PropertyInvoiceTypes::UtilityExpense->value,
+      ])
       ->where(function ($query) use ($invoiceId) {
           $query->doesntHave('relatedParents');
           if ($invoiceId) {

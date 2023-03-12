@@ -70,29 +70,10 @@ const { formData } = useReactiveForm(
         </AtInput>
       </AppFormField>
       <AppFormField
-        label="Fecha de pago deposito"
-        class="flex flex-col w-full -mt-8 md:mt-0"
-      >
-        <ElDatePicker v-model="formData.deposit_due" size="large" class="w-full" />
-      </AppFormField>
-    </FormSection>
-
-    <FormSection
-      title=""
-      v-if="formData.is_deposit_received"
-      section-class="flex w-full space-x-4"
-    >
-      <AppFormField
-        label="Referencia"
+        label="Metodo de pago"
         class="w-full"
-        v-model="formData.deposit_reference"
-      />
-
-      <AppFormField label="Cuenta de pago" class="w-full">
-        <AccountSelect v-model="formData.payment_account_id" rounded />
-      </AppFormField>
-
-      <AppFormField label="Metodo de pago" class="w-full">
+        v-if="formData.is_deposit_received"
+      >
         <AtSimpleSelect
           v-model="formData.payment_method_id"
           v-model:selected="formData.paymentMethod"
@@ -102,6 +83,12 @@ const { formData } = useReactiveForm(
           label="name"
           key-track="id"
         />
+      </AppFormField>
+      <AppFormField
+        label="Fecha de pago deposito"
+        class="flex flex-col w-full -mt-8 md:mt-0"
+      >
+        <ElDatePicker v-model="formData.deposit_due" size="large" class="w-full" />
       </AppFormField>
     </FormSection>
 

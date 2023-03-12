@@ -14,7 +14,7 @@ class PaymentApiController extends BaseController
         // $this->searchable = ['client_name'];
         $this->sorts = ['payment_date'];
         $this->validationRules = [];
-        $this->includes = ['payable'];
+        $this->includes = ['payable', 'payable.client', 'account'];
         $this->filters = [
           'payable_type' => Invoice::class
         ];

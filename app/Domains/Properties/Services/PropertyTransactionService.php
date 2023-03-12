@@ -46,15 +46,21 @@ class PropertyTransactionService {
         "related_invoices" => $formData["related_invoices"] ?? []
       ]);
 
+      if (isset($formData['payment_details'])) {
+        $data['payment_details'] = $formData['payment_details'];
+      }
+
       return Invoice::createDocument($data);
     }
 
-    public static function createDepositTransaction($rent) {
+    public static function createDepositTransaction(Rent $rent, mixed $rentData) {
+      $description = "Déposito de {$rent->client->fullName}";
+
       $formData = [
         "date" => $rent->deposit_due,
         "due_date" => $rent->deposit_due,
         "concept" => "Factura Déposito",
-        "description" => "Déposito de {$rent->client->fullName}",
+        "description" => $description,
         "total" => $rent->deposit,
         'category_type' => PropertyInvoiceTypes::Deposit,
         "invoice_account_id" => $rent->property->deposit_account_id,
@@ -68,6 +74,14 @@ class PropertyTransactionService {
           "amount" => $rent->deposit,
         ]]
       ];
+
+      if (isset($rentData['is_deposit_received'])) {
+        $formData['payment_details'] = [
+          'account_id' => Account::findByDisplayId('real_state', $rent->team_id),
+          'concept' => "Pago $description",
+          'payment_method' => $formData['payment_method'] ?? 'cash'
+        ];
+      }
       self::createInvoice($formData, $rent, false);
     }
 
@@ -98,7 +112,6 @@ class PropertyTransactionService {
 
       $refundAccountId = Account::guessAccount($rent, ['real_state', 'cash_and_bank']);
       $concept = "Devolucion de deposito $rent->client_name";
-
       $invoiceData = [
         "date" => $formData['date'] ?? date('Y-m-d'),
         "due_date" => $formData['date'] ?? date('Y-m-d'),
@@ -231,6 +244,48 @@ class PropertyTransactionService {
 
           $invoice->invoiceable->client->checkStatus();
       }
+    }
+
+    public static function createLateFee(Rent $rent, $formData = [], $invoice = null) {
+          $penaltyAmount = 0;
+
+          if ($rent->late_fee_type == 'PERCENTAGE') {
+              $penaltyAmount = ($rent->late_fee / 100) * $rent->total;
+          } else if ($rent->late_fee_type == 'PERCENTAGE_OUTSTANDING') {
+              $penaltyAmount = $rent->debt;
+          } else {
+              $penaltyAmount = $rent->late_fee;
+          }
+
+          if ($invoice) {
+            $invoice->update([
+              'status' => 'overdue'
+            ]);
+
+            $invoice->invoiceable->update([
+              'status' => Rent::STATUS_LATE
+            ]);
+          }
+
+          $amount =  $formData['amount'] ?? $penaltyAmount;
+
+          PropertyTransactionService::createInvoice([
+            "name" => "Factura de mora",
+            "concept" => $formData['concept'] ?? "Factura de mora {$rent->client->fullName}",
+            'invoice_account_id' => $rent->late_fee_account_id,
+            'amount' => $amount,
+            'due_date' => $formData['due_date'] ?? null,
+            'category_type' => PropertyInvoiceTypes::LateFee,
+            "items" => [[
+                "name" => "mora de renta",
+                "concept" => $formData['concept'] ?? "mora de {$rent->client->fullName}",
+                "quantity" => 1,
+                "price" => $amount,
+                "amount" => $amount,
+            ]]
+          ], $rent);
+
+          $rent->client->checkStatus();
     }
 
     public static function createOwnerDistribution($client, $invoiceId = null) {

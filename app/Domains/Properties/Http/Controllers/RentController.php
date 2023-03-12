@@ -7,6 +7,7 @@ use App\Domains\Properties\Services\PropertyService;
 use App\Domains\Properties\Services\RentService;
 use App\Http\Controllers\InertiaController;
 use Illuminate\Http\Request;
+use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Invoice\Invoice;
 
 class RentController extends InertiaController
@@ -18,6 +19,7 @@ class RentController extends InertiaController
         $this->templates = [
             "index" => 'Rents/Index',
             "create" => 'Rents/RentForm',
+            "edit" => 'Rents/RentForm',
             "show" => 'Rents/Show'
         ];
         $this->validationRules = [
@@ -37,16 +39,18 @@ class RentController extends InertiaController
     }
 
     public function create(Request $request) {
-      $client = $request->query('client');
+      $clientId = $request->query('client');
       $unitId = $request->query('unit');
 
       $unit = PropertyService::hintUnit($unitId);
+      $client = PropertyService::hintClient($clientId);
 
       return inertia($this->templates['create'], [
         'rents' => null,
-        'client' => null,
+        'paymentAccount' => Account::findByDisplayId('real_state', request()->user()->current_team_id),
         'property' => $unit?->property,
-        'unit' => $unit
+        'unit' => $unit,
+        "client" => $client
       ]);
     }
 
@@ -70,18 +74,7 @@ class RentController extends InertiaController
 
     // Payments
     public function payInvoice(Rent $rent, Invoice $invoice) {
-        $postData = $this->getPostData();
-        if ($invoice->invoiceable_id == $rent->id) {
-            $rent->createPayment(array_merge($postData, [
-                "client_id" => $rent->client_id,
-                "documents" => [[
-                    "payable_id" => $invoice->id,
-                    "payable_type" => Invoice::class,
-                    "amount" => $postData['amount']
-                ]]
-            ]));
-            $rent->client->checkStatus();
-        }
+        RentService::payInvoice($rent, $invoice, $this->getPostData());
     }
 
     public function generateNextInvoice(Rent $rent) {

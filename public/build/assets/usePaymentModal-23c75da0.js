@@ -1,1 +1,0 @@
-import{z as n,B as d}from"./app-b9464164.js";const e=n({isOpen:!1,data:null,mode:"EXPENSE"}),E=()=>{const o=()=>{e.isOpen=!1,e.data=null,e.mode="EXPENSE"},s=(a={})=>{e.data=a.data??null,e.mode=a.mode??"EXPENSE",e.isOpen=!0},t=a=>{e.isOpen?o():s(a)},{isOpen:l}=d(e);return{toggleModal:t,openModal:s,closeModal:o,isOpen:l}};export{e as m,E as u};

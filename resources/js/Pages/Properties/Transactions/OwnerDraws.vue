@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watch, Ref } from "vue";
+import { reactive, watch, computed } from "vue";
 import { AtBackgroundIconCard } from "atmosphere-ui";
 import { Link, router, useForm } from "@inertiajs/vue3";
 
@@ -12,6 +12,7 @@ import BaseTable from "@/Components/shared/BaseTable.vue";
 import { ElNotification, TableColumnCtx } from "element-plus";
 import AppButton from "@/Components/shared/AppButton.vue";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
+import AppFormField from "@/Components/shared/AppFormField.vue";
 
 const props = defineProps({
   invoices: {
@@ -169,22 +170,22 @@ function createOwnerDistribution() {
 }
 
 const { openModal: openInvoiceModal } = useToggleModal("invoice");
+
+const emptyLabel = computed(() => {
+  return !filters.owner
+    ? "Seleccione propietario para ver sus facturas"
+    : "No hay facturas para pagar al propietario";
+});
+
+const canSubmitForm = computed(() => {
+  return filters.owner?.id && !formData.processing && formData.invoices.length;
+});
 </script>
 
 <template>
   <AppLayout title="Centro de pago">
     <template #header>
-      <PropertySectionNav>
-        <template #actions>
-          <BaseSelect
-            v-model="filters.owner"
-            endpoint="/api/clients?filter[is_owner]=1"
-            placeholder="Selecciona un dueño"
-            label="display_name"
-            track-by="id"
-          />
-        </template>
-      </PropertySectionNav>
+      <PropertySectionNav />
     </template>
 
     <div class="py-10 mx-auto sm:px-6 lg:px-8">
@@ -206,8 +207,18 @@ const { openModal: openInvoiceModal } = useToggleModal("invoice");
         />
       </section>
 
-      <div class="mt-4 bg-base-lvl-3 rounded-md overflow-hidden px-1">
-        <template v-if="invoices?.length">
+      <div class="mt-4 bg-base-lvl-3 rounded-md overflow-hidden py-3 px-5">
+        <AppFormField label="Propietario">
+          <BaseSelect
+            v-model="filters.owner"
+            endpoint="/api/clients?filter[is_owner]=1"
+            placeholder="Selecciona un propietario"
+            label="display_name"
+            track-by="id"
+          />
+        </AppFormField>
+
+        <template v-if="invoices?.length && filters.owner">
           <BaseTable
             v-for="client in invoices"
             class="mt-0"
@@ -244,7 +255,6 @@ const { openModal: openInvoiceModal } = useToggleModal("invoice");
               </section>
             </template>
           </BaseTable>
-
           <footer class="flex justify-end px-4 py-2 space-x-2">
             <AppButton
               variant="error"
@@ -264,14 +274,14 @@ const { openModal: openInvoiceModal } = useToggleModal("invoice");
               variant="secondary"
               @click="createOwnerDistribution"
               :processing="formData.processing"
-              :disabled="!filters.owner?.id ?? formData.processing"
+              :disabled="!canSubmitForm"
             >
               Crear Factura de distribucion
             </AppButton>
           </footer>
         </template>
         <p class="h-48 flex items-center justify-center" v-else>
-          No hay facturas para pagar al propietario
+          {{ emptyLabel }}
         </p>
       </div>
     </div>

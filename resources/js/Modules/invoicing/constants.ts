@@ -1,6 +1,7 @@
 export const INVOICE_STATUS = {
   paid: 'Pagado',
-  unpaid: 'Pendiente'
+  unpaid: 'Pendiente',
+  overdue: 'Tardio'
 }
 
 export const invoicesStatus = {
@@ -11,6 +12,10 @@ export const invoicesStatus = {
   'paid': {
       color: 'text-success',
       iconClass: 'fa fa-check'
+  },
+  'overdue': {
+      color: 'text-warning',
+      iconClass: 'fa fa-exclamation'
   },
   'PENDING': {
       color: 'text-info',

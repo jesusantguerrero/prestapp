@@ -7,13 +7,13 @@
           <div
             class="cursor-pointer comparison-header__item previous-period hover:text-gray-700"
           >
-            <h6 class="period-title">Previous Year</h6>
+            <h6 class="period-title">{{ $t("Previous year") }}</h6>
             <span class="period-value"> {{ formatMoney(headerInfo.previous) }}</span>
           </div>
           <div
             class="cursor-pointer comparison-header__item current-period hover:text-gray-700"
           >
-            <h6 class="period-title">Current Year</h6>
+            <h6 class="period-title">{{ $t("Current Year") }}</h6>
             <span class="period-value"> {{ formatMoney(headerInfo.current) }}</span>
           </div>
         </div>

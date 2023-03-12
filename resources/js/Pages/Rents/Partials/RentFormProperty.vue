@@ -20,8 +20,6 @@ const { formData } = useReactiveForm(
     property: null,
     unit_id: null,
     unit: null,
-    is_new_client: false,
-    client_id: null,
   },
   modelValue,
   emit

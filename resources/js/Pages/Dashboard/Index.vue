@@ -9,10 +9,12 @@ import SectionFooterCard from "./SectionFooterCard.vue";
 
 import { formatMoney } from "@/utils/formatMoney";
 import { useTransactionModal } from "@/Modules/transactions/useTransactionModal";
-import { useToggleModal } from "@/Modules/_app/useToggleModal";
 import DashboardTemplate from "./Partials/DashboardTemplate.vue";
 import FastAccessOptions from "./Partials/FastAccessOptions.vue";
 import { Link } from "@inertiajs/vue3";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps({
   revenue: {
@@ -89,11 +91,11 @@ const comparisonRevenue = {
   },
   series: [
     {
-      name: "previous year",
+      name: t("previous year"),
       data: props.revenue.previousYear.values.map((item: IStatDetails) => item.total),
     },
     {
-      name: "current year",
+      name: t("current year"),
       data: props.revenue.currentYear.values.map((item: IStatDetails) => item.total),
     },
   ],
@@ -119,13 +121,17 @@ const { openTransactionModal } = useTransactionModal();
                   <p class="flex items-center text-xs text-success md:text-base" rounded>
                     <IMdiArrowUpThick />
                     <span class="font-bold">
-                      {{ formatMoney(accounts.assets.income) }} Recibido
+                      {{ formatMoney(accounts.cash_and_bank?.at(0)?.income ?? 0) }}
+                      Recibido
                     </span>
                   </p>
                   <p class="flex items-center text-xs text-error/70 md:text-base" rounded>
                     <IMdiArrowDownThick />
                     <span class="font-bold">
-                      {{ formatMoney(accounts.assets.outcome) }} Gastado
+                      {{
+                        formatMoney(accounts.cash_and_bank?.at(0)?.outcome ?? 0)
+                      }}
+                      Gastado
                     </span>
                   </p>
                 </template>
@@ -134,23 +140,25 @@ const { openTransactionModal } = useTransactionModal();
                 title="Balance pendiente"
                 :value="formatMoney(stats.outstanding)"
                 class="md:pl-6"
+                value-link="/properties/management-tools?filters[owner]=&filters[property]=&filters[section]=invoices"
               >
                 <template #footer class="flex">
-                  <AtButton
+                  <Link
                     class="flex items-center px-2 -ml-6 text-xs md:text-base text-error/70 hover:bg-error/10"
                     rounded
+                    href="/properties/management-tools?filters[owner]=&filters[property]=&filters[section]=invoices&filters[status]=overdue"
                   >
                     <IMdiFileDocumentAlertOutline class="mr-2" />
                     <span class="font-bold">
                       {{ formatMoney(stats.overdue) }} En mora
                     </span>
-                  </AtButton>
-                  <AtButton
+                  </Link>
+                  <!-- <AtButton
                     rounded
                     class="flex items-center text-xs md:text-base text-primary hover:bg-primary/10"
                   >
                     <IIcSharpPayment class="mr-2" /> Recibir Pago
-                  </AtButton>
+                  </AtButton> -->
                 </template>
               </SectionFooterCard>
             </section>

@@ -34,7 +34,7 @@ const { formData } = useReactiveForm(
         <section class="mt-4 flex flex-col md:flex-row md:space-x-4">
           <AppButton
             variant="neutral"
-            v-if="!formData.has_late_fees"
+            v-if="formData.has_late_fees"
             @click="formData.has_late_fees = true"
           >
             Aplicar Moras
@@ -57,7 +57,7 @@ const { formData } = useReactiveForm(
           </template>
         </section>
 
-        <section>
+        <!-- <section>
           <ServiceBlock
             v-if="formData.additional_fees.length"
             v-model:items="formData.additional_fees"
@@ -73,7 +73,7 @@ const { formData } = useReactiveForm(
             <i class="mr-2 fa fa-plus-circle"></i>
             Add service
           </AtButton>
-        </section>
+        </section> -->
       </FormSection>
     </article>
   </section>

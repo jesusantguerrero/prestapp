@@ -26,3 +26,15 @@ export const clientStatus = Object.entries(CLIENT_STATUS).map(([name, value]) =>
   name,
   label: value.label
 }));
+
+
+export const getClientLink = (client: Record<string, any>) => {
+  const type = client && Object.entries(client).reduce((type, [field, value]) => {
+    if (field.match(/owner|tenant|lender/) && value == 1) {
+      type = field.replace('is_', '');
+    }
+    return type;
+  }, "");
+
+  return `/contacts/${client?.id}/${type}`
+}

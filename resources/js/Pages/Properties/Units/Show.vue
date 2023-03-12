@@ -11,18 +11,17 @@ import IconMarker from "@/Components/icons/IconMarker.vue";
 import IconCoins from "@/Components/icons/IconCoins.vue";
 import IconPersonSafe from "@/Components/icons/IconPersonSafe.vue";
 import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.vue";
-
-import ContractCard from "./Partials/ContractCard.vue";
-import EmptyAddTool from "./Partials/EmptyAddTool.vue";
-import UnitForm from "./Partials/UnitFormModal.vue";
+import UnitTitle from "@/Components/realState/UnitTitle.vue";
+import UnitTag from "@/Components/realState/UnitTag.vue";
+import EmptyAddTool from "../Partials/EmptyAddTool.vue";
+import ContractCard from "../Partials/ContractCard.vue";
+import UnitForm from "../Partials/UnitFormModal.vue";
 
 import { formatMoney } from "@/utils";
 import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
 import { IProperty } from "@/Modules/properties/propertyEntity";
 import { ElTag } from "element-plus";
 import { clientInteractions } from "@/Modules/clients/clientInteractions";
-import UnitTitle from "@/Components/realState/UnitTitle.vue";
-import UnitTag from "@/Components/realState/UnitTag.vue";
 
 export interface Props {
   properties: IProperty;

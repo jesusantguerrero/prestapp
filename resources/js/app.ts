@@ -12,6 +12,7 @@ import VueApexCharts from 'vue3-apexcharts';
 import VueMultiselect from 'vue-multiselect';
 import { vRipple } from './utils/vRipple';
 import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
+import i18n from './plugins/i18n.ts';
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
@@ -26,6 +27,7 @@ createInertiaApp({
             .use(plugin)
             .use(ZiggyVue, Ziggy)
             .use(ElementPlus)
+            .use(i18n)
             .use(VueApexCharts)
             .use(autoAnimatePlugin)
             .component('multiselect', VueMultiselect)

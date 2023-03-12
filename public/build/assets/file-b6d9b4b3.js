@@ -1,0 +1,1 @@
+import{o as e,f as o,a as t}from"./app-494b6f90.js";const n={viewBox:"0 0 24 24",width:"1.2em",height:"1.2em"},c=t("path",{fill:"currentColor",d:"M13 9V3.5L18.5 9M6 2c-1.11 0-2 .89-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6Z"},null,-1),s=[c];function a(_,i){return e(),o("svg",n,s)}const l={name:"mdi-file",render:a};export{l as _};

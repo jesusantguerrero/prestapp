@@ -46,7 +46,7 @@ const props = withDefaults(defineProps<Props>(), {
       <ClientForm :form-data="clients" :disabled="true" type="tenant" />
     </article>
 
-    <template #options>
+    <template #options v-if="contract">
       <slot name="options">
         <section class="space-y-4 flex flex-col">
           <EmptyAddTool>

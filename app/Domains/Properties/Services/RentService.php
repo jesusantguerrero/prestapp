@@ -88,16 +88,22 @@ class RentService {
         'unit'
       ])->first();
     }
-
     //  payments / invoices
     public static function invoices($teamId, $statuses = []) {
       $query = Invoice::selectRaw('
           clients.names contact,
+          clients.names client_name,
           clients.id contact_id,
           invoices.debt,
+          invoices.series,
+          invoices.number,
+          invoices.date,
           invoices.due_date,
           invoices.total,
           invoices.id id,
+          invoices.status,
+          invoices.invoiceable_id,
+          rents.address category,
           invoices.concept concept'
         )->where([
           'invoices.team_id' => $teamId,
@@ -111,6 +117,7 @@ class RentService {
 
         $query
         ->join('clients', 'clients.id', '=', 'invoices.client_id')
+        ->join('rents', 'rents.id', '=', 'invoices.invoiceable_id')
         ->groupBy(['clients.names', 'clients.id', 'invoices.debt', 'invoices.due_date', 'invoices.id', 'invoices.concept'])
         ->take(5);
 
@@ -186,5 +193,29 @@ class RentService {
         'next_invoice_date' => $rent->end_date ? null : $nextDate,
         'generated_invoice_dates' => array_merge($rent->generated_invoice_dates, $generatedInvoices)
       ]);
+    }
+
+    public static function payInvoice(Rent $rent, Invoice $invoice, mixed $postData) {
+        if ($invoice->invoiceable_id != $rent->id || $invoice->invoiceable_type !== Rent::class) {
+          throw new Exception("This invoice doesn't belongs to this rent");
+        }
+        
+        if ($invoice && $invoice->debt <= 0) {
+            throw new Exception("This invoice is already paid");
+        }
+
+        $invoice->createPayment(array_merge($postData, [
+          "client_id" => $rent->client_id,
+          "account_id" => $formData['account_id'] ?? Account::findByDisplayId('real_state', $rent->team_id)->id,
+          "documents" => [[
+              "payable_id" => $invoice->id,
+              "payable_type" => Invoice::class,
+              "amount" => $postData['amount']
+          ]]
+        ]));
+
+        $invoice->save();
+        $rent->client->checkStatus();
+      
     }
 }

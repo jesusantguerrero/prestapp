@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Link, router } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
-import { AtBackgroundIconCard } from "atmosphere-ui";
+import { AtBackgroundIconCard, AtButton } from "atmosphere-ui";
 
 import Modal from "@/Components/Modal.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
@@ -17,8 +17,8 @@ import UnitForm from "./Partials/UnitFormModal.vue";
 
 import { formatMoney } from "@/utils";
 import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
-import { IProperty } from "@/Modules/properties/propertyEntity";
-import { ElTag } from "element-plus";
+import { IProperty, IUnit } from "@/Modules/properties/propertyEntity";
+import { ElMessageBox, ElNotification, ElTag } from "element-plus";
 import { clientInteractions } from "@/Modules/clients/clientInteractions";
 import UnitTitle from "@/Components/realState/UnitTitle.vue";
 import UnitTag from "@/Components/realState/UnitTag.vue";
@@ -75,8 +75,29 @@ const refresh = () => {
 };
 
 const isUnitFormOpen = ref(false);
-const addUnit = () => {
+const unitToEdit = ref<null | IUnit>(null);
+
+const addUnit = (unit: IUnit | null = null) => {
   isUnitFormOpen.value = true;
+  unitToEdit.value = unit;
+};
+
+const removeUnit = async (unit: IUnit) => {
+  const isConfirmed = await ElMessageBox.confirm(
+    `Estas seguro de eliminar la unidad ${unit.name}?`,
+    "Eliminar unidad"
+  );
+
+  if (!isConfirmed) return;
+  router.delete(`/properties/${props.properties.id}/units/${unit.id}`, {
+    onSuccess() {
+      ElNotification({
+        message: `Unidad ${unit.name} borrada con exito`,
+        title: "Unidad eliminada",
+        type: "success",
+      });
+    },
+  });
 };
 
 const isLoading = ref(false);
@@ -85,6 +106,13 @@ const generateOwnerDistribution = () => {
   clientInteractions.generateOwnerDistribution(props.properties.owner_id).finally(() => {
     isLoading.value = false;
   });
+};
+
+const handleContractClick = (unit: IUnit) => {
+  const url = unit.contract
+    ? `/rents/${unit.contract?.id}`
+    : `/rents/create?unit=${unit.id}`;
+  router.visit(url);
 };
 </script>
 
@@ -115,6 +143,7 @@ const generateOwnerDistribution = () => {
               @click="router.visit(route('rents.create', { propertyId: properties.id }))"
               variant="secondary"
             >
+              <IMdiFileDocumentPlus class="mr-2" />
               Nuevo Contrato
             </AppButton>
           </section>
@@ -194,12 +223,26 @@ const generateOwnerDistribution = () => {
               <div class="flex items-center space-x-2">
                 <UnitTag :status="unit.status" />
                 <div class="flex">
-                  <AppButton variant="neutral"><IMdiFile /></AppButton>
-                  <!-- <AppButton variant="neutral"><IMdiFile /></AppButton>
-                  <AppButton variant="neutral"><IMdiFile /></AppButton> -->
+                  <AppButton variant="neutral" @click="handleContractClick(unit)">
+                    <IMdiFile />
+                  </AppButton>
+                  <AppButton variant="neutral" @click="addUnit(unit)">
+                    <IMdiEdit />
+                  </AppButton>
+                  <AppButton
+                    variant="neutral"
+                    class="hover:bg-error/80 hover:text-white transition"
+                    @click="removeUnit(unit)"
+                  >
+                    <IMdiTrash />
+                  </AppButton>
                 </div>
               </div>
             </div>
+            <AtButton class="text-primary hover:font-bold" @click="addUnit()">
+              <i class="mr-2 fa fa-plus-circle"></i>
+              Agregar unidad
+            </AtButton>
           </section>
 
           <ContractCard
@@ -252,7 +295,11 @@ const generateOwnerDistribution = () => {
       />
 
       <Modal v-if="isUnitFormOpen" :show="isUnitFormOpen" @close="isUnitFormOpen = false">
-        <UnitForm @close="isUnitFormOpen = false" :property="properties" />
+        <UnitForm
+          @close="isUnitFormOpen = false"
+          :property="properties"
+          :unit="unitToEdit"
+        />
       </Modal>
     </main>
   </AppLayout>

@@ -31,13 +31,6 @@ class OwnerDistributionTest extends PropertyBase
       return $rent;
     }
 
-    public function payInvoices(Rent $rent) {
-      $this->actingAs($this->user);
-      foreach ($rent->fresh()->invoices as $invoice) {
-        $this->payInvoice($rent, $invoice);
-      }
-    }
-
     public function testItShouldGenerateDebt()
     {
       $rent = $this->generateInvoices();

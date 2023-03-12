@@ -58,7 +58,6 @@ class PropertyBase extends TestCase
       "date" => $date,
       "deposit" => 5000,
       "deposit_due" => $date,
-      "is_deposit_received" => true,
       "deposit_reference" => "",
       "payment_account_id" => null,
       "payment_method" => "",
@@ -97,7 +96,7 @@ class PropertyBase extends TestCase
     $this->actingAs($this->user);
 
       $url = $invoice->category_type !== PropertyInvoiceTypes::UtilityExpense->value
-      ? "/rents/$rent->id/invoices/$invoice->id/pay"
+      ? "/rents/$rent->id/invoices/$invoice->id/payments"
       : "/invoices/$invoice->id/payment";
 
       return $this->post($url, [
@@ -109,6 +108,13 @@ class PropertyBase extends TestCase
         'details' => 'Payment of ' . $invoice->concept,
         'concept' => 'Payment of ' . $invoice->concept,
       ]);
+  }
+
+  public function payInvoices(Rent $rent) {
+    $this->actingAs($this->user);
+    foreach ($rent->invoices()->get() as $invoice) {
+      $this->payInvoice($rent, $invoice);
+    }
   }
 
 }

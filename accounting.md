@@ -2,5 +2,10 @@
 - [x] Recoleccion de depositos I
 - [x] Devolucion de depositos E
 - [x] Distribucion de propietarios con depositos y Devolucion de depositos
-- [ ] Gastos E
+- [x] Gastos E
 - [ ] Owner Draw E
+- [ ] Moras
+
+- [ ] Gastos auto-pagar?
+- [ ] Marcar si una propiedad tiene gastos pendientes
+- [ ] Se aloca con gastos
