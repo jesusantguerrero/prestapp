@@ -33,7 +33,7 @@ class DashboardController extends Controller
 
       return inertia('Dashboard/Index',
       [
-          "revenue" => $reportHelper->revenueReport($teamId),
+          "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId, ['real_state', 'loans', 'real_state_operative'] ,null, null, null)->all(), now()->format('Y')),
           "stats" => AccountStatWidget::stats($teamId),
           'accounts' => $reportHelper->getTransactionsByAccount($teamId, ['real_state', 'loans'] ,null, null, 'display_id'),
           'paidCommissions' => $reportHelper->smallBoxRevenue('real_state_operative', $teamId),
