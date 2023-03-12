@@ -21,6 +21,7 @@ import {
   clientInteractions,
   InteractionsState,
 } from "@/Modules/clients/clientInteractions";
+import { ElMessageBox } from "element-plus";
 
 const props = defineProps({
   invoices: {
@@ -95,8 +96,6 @@ watch(
   { deep: true }
 );
 
-function deleteInvoice(invoice: IInvoice) {}
-
 const { openModal } = usePaymentModal();
 
 const handlePayment = (invoice: IInvoice) => {
@@ -107,8 +106,6 @@ const handlePayment = (invoice: IInvoice) => {
     id: undefined,
     invoice_id: invoice.id,
   };
-
-  debugger;
 
   const urls: Record<string, string> = {
     bills: `/owners/${invoice.client_id}/draws/${invoice?.id}/payments`,
@@ -173,6 +170,26 @@ const sections: Record<string, any> = {
   bills: {
     label: "Gastos",
   },
+};
+
+const onDelete = async (invoice: IInvoice) => {
+  const isValid = await ElMessageBox.confirm(
+    `Estas seguro de eliminar la factura ${invoice.concept} por ${formatMoney(
+      invoice.total
+    )}?`,
+    "Eliminar factura"
+  );
+
+  if (isValid) {
+    router.delete(`/invoices/${invoice.id}`, {
+      onSuccess() {
+        router.reload({
+          preserveState: true,
+          preserveScroll: true,
+        });
+      },
+    });
+  }
 };
 </script>
 
@@ -269,7 +286,7 @@ const sections: Record<string, any> = {
             <AppButton
               variant="neutral"
               class="hover:text-error transition items-center flex flex-col justify-center hover:border-red-400"
-              @click="deleteInvoice(row)"
+              @click="onDelete(row)"
             >
               <IMdiTrash />
             </AppButton>

@@ -53,8 +53,10 @@ const printUrl = computed(() => {
           <p>Recibo</p>
         </a>
       </p>
-      <span class="w-full text-center inline-block md:inline">{{
-        payment.resource?.client_name ?? payment.payable.clientName
+      <span class="w-full text-right inline-block md:inline">{{
+        payment.resource?.client_name ??
+        payment.payable.client_name ??
+        payment.payable?.client?.fullName
       }}</span>
     </section>
   </article>

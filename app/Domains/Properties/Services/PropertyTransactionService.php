@@ -112,7 +112,6 @@ class PropertyTransactionService {
 
       $refundAccountId = Account::guessAccount($rent, ['real_state', 'cash_and_bank']);
       $concept = "Devolucion de deposito $rent->client_name";
-
       $invoiceData = [
         "date" => $formData['date'] ?? date('Y-m-d'),
         "due_date" => $formData['date'] ?? date('Y-m-d'),

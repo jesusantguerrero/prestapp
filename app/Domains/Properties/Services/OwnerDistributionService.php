@@ -132,11 +132,11 @@ class OwnerDistributionService {
       $taxTotal = 0;
       foreach ($invoices as $invoice) {
           $type = PropertyTransactionService::getInvoiceLineType($invoice->category_type);
+          
           $item = [
             "name" => "$invoice->description $invoice->date",
             "concept" => "$invoice->description $invoice->date",
-            "quantity" => 1,
-            "type" => $type,
+            "quantity" => $type * 1,
             "category_id" => $property->owner_account_id, // payment account
             "account_id" => $invoice->type == Invoice::DOCUMENT_TYPE_BILL || $invoice->category_type == PropertyInvoiceTypes::Deposit->value
               ? Account::guessAccount($property, ['real_state_reserve', 'cash_and_bank'])

@@ -66,12 +66,50 @@ class PropertyTransactionsTest extends PropertyBase
     $this->assertEquals(-1, $payment->transaction->lines[1]->type);
   }
 
-  public function testItShouldCreateADepositRefund() {
+  public function testItShouldHaveDepositBalance() {
     $this->seed();
     $this->actingAs($this->user);
     $rent = $this->createRent([
       "deposit" => 5000,
       "price" => 5000
+    ]);
+
+    $this->assertEquals($rent->deposit, $rent->client->depositBalance());
+  }
+
+  public function testItShouldNotRefundMoreThanOwed() {
+    $this->seed();
+    $this->actingAs($this->user);
+    $rent = $this->createRent([
+      "deposit" => 5000,
+      "price" => 5000
+    ]);
+
+    $response = $this->post("/properties/{$rent->id}/transactions/refund", [
+      'client_id' => $rent->client_id,
+      'account_id' => $rent->property->deposit_account_id,
+      'total' => 6000,
+      'rent_id' => $rent->id,
+      'payments' => [[
+        'amount' => 6000,
+        'original_amount' => $rent->deposit,
+        'rent_id' => $rent->id,
+        'id' => '1'
+      ]],
+    ]);
+
+    $response->assertStatus(200);
+    $response->assertSessionHasErrors();
+  }
+
+  public function testItShouldCreateADepositRefund() {
+    $this->seed();
+    $this->actingAs($this->user);
+    $rent = $this->createRent([
+      "deposit" => 5000,
+      "price" => 5000,
+      'is_deposit_received' => true,
+      'payment_method' => 'cash'
     ]);
 
     $response = $this->post("/properties/{$rent->id}/transactions/refund", [
