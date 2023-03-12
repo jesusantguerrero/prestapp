@@ -75,7 +75,7 @@ export const useAppMenu = () => {
         {
             icon: 'fas fa-question',
             label: 'Ayuda y Soporte',
-            to: '/settings/help',
+            to: '/help',
             as: Link
         },
         {

@@ -70,6 +70,9 @@ Route::middleware([
      Route::get('/settings/{name}', function() {
       return "Hello world";
      });
+     Route::get('/help', function() {
+      return inertia('Help');
+     });
 
     Route::get('/search', [SearchController::class, 'index']);
      // CRM

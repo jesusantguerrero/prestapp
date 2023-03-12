@@ -164,9 +164,9 @@ function refresh() {
                       Manage Account
                     </div>
 
-                    <DropdownLink href="/docs/guide"> Guia de inicio </DropdownLink>
+                    <DropdownLink href="/help"> Guia de inicio </DropdownLink>
 
-                    <DropdownLink href="/docs/help"> Ayuda </DropdownLink>
+                    <DropdownLink href="/help"> Ayuda </DropdownLink>
                     =
                     <div class="border-t border-gray-100" />
                   </template>
