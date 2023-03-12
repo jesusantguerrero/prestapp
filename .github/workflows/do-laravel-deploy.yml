@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: demo
+      name: staging
       url:  ${{ secrets.DO_APP_URL }}
     steps:
       - uses: actions/checkout@v3
