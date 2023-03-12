@@ -5,7 +5,6 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-  workflow_dispatch:
 
 jobs:
   build:
@@ -38,12 +37,12 @@ jobs:
     - name: Install Composer
       run: composer test
 
-    - name: Build fronted
+    - name: Build frontend
       env:
         APP_URL: ${{ secrets.DO_APP_URL }}
         ASSET_URL: ${{ secrets.DO_APP_URL }}
-        APP_DEMO: true
-        VITE_APP_DEMO: true
+        APP_DEMO: false
+        VITE_APP_DEMO: false
       run: npm install ; npm run build
 
     - name: Archive production artifacts
@@ -65,7 +64,7 @@ jobs:
     needs: build
     environment:
       name: demo
-      url: https://loger.neatlancer.com/
+      url:  ${{ secrets.DO_APP_URL }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -108,5 +107,5 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.DO_DOPLET_SECRET }}
           script: |
-            cd /var/www/loger.com
+            cd ${{ DO_APP_ROOT }}
             composer update --ignore-platform-reqs
