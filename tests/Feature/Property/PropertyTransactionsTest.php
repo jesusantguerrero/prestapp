@@ -71,7 +71,8 @@ class PropertyTransactionsTest extends PropertyBase
     $this->actingAs($this->user);
     $rent = $this->createRent([
       "deposit" => 5000,
-      "price" => 5000
+      "price" => 5000,
+      'is_deposit_received' => true,
     ]);
 
     $this->assertEquals($rent->deposit, $rent->client->depositBalance());

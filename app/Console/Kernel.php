@@ -18,6 +18,8 @@ class Kernel extends ConsoleKernel
       $schedule->command('background:generate-invoices')->everyMinute();
       $schedule->command('background:generate-owner-distributions')->everyMinute();
       $schedule->command('background:generate-loan-fees')->everyMinute();
+      $schedule->command('backup:clean')->daily()->at('01:00');
+      $schedule->command('backup:run')->daily()->at('01:30');
     }
 
     /**

@@ -8,7 +8,6 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Insane\Journal\Models\Core\Account;
-use Tests\Feature\Loan\Helpers\LoanHelper;
 use Tests\TestCase;
 
 abstract class LoanBase extends TestCase

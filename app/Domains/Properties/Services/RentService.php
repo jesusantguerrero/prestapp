@@ -10,7 +10,6 @@ use App\Domains\Properties\Models\Rent;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Insane\Journal\Models\Core\Account;
-use Insane\Journal\Models\Core\Tax;
 use Insane\Journal\Models\Invoice\Invoice;
 use Insane\Journal\Models\Invoice\InvoiceLineTax;
 

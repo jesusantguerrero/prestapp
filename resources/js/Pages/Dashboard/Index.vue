@@ -70,8 +70,8 @@ interface IStatDetails {
 const comparisonRevenue = {
   headers: {
     gapName: "Year",
-    previous: props.revenue.previousYear.total,
-    current: props.revenue.currentYear.total,
+    previous: props.revenue?.total,
+    current: props.revenue?.total,
   },
   options: {
     chart: {
@@ -91,12 +91,12 @@ const comparisonRevenue = {
   },
   series: [
     {
-      name: t("previous year"),
-      data: props.revenue.previousYear.values.map((item: IStatDetails) => item.total),
+      name: t("Entradas"),
+      data: props.revenue.map((item: IStatDetails) => item.income ?? 0),
     },
     {
-      name: t("current year"),
-      data: props.revenue.currentYear.values.map((item: IStatDetails) => item.total),
+      name: t("Salidas"),
+      data: props.revenue.map((item: IStatDetails) => item.outcome ?? 0),
     },
   ],
 };
@@ -128,9 +128,7 @@ const { openTransactionModal } = useTransactionModal();
                   <p class="flex items-center text-xs text-error/70 md:text-base" rounded>
                     <IMdiArrowDownThick />
                     <span class="font-bold">
-                      {{
-                        formatMoney(accounts.cash_and_bank?.at(0)?.outcome ?? 0)
-                      }}
+                      {{ formatMoney(accounts.cash_and_bank?.at(0)?.outcome ?? 0) }}
                       Gastado
                     </span>
                   </p>

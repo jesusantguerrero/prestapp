@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Notification;
 use Tests\Feature\Loan\Helpers\LoanBase;
 
 class LoanCronsTest extends LoanBase {
-
   public function testItGeneratesLateFees() {
     $loan = $this->createLoan([
       "date" => '2022-12-15',

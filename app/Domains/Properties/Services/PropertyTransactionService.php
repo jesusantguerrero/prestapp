@@ -77,11 +77,12 @@ class PropertyTransactionService {
 
       if (isset($rentData['is_deposit_received'])) {
         $formData['payment_details'] = [
-          'account_id' => Account::findByDisplayId('real_state', $rent->team_id),
+          'account_id' => Account::findByDisplayId('real_state', $rent->team_id)->id,
           'concept' => "Pago $description",
           'payment_method' => $formData['payment_method'] ?? 'cash'
         ];
       }
+
       self::createInvoice($formData, $rent, false);
     }
 

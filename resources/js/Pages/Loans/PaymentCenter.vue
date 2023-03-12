@@ -13,7 +13,7 @@ import PropertySectionNav from "./Partials/LoanSectionNav.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import ButtonGroup from "@/Components/ButtonGroup.vue";
 
-import { cols } from "./paymentCenterCols";
+import { cols } from "./PaymentCenterCols";
 import { useSectionFilters } from "@/Modules/_app/useSectionFilters";
 import { router } from "@inertiajs/core";
 import { IClientSaved } from "@/Modules/clients/clientEntity";

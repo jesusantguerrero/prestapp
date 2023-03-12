@@ -97,7 +97,7 @@ return [
                 [
                   "resource_type" => "categories",
                   "display_id" => "rent",
-                  "alias" => "Rentas por pagar a propietarios",
+                  "alias" => "Rentas de ultimo mes",
                   "number" => 2200,
                   "name" => "Last Month's Rent",
                   "Description" => "Use this to track the balance of what you (or your partners) have personally loaned to the business, but expect to be paid back for. The same category can also be used to track loans the business has given you (or your partners), in which case the balance would be less than zero (negative).",
