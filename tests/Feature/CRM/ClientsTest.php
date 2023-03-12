@@ -21,11 +21,13 @@ class ClientsTest extends TestCase
       $this->user = User::factory()->create();
       $this->clientData = [
         'names' => 'John',
+        'address_details' => 'Your house is my house',
         'lastnames' => 'Doe',
         'dni' => '1234567',
         'dni_type' => 'cedula',
         'cellphone' => $this->faker->phoneNumber(),
-        'email' => $this->faker->email()
+        'email' => $this->faker->email(),
+        'work_name' => 'Insane Code',
       ];
     }
 

@@ -1,0 +1,1 @@
+import{z as s,m as a}from"./app-e7293397.js";const p=(m,u,o)=>{const e=s(m);return a(()=>u.value,t=>{Object.keys(e).map(r=>{t[r]&&t[r]!==e[r]&&(e[r]=t[r]||e[r])})},{immediate:!0,deep:!0}),a(()=>({...e}),()=>{o("update:modelValue",{...u.value,...e})},{deep:!0}),{formData:e}};export{p as u};

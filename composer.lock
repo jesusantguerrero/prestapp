@@ -1347,12 +1347,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/insane-code/journal.git",
-                "reference": "a420090a716d4a129538575c994943e66f83d6fe"
+                "reference": "0e59523418ca46363ee94be586a9f0af567596ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/insane-code/journal/zipball/a420090a716d4a129538575c994943e66f83d6fe",
-                "reference": "a420090a716d4a129538575c994943e66f83d6fe",
+                "url": "https://api.github.com/repos/insane-code/journal/zipball/0e59523418ca46363ee94be586a9f0af567596ff",
+                "reference": "0e59523418ca46363ee94be586a9f0af567596ff",
                 "shasum": ""
             },
             "require": {
@@ -1401,9 +1401,9 @@
             ],
             "support": {
                 "issues": "https://github.com/insane-code/journal/issues",
-                "source": "https://github.com/insane-code/journal/tree/v0.6.2"
+                "source": "https://github.com/insane-code/journal/tree/master"
             },
-            "time": "2023-02-04T02:47:27+00:00"
+            "time": "2023-03-12T14:45:45+00:00"
         },
         {
             "name": "jaybizzle/crawler-detect",

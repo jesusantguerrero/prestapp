@@ -1,0 +1,1 @@
+import{a as e,g as s}from"./constants-fbb1b618.js";import{l as o,o as r,c as n,w as u,h as c,t as p,u as t,ac as l}from"./app-e7293397.js";const _=o({__name:"UnitTag",props:{status:null},setup(a){return(i,m)=>(r(),n(t(l),{type:t(s)(a.status)},{default:u(()=>[c(p(t(e)(a.status)),1)]),_:1},8,["type"]))}});export{_};

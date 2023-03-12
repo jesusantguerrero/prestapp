@@ -1,1 +1,0 @@
-import{o as e,f as o,a as t}from"./app-494b6f90.js";const n={viewBox:"0 0 24 24",width:"1.2em",height:"1.2em"},c=t("path",{fill:"currentColor",d:"M8.59 16.58L13.17 12L8.59 7.41L10 6l6 6l-6 6l-1.41-1.42Z"},null,-1),r=[c];function s(_,i){return e(),o("svg",n,r)}const a={name:"mdi-chevron-right",render:s};export{a as _};

@@ -1,1 +1,0 @@
-import{C as n}from"./ClientProfile-45452668.js";import{l,f as t,a,b as r,u as o,o as c}from"./app-494b6f90.js";const p=l({__name:"ClientCard",props:{client:null},setup(e){return(s,i)=>(c(),t("div",null,[a("header",null,[r(o(n),{client:e.client},null,8,["client"])])]))}});export{p as _};

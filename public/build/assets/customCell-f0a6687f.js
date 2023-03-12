@@ -1,0 +1,1 @@
+import{l as o,Q as s}from"./app-e7293397.js";const l=o({props:{col:{type:Object},data:{type:Object}},setup(t,{slots:a}){return()=>{var e;return s("div",(e=t.col)==null?void 0:e.render(t.data))}}});export{l as C};
