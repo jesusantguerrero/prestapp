@@ -173,14 +173,14 @@ const handleContractClick = (unit: IUnit) => {
           <article class="flex space-x-5">
             <section>
               <div class="flex items-center">
-                <IconCoins class="mr-2 text-yellow-600" />
+                <!-- <IconCoins class="mr-2 text-yellow-600" />
                 <span class="font-bold text-success">
                   {{ formatMoney(properties.price) }}
-                </span>
+                </span> -->
               </div>
               <p class="text-bold text-body-1">Renta Mensual</p>
             </section>
-            <ElTag> {{ properties.status }}</ElTag>
+            <ElTag> {{ $t(properties.status) }}</ElTag>
           </article>
         </section>
       </header>
@@ -212,14 +212,34 @@ const handleContractClick = (unit: IUnit) => {
               v-for="unit in properties.units"
               class="flex w-full rounded-md px-4 py-2 justify-between"
             >
-              <h4>
+              <header>
                 <UnitTitle
                   :title="unit.name"
                   :owner-name="properties.owner.display_name"
                   :tenant-name="unit.contract?.client.display_name"
                   :price="formatMoney(unit.price)"
                 />
-              </h4>
+                <section class="flex mt-2 space-x-2 text-gray-500">
+                  <span class="flex items-center space-x-1">
+                    <i-ic-sharp-photo-size-select-small />
+                    <span>
+                      {{ unit.area ?? 0 }}
+                    </span>
+                  </span>
+                  <span class="flex items-center space-x-1"
+                    ><IIcTwotoneBed />
+                    <span>
+                      {{ unit.bedrooms ?? 0 }}
+                    </span>
+                  </span>
+                  <span class="flex items-center space-x-1"
+                    ><IIcTwotoneBathtub />
+                    <span>
+                      {{ unit.bathrooms ?? 0 }}
+                    </span>
+                  </span>
+                </section>
+              </header>
               <div class="flex items-center space-x-2">
                 <UnitTag :status="unit.status" />
                 <div class="flex">
@@ -275,9 +295,9 @@ const handleContractClick = (unit: IUnit) => {
                   Generar Pago a {{ properties.owner.names }}
                 </AppButton>
               </section>
-              <EmptyAddTool> Notes </EmptyAddTool>
+              <!-- <EmptyAddTool> Notes </EmptyAddTool>
               <EmptyAddTool> Imagenes </EmptyAddTool>
-              <EmptyAddTool> Documentos </EmptyAddTool>
+              <EmptyAddTool> Documentos </EmptyAddTool> -->
               <EmptyAddTool @click="addUnit()"> Agregar unidad </EmptyAddTool>
             </div>
           </div>

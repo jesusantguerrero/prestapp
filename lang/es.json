@@ -3,6 +3,8 @@
       "ACTIVE": "Activo",
       "INACTIVE": "Inactivo"
     },
+    "AVAILABLE": "Disponible",
+    "RENTED": "Rentada",
     "previous year": "Año anterior",
     "current year": "Este año",
     "Dashboard": "Inicio",
