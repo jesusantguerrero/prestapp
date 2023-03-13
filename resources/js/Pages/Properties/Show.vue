@@ -212,14 +212,34 @@ const handleContractClick = (unit: IUnit) => {
               v-for="unit in properties.units"
               class="flex w-full rounded-md px-4 py-2 justify-between"
             >
-              <h4>
+              <header>
                 <UnitTitle
                   :title="unit.name"
                   :owner-name="properties.owner.display_name"
                   :tenant-name="unit.contract?.client.display_name"
                   :price="formatMoney(unit.price)"
                 />
-              </h4>
+                <section class="flex mt-2 space-x-2 text-gray-500">
+                  <span class="flex items-center space-x-1">
+                    <i-ic-sharp-photo-size-select-small />
+                    <span>
+                      {{ unit.area ?? 0 }}
+                    </span>
+                  </span>
+                  <span class="flex items-center space-x-1"
+                    ><IIcTwotoneBed />
+                    <span>
+                      {{ unit.bedrooms ?? 0 }}
+                    </span>
+                  </span>
+                  <span class="flex items-center space-x-1"
+                    ><IIcTwotoneBathtub />
+                    <span>
+                      {{ unit.bathrooms ?? 0 }}
+                    </span>
+                  </span>
+                </section>
+              </header>
               <div class="flex items-center space-x-2">
                 <UnitTag :status="unit.status" />
                 <div class="flex">

@@ -3,6 +3,7 @@
 namespace App\Domains\Accounting\Helpers;
 
 use Illuminate\Support\Carbon;
+use NumberFormatter;
 
 class InvoiceHelper {
 
@@ -48,7 +49,7 @@ class InvoiceHelper {
     }
 
     public static function numberToWords($number) {
-      $formatter = new \NumberFormatter('es', \NumberFormatter::SPELLOUT);
+      $formatter = new NumberFormatter('es', NumberFormatter::SPELLOUT);
       return $formatter->format($number) . "\n";
     }
 }

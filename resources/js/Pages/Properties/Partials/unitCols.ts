@@ -1,13 +1,13 @@
+import  IMdiPlus  from '~icons/mdi/plus-thick';
+import IIcSharpArea from '~icons/ic/sharp-photo-size-select-small';
+import  IIcTwotoneBed  from '~icons/ic/twotone-bed';
+import  IIcTwotoneBathtub  from '~icons/ic/twotone-bathtub';
 import { formatMoney } from '../../../utils/formatMoney';
 import { h } from "vue";
-import {  ElTag } from "element-plus"
 // @ts-ignore
 import { IProperty } from '@/Modules/properties/propertyEntity';
 // @ts-ignore
-import IconMarker from "@/Components/icons/IconMarker.vue";
 import UnitTitle from "@/Components/realState/UnitTitle.vue";
-// @ts-ignore
-import { getPropertyStatus, getPropertyStatusColor } from "@/Modules/properties/constants";
 
 
 export default [
@@ -24,6 +24,11 @@ export default [
                 ownerName: row.owner?.display_name,
                 tenantName: row.contract?.client?.display_name,
               }),
+              h('div', { class: 'flex mt-2 space-x-2'} , [
+                h('span', {class: 'flex items-center space-x-1'}, [h(IIcSharpArea), h('span', row.area ?? 0)]),
+                h('span', {class: 'flex items-center space-x-1'}, [h(IIcTwotoneBed), h('span', row.bedrooms ?? 0)]),
+                h('span', {class: 'flex items-center space-x-1'}, [h(IIcTwotoneBathtub), h('span', row.bathrooms ?? 0)]),
+              ])
           ]);
         }
     },
