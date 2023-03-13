@@ -173,14 +173,14 @@ const handleContractClick = (unit: IUnit) => {
           <article class="flex space-x-5">
             <section>
               <div class="flex items-center">
-                <IconCoins class="mr-2 text-yellow-600" />
+                <!-- <IconCoins class="mr-2 text-yellow-600" />
                 <span class="font-bold text-success">
                   {{ formatMoney(properties.price) }}
-                </span>
+                </span> -->
               </div>
               <p class="text-bold text-body-1">Renta Mensual</p>
             </section>
-            <ElTag> {{ properties.status }}</ElTag>
+            <ElTag> {{ $t(properties.status) }}</ElTag>
           </article>
         </section>
       </header>
@@ -295,9 +295,9 @@ const handleContractClick = (unit: IUnit) => {
                   Generar Pago a {{ properties.owner.names }}
                 </AppButton>
               </section>
-              <EmptyAddTool> Notes </EmptyAddTool>
+              <!-- <EmptyAddTool> Notes </EmptyAddTool>
               <EmptyAddTool> Imagenes </EmptyAddTool>
-              <EmptyAddTool> Documentos </EmptyAddTool>
+              <EmptyAddTool> Documentos </EmptyAddTool> -->
               <EmptyAddTool @click="addUnit()"> Agregar unidad </EmptyAddTool>
             </div>
           </div>
