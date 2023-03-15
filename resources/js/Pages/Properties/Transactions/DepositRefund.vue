@@ -14,7 +14,7 @@ import AppButton from "@/Components/shared/AppButton.vue";
 import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 
 import { IClientSaved } from "@/Modules/clients/clientEntity";
-import { IInvoice } from "@/Modules/loans/loanEntity";
+import { IInvoice } from "@/Modules/invoicing/entities";
 
 const props = defineProps<{
   category: string;

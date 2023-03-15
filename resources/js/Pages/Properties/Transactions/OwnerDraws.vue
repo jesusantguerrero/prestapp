@@ -13,6 +13,7 @@ import { ElNotification, TableColumnCtx } from "element-plus";
 import AppButton from "@/Components/shared/AppButton.vue";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
 import AppFormField from "@/Components/shared/AppFormField.vue";
+import { IInvoice } from "@/Modules/invoicing/entities";
 
 const props = defineProps({
   invoices: {
@@ -68,11 +69,6 @@ watch(
   },
   { deep: true }
 );
-
-interface IInvoice {
-  id: number;
-  total: number;
-}
 
 interface SummaryMethodProps<T = IInvoice> {
   columns: TableColumnCtx<T>[];

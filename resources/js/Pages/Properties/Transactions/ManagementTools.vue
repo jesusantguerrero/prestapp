@@ -11,7 +11,7 @@ import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.v
 
 import { formatMoney } from "@/utils";
 import AppButton from "@/Components/shared/AppButton.vue";
-import { IInvoice } from "@/Modules/loans/loanEntity";
+import { IInvoice } from "@/Modules/invoicing/entities";
 import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
 import { usePrint } from "@/utils/usePrint";
 import Simple from "@/Pages/Journal/Invoices/printTemplates/Simple.vue";

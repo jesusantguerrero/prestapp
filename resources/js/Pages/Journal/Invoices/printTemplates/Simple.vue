@@ -1,3 +1,96 @@
+<script lang="ts" setup>
+import { toDate, differenceInDays } from "date-fns";
+import { reactive, computed, watch, toRefs } from "vue";
+import { parseISO } from "date-fns";
+
+import InvoiceTotals from "../Partials/InvoiceTotals.vue";
+import InvoiceGrid from "../Partials/InvoiceGrid.vue";
+import ClientCard from "./ClientCard.vue";
+import BusinessCard from "./BusinessCard.vue";
+
+import { IClient } from "@/Modules/clients/clientEntity";
+import { formatDate } from "@/utils";
+import { IInvoice } from "@/Modules/invoicing/entities";
+
+const props = withDefaults(
+  defineProps<{
+    imageUrl: string;
+    type: string;
+    user: Record<string, string>;
+    businessData: Record<string, string>;
+    products?: Record<string, string>[];
+    clients?: IClient[];
+    invoiceData: IInvoice;
+  }>(),
+  {
+    type: "INVOICE",
+    imageUrl: "/logo.png",
+  }
+);
+
+interface ILineItem {
+  quantity: number;
+  price: number;
+}
+
+const state: any = reactive({
+  totalValues: {},
+  totals: {
+    subtotalField: "subtotal",
+    totalField: "amount",
+    discountField: "discountTotal",
+    subtotalFormula(row: ILineItem) {
+      return row.quantity * row.price;
+    },
+    totalFormula(row: ILineItem) {
+      return row.quantity * row.price;
+    },
+    discountFormula(row: ILineItem) {
+      return row.quantity * row.price;
+    },
+  },
+  invoice: {},
+  selectedPayment: null,
+  isPaymentDialogVisible: false,
+  modals: {
+    email: {
+      value: false,
+    },
+  },
+  tableData: [],
+  client: null,
+  imageUrl: "",
+  dueDays: computed(() => {
+    return differenceInDays(state.invoice.due_date, state.invoice.date);
+  }),
+});
+
+const setInvoiceData = (data: Record<string, any>) => {
+  if (data) {
+    data.date = toDate(parseISO(data.date) || new Date());
+    data.due_date = toDate(parseISO(data.due_date) || new Date());
+    state.invoice = data;
+    state.client = data.client;
+    state.tableData =
+      data.lines.sort((a: Record<string, string>, b: Record<string, string>) =>
+        a.index > b.index ? 1 : -1
+      ) || [];
+  }
+};
+
+watch(
+  () => props.invoiceData,
+  (data) => {
+    if (data) {
+      setInvoiceData(data);
+    }
+  },
+  { immediate: true }
+);
+
+const { tableData, client, invoice, totals, totalValues, dueDays } = toRefs(state);
+</script>
+
 <template>
   <section class="w-full py-2 rounded-md section">
     <div class="section-body">
@@ -83,94 +176,6 @@
   </section>
 </template>
 
-<script lang="ts" setup>
-import { format, toDate, differenceInDays } from "date-fns";
-import { reactive, computed, watch, toRefs } from "vue";
-import parseISO from "date-fns/esm/fp/parseISO/index.js";
-
-import InvoiceTotals from "../Partials/InvoiceTotals.vue";
-import InvoiceGrid from "../Partials/InvoiceGrid.vue";
-import ClientCard from "./ClientCard.vue";
-import BusinessCard from "./BusinessCard.vue";
-import { IClient } from "@/Modules/clients/clientEntity";
-import { formatDate } from "@/utils";
-
-const props = withDefaults(
-  defineProps<{
-    imageUrl: string;
-    type: string;
-    user: Record<string, string>;
-    businessData: Record<string, string>;
-    products?: Record<string, string>[];
-    clients?: IClient[];
-    invoiceData: Record<string, string>;
-  }>(),
-  {
-    type: "INVOICE",
-    imageUrl: "/logo.png",
-  }
-);
-
-interface ILineItem {
-  quantity: number;
-  price: number;
-}
-
-const state = reactive({
-  totalValues: {},
-  totals: {
-    subtotalField: "subtotal",
-    totalField: "amount",
-    discountField: "discountTotal",
-    subtotalFormula(row: ILineItem) {
-      return row.quantity * row.price;
-    },
-    totalFormula(row: ILineItem) {
-      return row.quantity * row.price;
-    },
-    discountFormula(row: ILineItem) {
-      return row.quantity * row.price;
-    },
-  },
-  invoice: {},
-  selectedPayment: null,
-  isPaymentDialogVisible: false,
-  modals: {
-    email: {
-      value: false,
-    },
-  },
-  tableData: [],
-  client: null,
-  imageUrl: "",
-  dueDays: computed(() => {
-    return differenceInDays(state.invoice.due_date, state.invoice.date);
-  }),
-});
-
-const setInvoiceData = (data: Record<string, any>) => {
-  if (data) {
-    data.date = toDate(parseISO(data.date) || new Date());
-    data.due_date = toDate(parseISO(data.due_date) || new Date());
-    state.invoice = data;
-    state.client = data.client;
-    state.tableData = data.lines.sort((a, b) => (a.index > b.index ? 1 : -1)) || [];
-  }
-};
-
-watch(
-  () => props.invoiceData,
-  (data) => {
-    if (data) {
-      setInvoiceData(data);
-    }
-  },
-  { immediate: true, deep: true }
-);
-
-const { tableData, client, invoice, totals, totalValues, dueDays } = toRefs(state);
-</script>
-
 <style lang="scss" scoped>
 .totals-container {
   background: white;
@@ -218,7 +223,7 @@ const { tableData, client, invoice, totals, totalValues, dueDays } = toRefs(stat
 
 .main-grid {
   thead th {
-    @apply bg-secondary text-white;
+    @apply text-white;
   }
   .el-table__body-wrapper td {
     font-size: 1.5em !important;
@@ -281,7 +286,7 @@ section {
 <style lang="scss">
 .main-grid {
   thead th.el-table__cell {
-    @apply bg-secondary text-white;
+    @apply text-white;
   }
   .el-table__body-wrapper td {
     font-size: 1.2em !important;

@@ -4,7 +4,7 @@ import { Link, router } from "@inertiajs/vue3";
 import { AtField } from "atmosphere-ui";
 import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
 
-import AccountingSectionNav from "../Partials/AccountingSectionNav.vue";
+import AccountingSectionNav from "@/Pages/Journal/Partials/AccountingSectionNav.vue";
 import InvoiceSimple from "./printTemplates/Simple.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import InvoicePaymentOptions from "@/Components/templates/InvoicePaymentOptions.vue";
@@ -13,28 +13,17 @@ import AppButton from "@/Components/shared/AppButton.vue";
 import { formatDate, formatMoney } from "@/utils";
 import { getInvoiceTypeUrl } from "./utils";
 import { ref } from "vue";
+import { IInvoiceWithRelations } from "@/Modules/invoicing/entities";
 
-defineProps({
-    invoice: {
-        type: Object,
-        required: true
-    },
-    businessData: {
-        type: Object,
-        required: true
-    },
-    type: {
-        type: String,
-        required: true
-    },
-    user: {
-      type: Object
-    },
-    invoiceTemplate: {
-        type: String,
-        default: 'invoice-simple'
-    }
-})
+withDefaults(defineProps<{
+  user: Record<string, string>
+  invoice: IInvoiceWithRelations;
+  businessData: Record<string,string>;
+  type: string;
+  invoiceTemplate: string
+}>(), {
+  invoiceTemplate: 'invoice-simple'
+});
 
 
 const isModalPrintOpen = ref(false);
@@ -51,8 +40,10 @@ const print = () => {
   }
 
   section.innerHTML = "";
-  section.appendChild(cloned);
-  window.print();
+  if (cloned) {
+    section.appendChild(cloned);
+    window.print();
+  }
   // isModalPrintOpen.value = true;
 }
 </script>
@@ -63,11 +54,10 @@ const print = () => {
     <template #header>
       <AccountingSectionNav>
         <template #actions>
-          <AppButton @click="router.visit(getInvoiceTypeUrl(invoice))" variant="inverse" v-if="false">
+          <AppButton @click="router.visit(getInvoiceTypeUrl(invoice))"
+            variant="inverse"
+            v-if="false">
             Editar Factura
-          </AppButton>
-          <AppButton @click="router.visit(route('invoices.create', invoice))" variant="inverse" v-if="false">
-            Crear otra factura
           </AppButton>
           <AppButton variant="neutral" @click="print()">
             <IMdiPrinter />
@@ -123,13 +113,12 @@ const print = () => {
           </section>
         </div>
 
-        <component
-            :is="InvoiceSimple"
-            :user="user"
-            :type="type"
-            :business-data="businessData"
-            :invoice-data="invoice"
-            id="invoice-content"
+        <InvoiceSimple
+          :user="user"
+          :type="type"
+          :business-data="businessData"
+          :invoice-data="invoice"
+          id="invoice-content"
         />
     </div>
   </AppLayout>

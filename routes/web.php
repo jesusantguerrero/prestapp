@@ -11,6 +11,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SettingsController;
 
 use App\Http\Controllers\CRM\ClientController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SearchController;
 use Illuminate\Foundation\Application;
@@ -84,6 +85,17 @@ Route::middleware([
     // Reports
     Route::get('/statements/{category}', [ReportController::class, 'statements'])->name('statements.category');
     Route::get('/reports/{category}', [ReportController::class, 'category'])->name('report.category');
+
+
+      // invoicing
+      Route::resource('/invoices', InvoiceController::class);
+      Route::post('/invoices/{id}/payment', [InvoiceController::class, 'addPayment']);
+      Route::get('/invoices/{invoice}/print', [InvoiceController::class, 'print']);
+      Route::post('/invoices/{id}/mark-as-paid', [InvoiceController::class, 'markAsPaid']);
+      Route::delete('/invoices/{id}/payment/{paymentId}', [InvoiceController::class, 'deletePayment']);
+      Route::get('/invoices/{invoice}/preview', [InvoiceController::class, 'publicPreview']);
+      // Bills
+      Route::resource('/bills', InvoiceController::class);
   });
 
 // Admin

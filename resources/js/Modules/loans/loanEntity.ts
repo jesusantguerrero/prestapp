@@ -1,4 +1,5 @@
 import { IClient } from "../clients/clientEntity";
+import { IInvoice } from "../invoicing/entities";
 import { ILoanInstallment } from "./loanInstallmentEntity";
 
 export interface ILoan {
@@ -35,11 +36,6 @@ export interface IPayment {
   payment_date: Date;
 }
 
-export interface IInvoice {
-  id: number;
-  client_id: number;
-  concept: string;
-}
 export interface ILoanWithPayments extends ILoan {
   payment_documents: IPayment[]
 }
