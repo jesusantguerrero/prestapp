@@ -10,7 +10,6 @@ const localesMessages = Object.fromEntries(
     }),
 )
 
-console.log(localesMessages);
 const i18n = createI18n({
   locale: 'es',
   fallbackLocale: 'en',

@@ -32,7 +32,6 @@ const formData = reactive({
 })
 
 onMounted(async () => {
-  console.log(props.settingData);
   const accountId = props.settingData.loan_default_source_account
   if (accountId) {
     formData.loan_default_source_account = await axios.get(`/loan-accounts/${accountId}`).then(({data }) => {

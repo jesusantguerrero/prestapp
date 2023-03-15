@@ -3,7 +3,7 @@ import { router } from "@inertiajs/vue3";
 import { ref, computed, nextTick } from "vue";
 
 import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
-import { IInvoice } from "@/Modules/loans/loanEntity";
+import { IInvoice } from "@/Modules/invoicing/entities";
 import { ElMessageBox } from "element-plus";
 import { formatMoney } from "@/utils";
 
