@@ -10,6 +10,8 @@ import {
 } from "@/Modules/loans/loanInstallmentEntity";
 import cols from "./installmentCols";
 import { router } from "@inertiajs/core";
+import { useI18n } from "vue-i18n";
+import { onMounted, ref } from "vue";
 
 interface Props {
   installments: ILoanInstallment[];
@@ -47,10 +49,13 @@ const handlePayment = (installment: ILoanInstallment) => {
   });
   emit("pay", installment);
 };
+
+const { t } = useI18n();
+const columns = cols(t);
 </script>
 
 <template>
-  <BaseTable :cols="cols" :table-data="installments" :hidden-cols="hiddenCols">
+  <BaseTable :cols="columns" :table-data="installments" :hidden-cols="hiddenCols">
     <template v-slot:actions="{ scope: { row } }">
       <div class="flex space-x-2 justify-end">
         <AppButton

@@ -5,6 +5,8 @@
     },
     "AVAILABLE": "Disponible",
     "RENTED": "Rentada",
+    "PENDING": "Pendiente",
+    "PAID": "Pagado",
     "previous year": "Año anterior",
     "current year": "Este año",
     "Dashboard": "Inicio",

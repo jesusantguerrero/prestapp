@@ -9,3 +9,10 @@
 - [ ] Gastos auto-pagar?
 - [ ] Marcar si una propiedad tiene gastos pendientes
 - [ ] Se aloca con gastos
+
+
+- Evitar que se ponga coma en los montos
+- [x] Email Opcional
+- Traducir estatus de prestamos
+- [x] Datos de trabajo hacerla opcional
+- [x] correo hacerla opcional

@@ -28,11 +28,7 @@ class ClientController extends InertiaController
       $this->validationRules = [
         'names' => 'required',
         'lastnames' => 'required',
-        'address_details' => 'required',
         'dni' => 'required',
-        'email' => 'required',
-        'cellphone' => 'required',
-        'work_name' => 'required',
       ];
   }
 

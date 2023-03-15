@@ -11,6 +11,7 @@ import TransactionTypesPicker from "./TransactionTypesPicker.vue";
 import { TRANSACTION_DIRECTIONS } from "@/Modules/transactions";
 import AccountSelect from "./Selects/AccountSelect.vue";
 import AppFormField from "./AppFormField.vue";
+import axios from "axios";
 
 const props = defineProps({
   show: {
@@ -21,6 +22,9 @@ const props = defineProps({
   },
   closeable: {
     default: true,
+  },
+  hideTypeSelector: {
+    default: false,
   },
   categories: {
     type: Array,
@@ -57,7 +61,7 @@ const state = reactive({
     account: null,
     payee_label: "",
     date: new Date(),
-    description: "",
+    description: "Transferencia",
     direction: "WITHDRAW",
     category_id: null,
     counterAccount: null,
@@ -79,6 +83,45 @@ watch(
     }
   }
 );
+
+const hintAccount = async (accountName: any) => {
+  if (typeof accountName == "string") {
+    return await axios
+      .get(`/api/accounts?filter[display_id]=${accountName}`)
+      .then(({ data }) => {
+        return data.data?.length ? data.data[0] : null;
+      });
+  }
+};
+
+watch(
+  () => state.form.counter_account_id,
+  async (counterAccount) => {
+    const account = await hintAccount(counterAccount);
+    if (account) {
+      state.form.counterAccount = account;
+      state.form.counter_account_id = account.id;
+    }
+  },
+  {
+    immediate: true,
+  }
+);
+
+watch(
+  () => state.form.account_id,
+  async (accountName) => {
+    const account = await hintAccount(accountName);
+    if (account) {
+      state.form.account = account;
+      state.form.account_id = account.id;
+    }
+  },
+  {
+    immediate: true,
+  }
+);
+
 const isTransfer = computed(() => {
   return state.form.is_transfer;
 });
@@ -128,16 +171,21 @@ const submit = () => {
   const action = actions[actionType][method];
 
   state.form
-    .transform((form) => ({
-      ...form,
-      resource_type_id: "MANUAL",
-      total: form.total,
-      account_id: form.account?.id,
-      counter_account_id: form.counterAccount?.id,
-      date: format(new Date(form.date), "yyyy-MM-dd"),
-      status: "verified",
-      direction: form.is_transfer ? TRANSACTION_DIRECTIONS.WITHDRAW : form.direction,
-    }))
+    .transform((data: Record<string, any>) => {
+      return {
+        ...data,
+        resource_type_id: "MANUAL",
+        description:
+          data.description ??
+          `Transferencia de ${data.account?.alias} a ${data.counterAccount.alias}`,
+        total: data.total,
+        account_id: data.account?.id ?? form.value.account_id,
+        counter_account_id: data.counterAccount?.id ?? form.value.counter_account_id,
+        date: format(new Date(data.date), "yyyy-MM-dd"),
+        status: "verified",
+        direction: data.is_transfer ? TRANSACTION_DIRECTIONS.WITHDRAW : data.direction,
+      };
+    })
     .submit(action.method, action.url(), {
       onBefore(evt) {
         if (!evt.data.total) {
@@ -192,10 +240,17 @@ const isPickerOpen = ref(false);
     :closeable="closeable"
     @close="$emit('update:show', false)"
   >
+    <header
+      class="border-b bg-secondary/80 text-white py-4 px-4 flex items-center justify-between"
+    >
+      <h4 class="font-bold text-xl">Registrar Transaccion</h4>
+      <button class="hover:text-danger" @click="close()">
+        <IMdiClose />
+      </button>
+    </header>
     <div class="pb-4 bg-base-lvl-3 sm:p-6 sm:pb-4 text-body flex-1">
       <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-        <TransactionTypesPicker v-model="form.direction" />
-        {{ form.direction }}
+        <TransactionTypesPicker v-model="form.direction" v-if="!hideTypeSelector" />
 
         <div class="mt-2">
           <slot name="content">
