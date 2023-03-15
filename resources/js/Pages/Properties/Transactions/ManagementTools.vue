@@ -22,6 +22,7 @@ import {
   InteractionsState,
 } from "@/Modules/clients/clientInteractions";
 import { ElMessageBox } from "element-plus";
+import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
 
 const props = defineProps({
   invoices: {
@@ -246,50 +247,59 @@ const onDelete = async (invoice: IInvoice) => {
       </section>
       <InvoiceTable :invoice-data="invoices" class="mt-10 rounded-md bg-base-lvl-3">
         <template v-slot:actions="{ row }">
-          <div class="flex justify-end items-center space-x-2s">
-            <Link
-              class="relative inline-block cursor-pointer ml-4 hover:bg-primary hover:text-white px-5 py-2 overflow-hidden font-bold text-body transition rounded-md focus:outline-none hover:bg-opacity-80 min-w-max"
-              :href="`/properties/${row.property_id}?unit=${row.id}`"
-            >
-              <IMdiChevronRight />
-            </Link>
-            <AppButton
-              @click="handlePayment(row)"
-              variant="inverse-secondary"
-              class="flex items-center justify-center"
-              v-if="row?.status !== 'paid'"
-            >
-              <IIcSharpPayment />
-            </AppButton>
-            <div class="flex space-x-2">
-              <AppButton
-                class="hover:text-primary transition items-center flex flex-col justify-center hover:border-primary-400"
-                variant="neutral"
-                :processing="isPrinting == row.id"
-                :disabled="isPrinting == row.id"
-                @click="printExternal(row)"
+          <div class="flex justify-end items-center space-x-2s group">
+            <div class="font-bold capitalize text-sm" :class="getStatusColor(row.status)">
+              <i :class="getStatusIcon(row.status)" />
+              {{ getStatus(row.status) }}
+            </div>
+            <div class="hidden group-hover:flex">
+              <Link
+                class="relative inline-block cursor-pointer ml-4 hover:bg-primary hover:text-white px-5 py-2 overflow-hidden font-bold text-body transition rounded-md focus:outline-none hover:bg-opacity-80 min-w-max"
+                :href="`/properties/${row.property_id}?unit=${row.id}`"
               >
-                <IMdiFile />
+                <IMdiChevronRight />
+              </Link>
+              <AppButton
+                @click="handlePayment(row)"
+                variant="inverse-secondary"
+                class="flex items-center justify-center"
+                v-if="row?.status !== 'paid'"
+                title="Pagar"
+              >
+                <IIcSharpPayment />
               </AppButton>
+              <div class="flex space-x-2">
+                <AppButton
+                  class="hover:text-primary transition items-center flex flex-col justify-center hover:border-primary-400"
+                  variant="neutral"
+                  title="Imprimir"
+                  :processing="isPrinting == row.id"
+                  :disabled="isPrinting == row.id"
+                  @click="printExternal(row)"
+                >
+                  <IMdiFile />
+                </AppButton>
+                <AppButton
+                  v-if="filters.section == 'bills' && row.status != 'paid'"
+                  class="mr-2"
+                  variant="neutral"
+                  :process="InteractionsState.isGeneratingDistribution"
+                  @click="
+                    clientInteractions.generateOwnerDistribution(row.contact_id, row.id)
+                  "
+                >
+                  Re-generar
+                </AppButton>
+              </div>
               <AppButton
-                v-if="filters.section == 'bills' && row.status != 'paid'"
-                class="mr-2"
                 variant="neutral"
-                :process="InteractionsState.isGeneratingDistribution"
-                @click="
-                  clientInteractions.generateOwnerDistribution(row.contact_id, row.id)
-                "
+                class="hover:text-error transition items-center flex flex-col justify-center hover:border-red-400"
+                @click="onDelete(row)"
+                title="Eliminar"
               >
-                Re-generar
+                <IMdiTrash />
               </AppButton>
             </div>
-            <AppButton
-              variant="neutral"
-              class="hover:text-error transition items-center flex flex-col justify-center hover:border-red-400"
-              @click="onDelete(row)"
-            >
-              <IMdiTrash />
-            </AppButton>
           </div>
         </template>
       </InvoiceTable>
