@@ -4,8 +4,8 @@ import { formatMoney , formatDate } from "@/utils";
 import { Link } from "@inertiajs/vue3";
 import { h } from "vue";
 
-export default [
-  {
+export default function(t: Function): any[] {
+   return [{
     name: 'due_date',
     minWidth: 100,
     label: 'Fecha',
@@ -72,7 +72,7 @@ export default [
     class: "text-right",
     render(row: ILoanInstallment) {
       return h('div', {class: 'flex space-x-4 w-full justify-end'}, [
-        h('span', row.payment_status),
+        h('span', t(row.payment_status ?? '')),
         h('span', { class: 'text-right font-bold'}, formatMoney(row.final_balance))
       ])
     }
@@ -82,4 +82,5 @@ export default [
     align: 'center',
     label: 'Acciones',
   }
-]
+  ]
+}

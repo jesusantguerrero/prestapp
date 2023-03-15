@@ -205,6 +205,11 @@ const { openTransactionModal } = useTransactionModal();
           @click="
             openTransactionModal({
               mode: 'TRANSFER',
+              hideTypeSelector: true,
+              transactionData: {
+                account_id: 'opening_balance_capital',
+                counter_account_id: 'loan_business',
+              },
             })
           "
         >

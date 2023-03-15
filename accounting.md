@@ -12,7 +12,7 @@
 
 
 - Evitar que se ponga coma en los montos
-- Opcional
+- [x] Email Opcional
 - Traducir estatus de prestamos
-- Datos de trabajo hacerla opcional
-- correo hacerla opcional
+- [x] Datos de trabajo hacerla opcional
+- [x] correo hacerla opcional

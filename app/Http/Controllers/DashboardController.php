@@ -35,9 +35,9 @@ class DashboardController extends Controller
       [
           "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId, ['real_state', 'loans', 'real_state_operative'] ,null, null, null)->all(), now()->format('Y')),
           "stats" => AccountStatWidget::stats($teamId),
-          'accounts' => $reportHelper->getTransactionsByAccount($teamId, ['real_state', 'loans'] ,null, null, 'display_id'),
+          'accounts' => $reportHelper->getTransactionsByAccount($teamId, ['real_state', 'loan_business', 'loans'] ,null, null, 'display_id'),
           'paidCommissions' => $reportHelper->smallBoxRevenue('real_state_operative', $teamId),
-          'dailyBox' => $reportHelper->smallBoxRevenue('daily_box', $teamId),
+          'dailyBox' => $reportHelper->smallBoxRevenue('loan_business', $teamId),
           'realState' => Account::where(['team_id' => $teamId, 'display_id' => 'real_state'])->first(),
           'logs' => Activity::all()->last(),
           'section' => "general",
@@ -52,9 +52,9 @@ class DashboardController extends Controller
       $propertyTotals = PropertyService::totalByStatusFor($teamId);
 
       $invoices = RentService::invoices($teamId);
-     
 
-      
+
+
       return inertia('Dashboard/Properties',
       [
           "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId, ['real_state'] ,null, null, null)->all(), now()->format('Y')),

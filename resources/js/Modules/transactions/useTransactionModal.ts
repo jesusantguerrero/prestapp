@@ -9,6 +9,7 @@ export const transactionModalState = reactive({
     mode: 'EXPENSE',
     recurrence: false,
     automatic: false,
+    hideTypeSelector: false,
 })
 
 
@@ -23,6 +24,7 @@ export const useTransactionModal = () => {
         transactionModalState.automatic = false
         transactionModalState.transactionData = null
         transactionModalState.mode = 'EXPENSE'
+        transactionModalState.hideTypeSelector = false
         transactionModalState.recurrence = false
     }
 
@@ -31,6 +33,7 @@ export const useTransactionModal = () => {
         transactionModalState.transactionData = config.transactionData ?? null
         transactionModalState.recurrence = config.recurrence ?? false
         transactionModalState.mode = config.mode ?? 'EXPENSE'
+        transactionModalState.hideTypeSelector = config.hideTypeSelector ?? false
         transactionModalState.isOpen = true
     }
 
