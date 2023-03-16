@@ -2,11 +2,10 @@
 
 namespace App\Domains\Admin\Http\Controllers;
 
-use App\Domains\Loans\Services\LoanService;
+use App\Domains\Properties\Models\Property;
 use App\Http\Controllers\InertiaController;
 use App\Models\Team;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\User;
 
 class AdminController extends InertiaController
 {
@@ -14,7 +13,11 @@ class AdminController extends InertiaController
     public function __invoke() {
       return inertia('Admin/Index',
       [
-          'Teams' => Team::all(),
+          'stats' => [
+            "users" => User::count(),
+            "teams" => Team::count(),
+            "properties" => Property::count(),
+          ],
       ]);
     }
 }
