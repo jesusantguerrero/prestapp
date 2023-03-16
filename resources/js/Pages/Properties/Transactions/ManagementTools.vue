@@ -169,7 +169,7 @@ const sections: Record<string, any> = {
     label: "Facturas",
   },
   bills: {
-    label: "Gastos",
+    label: "Propietarios",
   },
 };
 
@@ -263,7 +263,7 @@ const onDelete = async (invoice: IInvoice) => {
                 @click="handlePayment(row)"
                 variant="inverse-secondary"
                 class="flex items-center justify-center"
-                v-if="row?.status !== 'paid'"
+                v-if="row?.status !== 'paid' && filters.section !== 'commissions'"
                 title="Pagar"
               >
                 <IIcSharpPayment />
