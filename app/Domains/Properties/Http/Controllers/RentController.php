@@ -28,7 +28,7 @@ class RentController extends InertiaController
             'count' => 'numeric',
             'frequency' => 'string',
             'grace_days' => 'numeric',
-            'commission' => 'numeric|max:100',
+            'commission' => 'numeric',
             'installments' => 'array'
         ];
         $this->sorts = ['created_at'];

@@ -23,6 +23,9 @@ class Rent extends Transactionable implements IPayableDocument {
     const STATUS_GRACE = 'GRACE';
     const STATUS_CANCELLED = 'CANCELLED';
 
+    const COMMISSION_PERCENTAGE = 'PERCENTAGE';
+    const COMMISSION_FIXED = 'FIXED';
+
     protected $fillable = [
         'team_id',
         'user_id',
@@ -200,7 +203,7 @@ class Rent extends Transactionable implements IPayableDocument {
     public function getTotalField($formData = []) {
       return 'total';
     }
-    
+
     public function getTotal($formData = []) {
       return $this->invoices()->sum('total');
     }

@@ -47,7 +47,7 @@ const availableUnits = computed(() => {
         <BaseSelect
           v-model="formData.unit"
           :options="availableUnits"
-          placeholder="Unidad #1"
+          placeholder="Seleccione unidad"
           label="name"
           track-by="id"
         />
