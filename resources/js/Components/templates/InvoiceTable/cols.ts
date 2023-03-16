@@ -34,7 +34,7 @@ export default [
     // },
     {
       label: " ",
-      width: 300,
+      minWidth: 300,
       name: "actions",
       type: "custom",
     },

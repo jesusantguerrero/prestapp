@@ -252,7 +252,7 @@ const onDelete = async (invoice: IInvoice) => {
               <i :class="getStatusIcon(row.status)" />
               {{ getStatus(row.status) }}
             </div>
-            <div class="hidden group-hover:flex">
+            <div class="flex">
               <Link
                 class="relative inline-block cursor-pointer ml-4 hover:bg-primary hover:text-white px-5 py-2 overflow-hidden font-bold text-body transition rounded-md focus:outline-none hover:bg-opacity-80 min-w-max"
                 :href="`/properties/${row.property_id}?unit=${row.id}`"
