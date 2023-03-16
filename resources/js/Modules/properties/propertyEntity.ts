@@ -30,10 +30,16 @@ export interface IRent {
   unit_id: number;
   client_id: number;
   client: IClient;
-  status: string;
+  status: number;
+  deposit: string;
+  address: string;
+  owner_name: string;
   date: Date;
   next_invoice_date: Date;
   commission_paid?: number;
   paid?: number;
   total: number
+  property?: IProperty;
+  owner?: IClient;
+  amount: number
 }

@@ -6,7 +6,7 @@ import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
 
 import { formatMoney, formatDate } from "@/utils";
 import UnitTitle from "@/Components/realState/UnitTitle.vue";
-import RentTemplate from "./Partials/RentTemplate.vue";
+import RentTemplate from "../Partials/RentTemplate.vue";
 import { IRent } from "@/Modules/properties/propertyEntity";
 
 interface Props {
@@ -62,7 +62,7 @@ defineProps<Props>();
           class="mt-4 hover:bg-white cursor-pointer px-4 py-2 bg-white rounded-md"
           :title="rents.address + ' ' + rents.unit?.name"
           :owner-name="rents.owner_name"
-          :owner-link="`/contacts/${rents.property.owner_id}/owners`"
+          :owner-link="`/contacts/${rents.property?.owner_id}/owners`"
           :tenant-name="formatMoney(rents.amount)"
         />
       </template>
