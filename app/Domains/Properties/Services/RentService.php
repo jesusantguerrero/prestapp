@@ -19,27 +19,32 @@ class RentService {
       $unit = PropertyUnit::find($rentData['unit_id']);
       if (!$unit || $unit->status !== PropertyUnit::STATUS_AVAILABLE) {
         throw new Exception('This unit is not available at the time');
-      } else {
-        return DB::transaction(function() use ($rentData, $unit) {
-          $property = $unit->property;
-          if (!$property->account_id) {
-            $property->initAccounts();
-            $property = $unit->property()->first();
-          }
-          $rentData = array_merge($rentData, [
-            'account_id' => $property->account_id,
-            'owner_id' => $property->owner_id,
-            'commission_account_id' => $property->commission_account_id,
-            'late_fee_account_id' => $property->late_fee_account_id,
-          ]);
-          $rent = Rent::create($rentData);
-          $rent->unit->update(['status' => PropertyUnit::STATUS_RENTED]);
-          $rent->client->update(['status' => Client::STATUS_ACTIVE]);
-          $rent->owner->checkStatus();
-          PropertyTransactionService::createDepositTransaction($rent->fresh(), $rentData);
-          return PropertyTransactionService::generateFirstInvoice($rent);
-        });
       }
+
+      if ($rentData['commission_type'] == Rent::COMMISSION_PERCENTAGE && $rentData['commission'] > 100) {
+        throw new Exception(__("The percentage can't be greater than 100%"));
+      }
+
+      return DB::transaction(function() use ($rentData, $unit) {
+        $property = $unit->property;
+        if (!$property->account_id) {
+          $property->initAccounts();
+          $property = $unit->property()->first();
+        }
+        $rentData = array_merge($rentData, [
+          'account_id' => $property->account_id,
+          'owner_id' => $property->owner_id,
+          'commission_account_id' => $property->commission_account_id,
+          'late_fee_account_id' => $property->late_fee_account_id,
+        ]);
+        $rent = Rent::create($rentData);
+        $rent->unit->update(['status' => PropertyUnit::STATUS_RENTED]);
+        $rent->client->update(['status' => Client::STATUS_ACTIVE]);
+        $rent->owner->checkStatus();
+        PropertyTransactionService::createDepositTransaction($rent->fresh(), $rentData);
+        return PropertyTransactionService::generateFirstInvoice($rent);
+      });
+
     }
 
     public static function allowedUpdate(mixed $rentData) {
@@ -198,7 +203,7 @@ class RentService {
         if ($invoice->invoiceable_id != $rent->id || $invoice->invoiceable_type !== Rent::class) {
           throw new Exception("This invoice doesn't belongs to this rent");
         }
-        
+
         if ($invoice && $invoice->debt <= 0) {
             throw new Exception("This invoice is already paid");
         }
@@ -215,6 +220,6 @@ class RentService {
 
         $invoice->save();
         $rent->client->checkStatus();
-      
+
     }
 }

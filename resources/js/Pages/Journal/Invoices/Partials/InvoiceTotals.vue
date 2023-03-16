@@ -63,7 +63,10 @@ const calculateRowTaxes = (
         ? calculateTaxableAmount(rowTotal, tax.rate)
         : rowTotal;
       const rowTax =
-        ExactMath.formula(`${taxableTotal} * (${tax.rate} / ${100})`) * (tax.type ?? 1);
+        tax.rate > 100
+          ? tax.rate * tax.type
+          : ExactMath.formula(`${taxableTotal} * (${tax.rate} / ${100})`) *
+            (tax.type ?? 1);
       total.taxes[taxLabel] = (total.taxes[taxLabel] || 0) + (rowTax || 0);
       total.taxesTotal += rowTax;
       taxesRowTotal += rowTax;

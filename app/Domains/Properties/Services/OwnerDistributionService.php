@@ -5,6 +5,7 @@ namespace App\Domains\Properties\Services;
 use App\Domains\CRM\Models\Client;
 use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Property;
+use App\Domains\Properties\Models\Rent;
 use App\Models\User;
 use App\Notifications\InvoiceGenerated;
 use Exception;
@@ -51,7 +52,8 @@ class OwnerDistributionService {
 
       [
         "items" => $items,
-        "total" => $total
+        "total" => $total,
+        "taxTotal" => $taxTotal
       ] = self::distributionItems($invoices, $this->property);
 
       if (count($items)) {
@@ -70,6 +72,7 @@ class OwnerDistributionService {
           'type' => Invoice::DOCUMENT_TYPE_BILL,
           'category_type' => PropertyInvoiceTypes::OwnerDistribution,
           'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
+          'subtotal' => $formData['subtotal'] ?? $total - $taxTotal,
           'total' =>  $formData['amount'] ?? $total,
           'items' => $formData['items'] ?? $items,
           'related_invoices' => [[
@@ -132,7 +135,7 @@ class OwnerDistributionService {
       $taxTotal = 0;
       foreach ($invoices as $invoice) {
           $type = PropertyTransactionService::getInvoiceLineType($invoice->category_type);
-          
+
           $item = [
             "name" => "$invoice->description $invoice->date",
             "concept" => "$invoice->description $invoice->date",
@@ -153,7 +156,7 @@ class OwnerDistributionService {
               "translate_account_id" => Account::guessAccount($rent, ['Comisiones por renta','expected_commissions_owners']),
             ]);
 
-            $retentionTotal = (double) $retention->rate * $invoice->total / 100;
+            $retentionTotal = $rent->commission_type === Rent::COMMISSION_PERCENTAGE ? (double) $retention->rate * $invoice->total / 100 : $retention->rate;
 
             $item['taxes'] = [
               [
@@ -162,6 +165,7 @@ class OwnerDistributionService {
                 "concept" => $retention->description,
                 "rate" => $retention->rate,
                 "type" => $retention->type,
+                "is_fixed" => $rent->commission_type === Rent::COMMISSION_FIXED,
                 "label" => $retention->label,
                 "description" => $retention->description,
                 "amount" => $retentionTotal,
