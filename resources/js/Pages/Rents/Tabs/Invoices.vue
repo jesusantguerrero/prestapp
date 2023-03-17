@@ -6,7 +6,7 @@ import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
 
 import { formatMoney, formatDate } from "@/utils";
 import UnitTitle from "@/Components/realState/UnitTitle.vue";
-import RentTemplate from "./Partials/RentTemplate.vue";
+import RentTemplate from "../Partials/RentTemplate.vue";
 import { IRent } from "@/Modules/properties/propertyEntity";
 
 interface Props {

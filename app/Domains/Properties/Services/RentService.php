@@ -132,7 +132,11 @@ class RentService {
       $query = InvoiceLineTax::selectRaw('
           clients.names client_name,
           clients.id contact_id,
-          invoices.debt,
+          (CASE
+            WHEN invoices.status = "paid" then 0
+            ELSE invoice_line_taxes.amount
+          END) as debt,
+          invoices.debt invoice_debt,
           invoices.date,
           invoice_line_taxes.concept category,
           invoice_lines.concept account_name,

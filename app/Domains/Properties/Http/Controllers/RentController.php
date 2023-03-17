@@ -80,4 +80,51 @@ class RentController extends InertiaController
     public function generateNextInvoice(Rent $rent) {
       RentService::generateNextInvoice($rent);
     }
+
+    // Tabs
+    public function getSection(Rent $rent, string $section) {
+      $resourceName = $this->resourceName ?? $this->model->getTable();
+      $resource = Rent::with([
+        'client',
+        'payments',
+        'rentInvoices',
+        'depositInvoices',
+        'rentExpenses',
+      ])->where('id', $rent->id)
+      ->first()
+      ->toArray();
+
+      $sectionName = ucfirst($section);
+
+      return inertia("Rents/Tabs/$sectionName",
+      [
+          $resourceName => array_merge($resource, $this->$section($rent)),
+          "currentTab" => $section,
+      ]);
+    }
+
+    public function payments(Rent $rent) {
+      return [
+        "payments" => $rent->payments,
+      ];
+    }
+
+    public function invoices(Rent $rent) {
+      return [
+        "invoices" => $rent->rentInvoices,
+      ];
+    }
+
+    public function deposits(Rent $rent) {
+      return [
+        "deposits" => $rent->depositInvoices,
+      ];
+    }
+
+    public function expenses(Rent $rent) {
+      return [
+        "expenses" => $rent->rentExpenses,
+      ];
+    }
+
 }

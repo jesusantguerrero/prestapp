@@ -5,6 +5,7 @@ namespace App\Domains\Properties\Models;
 use App\Domains\CRM\Models\Client;
 use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Models\User;
+use Insane\Journal\Models\Core\Payment;
 use Insane\Journal\Models\Core\Transaction;
 use Insane\Journal\Models\Invoice\Invoice;
 use Insane\Journal\Traits\HasPaymentDocuments;
@@ -95,6 +96,11 @@ class Rent extends Transactionable implements IPayableDocument {
 
     public function invoices() {
       return $this->morphMany(Invoice::class, 'invoiceable')->orderBy('due_date', 'desc');
+    }
+
+    public function payments()
+    {
+        return $this->hasManyThrough(Payment::class, Invoice::class, 'invoiceable_id', 'payable_id');
     }
 
     public function rentInvoices() {

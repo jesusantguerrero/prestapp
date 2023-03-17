@@ -1,2 +1,0 @@
-- Custom link content
-- Custom content under each field
