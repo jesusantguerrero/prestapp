@@ -108,6 +108,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.DO_DOPLET_SECRET }}
+          port: ${{ secrets.SSH_PORT }}
           script: |
             cd ${{ secrets.DO_APP_ROOT }}
             composer update --ignore-platform-reqs
