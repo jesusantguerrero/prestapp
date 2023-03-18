@@ -24,5 +24,7 @@ class AdminTeamController extends InertiaController
       $this->filters = [];
       $this->page = 1;
       $this->limit = 10;
+
+      $this->authorizeResource(Team::class, 'index');
   }
 }

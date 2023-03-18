@@ -92,12 +92,20 @@ const menus = {
     }],
     [MODULES.ADMIN]: [{
         label: 'Dashboard',
-        url: '/admin'
+        url: '/admin',
+        isActiveFunction(currentPath: string) {
+          return '/admin' == currentPath;
+        },
     },
     {
         label: 'Teams',
         url: '/admin/teams',
-    }]
+    },
+    {
+        label: 'Backups',
+        url: '/admin/backups',
+    }
+  ]
 }
 
 
