@@ -4,7 +4,6 @@ import { computed, ref, toRefs } from "vue";
 import { router } from "@inertiajs/core";
 
 // @ts-ignore: its my template
-import AppLayout from "@/Components/templates/AppLayout.vue";
 import AtTable from "@/Components/shared/BaseTable.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
@@ -14,6 +13,7 @@ import { IRent } from "@/Modules/property/propertyEntity";
 import { getRangeParams } from "@/utils";
 import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
 import { IServerSearchData, useServerSearch } from "@/utils/useServerSearch";
+import AdminTemplate from "../Partials/AdminTemplate.vue";
 
 interface IPaginatedData {
   data: IRent[];
@@ -22,6 +22,7 @@ interface IPaginatedData {
 const props = defineProps<{
   teams: IRent[] | IPaginatedData;
   serverSearchOptions: IServerSearchData;
+  user: Record<string, string>;
 }>();
 
 const { serverSearchOptions } = toRefs(props);
@@ -80,12 +81,8 @@ const tableConfig = {
 </script>
 
 <template>
-  <AppLayout title="Empresas">
-    <template #header>
-      <PropertySectionNav />
-    </template>
-
-    <main class="py-16">
+  <AdminTemplate title="Teams">
+    <main class="pb-16">
       <section class="flex space-x-4">
         <AppSearch
           v-model.lazy="searchState.search"
@@ -150,5 +147,5 @@ const tableConfig = {
         </template>
       </AtTable>
     </main>
-  </AppLayout>
+  </AdminTemplate>
 </template>

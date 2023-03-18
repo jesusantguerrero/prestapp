@@ -16,7 +16,7 @@ const printUrl = computed(() => {
     ? `/loans/${props.payment.resource?.id ?? props.payment.payable.loan_id}/payments/${
         props.payment.id
       }/print`
-    : `/invoices/${props.payment.payable.id}/payments/${props.payment.id}/print`;
+    : `/invoices/${props.payment.payable_id}/payments/${props.payment.id}/print`;
 });
 </script>
 
@@ -55,7 +55,7 @@ const printUrl = computed(() => {
       </p>
       <span class="w-full text-right inline-block md:inline">{{
         payment.resource?.client_name ??
-        payment.payable.client_name ??
+        payment.payable?.client_name ??
         payment.payable?.client?.fullName
       }}</span>
     </section>

@@ -1,4 +1,4 @@
-<script setup>
+<script lang="ts" setup>
 import { reactive, computed, watch, ref } from "vue";
 import { AtButton, AtTable } from "atmosphere-ui";
 import { router } from "@inertiajs/vue3";
@@ -95,7 +95,6 @@ const isInvoiceModalOpen = ref(false);
     <div class="py-10 mx-auto sm:px-6 lg:px-8">
       <InvoiceTable :invoice-data="invoices.data" class="mt-10 bg-base-lvl-3" />
     </div>
-    
   </AppLayout>
 </template>
 

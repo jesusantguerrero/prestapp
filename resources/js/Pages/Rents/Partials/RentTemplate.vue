@@ -19,6 +19,7 @@ const { openModal: openInvoiceModal } = useToggleModal("invoice");
 interface Props {
   rents: IRent;
   currentTab: string;
+  hidePanel?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -26,7 +27,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const tabs = {
-  summary: "Detalles",
+  "": "Detalles",
   payments: "Pagos",
   invoices: "Facturas De Renta",
   deposits: "Depositos",
@@ -174,7 +175,7 @@ const generateNextInvoice = () => {
             class="px-2 py-1 transition rounded-md cursor-pointer bg-gray-50 hover:bg-gray-200"
             v-for="(tabLabel, tab) in tabs"
             :key="tab"
-            :class="{ 'bg-gray-300': tab == currentTab }"
+            :class="{ 'bg-primary/10 text-primary font-bold': tab == currentTab }"
             :href="`/rents/${rents.id}/${tab}`"
             replace
           >
@@ -185,11 +186,12 @@ const generateNextInvoice = () => {
       <section
         class="flex flex-col md:flex-row w-full md:space-x-8 rounded-t-none border-t-none"
       >
-        <article class="w-full md:w-9/12 space-y-2">
+        <article class="w-full space-y-2" :class="[hidePanel ? '' : 'md:w-9/12']">
           <slot />
         </article>
 
         <article
+          v-if="!hidePanel"
           class="w-full md:w-3/12 mt-4 md:mt-0 p-4 space-y-2 rounded-md bg-base-lvl-3"
         >
           <section class="flex space-x-4">
