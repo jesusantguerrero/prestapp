@@ -87,6 +87,7 @@ class RentController extends InertiaController
       $resource = Rent::with([
         'client',
         'payments',
+        'payments.payable',
         'rentInvoices',
         'depositInvoices',
         'rentExpenses',
