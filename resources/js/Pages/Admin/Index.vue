@@ -44,7 +44,7 @@ const props = defineProps({
   },
 });
 
-const propertyStats = [
+const appStats = [
   {
     label: "Total usuarios",
     value: props.stats?.users || 0,
@@ -53,6 +53,19 @@ const propertyStats = [
     label: "Empresas",
     icon: "fa-money",
     value: `${props.stats?.teams || 0}`,
+  },
+  {
+    label: "Propiedades",
+    icon: "fa-money",
+    value: `${props.stats?.properties || 0}`,
+  },
+];
+
+const propertyStats = [
+  {
+    label: "Unidades",
+    icon: "fa-money",
+    value: `${props.stats?.units || 0}`,
   },
   {
     label: "Propiedades",
@@ -106,7 +119,7 @@ const comparisonRevenue = {
       <WelcomeWidget
         message="Estadisticas de usuarios"
         class="text-body-1 w-full shadow-md"
-        :cards="propertyStats"
+        :cards="appStats"
       />
     </header>
 
@@ -138,7 +151,7 @@ const comparisonRevenue = {
 
       <article class="order-1 space-y-5 lg:w-5/12 lg:order-2">
         <WelcomeWidget
-          message="Distribucion a propietarios"
+          message="Propiedades"
           class="text-body-1 w-full shadow-md"
           size="small"
           :cards="propertyStats"
