@@ -5,7 +5,7 @@ import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import IncomeSummaryWidget from "@/Pages/Dashboard/Partials/IncomeSummaryWidget.vue";
 import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
-import DashboardTemplate from "./Partials/DashboardTemplate.vue";
+import DashboardTemplate from "./Partials/AdminTemplate.vue";
 
 const props = defineProps({
   user: {
