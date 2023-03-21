@@ -8,6 +8,7 @@ import { IUnit } from "@/Modules/properties/propertyEntity";
 import { useReactiveForm } from "@/utils/useReactiveForm";
 import AppFormField from "@/Components/shared/AppFormField.vue";
 import { formatMoney } from "@/utils";
+import UnitTitle from "@/Components/realState/UnitTitle.vue";
 
 const props = defineProps<{
   modelValue: Record<string, any>;
@@ -56,7 +57,37 @@ const unitLabel = (unit: IUnit) => {
           label="name"
           track-by="id"
           :custom-label="unitLabel"
-        />
+        >
+          <template v-slot:option="{ option }">
+            <article>
+              <UnitTitle
+                :title="option.name"
+                :owner-name="formData.property.owner_name"
+                :price="formatMoney(option.price)"
+              />
+              <section class="flex mt-2 space-x-2 text-gray-500">
+                <span class="flex items-center space-x-1">
+                  <i-ic-sharp-photo-size-select-small />
+                  <span>
+                    {{ option.area ?? 0 }}
+                  </span>
+                </span>
+                <span class="flex items-center space-x-1"
+                  ><IIcTwotoneBed />
+                  <span>
+                    {{ option.bedrooms ?? 0 }}
+                  </span>
+                </span>
+                <span class="flex items-center space-x-1"
+                  ><IIcTwotoneBathtub />
+                  <span>
+                    {{ option.bathrooms ?? 0 }}
+                  </span>
+                </span>
+              </section>
+            </article>
+          </template>
+        </BaseSelect>
       </AppFormField>
     </FormSection>
   </section>
