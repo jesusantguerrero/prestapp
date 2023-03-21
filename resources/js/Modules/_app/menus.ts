@@ -102,6 +102,10 @@ const menus = {
         url: '/admin/teams',
     },
     {
+        label: 'Commands',
+        url: '/admin/commands',
+    },
+    {
         label: 'Backups',
         url: '/admin/backups',
     }

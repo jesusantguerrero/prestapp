@@ -7,6 +7,7 @@ import FormSection from "./FormSection.vue";
 import { IUnit } from "@/Modules/properties/propertyEntity";
 import { useReactiveForm } from "@/utils/useReactiveForm";
 import AppFormField from "@/Components/shared/AppFormField.vue";
+import { formatMoney } from "@/utils";
 
 const props = defineProps<{
   modelValue: Record<string, any>;
@@ -29,6 +30,10 @@ const availableUnits = computed(() => {
   // @ts-expect-error
   return formData.property?.units.filter((unit: IUnit) => unit.status !== "RENTED");
 });
+
+const unitLabel = (unit: IUnit) => {
+  return `${unit.name} (${formatMoney(unit.price)})`;
+};
 </script>
 
 <template>
@@ -50,6 +55,7 @@ const availableUnits = computed(() => {
           placeholder="Seleccione unidad"
           label="name"
           track-by="id"
+          :custom-label="unitLabel"
         />
       </AppFormField>
     </FormSection>
