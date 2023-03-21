@@ -4,6 +4,7 @@ namespace App\Http\Controllers\CRM;
 
 use App\Domains\CRM\Models\Client;
 use App\Http\Controllers\InertiaController;
+use Exception;
 use Illuminate\Http\Request;
 
 class ClientController extends InertiaController
@@ -101,4 +102,19 @@ class ClientController extends InertiaController
     ]);
   }
 
+  public function validateDelete(Request $request, $client) {
+    if ($client->hasActiveLoans()) {
+      throw new Exception(__("This client has active loans"));
+    }
+
+    if ($client->rents()->count()) {
+      throw new Exception(__("This client has current rents"));
+    }
+
+    if ($client->properties()->count()) {
+      throw new Exception(__("This client has current properties"));
+    }
+
+    return true;
+  }
 }
