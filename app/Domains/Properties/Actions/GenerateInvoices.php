@@ -52,6 +52,7 @@ class GenerateInvoices {
       ->where('invoiceable_type', Rent::class)
       ->whereNot('invoices.status', 'overdue')
       ->get();
+
       if (count($lateInvoices)) {
           PropertyTransactionService::createLateFees($lateInvoices);
       }

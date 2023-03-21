@@ -32,11 +32,11 @@ class GenerateInvoices extends Command
       $lateFees = $this->option('late-fees');
 
       if ($nextInvoices) {
-        return GenerateInvoices::forceNextRents();
+        return ActionsGenerateInvoices::forceNextRents();
       }
 
       if ($lateFees) {
-        return GenerateInvoices::chargeLateFees();
+        return ActionsGenerateInvoices::chargeLateFees();
       }
 
       return ActionsGenerateInvoices::scheduledRents();
