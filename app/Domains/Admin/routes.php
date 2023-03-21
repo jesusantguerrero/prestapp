@@ -4,13 +4,13 @@ use App\Domains\Admin\Http\Controllers\AdminController;
 use App\Domains\Admin\Http\Controllers\AdminTeamController;
 use Illuminate\Support\Facades\Route;
 
-
-
 Route::middleware([
   'auth:sanctum',
   config('jetstream.auth_session'),
   'verified',
-])->group(function () {
-    Route::get('/admin', AdminController::class);
-    Route::resource('/admin/teams', AdminTeamController::class);
-  });
+])->prefix('/admin')->name('admin.')->group(function () {
+    Route::get('/', AdminController::class);
+    Route::resource('/teams', AdminTeamController::class);
+    Route::get('/commands', [AdminController::class, 'commandList']);
+    Route::post('/commands', [AdminController::class, 'runCommand']);
+});
