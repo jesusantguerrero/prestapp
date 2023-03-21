@@ -64,6 +64,10 @@ class AdminController extends InertiaController
         [
           "label" => 'Generate Invoices',
           "command" => 'background:generate-invoices'
+        ],
+        [
+          "label" => 'Generate Rent Late Fees',
+          "command" => 'background:generate-invoices --late-fees'
         ], [
           "label" => 'Generate Owner Distributions',
           "command" => 'background:generate-owner-distributions'
@@ -72,10 +76,10 @@ class AdminController extends InertiaController
           "command" => 'background:generate-loan-fees'
         ],[
           "label" => 'Backup Clean',
-          "command" => 'background:generate-loan-fees'
+          "command" => 'backup:clean'
         ],[
           "label" => 'Backup Run',
-          "command" => 'background:generate-loan-fees'
+          "command" => 'backup:run'
         ]
       ];
 

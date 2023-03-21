@@ -29,7 +29,7 @@ class GenerateInvoices extends Command
     public function handle()
     {
       $nextInvoices = $this->option('next-invoices');
-      $lateFees = $this->option('next-invoices');
+      $lateFees = $this->option('late-fees');
 
       if ($nextInvoices) {
         return GenerateInvoices::forceNextRents();
