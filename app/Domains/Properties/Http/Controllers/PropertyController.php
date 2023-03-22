@@ -78,6 +78,14 @@ class PropertyController extends InertiaController
         return PropertyService::createProperty($postData, $request->get('units'));
     }
 
+    public function validateDelete(Request $request, $property) {
+      if ($property->rents()->count()) {
+        throw new Exception(__("This property has contracts and can't be eliminated"));
+      }
+
+      return true;
+    }
+
     public function getEditProps(Request $request, $resource) {
       $teamId = $request->user()->current_team_id;
 

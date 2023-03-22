@@ -6,8 +6,10 @@ use App\Domains\Properties\Models\Rent;
 use App\Domains\Properties\Services\PropertyService;
 use App\Domains\Properties\Services\RentService;
 use App\Http\Controllers\InertiaController;
+use Exception;
 use Illuminate\Http\Request;
 use Insane\Journal\Models\Core\Account;
+use Insane\Journal\Models\Core\Payment;
 use Insane\Journal\Models\Invoice\Invoice;
 
 class RentController extends InertiaController
@@ -72,9 +74,21 @@ class RentController extends InertiaController
       ];
     }
 
+    public function validateDelete(Request $request, $rent) {
+      if ($rent->payments()->count()) {
+        throw new Exception(__("This rent has payments and can't be eliminated"));
+      }
+
+      return true;
+    }
+
     // Payments
     public function payInvoice(Rent $rent, Invoice $invoice) {
         RentService::payInvoice($rent, $invoice, $this->getPostData());
+    }
+
+    public function deletePayment(Rent $rent, Invoice $invoice, Payment $payment) {
+        RentService::deletePayment($rent, $invoice, $payment);
     }
 
     public function generateNextInvoice(Rent $rent) {
