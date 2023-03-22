@@ -110,13 +110,15 @@ class InertiaController extends Controller {
         $resource = $this->model::findOrFail($id);
         try {
           if ($this->validateDelete($request, $resource)) {
-              $resource->delete();
-              return Redirect::back();
+            $resource->delete();
+            return $this->index($request);
           }
           return Redirect::back()->withErrors(['default' => 'You cannot delete this resource']);
         } catch (Exception $e) {
           return Redirect::back()->withErrors(['default' => $e->getMessage()]);
         }
+
+
     }
 
     protected function getIndexProps(Request $request, Collection|ResourceCollection|Array $resources): array {

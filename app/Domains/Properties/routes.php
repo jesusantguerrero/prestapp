@@ -33,6 +33,7 @@ Route::middleware([
     // rents
     Route::resource('rents', RentController::class);
     Route::post('/rents/{rent}/invoices/{invoice}/payments', [RentController::class, 'payInvoice']);
+    Route::delete('/rents/{rent}/invoices/{invoice}/payments/{payment}', [RentController::class, 'deletePayment']);
     Route::post('/rents/{rent}/generate-next-invoice', [RentController::class, 'generateNextInvoice']);
     Route::get('/rents/{rent}/{section}', [RentController::class, 'getSection']);
 

@@ -8,6 +8,7 @@ import { formatMoney, formatDate } from "@/utils";
 import UnitTitle from "@/Components/realState/UnitTitle.vue";
 import RentTemplate from "./Partials/RentTemplate.vue";
 import { IRent } from "@/Modules/properties/propertyEntity";
+import { ElMessageBox } from "element-plus";
 
 interface Props {
   rents: IRent;
@@ -15,6 +16,20 @@ interface Props {
 }
 
 defineProps<Props>();
+
+const deleteRent = async (rent: IRent) => {
+  const isValid = await ElMessageBox.confirm(
+    `Estas seguro de eliminar el contrato de ${rent.address} ${rent.client_name}?`,
+    "Eliminar contrato"
+  );
+  if (isValid) {
+    router.delete(route("rents.destroy", rent), {
+      onSuccess() {
+        router.reload();
+      },
+    });
+  }
+};
 </script>
 
 <template>
@@ -24,7 +39,7 @@ defineProps<Props>();
         <section class="py-4 space-y-2">
           <p>
             Mensualidad:
-            {{ rents.amount }}
+            {{ formatMoney(rents.amount) }}
           </p>
           <p>
             Fecha de Inicio:
@@ -44,15 +59,24 @@ defineProps<Props>();
         </section>
       </template>
       <template #actions>
-        <AppButton
-          variant="neutral"
-          class="hover:bg-error hover:text-white"
-          v-if="rents.status !== 'CANCELLED'"
-          @click="router.visit(`/clients/${rents.client_id}/rents/${rents.id}/end`)"
-        >
-          <IMdiFileDocumentRemove class="mr-2" />
-          Terminar Contrato
-        </AppButton>
+        <section class="flex">
+          <AppButton
+            variant="neutral"
+            class="hover:bg-error hover:text-white"
+            v-if="rents.status !== 'CANCELLED'"
+            @click="router.visit(`/clients/${rents.client_id}/rents/${rents.id}/end`)"
+          >
+            <IMdiFileDocumentRemove class="mr-2" />
+            Terminar Contrato
+          </AppButton>
+          <AppButton
+            variant="error"
+            class="hover:text-error transition items-center flex flex-col justify-center hover:border-red-400"
+            @click="deleteRent(rents)"
+          >
+            <IMdiTrash />
+          </AppButton>
+        </section>
       </template>
     </WelcomeWidget>
 

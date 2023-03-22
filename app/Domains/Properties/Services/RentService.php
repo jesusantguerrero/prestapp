@@ -10,6 +10,7 @@ use App\Domains\Properties\Models\Rent;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Insane\Journal\Models\Core\Account;
+use Insane\Journal\Models\Core\Payment;
 use Insane\Journal\Models\Invoice\Invoice;
 use Insane\Journal\Models\Invoice\InvoiceLineTax;
 
@@ -222,6 +223,17 @@ class RentService {
           ]]
         ]));
 
+        $invoice->save();
+        $rent->client->checkStatus();
+
+    }
+
+    public static function deletePayment(Rent $rent, Invoice $invoice, Payment $payment) {
+        if ($invoice->invoiceable_id != $rent->id || $invoice->invoiceable_type !== Rent::class) {
+          throw new Exception("This invoice doesn't belongs to this rent");
+        }
+
+        $payment->delete();
         $invoice->save();
         $rent->client->checkStatus();
 

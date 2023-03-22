@@ -13,8 +13,9 @@ import { IPaginatedData } from "@/utils/constants";
 import BudgetProgress from "@/Components/BudgetProgress.vue";
 import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
 import { IServerSearchData, useServerSearch } from "@/utils/useServerSearch";
-import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import ButtonGroup from "@/Components/ButtonGroup.vue";
+import { ElMessageBox } from "element-plus";
+import { IProperty } from "@/Modules/properties/propertyEntity";
 
 const props = defineProps<{
   properties: ILoan[] | IPaginatedData<ILoan>;
@@ -56,6 +57,20 @@ const sections: Record<string, any> = {
 };
 const handleChange = (sectionName: string) => {
   router.get(sections[sectionName].link);
+};
+
+const deleteProperty = async (property: IProperty) => {
+  const isValid = await ElMessageBox.confirm(
+    `Estas seguro de eliminar la propiedad ${property.name}?`,
+    "Eliminar propiedad"
+  );
+  if (isValid) {
+    router.delete(route("properties.destroy", property), {
+      onSuccess() {
+        router.reload();
+      },
+    });
+  }
 };
 </script>
 
@@ -135,6 +150,7 @@ const handleChange = (sectionName: string) => {
             </div>
             <AppButton
               variant="neutral"
+              @click="deleteProperty(row)"
               class="hover:text-error transition items-center flex flex-col justify-center hover:border-red-400"
             >
               <IMdiTrash />
