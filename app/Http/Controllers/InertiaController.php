@@ -54,7 +54,9 @@ class InertiaController extends Controller {
 
     public function show(Request $request, int $id) {
         $resource = $this->getModelQuery($request, $id)[0];
-
+        if (!$resource) {
+          return to_route($this->model->getTable());
+        }
         return Inertia::render($this->templates['show'],  array_merge(
           [$this->model->getTable() => $resource],
           $this->getEditProps($request, $resource)));
@@ -110,15 +112,13 @@ class InertiaController extends Controller {
         $resource = $this->model::findOrFail($id);
         try {
           if ($this->validateDelete($request, $resource)) {
-            $resource->delete();
-            return $this->index($request);
+              $resource->delete();
+              return Redirect::back();
           }
           return Redirect::back()->withErrors(['default' => 'You cannot delete this resource']);
         } catch (Exception $e) {
           return Redirect::back()->withErrors(['default' => $e->getMessage()]);
         }
-
-
     }
 
     protected function getIndexProps(Request $request, Collection|ResourceCollection|Array $resources): array {
