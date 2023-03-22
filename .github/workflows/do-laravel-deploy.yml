@@ -109,3 +109,4 @@ jobs:
           script: |
             cd ${{ secrets.DO_APP_ROOT }}
             composer update --ignore-platform-reqs
+            route:cache
