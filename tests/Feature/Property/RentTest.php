@@ -115,6 +115,7 @@ class RentTest extends TestCase
       'deposit_due' => '2023-01-15',
       'first_invoice_date' => '2023-01-30',
     ]));
+
     $response->assertStatus(302);
     $rent = Rent::first();
     $this->assertCount(1, $rent->depositInvoices);
@@ -134,7 +135,7 @@ class RentTest extends TestCase
       'deposit_due' => '2023-01-15',
       'first_invoice_date' => '2023-01-30',
     ]));
-    
+
     $response->assertStatus(302);
     $rent = Rent::first();
     $this->assertEquals($rent->depositInvoices()->first()->status, Invoice::STATUS_PAID);

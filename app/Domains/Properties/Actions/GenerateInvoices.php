@@ -6,6 +6,7 @@ use App\Domains\Accounting\Helpers\InvoiceHelper;
 use App\Domains\CRM\Models\Client;
 use App\Domains\Properties\Models\Rent;
 use App\Domains\Properties\Services\PropertyTransactionService;
+use App\Domains\Properties\Services\RentService;
 use Insane\Journal\Models\Invoice\Invoice;
 
 class GenerateInvoices {
@@ -16,16 +17,8 @@ class GenerateInvoices {
       ->get();
 
       foreach ($rentWithInvoicesToCreate as $rent) {
-        if (!in_array($rent->next_invoice_date, $rent->generated_invoice_dates))  {
-          PropertyTransactionService::createInvoice([
-            'date' => $rent->next_invoice_date
-          ], $rent);
-          $rent->update([
-            'next_invoice_date' => InvoiceHelper::getNextDate($rent->next_invoice_date),
-            'generated_invoice_dates' => array_merge($rent->next_invoice_date)
-          ]);
-        }
-          }
+        RentService::generateNextInvoice($rent);
+      }
     }
 
     public static function forceNextRents() {

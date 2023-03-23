@@ -47,20 +47,21 @@ class RentCronsTest extends PropertyBase
     $this->assertEquals($rent->fresh()->status, Rent::STATUS_LATE);
   }
 
-  public function testItShouldGenerateTodaysPayments() {
+  public function testItShouldGenerateScheduledInvoices() {
     $this->seed();
     $this->actingAs($this->user);
-    $rent = $this->createRent();
 
-    $this->makePropertyExpense($rent);
-    $expense = $rent->rentExpenses->first();
-    $transaction = $expense->transaction;
+    $createdDate = now()->subMonths(2)->format('Y-m-d');
+    $firstInvoiceDate = InvoiceHelper::getNextDate($createdDate);
+    $rent = $this->createRent([
+      "date" => $createdDate,
+      "amount" => 5000,
+      "first_invoice_date" => $firstInvoiceDate->format('Y-m-d'),
+      "next_invoice_date" => $firstInvoiceDate->format('Y-m-d'),
+    ]);
 
-    $this->assertEquals(1000, $transaction->total);
-    $this->assertEquals($expense->account_id, $transaction->lines[0]->account_id);
-    $this->assertEquals(1, $transaction->lines[0]->type);
-    $this->assertEquals($expense->invoice_account_id, $transaction->lines[1]->account_id);
-    $this->assertEquals(-1, $transaction->lines[1]->type);
+    GenerateInvoices::scheduledRents();
+    $this->assertCount(2, $rent->rentInvoices);
   }
 
 }
