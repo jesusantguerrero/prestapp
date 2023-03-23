@@ -114,6 +114,12 @@ class Rent extends Transactionable implements IPayableDocument {
       ->where('category_type', PropertyInvoiceTypes::Rent);
     }
 
+    public function lateFeeInvoices() {
+      return $this->morphMany(Invoice::class, 'invoiceable')
+      ->where('invoiceable_type', Rent::class)
+      ->where('category_type', PropertyInvoiceTypes::LateFee);
+    }
+
     public function depositInvoices() {
       return $this->morphMany(Invoice::class, 'invoiceable')
       ->where('invoiceable_type', Rent::class)

@@ -46,11 +46,12 @@ class GenerateInvoices {
       }
     }
 
-    public static function chargeLateFees() {
-      $lateInvoices = Invoice::select(['invoices.*','rents.id as rentId', 'rents.grace_days as rentGraceDays'])->whereRaw('debt > 0 AND DATE_ADD(due_date, INTERVAL COALESCE(rents.grace_days, 0) DAY) < curdate()')
+    public static function chargeLateFees(bool $forceCharge = false) {
+      $lateInvoices = Invoice::select(['invoices.*','rents.id as rentId', 'rents.grace_days as rentGraceDays'])
+      ->whereRaw('debt > 0 AND DATE_ADD(due_date, INTERVAL COALESCE(rents.grace_days, 0) DAY) < curdate()')
       ->join('rents', 'invoiceable_id', 'rents.id')
       ->where('invoiceable_type', Rent::class)
-      ->whereNot('invoices.status', 'overdue')
+      ->when(!$forceCharge, fn ($query) => $query->whereNot('invoices.status', 'overdue'))
       ->get();
 
       if (count($lateInvoices)) {

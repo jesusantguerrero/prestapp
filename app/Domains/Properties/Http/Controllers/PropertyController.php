@@ -46,9 +46,7 @@ class PropertyController extends InertiaController
     }
 
     public function store(Request $request, Response $response) {
-      $postData = $request->post();
-      $postData['user_id'] = $request->user()->id;
-      $postData['team_id'] = $request->user()->current_team_id;
+      $postData = $this->getPostData();
 
       $this->validate($request, $this->getValidationRules($postData));
       try {

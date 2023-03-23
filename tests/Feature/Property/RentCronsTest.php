@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Property;
 
+use App\Domains\Accounting\Helpers\InvoiceHelper;
+use App\Domains\Properties\Actions\GenerateInvoices;
 use App\Domains\Properties\Models\Rent;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -9,7 +11,7 @@ use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Invoice\Invoice;
 use Tests\Feature\Property\Helpers\PropertyBase;
 
-class PropertyCronsTest extends PropertyBase
+class RentCronsTest extends PropertyBase
 {
   use WithFaker;
   use RefreshDatabase;
@@ -28,16 +30,21 @@ class PropertyCronsTest extends PropertyBase
   public function testItGenerateLateFees() {
     $this->seed();
     $this->actingAs($this->user);
-    $rent = $this->createRent();
 
-    $response = $this->makePropertyExpense($rent);
+    $createdDate = now()->subMonths(2)->format('Y-m-d');
+    $firstInvoiceDate = InvoiceHelper::getNextDate($createdDate);
+    $rent = $this->createRent([
+      "date" => $createdDate,
+      "amount" => 5000,
+      "first_invoice_date" => $firstInvoiceDate->format('Y-m-d'),
+      "next_invoice_date" => $firstInvoiceDate->format('Y-m-d'),
+    ]);
 
-    $response->assertStatus(200);
-    $rent = Rent::first();
-
-    $this->assertCount(1, $rent->rentExpenses);
-    $this->assertEquals(1000, $rent->rentExpenses[0]->total);
-    $this->assertEquals(Invoice::STATUS_UNPAID, $rent->rentExpenses[0]->status);
+    GenerateInvoices::chargeLateFees(true);
+    $this->assertCount(1, $rent->rentInvoices);
+    $this->assertEquals($rent->rentInvoices->first()->status, Invoice::STATUS_OVERDUE);
+    $this->assertCount(1, $rent->lateFeeInvoices);
+    $this->assertEquals($rent->fresh()->status, Rent::STATUS_LATE);
   }
 
   public function testItShouldGenerateTodaysPayments() {
