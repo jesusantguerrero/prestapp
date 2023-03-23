@@ -3,6 +3,7 @@
       "ACTIVE": "Activo",
       "INACTIVE": "Inactivo"
     },
+    "validation.unique": "",
     "AVAILABLE": "Disponible",
     "RENTED": "Rentada",
     "PENDING": "Pendiente",

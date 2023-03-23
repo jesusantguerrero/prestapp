@@ -66,9 +66,9 @@ class PropertyBase extends TestCase
       "next_invoice_date" => $firstInvoiceDate->format('Y-m-d'),
       "commission" => 10,
       "commission_type" => "PERCENTAGE",
+      "grace_days" => 5,
       "late_fee" => 10,
       "late_fee_type" => "PERCENTAGE",
-      "grace_days" => 5,
       "frequency" => "MONTHLY",
       "additional_fees" => [],
     ];
