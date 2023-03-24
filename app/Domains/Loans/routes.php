@@ -18,6 +18,7 @@ Route::middleware([
   'auth:sanctum',
   config('jetstream.auth_session'),
   'verified',
+  'atmosphere.teams-approved'
 ])->group(function () {
     Route::resource('loans', LoanController::class);
 
@@ -26,7 +27,7 @@ Route::middleware([
       Route::get('/loan-accounts/{id}', 'loanSourceAccounts');
       Route::get('/loans/{loan}/refinance', 'refinance');
       Route::get('/loans/{loan}/{section}', 'getSection');
-      
+
       Route::post('/loans/{loan}/update-status', 'updateStatus');
       Route::post('/loans/{loan}/pay', 'pay');
       Route::post('/loans/{loan}/payoff', 'payoff');

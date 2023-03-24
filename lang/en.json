@@ -3,5 +3,15 @@
       "errors": {
         "hasPayments": "This loan already has payments and can't be deleted"
       }
+  },
+  "approval": {
+    "pending": {
+      "title": "Your application is now under review",
+      "content": "We will notify you once your account registration has been approved."
+    },
+    "disabled": {
+        "title": "Disabled",
+        "content": "Your account has been disabled by the administrator due to security reasons or policy violations. If you believe this is a mistake, please contact us."
+    }
   }
 }

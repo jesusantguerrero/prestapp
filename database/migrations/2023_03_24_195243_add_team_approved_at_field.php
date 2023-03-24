@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-      Schema::table('clients', function (Blueprint $table) {
-        $table->string('work_name')->nullable()->change();
+      Schema::table('teams', function (Blueprint $table) {
+        $table->timestamp('approved_at')->nullable();
       });
     }
 
@@ -25,6 +25,9 @@ return new class extends Migration
      */
     public function down()
     {
-      $table->string('work_name')->change();
+      Schema::table('teams', function (Blueprint $table) {
+        $table->dropColumn('approved_at');
+      });
+        //
     }
 };
