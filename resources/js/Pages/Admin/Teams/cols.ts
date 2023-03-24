@@ -17,9 +17,7 @@ export default [
     {
         name: 'name',
         label: 'Empresa',
-        class: "text-center",
-        align: 'center',
-        headerClass: "text-center",
+        align: 'left',
         minWidth: 150,
         render(row: Record<string, any>) {
             return h(Link, { href: `/admin/teams/${row.id}` }, row.name )
@@ -37,7 +35,9 @@ export default [
           }
     },{
         name: 'days',
-        label: 'Dias restantes',
+        label: 'Dias de registro',
+        class: "text-center",
+        align: 'center',
         render(row) {
             let daysLeft =  differenceInCalendarDays(new Date(), parseISO(row.created_at))
             return h(Link, {href: `/contacts/${row.client?.id}/tenants/rents/${row.id}/renew`} , h(ElTag, { type: getRentStatusColor(row.status) }, daysLeft))

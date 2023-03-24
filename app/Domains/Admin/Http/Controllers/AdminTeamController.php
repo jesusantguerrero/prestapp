@@ -2,6 +2,7 @@
 
 namespace App\Domains\Admin\Http\Controllers;
 
+use App\Domains\Admin\Services\AdminTeamService;
 use App\Http\Controllers\InertiaController;
 use App\Models\Team;
 
@@ -27,5 +28,10 @@ class AdminTeamController extends InertiaController
 
       // $this->authorizeResource(Team::class, 'index');
       // $this->authorizeResource(Team::class, 'show');
-  }
+
+    }
+
+    public function approve(Team $team, AdminTeamService $teamService) {
+      $teamService->approve($team);
+    }
 }
