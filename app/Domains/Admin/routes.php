@@ -9,8 +9,10 @@ Route::middleware([
   config('jetstream.auth_session'),
   'verified',
 ])->prefix('/admin')->name('admin.')->group(function () {
+    Route::impersonate();
     Route::get('/', AdminController::class);
     Route::resource('/teams', AdminTeamController::class);
+    Route::post('/impersonate-user/{userId}', [AdminController::class, 'impersonateUser']);
     Route::get('/commands', [AdminController::class, 'commandList']);
     Route::post('/commands', [AdminController::class, 'runCommand']);
 });

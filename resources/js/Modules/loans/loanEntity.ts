@@ -32,6 +32,7 @@ export type ILoanWithInstallments = ILoan & {
 
 export interface IPayment {
   id: number;
+  payable_id: number;
   amount: number;
   payment_date: Date;
 }

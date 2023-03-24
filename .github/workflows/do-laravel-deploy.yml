@@ -109,3 +109,5 @@ jobs:
           script: |
             cd ${{ secrets.DO_APP_ROOT }}
             composer update --ignore-platform-reqs
+            php artisan migrate --force
+            php artisan route:cache

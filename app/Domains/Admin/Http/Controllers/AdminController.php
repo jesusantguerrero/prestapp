@@ -8,6 +8,7 @@ use App\Domains\Properties\Models\PropertyUnit;
 use App\Http\Controllers\InertiaController;
 use App\Models\Team;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class AdminController extends InertiaController
@@ -54,6 +55,20 @@ class AdminController extends InertiaController
           "widgets" => $widgets,
       ]);
     }
+
+    public function impersonateUser (int $userToImpersonate) {
+      if (! Gate::allows('superadmin')) {
+        abort(403);
+      }
+      $user = User::find($userToImpersonate);
+      auth()->user()->impersonate($user, 'superadmin');
+      return redirect('/dashboard');
+    }
+
+    public function leaveImpersonate() {
+      auth()->user()->leaveImpersonation();
+      return redirect()->route('home.index');
+  }
 
     public function commandList() {
       if (! Gate::allows('superadmin')) {

@@ -100,13 +100,24 @@ class Rent extends Transactionable implements IPayableDocument {
 
     public function payments()
     {
-        return $this->hasManyThrough(Payment::class, Invoice::class, 'invoiceable_id', 'payable_id');
+        return $this->hasManyThrough(
+          Payment::class,
+          Invoice::class,
+          'invoiceable_id',
+          'payable_id'
+        );
     }
 
     public function rentInvoices() {
       return $this->morphMany(Invoice::class, 'invoiceable')
       ->where('invoiceable_type', Rent::class)
       ->where('category_type', PropertyInvoiceTypes::Rent);
+    }
+
+    public function lateFeeInvoices() {
+      return $this->morphMany(Invoice::class, 'invoiceable')
+      ->where('invoiceable_type', Rent::class)
+      ->where('category_type', PropertyInvoiceTypes::LateFee);
     }
 
     public function depositInvoices() {
@@ -151,6 +162,10 @@ class Rent extends Transactionable implements IPayableDocument {
 
     public function hasLateInvoices() {
         return $this->invoices()->late()->count();
+    }
+
+    public function hasClientPayments() {
+      return $this->payments()->whereHas('payable', fn ($query) => $query->where('invoiceable_type', Rent::class))->count();
     }
 
     public function getTransactionItems() {

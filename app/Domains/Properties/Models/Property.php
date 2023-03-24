@@ -69,6 +69,10 @@ class Property extends Model {
       return $this->hasMany(PropertyUnit::class);
     }
 
+    public function rents() {
+      return $this->hasMany(Rent::class);
+    }
+
     public function invoices() {
       return $this->hasManyThrough(Invoice::class, Rent::class, 'id', 'invoiceable_id')->where('invoiceable_type', Rent::class);
     }

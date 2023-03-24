@@ -26,6 +26,13 @@ defineProps<{
         >
           Terminar Contrato
         </AppButton>
+        <AppButton
+          variant="neutral"
+          class="hover:text-error transition items-center flex flex-col justify-center hover:border-red-400"
+          @click="deleteRent(row)"
+        >
+          <IMdiTrash />
+        </AppButton>
       </section>
     </header>
     <article>

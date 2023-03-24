@@ -218,75 +218,50 @@ class PropertyTransactionService {
 
     public static function createLateFees($invoices) {
       foreach ($invoices as $invoice) {
-          $penaltyAmount = 0;
-
-          if ($invoice->invoiceable->late_fee_type == 'PERCENTAGE') {
-              $penaltyAmount = ($invoice->invoiceable->late_fee / 100) * $invoice->invoiceable->total;
-          } else if ($invoice->invoiceable->late_fee_type == 'PERCENTAGE_OUTSTANDING') {
-              $penaltyAmount = $invoice->invoiceable->debt;
-          } else {
-              $penaltyAmount = $invoice->invoiceable->late_fee;
-          }
-
-          $invoice->update([
-            'status' => 'overdue'
-          ]);
-
-          $invoice->invoiceable->update([
-            'status' => Rent::STATUS_LATE
-          ]);
-
-          PropertyTransactionService::createInvoice([
-            "name" => "Factura de mora",
-            "concept" => "Factura de mora {$invoice->invoiceable->client->fullName}",
-            'invoice_account_id' => $invoice->invoiceable->late_fee_account_id,
-            'total' => $penaltyAmount
-          ], $invoice->invoiceable);
-
-          $invoice->invoiceable->client->checkStatus();
+        self::createLateFee($invoice->invoiceable, [], $invoice);
       }
     }
 
     public static function createLateFee(Rent $rent, $formData = [], $invoice = null) {
-          $penaltyAmount = 0;
+      $penaltyAmount = 0;
 
-          if ($rent->late_fee_type == 'PERCENTAGE') {
-              $penaltyAmount = ($rent->late_fee / 100) * $rent->total;
-          } else if ($rent->late_fee_type == 'PERCENTAGE_OUTSTANDING') {
-              $penaltyAmount = $rent->debt;
-          } else {
-              $penaltyAmount = $rent->late_fee;
-          }
+      if ($rent->late_fee_type == 'PERCENTAGE') {
+          $penaltyAmount = ($rent->late_fee / 100) * $rent->total;
+      } else if ($rent->late_fee_type == 'PERCENTAGE_OUTSTANDING') {
+          $penaltyAmount = $rent->debt;
+      } else {
+          $penaltyAmount = $rent->late_fee;
+      }
 
-          if ($invoice) {
-            $invoice->update([
-              'status' => 'overdue'
-            ]);
+      if ($invoice) {
+        $invoice->update([
+          'status' => 'overdue'
+        ]);
 
-            $invoice->invoiceable->update([
-              'status' => Rent::STATUS_LATE
-            ]);
-          }
+        $invoice->invoiceable->update([
+          'status' => Rent::STATUS_LATE
+        ]);
+      }
 
-          $amount =  $formData['amount'] ?? $penaltyAmount;
+      $amount =  $formData['amount'] ?? $penaltyAmount;
 
-          PropertyTransactionService::createInvoice([
-            "name" => "Factura de mora",
-            "concept" => $formData['concept'] ?? "Factura de mora {$rent->client->fullName}",
-            'invoice_account_id' => $rent->late_fee_account_id,
-            'amount' => $amount,
-            'due_date' => $formData['due_date'] ?? null,
-            'category_type' => PropertyInvoiceTypes::LateFee,
-            "items" => [[
-                "name" => "mora de renta",
-                "concept" => $formData['concept'] ?? "mora de {$rent->client->fullName}",
-                "quantity" => 1,
-                "price" => $amount,
-                "amount" => $amount,
-            ]]
-          ], $rent);
+      PropertyTransactionService::createInvoice([
+        "name" => "Factura de mora",
+        "concept" => $formData['concept'] ?? "Factura de mora {$rent->client->fullName}",
+        'invoice_account_id' => $rent->late_fee_account_id,
+        'amount' => $amount,
+        'due_date' => $formData['due_date'] ?? null,
+        'category_type' => PropertyInvoiceTypes::LateFee,
+        "items" => [[
+            "name" => "mora de renta",
+            "concept" => $formData['concept'] ?? "mora de {$rent->client->fullName}",
+            "quantity" => 1,
+            "price" => $amount,
+            "amount" => $amount,
+        ]]
+      ], $rent);
 
-          $rent->client->checkStatus();
+      $rent->client->checkStatus();
     }
 
     public static function createOwnerDistribution($client, $invoiceId = null) {
