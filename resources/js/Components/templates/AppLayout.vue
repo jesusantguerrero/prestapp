@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onUnmounted, nextTick, onMounted } from "vue";
+import { ref, computed, onUnmounted, nextTick, onMounted, toRefs, provide } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
 import { Head, Link } from "@inertiajs/vue3";
 // @ts-ignore
@@ -23,25 +23,12 @@ import { useSelect } from "@/Modules/shared/useSelects";
 import { useLocalStorage } from "@vueuse/core";
 import MobileMenuBar from "../mobile/MobileMenuBar.vue";
 
-defineProps({
+const props = defineProps({
   title: String,
   showBackButton: Boolean,
   isOnboarding: Boolean,
+  isTeamApproved: Boolean,
 });
-
-const showingNavigationDropdown = ref(false);
-
-const switchToTeam = (team: Record<string, any>) => {
-  router.put(
-    route("current-team.update"),
-    {
-      team_id: team.id,
-    },
-    {
-      preserveState: false,
-    }
-  );
-};
 
 const currentPath = computed(() => {
   return document?.location?.pathname;
@@ -53,10 +40,15 @@ const logout = () => {
   router.post(route("logout"));
 };
 
-const { appMenu: currentMenu, headerMenu, mobileMenu } = useAppMenu();
-
 //  categories
 const pageProps = usePage().props;
+const isTeamApproved = computed(() => {
+  return pageProps?.isTeamApproved;
+});
+
+provide("isTeamApproved", isTeamApproved);
+
+const { appMenu: currentMenu, headerMenu, mobileMenu } = useAppMenu(isTeamApproved);
 const { categoryOptions: transformCategoryOptions } = useSelect();
 transformCategoryOptions(pageProps?.categories, "sub_categories", "categoryOptions");
 transformCategoryOptions(
@@ -137,10 +129,13 @@ function refresh() {
             <div class="flex items-center sm:ml-6">
               <!-- <AppResourceSearch class="hidden md:block mr-2" /> -->
 
-              <AddNewButton class="hidden mr-2 md:inline-block" v-if="!isOnboarding">
+              <AddNewButton
+                class="hidden mr-2 md:inline-block"
+                v-if="!isOnboarding && isTeamApproved"
+              >
                 <AppButton class="hidden md:flex px-1 items-center mr-4 ml-2">
                   <IMdiPlus class="mr-2" />
-                  Nuevo
+                  {{ $t("commons.new") }}
                 </AppButton>
               </AddNewButton>
               <AppNotificationBell
@@ -276,7 +271,9 @@ function refresh() {
         </header>
 
         <!-- Page Content -->
-        <main class="pt-0 md:pt-8 mx-auto md:px-24"><slot /></main>
+        <main class="pt-0 md:pt-8 mx-auto md:px-24">
+          <slot />
+        </main>
         <MobileMenuBar :menu="mobileMenu" @action="handleActions" />
       </template>
     </AppShell>

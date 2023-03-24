@@ -1,3 +1,4 @@
+import { Ref } from 'vue';
 import { cloneDeep } from 'lodash';
 import { Link } from "@inertiajs/vue3"
 import IMdiPlus from '~icons/mdi/plus-thick';
@@ -12,7 +13,7 @@ interface IAppMenuItem {
   hidden?: boolean;
   isActiveFunction?: (url: string, currentPath: string) => boolean
 }
-export const useAppMenu = () => {
+export const useAppMenu = (isTeamApproved: Ref<boolean>) => {
     const appMenu: IAppMenuItem[] =  [
         {
             icon: 'fa fa-home',
@@ -29,7 +30,8 @@ export const useAppMenu = () => {
             as: Link,
             isActiveFunction(url: string, currentPath: string) {
                return /loans|lender/.test(currentPath)
-            }
+            },
+            hidden: !isTeamApproved.value,
         },
         {
             icon: 'fas fa-building',
@@ -38,7 +40,8 @@ export const useAppMenu = () => {
             as: Link,
             isActiveFunction(url: string, currentPath: string) {
               return /properties|units|tenant|owner/.test(currentPath)
-            }
+            },
+            hidden: !isTeamApproved.value,
 
         },
         {

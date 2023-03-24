@@ -50,7 +50,8 @@ class HandleInertiaRequests extends Middleware
                 ->whereNull('parent_id')
                 ->orderBy('index')
                 ->with('subCategories')
-                ->get() : ['']
+                ->get() : [''],
+            "isTeamApproved" => config('atmosphere.superadmin.email') === $user?->email ?? $team?->approved_at
         ]);
     }
 }

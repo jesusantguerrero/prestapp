@@ -20,7 +20,8 @@ Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->name('api.')->g
 Route::middleware([
   'auth:sanctum',
   config('jetstream.auth_session'),
-  'verified',
+  'atmosphere.teams-approved',
+  'verified'
 ])->group(function () {
     // Properties
     Route::get('properties/management-tools', [PropertyController::class, 'managementTools']);

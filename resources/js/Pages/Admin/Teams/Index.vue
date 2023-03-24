@@ -6,11 +6,9 @@ import { router } from "@inertiajs/core";
 // @ts-ignore: its my template
 import AtTable from "@/Components/shared/BaseTable.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
-import BaseSelect from "@/Components/shared/BaseSelect.vue";
 
 import cols from "./cols";
 import { IRent } from "@/Modules/property/propertyEntity";
-import { getRangeParams } from "@/utils";
 import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
 import { IServerSearchData, useServerSearch } from "@/utils/useServerSearch";
 import AdminTemplate from "../Partials/AdminTemplate.vue";
@@ -43,32 +41,6 @@ const {
   }
 );
 
-const filters = ref({});
-const expiringRanges = [
-  {
-    text: "Este mes",
-    range: [30, 0],
-  },
-  {
-    text: "3 Meses",
-    range: [90, 0],
-  },
-  {
-    text: "Last 6 months",
-    range: [180, 0],
-  },
-];
-
-const setRange = (field: string, range: number[]) => {
-  const params = getRangeParams(field, range);
-  router.get(
-    `/admin/teams?${params}`,
-    {},
-    {
-      preserveState: true,
-    }
-  );
-};
 const listData = computed(() => {
   return Array.isArray(props.teams) ? props.teams : props.teams.data;
 });
@@ -78,6 +50,12 @@ const tableConfig = {
   searchBar: true,
   pagination: true,
 };
+
+const approveTeam = (team: Record<string, string>) => {
+  router.post(route("admin.teams.approve", team));
+};
+
+const deleteTeam = () => {};
 </script>
 
 <template>
@@ -117,9 +95,18 @@ const tableConfig = {
               <IMdiChevronRight />
             </Link>
             <AppButton
+              variant="success"
+              @click="approveTeam(row)"
+              title="Remove team"
+              v-if="!row.approved_at"
+            >
+              <IMdiCheck />
+            </AppButton>
+            <AppButton
               variant="neutral"
               class="hover:text-error transition items-center flex flex-col justify-center hover:border-red-400"
-              @click="deleteUnit(row)"
+              @click="deleteTeam(row)"
+              title="Approve team"
             >
               <IMdiTrash />
             </AppButton>
