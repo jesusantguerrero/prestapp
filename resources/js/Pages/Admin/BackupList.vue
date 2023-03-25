@@ -63,7 +63,7 @@ const executeSearch = () => {};
               variant="neutral"
               @click="
                 router.post(`/admin/send-backup`, {
-                  command: row,
+                  fileName: row,
                 })
               "
             >
@@ -73,8 +73,10 @@ const executeSearch = () => {};
               class="hover:text-error transition items-center flex justify-center hover:border-error ml-2"
               variant="neutral"
               @click="
-                router.post(`/admin/remove-backup`, {
-                  command: row.command,
+                router.delete(`/admin/delete-backup`, {
+                  data: {
+                    fileName: row,
+                  },
                 })
               "
             >

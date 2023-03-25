@@ -18,4 +18,6 @@ Route::middleware([
     Route::post('/commands', [AdminController::class, 'runCommand']);
 
     Route::get('/backups', [AdminController::class, 'backupList']);
+    Route::post('/send-backup', [AdminController::class, 'backupSendFile']);
+    Route::delete('/delete-backup', [AdminController::class, 'backupRemoveFile']);
 });

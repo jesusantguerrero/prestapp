@@ -116,4 +116,18 @@ class AdminController extends InertiaController
           'data' => $this->commandService->listBackups(),
       ]);
     }
+
+    public function backupRemoveFile() {
+      $fileName = request()->post('fileName');
+      return inertia('Admin/BackupList', [
+          'data' => $this->commandService->removeBackupFile($fileName),
+      ]);
+    }
+
+    public function backupSendFile() {
+      $fileName = request()->post('fileName');
+      return inertia('Admin/BackupList', [
+          'data' => $this->commandService->sendBackupFile($fileName),
+      ]);
+    }
 }
