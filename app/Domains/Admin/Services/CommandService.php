@@ -12,4 +12,8 @@ class CommandService {
     ->withProperties(['command' => $command])
     ->log("Admin ran command $command");
   }
+
+  public function listBackups() {
+    return collect(array_diff(scandir(storage_path('app/backup-temp')), ['.', '..']))->values();
+  }
 }
