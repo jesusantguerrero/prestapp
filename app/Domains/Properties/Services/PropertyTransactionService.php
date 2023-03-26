@@ -194,8 +194,16 @@ class PropertyTransactionService {
         "total" => $formData['amount'],
         "invoice_account_id" => $vendorAccountId, // fallback credit account in case that items doesn't have an account_id and default payment account
         "account_id" => $expenseAccountId, // debit account
-        "items" => $items
+        "items" => $items,
       ];
+
+      if (isset($formData['is_paid_expense'])) {
+        $invoiceData['payment_details'] = [
+          'account_id' => $formData['payment_account_id'] ?? $rent->property->account_id,
+          'concept' => "Pago {$formData['concept']}",
+          'payment_method' => $formData['payment_method'] ?? 'cash'
+        ];
+      }
 
       if ($invoiceId) {
         Invoice::find($invoiceId)->updateDocument($invoiceData);
