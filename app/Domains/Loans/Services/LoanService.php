@@ -4,7 +4,7 @@ namespace App\Domains\Loans\Services;
 
 use App\Domains\Accounting\DTO\ReceiptData;
 use App\Domains\Accounting\Helpers\InvoiceHelper;
-use App\Domains\CRM\Models\Client;
+use App\Domains\CRM\Enums\ClientStatus;
 use App\Domains\Loans\Helpers\LoanValidator;
 use App\Domains\Loans\Jobs\CreateLoanTransaction;
 use App\Domains\Loans\Models\Loan;
@@ -29,7 +29,7 @@ class LoanService {
                 LoanService::createInstallments($loan, $installments);
                 CreateLoanTransaction::dispatch($loan);
                 $loan->client->update([
-                  'status' => Client::STATUS_ACTIVE
+                  'status' => ClientStatus::Active
                 ]);
             } catch (Exception $e) {
                 DB::rollBack();
@@ -47,9 +47,9 @@ class LoanService {
       } else  {
             try {
                 DB::beginTransaction();
-               
+
                 $agreement = Loan::create(array_merge(
-                  $loanData, 
+                  $loanData,
                   [
                     "team_id" => $loan->team_id,
                     "user_id" => $loan->user_id,
@@ -157,7 +157,7 @@ class LoanService {
 
       $results = ReportHelper::getTransactionsByAccount($teamId, ['expected_interest_loans'], $startDate, $endDate);
       $results =  collect($results["expected_interest_loans"] ?? [[]]);
-      
+
       return [
         "year" => $results->sum('outcome'),
         "months" => $results->values(),
