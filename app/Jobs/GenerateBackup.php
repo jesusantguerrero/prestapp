@@ -32,6 +32,5 @@ class GenerateBackup implements ShouldQueue
     public function handle()
     {
         Artisan::call('backup:run --only-db');
-
     }
 }

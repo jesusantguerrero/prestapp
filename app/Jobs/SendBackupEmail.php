@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Domains\Admin\Services\BackupService;
 use App\Domains\Admin\Services\CommandService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -31,8 +32,8 @@ class SendBackupEmail implements ShouldQueue
      *
      * @return void
      */
-    public function handle(CommandService $commandService)
+    public function handle(BackupService $backupService)
     {
-        $commandService->createBackupFile($this->fileName);
+        $backupService->createFile($this->fileName);
     }
 }

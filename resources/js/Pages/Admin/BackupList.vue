@@ -29,6 +29,22 @@ const backupGenerateForm = useForm({});
 const generateBackup = () => {
   if (!backupGenerateForm.processing) backupGenerateForm.post("/admin/backups");
 };
+
+const sendBackupForm = useForm({
+  fileName: "",
+});
+const sendBackupFile = (fileName: string) => {
+  if (!sendBackupForm.processing) sendBackupForm.fileName = fileName;
+  sendBackupForm.post("/admin/send-backup", {
+    onSuccess() {
+      sendBackupForm.reset();
+    },
+  });
+};
+
+const isProcessing = (fileName: string) => {
+  return sendBackupForm.fileName == fileName && sendBackupForm.processing;
+};
 </script>
 
 <template>
@@ -74,11 +90,9 @@ const generateBackup = () => {
             <AppButton
               class="hover:text-primary transition items-center flex justify-center hover:border-primary-400"
               variant="neutral"
-              @click="
-                router.post(`/admin/send-backup`, {
-                  fileName: row,
-                })
-              "
+              @click="sendBackupFile(row)"
+              :disabled="isProcessing(row)"
+              :processing="isProcessing(row)"
             >
               <IMdiMail class="mr-2" /> Send
             </AppButton>
