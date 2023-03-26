@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { formatDate, formatMoney } from "@/utils";
 import { computed } from "vue";
+import AppButton from "./shared/AppButton.vue";
 
 export interface Props {
   payment: Record<string, any>;
   type?: string;
+  allowDelete?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -16,7 +18,7 @@ const printUrl = computed(() => {
     ? `/loans/${props.payment.resource?.id ?? props.payment.payable.loan_id}/payments/${
         props.payment.id
       }/print`
-    : `/invoices/${props.payment.payable.id}/payments/${props.payment.id}/print`;
+    : `/invoices/${props.payment.payable_id}/payments/${props.payment.id}/print`;
 });
 </script>
 
@@ -52,10 +54,18 @@ const printUrl = computed(() => {
           <IMdiReceipt />
           <p>Recibo</p>
         </a>
+        <AppButton
+          v-if="allowDelete"
+          variant="neutral"
+          class="hover:text-error transition items-center flex flex-col justify-center hover:border-red-400"
+          @click="$emit('delete', payment)"
+        >
+          <IMdiTrash />
+        </AppButton>
       </p>
       <span class="w-full text-right inline-block md:inline">{{
         payment.resource?.client_name ??
-        payment.payable.client_name ??
+        payment.payable?.client_name ??
         payment.payable?.client?.fullName
       }}</span>
     </section>

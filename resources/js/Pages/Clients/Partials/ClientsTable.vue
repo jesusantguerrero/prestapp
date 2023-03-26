@@ -68,7 +68,7 @@ getClientLink;
           <AppButton
             variant="neutral"
             class="hover:text-error transition items-center flex flex-col justify-center hover:border-red-400"
-            @click="deleteClient(row)"
+            @click="$emit('delete', row)"
           >
             <IMdiTrash />
           </AppButton>

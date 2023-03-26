@@ -46,9 +46,7 @@ class PropertyController extends InertiaController
     }
 
     public function store(Request $request, Response $response) {
-      $postData = $request->post();
-      $postData['user_id'] = $request->user()->id;
-      $postData['team_id'] = $request->user()->current_team_id;
+      $postData = $this->getPostData();
 
       $this->validate($request, $this->getValidationRules($postData));
       try {
@@ -76,6 +74,14 @@ class PropertyController extends InertiaController
     protected function createResource(Request $request, $postData)
     {
         return PropertyService::createProperty($postData, $request->get('units'));
+    }
+
+    public function validateDelete(Request $request, $property) {
+      if ($property->rents()->count()) {
+        throw new Exception(__("This property has contracts and can't be eliminated"));
+      }
+
+      return true;
     }
 
     public function getEditProps(Request $request, $resource) {

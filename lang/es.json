@@ -1,7 +1,29 @@
 {
     "commons": {
       "ACTIVE": "Activo",
-      "INACTIVE": "Inactivo"
+      "INACTIVE": "Inactivo",
+      "new": "Nuevo"
+    },
+    "validation": {
+      "unique": ""
+    },
+    "approval": {
+      "consultantPending": {
+          "content": "Your account is currently unverified and your application is pending approval. Please check back again within 24 hours."
+      },
+      "consultantNotPending": {
+          "content": "Your account is currently unverified. Please complete and submit your application for verification."
+      },
+      "disabled": {
+          "title": "Disabled",
+          "content": "Your account has been disabled by the administrator due to security reasons or policy violations. If you believe this is a mistake, please contact us."
+      },
+      "companyPending": {
+          "content": "Your account is currently unverified. You may still create engagements and seek matches, but you will need to be verified before you can be matched with a consultant."
+      },
+      "companyNotPending": {
+          "content": "Your account is currently unverified. You may still create engagements and seek matches, but you will need to be verified before you can be matched with a consultant."
+      }
     },
     "AVAILABLE": "Disponible",
     "RENTED": "Rentada",
@@ -17,5 +39,11 @@
     },
     "The percentage can't be greater than 100%": "El porcentaje no puede ser mayor a 100%",
     "This loan already has payments and can't be deleted": "Este prestamo ya tiene pagos y no puede borrarse",
-    "Source account balance (:balance) is lower than loan amount (:amount), please fund your account :accountName": "El balance de la cuenta de origen (:balance) es menor al monto del prestamo (:amount), por favor transfiera a esta cuenta :accountName"
-}
+    "Source account balance (:balance) is lower than loan amount (:amount), please fund your account :accountName": "El balance de la cuenta de origen (:balance) es menor al monto del prestamo (:amount), por favor transfiera a esta cuenta :accountName",
+    "This client has current rents": "Este cliente tiene contractos activos",
+    "This client has current properties": "Este cliente tiene propiedades activas",
+    "This client has active loans": "Este cliente tiene prestamos activos",
+    "This unit is currently rented": "Esta unidad esta en renta actualmente",
+    "This rent has payments and can't be eliminated": "Este contrato tiene pagos  y tienen que ser eliminados primero",
+    "This property has contracts and can't be eliminated": "Esta propiedad tiene contratos que tienen que ser eliminados primero"
+  }

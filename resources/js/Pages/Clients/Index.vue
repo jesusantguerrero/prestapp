@@ -19,6 +19,7 @@ import { IServerSearchData, useServerSearch } from "@/utils/useServerSearch";
 import { useResponsive } from "@/utils/useResponsive";
 import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
+import { ElMessageBox } from "element-plus";
 
 const props = withDefaults(
   defineProps<{
@@ -88,6 +89,20 @@ const filters = reactive({
 const onStateSelected = (status: Record<string, string>) => {
   searchState.filters.status = status.name;
   executeSearch();
+};
+
+const deleteClient = async (client: IClient) => {
+  const isValid = await ElMessageBox.confirm(
+    `Estas seguro de eliminar el cliente ${client.fullName}?`,
+    "Eliminar cliente"
+  );
+  if (isValid) {
+    router.delete(route("clients.destroy", client), {
+      onSuccess() {
+        router.reload();
+      },
+    });
+  }
 };
 </script>
 
@@ -184,6 +199,7 @@ const onStateSelected = (status: Record<string, string>) => {
         :clients="listData"
         :pagination="searchState"
         :total="paginationTotal"
+        @delete="deleteClient"
         @search="executeSearch"
         @paginate="paginate"
         @size-change="changeSize"

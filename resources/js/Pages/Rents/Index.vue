@@ -15,6 +15,7 @@ import { IRent } from "@/Modules/property/propertyEntity";
 import { getRangeParams } from "@/utils";
 import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
 import { IServerSearchData, useServerSearch } from "@/utils/useServerSearch";
+import { ElMessageBox } from "element-plus";
 
 interface IPaginatedData {
   data: IRent[];
@@ -77,6 +78,20 @@ const tableConfig = {
   selectable: true,
   searchBar: true,
   pagination: true,
+};
+
+const deleteRent = async (rent: IRent) => {
+  const isValid = await ElMessageBox.confirm(
+    `Estas seguro de eliminar el contrato de ${rent.address} ${rent.client_name}?`,
+    "Eliminar contrato"
+  );
+  if (isValid) {
+    router.delete(route("rents.destroy", rent), {
+      onSuccess() {
+        router.reload();
+      },
+    });
+  }
 };
 </script>
 
@@ -143,7 +158,7 @@ const tableConfig = {
             <AppButton
               variant="neutral"
               class="hover:text-error transition items-center flex flex-col justify-center hover:border-red-400"
-              @click="deleteUnit(row)"
+              @click="deleteRent(row)"
             >
               <IMdiTrash />
             </AppButton>

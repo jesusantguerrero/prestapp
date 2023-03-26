@@ -3,6 +3,7 @@
 namespace Tests\Feature\Property;
 
 use App\Domains\Accounting\Helpers\InvoiceHelper;
+use App\Domains\CRM\Enums\ClientStatus;
 use App\Domains\CRM\Models\Client;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
@@ -115,6 +116,7 @@ class RentTest extends TestCase
       'deposit_due' => '2023-01-15',
       'first_invoice_date' => '2023-01-30',
     ]));
+
     $response->assertStatus(302);
     $rent = Rent::first();
     $this->assertCount(1, $rent->depositInvoices);
@@ -134,7 +136,7 @@ class RentTest extends TestCase
       'deposit_due' => '2023-01-15',
       'first_invoice_date' => '2023-01-30',
     ]));
-    
+
     $response->assertStatus(302);
     $rent = Rent::first();
     $this->assertEquals($rent->depositInvoices()->first()->status, Invoice::STATUS_PAID);
@@ -231,14 +233,14 @@ class RentTest extends TestCase
     $this->actingAs($this->user);
     $rent = $this->createRent();
 
-    $this->assertEquals($rent->client->status, Client::STATUS_ACTIVE);
+    $this->assertEquals($rent->client->status, ClientStatus::Active);
   }
 
   public function testRentOwnerShouldHaveStatusActive() {
     $this->actingAs($this->user);
     $rent = $this->createRent();
 
-    $this->assertEquals($rent->owner->status, Client::STATUS_ACTIVE);
+    $this->assertEquals($rent->owner->status, ClientStatus::Active);
   }
 }
 

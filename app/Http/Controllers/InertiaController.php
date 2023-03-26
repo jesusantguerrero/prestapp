@@ -54,7 +54,9 @@ class InertiaController extends Controller {
 
     public function show(Request $request, int $id) {
         $resource = $this->getModelQuery($request, $id)[0];
-
+        if (!$resource) {
+          return to_route($this->model->getTable());
+        }
         return Inertia::render($this->templates['show'],  array_merge(
           [$this->model->getTable() => $resource],
           $this->getEditProps($request, $resource)));

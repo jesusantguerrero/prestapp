@@ -2,6 +2,7 @@
 
 namespace App\Domains\Admin\Http\Controllers;
 
+use App\Domains\Admin\Services\AdminTeamService;
 use App\Http\Controllers\InertiaController;
 use App\Models\Team;
 
@@ -16,7 +17,7 @@ class AdminTeamController extends InertiaController
       $this->searchable = ['name'];
       $this->templates = [
           "index" => 'Admin/Teams/Index',
-          "show" => 'Rents/Show'
+          "show" => 'Admin/Teams/Show'
       ];
       $this->validationRules = [ ];
       $this->sorts = ['created_at'];
@@ -24,5 +25,13 @@ class AdminTeamController extends InertiaController
       $this->filters = [];
       $this->page = 1;
       $this->limit = 10;
-  }
+
+      // $this->authorizeResource(Team::class, 'index');
+      // $this->authorizeResource(Team::class, 'show');
+
+    }
+
+    public function approve(Team $team, AdminTeamService $teamService) {
+      $teamService->approve($team);
+    }
 }

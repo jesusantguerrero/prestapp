@@ -6,68 +6,117 @@
 
  <p align="center">
 	<strong>
-		<a href="https://loger.vercel.app/" target="_blank" style="color:dodgerblue;">Website</a>
+		<a href="https://icloanapp.com" target="_blank" style="color:dodgerblue;">Website</a>
 		•
-		<a href="https://github.com/jesusantguerrero/prestapp/wiki/Introduccion" target="_blank">Docs</a>
+		<a href="https://docs.icloanapp.com/" target="_blank">Docs</a>
 		•
-		<a href="https://loger.ic-adminn.com" target="_blank">Demo</a>
+		<a href="https://icloanapp.com/" target="_blank">Demo</a>
 	</strong>
 </p>
 
 ## About ICLoan
+ICLoan is a Loan & Property Management Software that can handle properties with multiple units, owner distribution, rental contracts and rental expenses along with loan with rates.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ✨Features:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+* ### 💵 Loans:
+* ### 🏡 Property Management
+* ### 👨‍👩‍👧 Integrated Loan + Property Management dashboard**
 
-## Learning Laravel
+## Scope
+ICLoan is an exploration in the property management area and it is a good alternative for property managers with an small portfolio. Compared to more mature software ICLoan doesnt handle 
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- Accounting (event though we make the transactions under the hood that section is not public), 
+- Maintenance
+- Tasks
+- Public Listing
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Technical Stuff
+ICLoan is a Monolith app using laravel 9, jetstream, inertia, vue3, Tailwindcss and some hand crafted packages [Atmosphere UI](https://github.com/jesusantguerrero/atmosphere-ui), [Journal](https://github.com/insane-code/journal), and others.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-## Laravel Sponsors
+| Prerequisite                                          | Version     |
+| ------------------------------------------------------| ----------  |
+| [Node.js](http://nodejs.org)                          | `~ ^16.18.0`|
+| npm (comes with Node)                                 | `~ ^8.19.2` |
+| [PHP]                                                 | `~ ^8.1.2`  |
+| [Composer](https://getcomposer.org/)                  | ' ^2.3.8    |
+| [MariaDB](https://mariadb.org/)***                    |  `10.8.4`   |
+| [Cloud Platform Project (with Gmail API)**](https://developers.google.com/gmail/api/quickstart/js)                                |    --                                                 |             |
+| PHP extension ext-mailparse**                         |      --     |
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+`** Those requirements are optional for Gmail integration/automation`
+`*** MariaDB could be replaced with MySql8`
 
-### Premium Partners
+```shell
+node -v
+php -v
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+## Installation
 
-## Contributing
+To install Loger, you'll need to clone or download this repo:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```
+git clone https://github.com/jesusantguerrero/atmosphere.git project_name
+```
 
-## Code of Conduct
+Next, we can install Atmosphere with these **4 simple steps**:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 1. Create a New Database
 
-## Security Vulnerabilities
+During the installation we need to use a MySQL database. You will need to create a new database and save the credentials for the next step.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 2. Copy the `.env.example` file
+
+We need to specify our Environment variables for our application. You will see a file named `.env.example`, you will need to duplicate that file and rename it to `.env`.
+
+Then, open up the `.env` file and update your *DB_DATABASE*, *DB_USERNAME*, and *DB_PASSWORD* in the appropriate fields. You will also want to update the *APP_URL* to the URL of your application.
+
+```bash
+APP_URL=http://127.0.0.1:8000/
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=prestapp
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### 3. Add Composer Dependencies
+```php
+composer install --ignore-platform-reqs
+```
+### 4. Run Migrations and Seeds
+
+```bash
+php artisan migrate --seed
+php artisan app:demo-fresh-start
+```
+<br>
+
+backend development
+```bash
+php artisan serve
+```
+Frontend development
+The backend have to be running
+
+```bash
+# install npm packages
+npm install
+# development
+npm run dev
+```
+
+🎉 And that's it! You will now be able to visit your URL and see your Atmosphere application up and running.
 
 ## License
+[BSD-3 license](https://github.com/jesusantguerrero/atmosphere/blob/master/LICENSE).
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Author
+Jesus Guerrero
+- website: [jesusantguerrero.com](https://jesusantguerrero.com)
+- twitter: [@jesusntguerrero](https://twitter.com/jesusntguerrero) 

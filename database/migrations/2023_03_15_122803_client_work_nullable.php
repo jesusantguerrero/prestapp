@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down()
     {
-        //
+      $table->string('work_name')->change();
     }
 };

@@ -2,7 +2,8 @@ export const MODULES = {
     CRM: 'CRM',
     LOAN: 'loan',
     PROPERTY: 'property',
-    ACCOUNTING: 'accounting'
+    ACCOUNTING: 'accounting',
+    ADMIN: 'admin'
 }
 
 const menus = {
@@ -76,8 +77,7 @@ const menus = {
     {
       label: 'Herramientas de agente',
       url: '/properties/management-tools/'
-    },
-    ],
+    }],
     [MODULES.ACCOUNTING]: [{
         label: 'Banco',
         url: '/properties/overview'
@@ -89,8 +89,27 @@ const menus = {
     {
       label: 'Cuentas',
       url: '/accounts'
+    }],
+    [MODULES.ADMIN]: [{
+        label: 'Dashboard',
+        url: '/admin',
+        isActiveFunction(currentPath: string) {
+          return '/admin' == currentPath;
+        },
+    },
+    {
+        label: 'Teams',
+        url: '/admin/teams',
+    },
+    {
+        label: 'Commands',
+        url: '/admin/commands',
+    },
+    {
+        label: 'Backups',
+        url: '/admin/backups',
     }
-    ]
+  ]
 }
 
 

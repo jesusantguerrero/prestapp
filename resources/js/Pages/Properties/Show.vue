@@ -178,9 +178,7 @@ const handleContractClick = (unit: IUnit) => {
                   {{ formatMoney(properties.price) }}
                 </span> -->
               </div>
-              <p class="text-bold text-body-1">Renta Mensual</p>
             </section>
-            <ElTag> {{ $t(properties.status) }}</ElTag>
           </article>
         </section>
       </header>
@@ -272,8 +270,8 @@ const handleContractClick = (unit: IUnit) => {
           />
         </article>
 
-        <article class="w-3/12 space-y-2 rounded-md shadow-md">
-          <div class="px-5 py-10 text-gray-600 bg-gray-200 rounded-md">
+        <article class="w-3/12 space-y-2">
+          <div class="px-5 py-10 shadow-md text-gray-600 bg-gray-200 rounded-md">
             <div class="header">
               <h2 class="text-lg font-bold">Manejo de Propiedad</h2>
               <small>

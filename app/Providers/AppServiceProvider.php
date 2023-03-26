@@ -3,8 +3,8 @@
 namespace App\Providers;
 
 use App\Domains\CRM\Models\Client;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\ParallelTesting;
+use App\Models\User;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Insane\Journal\Models\Invoice\Invoice;
 
@@ -29,6 +29,10 @@ class AppServiceProvider extends ServiceProvider
     {
       Invoice::resolveRelationUsing('client', function ($clientModel) {
         return $clientModel->belongsTo(Client::class, 'client_id');
+      });
+
+      Gate::define('superadmin', function (User $user) {
+        return $user->email === config('atmosphere.superadmin.email');
       });
     }
 }

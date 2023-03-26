@@ -3,6 +3,7 @@
 namespace App\Domains\Properties\Services;
 
 use App\Domains\Accounting\Helpers\InvoiceHelper;
+use App\Domains\CRM\Enums\ClientStatus;
 use App\Domains\CRM\Models\Client;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
@@ -10,6 +11,7 @@ use App\Domains\Properties\Models\Rent;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Insane\Journal\Models\Core\Account;
+use Insane\Journal\Models\Core\Payment;
 use Insane\Journal\Models\Invoice\Invoice;
 use Insane\Journal\Models\Invoice\InvoiceLineTax;
 
@@ -39,7 +41,7 @@ class RentService {
         ]);
         $rent = Rent::create($rentData);
         $rent->unit->update(['status' => PropertyUnit::STATUS_RENTED]);
-        $rent->client->update(['status' => Client::STATUS_ACTIVE]);
+        $rent->client->update(['status' => ClientStatus::Active]);
         $rent->owner->checkStatus();
         PropertyTransactionService::createDepositTransaction($rent->fresh(), $rentData);
         return PropertyTransactionService::generateFirstInvoice($rent);
@@ -222,6 +224,17 @@ class RentService {
           ]]
         ]));
 
+        $invoice->save();
+        $rent->client->checkStatus();
+
+    }
+
+    public static function deletePayment(Rent $rent, Invoice $invoice, Payment $payment) {
+        if ($invoice->invoiceable_id != $rent->id || $invoice->invoiceable_type !== Rent::class) {
+          throw new Exception("This invoice doesn't belongs to this rent");
+        }
+
+        $payment->delete();
         $invoice->save();
         $rent->client->checkStatus();
 
