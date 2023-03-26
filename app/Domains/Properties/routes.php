@@ -26,10 +26,14 @@ Route::middleware([
     // Properties
     Route::get('properties/management-tools', [PropertyController::class, 'managementTools']);
     Route::resource('properties', PropertyController::class);
-    Route::post('properties/{property}/units', [PropertyController::class, 'addUnit']);
-    Route::delete('properties/{property}/units/{propertyUnit}', [PropertyController::class, 'removeUnit']);
-    Route::put('properties/{property}/units/{propertyUnit}', [PropertyController::class, 'updateUnit']);
-    Route::get('units', [PropertyUnitController::class, 'index']);
+
+    // Units
+    Route::controller(PropertyUnitController::class)->group(function() {
+      Route::get('units', 'index');
+      Route::post('properties/{property}/units', 'addUnit');
+      Route::put('properties/{property}/units/{propertyUnit}', 'updateUnit');
+      Route::delete('properties/{property}/units/{propertyUnit}','removeUnit');
+    });
 
     // rents
     Route::resource('rents', RentController::class);
