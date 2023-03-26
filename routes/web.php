@@ -14,9 +14,7 @@ use App\Http\Controllers\CRM\ClientController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SearchController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,8 +29,6 @@ use Inertia\Inertia;
 
 Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->name('api.')->group(function () {
     //  accounts and transactions
-
-
     Route::apiResource('/settings', SettingsController::class, [
      "only" => ['index', 'store', 'update', 'delete']
     ])->names([
@@ -52,7 +48,6 @@ Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->name('api.')->g
     Route::apiResource('rents', RentApiController::class);
 });
 
-
 Route::get('/background/run', BackgroundController::class);
 Route::get('/background/update-late-payments', [BackgroundController::class, 'updateLatePayments']);
 Route::get('/background/generate-rent-invoices', [BackgroundController::class, 'generateRentInvoices']);
@@ -62,18 +57,26 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
+    Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    // settings
+    Route::resource('/settings', SettingsController::class);
+    Route::get('/settings/{name}', function() {
+    return "Hello world";
+    });
+    Route::get('/help', function() {
+    return inertia('Help');
+    });
+});
+
+Route::middleware([
+  'auth:sanctum',
+  config('jetstream.auth_session'),
+  'verified',
+  'atmosphere.teams-approved',
+])->group(function () {
     Route::get('/', fn () => redirect("/dashboard"));
 
-    Route::get('/dashboard/{section?}', DashboardController::class)->name('dashboard');
-
-     // settings
-     Route::resource('/settings', SettingsController::class);
-     Route::get('/settings/{name}', function() {
-      return "Hello world";
-     });
-     Route::get('/help', function() {
-      return inertia('Help');
-     });
+    Route::get('/dashboard/section', DashboardController::class)->name('dashboard.section');
 
     Route::get('/search', [SearchController::class, 'index']);
      // CRM
@@ -85,21 +88,20 @@ Route::middleware([
     // Reports
     Route::get('/statements/{category}', [ReportController::class, 'statements'])->name('statements.category');
     Route::get('/reports/{category}', [ReportController::class, 'category'])->name('report.category');
-
-
-      // invoicing
-      Route::resource('/invoices', InvoiceController::class);
-      Route::post('/invoices/{id}/payment', [InvoiceController::class, 'addPayment']);
-      Route::get('/invoices/{invoice}/print', [InvoiceController::class, 'print']);
-      Route::post('/invoices/{id}/mark-as-paid', [InvoiceController::class, 'markAsPaid']);
-      Route::delete('/invoices/{id}/payment/{paymentId}', [InvoiceController::class, 'deletePayment']);
-      Route::get('/invoices/{invoice}/preview', [InvoiceController::class, 'publicPreview']);
-      // Bills
-      Route::resource('/bills', InvoiceController::class);
+    // invoicing
+    Route::resource('/invoices', InvoiceController::class);
+    Route::post('/invoices/{id}/payment', [InvoiceController::class, 'addPayment']);
+    Route::get('/invoices/{invoice}/print', [InvoiceController::class, 'print']);
+    Route::post('/invoices/{id}/mark-as-paid', [InvoiceController::class, 'markAsPaid']);
+    Route::delete('/invoices/{id}/payment/{paymentId}', [InvoiceController::class, 'deletePayment']);
+    Route::get('/invoices/{invoice}/preview', [InvoiceController::class, 'publicPreview']);
+    // Bills
+    Route::resource('/bills', InvoiceController::class);
   });
 
-// Admin
-  Route::group([],  app_path('/Domains/Admin/routes.php'));
+
+  // Admin
+Route::group([],  app_path('/Domains/Admin/routes.php'));
 // Loans
 Route::group([],  app_path('/Domains/Loans/routes.php'));
 // properties

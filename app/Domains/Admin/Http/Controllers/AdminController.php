@@ -8,7 +8,6 @@ use App\Domains\Properties\Models\PropertyUnit;
 use App\Http\Controllers\InertiaController;
 use App\Models\Team;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class AdminController extends InertiaController

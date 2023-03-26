@@ -1,5 +1,6 @@
 <?php
 
+use App\Domains\Admin\Http\Controllers\AdminBackupController;
 use App\Domains\Admin\Http\Controllers\AdminController;
 use App\Domains\Admin\Http\Controllers\AdminTeamController;
 use Illuminate\Support\Facades\Route;
@@ -12,7 +13,13 @@ Route::middleware([
     Route::impersonate();
     Route::get('/', AdminController::class);
     Route::resource('/teams', AdminTeamController::class);
+    Route::post('/teams/{team}/approve', [AdminTeamController::class, 'approve'])->name('teams.approve');
     Route::post('/impersonate-user/{userId}', [AdminController::class, 'impersonateUser']);
     Route::get('/commands', [AdminController::class, 'commandList']);
     Route::post('/commands', [AdminController::class, 'runCommand']);
+
+    Route::get('/backups', [AdminBackupController::class, 'list']);
+    Route::post('/backups', [AdminBackupController::class, 'generate']);
+    Route::post('/send-backup', [AdminBackupController::class, 'sendFile']);
+    Route::delete('/delete-backup', [AdminBackupController::class, 'removeFile']);
 });

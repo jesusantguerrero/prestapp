@@ -61,6 +61,9 @@ const props = defineProps({
   pendingDraws: {
     type: Number,
   },
+  isTeamApproved: {
+    type: Boolean,
+  },
 });
 
 interface IStatDetails {
@@ -105,7 +108,7 @@ const { openTransactionModal } = useTransactionModal();
 </script>
 
 <template>
-  <DashboardTemplate :user="user">
+  <DashboardTemplate :user="user" :is-team-approved="isTeamApproved">
     <section class="w-full md:flex md:space-x-4">
       <div class="flex flex-col justify-between w-full md:w-9/12">
         <WelcomeWidget message="Hola, " :username="user.name" class="shadow-sm">

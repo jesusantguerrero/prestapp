@@ -18,7 +18,7 @@ class ClientsTest extends TestCase
 
     protected function setup(): void {
       parent::setup();
-      $this->user = User::factory()->create();
+      $this->user = User::factory()->withPersonalTeam()->create();
       $this->clientData = [
         'names' => 'John',
         'address_details' => 'Your house is my house',
@@ -47,7 +47,7 @@ class ClientsTest extends TestCase
 
     public function testItShouldCreateClient() {
       $this->actingAs($this->user);
-     
+
 
       $response = $this->post('/clients', $this->clientData);
       $response->assertStatus(302);

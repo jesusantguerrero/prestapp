@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, inject } from "vue";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import ButtonGroup from "@/Components/ButtonGroup.vue";
 import { router } from "@inertiajs/core";
 import { usePage } from "@inertiajs/vue3";
+import TeamApproval from "./TeamApproval.vue";
 
 defineProps({
   user: {
+    type: Object,
+    required: true,
+  },
+  isTeamApproved: {
     type: Object,
     required: true,
   },
@@ -40,13 +45,15 @@ const handleChange = (sectionName: string) => {
       <div class="flex justify-between mt-4 md:mt-0 mb-4">
         <h4 class="hidden md:inline-block">Bienvenido, {{ user.name }}</h4>
         <ButtonGroup
+          v-if="isTeamApproved"
           class="w-full md:w-fit"
           @update:modelValue="handleChange"
           :values="sections"
           v-model="section"
         />
       </div>
-      <slot />
+      <slot v-if="isTeamApproved" />
+      <TeamApproval v-else />
     </main>
   </AppLayout>
 </template>

@@ -1,9 +1,30 @@
 {
     "commons": {
       "ACTIVE": "Activo",
-      "INACTIVE": "Inactivo"
+      "INACTIVE": "Inactivo",
+      "new": "Nuevo"
     },
-    "validation.unique": "",
+    "validation": {
+      "unique": ""
+    },
+    "approval": {
+      "consultantPending": {
+          "content": "Your account is currently unverified and your application is pending approval. Please check back again within 24 hours."
+      },
+      "consultantNotPending": {
+          "content": "Your account is currently unverified. Please complete and submit your application for verification."
+      },
+      "disabled": {
+          "title": "Disabled",
+          "content": "Your account has been disabled by the administrator due to security reasons or policy violations. If you believe this is a mistake, please contact us."
+      },
+      "companyPending": {
+          "content": "Your account is currently unverified. You may still create engagements and seek matches, but you will need to be verified before you can be matched with a consultant."
+      },
+      "companyNotPending": {
+          "content": "Your account is currently unverified. You may still create engagements and seek matches, but you will need to be verified before you can be matched with a consultant."
+      }
+    },
     "AVAILABLE": "Disponible",
     "RENTED": "Rentada",
     "PENDING": "Pendiente",

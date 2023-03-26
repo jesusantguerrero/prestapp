@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Loan;
 
-use App\Domains\CRM\Models\Client;
+use App\Domains\CRM\Enums\ClientStatus;
 use App\Domains\Loans\Models\Loan;
 use Tests\Feature\Loan\Helpers\LoanBase;
 
@@ -38,7 +38,7 @@ class LoanTest extends LoanBase
     $this->actingAs($this->user);
 
     $response = $this->withoutExceptionHandling()->post('/loans', $this->loanData);
-    $response->assertStatus(404);
+    $response->assertSessionHasErrors();
   }
 
   public function testItShouldCreateLoan() {
@@ -52,7 +52,7 @@ class LoanTest extends LoanBase
   public function testLoanShouldHaveStatusPending() {
     $this->actingAs($this->user);
     $this->fundAccount('daily_box', $this->loanData['amount'], $this->lender->team_id);
-    
+
     $response = $this->post('/loans', $this->loanData);
     $response->assertStatus(302);
     $loan = Loan::query()->first();
@@ -63,11 +63,11 @@ class LoanTest extends LoanBase
   public function testClientShouldHaveStatusActive() {
     $this->actingAs($this->user);
     $this->fundAccount('daily_box', $this->loanData['amount'], $this->lender->team_id);
-    
+
     $response = $this->post('/loans', $this->loanData);
     $response->assertStatus(302);
     $loan = Loan::query()->first();
 
-    $this->assertEquals($loan->client->status, Client::STATUS_ACTIVE);
+    $this->assertEquals($loan->client->status, ClientStatus::Active);
   }
 }
