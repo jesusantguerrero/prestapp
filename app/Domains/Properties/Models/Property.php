@@ -49,6 +49,10 @@ class Property extends Model {
             $property->setResourceAccount('late_fee_account_id', 'owed_commissions');
             $property->name = $property->name ?? $property->shortName;
         });
+
+        static::deleting(function ($property) {
+            $property->units()->delete();
+        });
     }
 
     public function initAccounts() {
