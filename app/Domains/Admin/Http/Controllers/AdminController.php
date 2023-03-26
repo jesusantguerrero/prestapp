@@ -8,7 +8,6 @@ use App\Domains\Properties\Models\PropertyUnit;
 use App\Http\Controllers\InertiaController;
 use App\Models\Team;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class AdminController extends InertiaController
@@ -119,9 +118,7 @@ class AdminController extends InertiaController
 
     public function backupRemoveFile() {
       $fileName = request()->post('fileName');
-      return inertia('Admin/BackupList', [
-          'data' => $this->commandService->removeBackupFile($fileName),
-      ]);
+       $this->commandService->removeBackupFile($fileName);
     }
 
     public function backupSendFile() {

@@ -21,8 +21,6 @@ class CommandService {
   }
 
   public function createBackupFile($fileName) {
-    $files = collect(array_diff(scandir(storage_path('app/backup-temp')), ['.', '..']))->values();
-
     $boundary      = "PHP-mixed-".md5(time());
     $boundWithPre  = "\n--".$boundary;
 
@@ -67,5 +65,9 @@ class CommandService {
   }
   public function sendBackupFile($fileName) {
     SendBackupEmail::dispatch($fileName);
+  }
+
+  public function removeBackupFile($fileName) {
+    File::delete(storage_path("app/backup-temp/$fileName"));
   }
 }
