@@ -2,6 +2,7 @@
 
 namespace App\Domains\Admin\Services;
 
+use App\Jobs\GenerateBackup;
 use App\Jobs\SendBackupEmail;
 use Exception;
 use Illuminate\Support\Facades\Artisan;
@@ -66,8 +67,17 @@ class CommandService {
   public function sendBackupFile($fileName) {
     SendBackupEmail::dispatch($fileName);
   }
+  public function generateBackup() {
+    GenerateBackup::dispatch();
+    return activity()
+    ->causedBy(auth()->user())
+    ->log("Admin started to generate backup");
+  }
 
   public function removeBackupFile($fileName) {
     File::delete(storage_path("app/backup-temp/$fileName"));
+    return activity()
+    ->causedBy(auth()->user())
+    ->log("Admin removed backup file $fileName");
   }
 }

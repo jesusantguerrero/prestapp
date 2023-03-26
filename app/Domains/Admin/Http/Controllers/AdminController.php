@@ -109,22 +109,4 @@ class AdminController extends InertiaController
       }
       $this->commandService->runAdminCommand(request()->post('command'), request()->user());
     }
-
-    public function backupList() {
-      return inertia('Admin/BackupList', [
-          'data' => $this->commandService->listBackups(),
-      ]);
-    }
-
-    public function backupRemoveFile() {
-      $fileName = request()->post('fileName');
-       $this->commandService->removeBackupFile($fileName);
-    }
-
-    public function backupSendFile() {
-      $fileName = request()->post('fileName');
-      return inertia('Admin/BackupList', [
-          'data' => $this->commandService->sendBackupFile($fileName),
-      ]);
-    }
 }

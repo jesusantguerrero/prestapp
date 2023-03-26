@@ -164,7 +164,7 @@ return [
         'notifiable' => \Spatie\Backup\Notifications\Notifiable::class,
 
         'mail' => [
-            'to' => 'jesusant.guerrero@gmail.com',
+            'to' => env('APP_BACKUP_EMAIL', 'help@neatlancer.com'),
 
             'from' => [
                 'address' => env('MAIL_FROM_ADDRESS', 'help@neatlancer.com'),
@@ -274,5 +274,4 @@ return [
             'delete_oldest_backups_when_using_more_megabytes_than' => 5000,
         ],
     ],
-
 ];

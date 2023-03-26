@@ -8,6 +8,7 @@ import AppButton from "@/Components/shared/AppButton.vue";
 
 import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
 import AdminTemplate from "./Partials/AdminTemplate.vue";
+import { useForm } from "@inertiajs/vue3";
 
 defineProps<{
   data: Record<string, string>[];
@@ -23,6 +24,11 @@ const tableConfig = {
 const searchText = ref();
 const reset = () => {};
 const executeSearch = () => {};
+
+const backupGenerateForm = useForm({});
+const generateBackup = () => {
+  if (!backupGenerateForm.processing) backupGenerateForm.post("/admin/backups");
+};
 </script>
 
 <template>
@@ -36,6 +42,13 @@ const executeSearch = () => {};
           @clear="reset()"
           @blur="executeSearch"
         />
+        <AppButton
+          @click="generateBackup()"
+          :disabled="backupGenerateForm.processing"
+          :processing="backupGenerateForm.processing"
+        >
+          Generate Backup
+        </AppButton>
       </section>
       <AtTable
         class="bg-white rounded-md text-body-1 mt-4"
