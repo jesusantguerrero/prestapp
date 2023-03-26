@@ -2,6 +2,7 @@
 
 namespace App\Domains\CRM\Models;
 
+use App\Domains\CRM\Enums\ClientStatus;
 use App\Domains\CRM\Models\Traits\BorrowerTrait;
 use App\Domains\CRM\Models\Traits\OwnerTrait;
 use App\Domains\CRM\Models\Traits\TenantTrait;
@@ -45,13 +46,9 @@ class Client extends Model {
     ];
     protected $appends = ['fullName'];
 
-    const STATUS_INACTIVE = 'INACTIVE';
-    const STATUS_ACTIVE = 'ACTIVE';
-    const STATUS_LATE =  'LATE';
-    const STATUS_SUSPENDED = 'SUSPENDED';
-
     protected $casts = [
-      'generated_distribution_dates' => 'array'
+      'generated_distribution_dates' => 'array',
+      'status' => ClientStatus::class
     ];
 
     protected static function boot()
@@ -65,23 +62,23 @@ class Client extends Model {
     public function checkStatus() {
         if($this->hasLateLoans()) {
             $this->updateQuietly([
-                'status' => self::STATUS_LATE
+                'status' => ClientStatus::Late
             ]);
         } else if ( $this->hasActiveLoans()) {
           $this->updateQuietly([
-              'status' => self::STATUS_ACTIVE
+              'status' => ClientStatus::Active
           ]);
         } else if ($this->units()->count()) {
           $this->updateQuietly([
-            'status' => self::STATUS_ACTIVE
+            'status' => ClientStatus::Active
           ]);
         } else if ($this->rents()->count()) {
           $this->updateQuietly([
-            'status' => self::STATUS_ACTIVE
+            'status' => ClientStatus::Active
           ]);
         } else {
           $this->updateQuietly([
-            'status' => self::STATUS_INACTIVE
+            'status' => ClientStatus::Inactive
           ]);
         }
     }
@@ -112,7 +109,7 @@ class Client extends Model {
 
     public function scopeActive($query)
     {
-      return $query->where('status', Client::STATUS_ACTIVE);
+      return $query->where('status', ClientStatus::Active);
     }
 
     /**

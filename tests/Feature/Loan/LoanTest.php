@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Loan;
 
-use App\Domains\CRM\Models\Client;
+use App\Domains\CRM\Enums\ClientStatus;
 use App\Domains\Loans\Models\Loan;
 use Tests\Feature\Loan\Helpers\LoanBase;
 
@@ -68,6 +68,6 @@ class LoanTest extends LoanBase
     $response->assertStatus(302);
     $loan = Loan::query()->first();
 
-    $this->assertEquals($loan->client->status, Client::STATUS_ACTIVE);
+    $this->assertEquals($loan->client->status, ClientStatus::Active);
   }
 }

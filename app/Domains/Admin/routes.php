@@ -16,4 +16,8 @@ Route::middleware([
     Route::post('/impersonate-user/{userId}', [AdminController::class, 'impersonateUser']);
     Route::get('/commands', [AdminController::class, 'commandList']);
     Route::post('/commands', [AdminController::class, 'runCommand']);
+
+    Route::get('/backups', [AdminController::class, 'backupList']);
+    Route::post('/send-backup', [AdminController::class, 'backupSendFile']);
+    Route::delete('/delete-backup', [AdminController::class, 'backupRemoveFile']);
 });
