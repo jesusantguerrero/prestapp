@@ -3,8 +3,8 @@
 - [x] Devolucion de depositos E
 - [x] Distribucion de propietarios con depositos y Devolucion de depositos
 - [x] Gastos E
-- [ ] Owner Draw E
-- [ ] Moras
+- [x] Owner Draw E
+- [x] Moras
 
 - [ ] Gastos auto-pagar?
 - [ ] Marcar si una propiedad tiene gastos pendientes
