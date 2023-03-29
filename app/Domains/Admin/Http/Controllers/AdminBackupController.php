@@ -46,4 +46,14 @@ class AdminBackupController extends InertiaController
       return  $this->backupService->sendFile($fileName);
     }
 
+    public function downloadFile() {
+      if (! Gate::allows('superadmin')) {
+        abort(403);
+      }
+
+      $fileName = request()->get('fileName');
+      $file = $this->backupService->getBackupFile($fileName);
+      return response()->download($file, $fileName);
+    }
+
 }

@@ -62,4 +62,9 @@ class BackupService {
     ->causedBy(auth()->user())
     ->log("Admin removed backup file $fileName");
   }
+
+  public function getBackupFile($fileName) {
+    $backupDir = config('app.name');
+    return File::get(storage_path("app/$backupDir/$fileName"));
+  }
 }

@@ -22,4 +22,5 @@ Route::middleware([
     Route::post('/backups', [AdminBackupController::class, 'generate']);
     Route::post('/send-backup', [AdminBackupController::class, 'sendFile']);
     Route::delete('/delete-backup', [AdminBackupController::class, 'removeFile']);
+    Route::get('/backups/download', [AdminBackupController::class, 'downloadFile']);
 });

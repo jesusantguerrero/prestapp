@@ -32,18 +32,36 @@ const generateBackup = () => {
 
 const sendBackupForm = useForm({
   fileName: "",
+  endpoint: "",
 });
-const sendBackupFile = (fileName: string) => {
+
+type BackupMethod = "send" | "download";
+const sendBackupFile = (fileName: string, endpoint: BackupMethod = "send") => {
+  const endpoints = {
+    send: {
+      url: "/admin/send-backup",
+      method: "post",
+    },
+    download: {
+      url: "/admin/backups/download",
+      method: "get",
+    },
+  };
   if (!sendBackupForm.processing) sendBackupForm.fileName = fileName;
-  sendBackupForm.post("/admin/send-backup", {
+  const endpointMode = endpoints[endpoint];
+  sendBackupForm.endpoint = endpoints[endpoint].url;
+  const method = endpointMode.method as string;
+  // @ts-ignore;
+  sendBackupForm[method](endpointMode.url, {
     onSuccess() {
       sendBackupForm.reset();
     },
   });
 };
 
-const isProcessing = (fileName: string) => {
-  return sendBackupForm.fileName == fileName && sendBackupForm.processing;
+const isProcessing = (fileName: string, endpoint?: string) => {
+  const isSameFile = sendBackupForm.fileName == fileName && sendBackupForm.processing;
+  return endpoint ? endpoint == sendBackupForm.endpoint && isSameFile : isSameFile;
 };
 </script>
 
@@ -87,6 +105,15 @@ const isProcessing = (fileName: string) => {
       >
         <template v-slot:actions="{ scope: { row } }" class="flex">
           <div class="flex justify-end items-center">
+            <AppButton
+              class="hover:text-primary transition items-center flex justify-center hover:border-primary-400"
+              variant="neutral"
+              @click="sendBackupFile(row, 'download')"
+              :disabled="isProcessing(row, '/backups/download')"
+              :processing="isProcessing(row, '/backups/download')"
+            >
+              <IMdiDownload class="mr-2" /> Download
+            </AppButton>
             <AppButton
               class="hover:text-primary transition items-center flex justify-center hover:border-primary-400"
               variant="neutral"
