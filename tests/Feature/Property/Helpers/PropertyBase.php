@@ -24,6 +24,7 @@ class PropertyBase extends TestCase
   protected Client $owner;
   protected Property $property;
   protected mixed $rentData;
+  protected mixed $unitData;
 
   protected function setup(): void {
     parent::setup();
@@ -72,6 +73,11 @@ class PropertyBase extends TestCase
       "frequency" => "MONTHLY",
       "additional_fees" => [],
     ];
+
+    $this->unitData = [
+      "price" => 5000,
+      "name" => "New unit"
+    ];
   }
 
   protected function createRent($data = []) {
@@ -79,6 +85,13 @@ class PropertyBase extends TestCase
     $this->post('/rents', array_merge($this->rentData, $data));
 
     return Rent::latest()->first();
+  }
+
+  protected function createUnit($data = []) {
+    $this->actingAs($this->user);
+    $this->post('/rents', array_merge($this->unitData, $data));
+
+    return PropertyUnit::latest()->first();
   }
 
   protected function createExpense($rent, $formData = []) {
@@ -89,6 +102,7 @@ class PropertyBase extends TestCase
       'date' => $formData['date'] ?? date('Y-m-d'),
       'details' => 'Fix front door',
       'concept' => 'fix front door',
+      'is_paid_expense' => isset($formData['is_paid_expense'])
     ]));
   }
 
@@ -116,5 +130,4 @@ class PropertyBase extends TestCase
       $this->payInvoice($rent, $invoice);
     }
   }
-
 }

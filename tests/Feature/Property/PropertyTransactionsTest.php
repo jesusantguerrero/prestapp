@@ -66,6 +66,22 @@ class PropertyTransactionsTest extends PropertyBase
     $this->assertEquals(-1, $payment->transaction->lines[1]->type);
   }
 
+  public function testItShouldCreateAPaidRentExpense() {
+    $this->seed();
+    $this->actingAs($this->user);
+    $rent = $this->createRent();
+
+    $response = $this->createExpense($rent, [
+      'is_paid_expense' => true
+    ]);
+
+    $response->assertStatus(200);
+    $rent = Rent::first();
+
+    $this->assertCount(1, $rent->rentExpenses);
+    $this->assertEquals(Invoice::STATUS_PAID, $rent->rentExpenses[0]->status);
+  }
+
   public function testItShouldHaveDepositBalance() {
     $this->seed();
     $this->actingAs($this->user);

@@ -2,8 +2,11 @@
 
 namespace App\Domains\Properties\Http\Controllers;
 
+use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
+use App\Domains\Properties\Services\PropertyService;
 use App\Http\Controllers\InertiaController;
+use Exception;
 
 class PropertyUnitController extends InertiaController
 {
@@ -18,9 +21,9 @@ class PropertyUnitController extends InertiaController
           "show" => 'Properties/Show'
       ];
       $this->validationRules = [
-          'owner_id' => 'numeric',
-                                                                                    'address' => 'string',
-          'price' => 'required'
+        'owner_id' => 'numeric',
+        'address' => 'string',
+        'price' => 'required'
       ];
       $this->sorts = ['created_at'];
       $this->includes = ['property', 'owner', 'contract', 'contract.client'];
@@ -28,5 +31,27 @@ class PropertyUnitController extends InertiaController
       $this->page = 1;
       $this->limit = 10;
       $this->resourceName= "units";
+  }
+
+  public function addUnit(Property $property) {
+    $postData = request()->only(['name', 'price', 'description', 'bedrooms', 'area', 'bathrooms']);
+    PropertyService::addUnit($property,  $postData);
+  }
+
+  public function removeUnit(Property $property, PropertyUnit $propertyUnit) {
+    try {
+      PropertyService::removeUnit($property, $propertyUnit);
+    } catch (Exception $e) {
+      return redirect()->back()->withErrors($e->getMessage());
+    }
+  }
+
+  public function updateUnit(Property $property, PropertyUnit $propertyUnit) {
+    try {
+      $postData = request()->only(['name', 'price', 'description', 'bedrooms', 'area', 'bathrooms']);
+      PropertyService::updateUnit($propertyUnit, $postData);
+    } catch (Exception $e) {
+      return redirect()->back()->withErrors($e->getMessage());
+    }
   }
 }

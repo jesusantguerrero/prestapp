@@ -101,7 +101,7 @@ const handleSearch = debounce((query) => {
     return;
   }
   isLoading.value = true;
-  const params = props.endpoint?.includes("?") ? `search=${query}` : `?search=${query}`;
+  const params = props.endpoint?.includes("?") ? `&search=${query}` : `?search=${query}`;
 
   axios
     .get(`${props.endpoint}${params}`)

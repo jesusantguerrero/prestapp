@@ -92,31 +92,7 @@ class PropertyController extends InertiaController
       ];
     }
 
-    // Units
-    public function addUnit(Property $property) {
-      $postData = request()->only(['name', 'price', 'description', 'bedrooms', 'area', 'bathrooms']);
-      PropertyService::addUnit($property,  $postData);
-    }
-
-    public function removeUnit(Property $property, PropertyUnit $propertyUnit) {
-      try {
-        PropertyService::removeUnit($property, $propertyUnit);
-      } catch (Exception $e) {
-        return redirect()->back()->withErrors($e->getMessage());
-      }
-    }
-
-    public function updateUnit(Property $property, PropertyUnit $propertyUnit) {
-      try {
-        $postData = request()->only(['name', 'price', 'description', 'bedrooms', 'area', 'bathrooms']);
-        PropertyService::updateUnit($propertyUnit, $postData);
-      } catch (Exception $e) {
-        return redirect()->back()->withErrors($e->getMessage());
-      }
-    }
-
     // Tools
-
     public function managementTools(Request $request) {
       $teamId = $request->user()->current_team_id;
       $filters = $request->query('filters');

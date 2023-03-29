@@ -29,6 +29,40 @@ const backupGenerateForm = useForm({});
 const generateBackup = () => {
   if (!backupGenerateForm.processing) backupGenerateForm.post("/admin/backups");
 };
+
+const sendBackupForm = useForm({
+  fileName: "",
+  endpoint: "",
+});
+
+type BackupMethod = "send" | "download";
+const sendBackupFile = (fileName: string, endpoint: BackupMethod = "send") => {
+  const endpoints = {
+    send: {
+      url: "/admin/send-backup",
+      method: "post",
+    },
+    download: {
+      url: "/admin/backups/download",
+      method: "get",
+    },
+  };
+  if (!sendBackupForm.processing) sendBackupForm.fileName = fileName;
+  const endpointMode = endpoints[endpoint];
+  sendBackupForm.endpoint = endpoints[endpoint].url;
+  const method = endpointMode.method as string;
+  // @ts-ignore;
+  sendBackupForm[method](endpointMode.url, {
+    onSuccess() {
+      sendBackupForm.reset();
+    },
+  });
+};
+
+const isProcessing = (fileName: string, endpoint?: string) => {
+  const isSameFile = sendBackupForm.fileName == fileName && sendBackupForm.processing;
+  return endpoint ? endpoint == sendBackupForm.endpoint && isSameFile : isSameFile;
+};
 </script>
 
 <template>
@@ -74,11 +108,18 @@ const generateBackup = () => {
             <AppButton
               class="hover:text-primary transition items-center flex justify-center hover:border-primary-400"
               variant="neutral"
-              @click="
-                router.post(`/admin/send-backup`, {
-                  fileName: row,
-                })
-              "
+              @click="sendBackupFile(row, 'download')"
+              :disabled="isProcessing(row, '/backups/download')"
+              :processing="isProcessing(row, '/backups/download')"
+            >
+              <IMdiDownload class="mr-2" /> Download
+            </AppButton>
+            <AppButton
+              class="hover:text-primary transition items-center flex justify-center hover:border-primary-400"
+              variant="neutral"
+              @click="sendBackupFile(row)"
+              :disabled="isProcessing(row)"
+              :processing="isProcessing(row)"
             >
               <IMdiMail class="mr-2" /> Send
             </AppButton>

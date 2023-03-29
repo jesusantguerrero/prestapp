@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AtButton, AtField, AtInput } from "atmosphere-ui";
+import { AtButton, AtField, AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { format as formatDate } from "date-fns";
 import { ElDatePicker, ElDialog, ElNotification } from "element-plus";
 import { ref, watch, computed } from "vue";
@@ -53,6 +53,7 @@ function generatePaymentData() {
     payment_method_id: paymentMethods[0].id,
     paymentMethod: paymentMethods[0],
     date: new Date(),
+    is_paid_expense: false,
   };
 }
 
@@ -123,6 +124,7 @@ function onSubmit() {
     client_id: formData.value.client?.id ?? props.clientId,
     rent_id: formData.value.rent?.id ?? props.rentId,
     details: formData.value.notes,
+    is_paid_expense: formData.value.is_paid_expense,
   };
 
   isLoading.value = true;
@@ -193,10 +195,11 @@ function emitChange(value) {
       </section>
 
       <section>
-        <section class="flex">
+        <section class="flex space-x-4">
           <AppFormField label="Fecha limite" class="w-6/12">
             <ElDatePicker v-model="formData.date" size="large" class="w-full" rounded />
           </AppFormField>
+
           <AppFormField class="w-6/12 text-left" label="Monto Recibido">
             <AtInput
               class="form-control"
@@ -204,8 +207,37 @@ function emitChange(value) {
               v-model="formData.amount"
               rounded
               required
+            >
+              <template #suffix>
+                <button
+                  class="w-32 px-2 transition"
+                  :class="[
+                    formData.is_paid_expense
+                      ? 'bg-success text-white font-bold'
+                      : 'bg-base-lvl-2 text-body-1',
+                  ]"
+                  @click.stop="formData.is_paid_expense = !formData.is_paid_expense"
+                >
+                  {{ formData.is_paid_expense ? "Pagado" : "No Pagado" }}
+                </button>
+              </template>
+            </AtInput>
+          </AppFormField>
+
+          <AppFormField
+            label="Metodo de pago"
+            class="w-full ml-4"
+            v-if="formData.is_paid_expense"
+          >
+            <AtSimpleSelect
+              v-model="formData.payment_method_id"
+              v-model:selected="formData.paymentMethod"
+              :options="paymentMethods"
+              placeholder="Seleccione metodo de pago"
+              class="w-full"
+              label="name"
+              key-track="id"
             />
-            {{ documentTotal }}
           </AppFormField>
         </section>
       </section>
@@ -252,7 +284,8 @@ function emitChange(value) {
         </AtButton>
         <AppButton
           :processing="isLoading"
-          :disabled="isLoading"
+          :disabled="isLoading || !formData.amount"
+          :title="!formData.amount && 'Debe ingresar un monto mayor a 0 para guardar'"
           variant="secondary"
           @click="onSubmit()"
         >

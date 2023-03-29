@@ -45,7 +45,7 @@ trait Querify
         }
 
         if ($this->whereRaw) {
-            $this->modelQuery->whereRaw($this->whereRaw);
+            $this->modelQuery->where(fn ($q) => $q->whereRaw($this->whereRaw));
         }
 
         if ($id) {

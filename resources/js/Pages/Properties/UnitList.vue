@@ -18,6 +18,7 @@ import { useServerSearch, IServerSearchData } from "@/utils/useServerSearch";
 import { Link } from "@inertiajs/vue3";
 import { propertyStatus } from "@/Modules/properties/constants";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
+import { ElMessageBox, ElNotification } from "element-plus";
 
 const props = defineProps<{
   units: IProperty[] | IPaginatedData<IProperty>;
@@ -67,7 +68,23 @@ const tableConfig = {
   pagination: true,
 };
 
-const deleteUnit = (unit: IUnit) => {};
+const deleteUnit = async (unit: IUnit) => {
+  const isConfirmed = await ElMessageBox.confirm(
+    `Estas seguro de eliminar la unidad ${unit.name}?`,
+    "Eliminar unidad"
+  );
+
+  if (!isConfirmed) return;
+  router.delete(`/properties/${unit.property_id}/units/${unit.id}`, {
+    onSuccess() {
+      ElNotification({
+        message: `Unidad ${unit.name} borrada con exito`,
+        title: "Unidad eliminada",
+        type: "success",
+      });
+    },
+  });
+};
 
 const section = ref("units");
 const sections: Record<string, any> = {

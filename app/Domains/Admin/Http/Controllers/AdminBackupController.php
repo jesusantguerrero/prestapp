@@ -2,20 +2,16 @@
 
 namespace App\Domains\Admin\Http\Controllers;
 
-use App\Domains\Admin\Services\CommandService;
-use App\Domains\Properties\Models\Property;
-use App\Domains\Properties\Models\PropertyUnit;
+use App\Domains\Admin\Services\BackupService;
 use App\Http\Controllers\InertiaController;
-use App\Models\Team;
-use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 
 class AdminBackupController extends InertiaController
 {
 
-  public function __construct(protected CommandService $commandService)
+  public function __construct(protected BackupService $backupService)
   {
-    $this->commandService = $commandService;
+    $this->backupService = $backupService;
   }
 
     public function list() {
@@ -23,7 +19,7 @@ class AdminBackupController extends InertiaController
         abort(403);
       }
       return inertia('Admin/BackupList', [
-          'data' => $this->commandService->listBackups(),
+          'data' => $this->backupService->list(),
       ]);
     }
 
@@ -31,7 +27,7 @@ class AdminBackupController extends InertiaController
       if (! Gate::allows('superadmin')) {
         abort(403);
       }
-      $this->commandService->generateBackup();
+      $this->backupService->generate();
     }
 
     public function removeFile() {
@@ -39,7 +35,7 @@ class AdminBackupController extends InertiaController
         abort(403);
       }
       $fileName = request()->post('fileName');
-      $this->commandService->removeBackupFile($fileName);
+      $this->backupService->removeFile($fileName);
     }
 
     public function sendFile() {
@@ -47,9 +43,17 @@ class AdminBackupController extends InertiaController
         abort(403);
       }
       $fileName = request()->post('fileName');
-      return inertia('Admin/BackupList', [
-          'data' => $this->commandService->sendBackupFile($fileName),
-      ]);
+      return  $this->backupService->sendFile($fileName);
+    }
+
+    public function downloadFile() {
+      if (! Gate::allows('superadmin')) {
+        abort(403);
+      }
+
+      $fileName = request()->get('fileName');
+      $file = $this->backupService->getBackupFile($fileName);
+      return response()->download($file, $fileName);
     }
 
 }
