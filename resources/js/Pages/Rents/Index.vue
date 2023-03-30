@@ -108,6 +108,7 @@ const deleteRent = async (rent: IRent) => {
           class="w-full md:flex"
           :has-filters="true"
           @clear="reset()"
+          @search="executeSearch"
           @blur="executeSearch"
         />
         <BaseSelect

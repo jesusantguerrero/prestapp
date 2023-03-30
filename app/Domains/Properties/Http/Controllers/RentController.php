@@ -17,7 +17,7 @@ class RentController extends InertiaController
     public function __construct(Rent $rent)
     {
         $this->model = $rent;
-        $this->searchable = ['name'];
+        $this->searchable = ['client_name', 'owner_name', 'address'];
         $this->templates = [
             "index" => 'Rents/Index',
             "create" => 'Rents/RentForm',

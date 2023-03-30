@@ -44,7 +44,8 @@ class RentService {
         $rent->client->update(['status' => ClientStatus::Active]);
         $rent->owner->checkStatus();
         PropertyTransactionService::createDepositTransaction($rent->fresh(), $rentData);
-        return PropertyTransactionService::generateFirstInvoice($rent);
+        PropertyTransactionService::generateFirstInvoice($rent);
+        RentService::generateUpToDate($rent->fresh(), true);
       });
 
     }
@@ -186,15 +187,18 @@ class RentService {
       }
     }
 
-    public static function generateUpToDate($rent) {
+    public static function generateUpToDate($rent, $areInvoicesPaid = false) {
       $dateTarget = $rent->end_date ?? date('Y-m-d');
       $nextDate = $rent->next_invoice_date;
       $generatedInvoices = [];
 
       while ($nextDate < $dateTarget) {
-        PropertyTransactionService::createInvoice([
-          'date' => $nextDate
-        ], $rent);
+        $invoiceData = [
+          'date' => $nextDate,
+          'is_paid' => $areInvoicesPaid
+        ];
+
+        PropertyTransactionService::createInvoice($invoiceData, $rent);
         $generatedInvoices[] = $nextDate;
         $nextDate = InvoiceHelper::getNextDate($nextDate)->format('Y-m-d');
       }

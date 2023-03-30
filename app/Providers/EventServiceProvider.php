@@ -39,6 +39,10 @@ class EventServiceProvider extends ServiceProvider
     }
 
     private function clearAuthHashes() {
+      foreach (array_keys(config('auth.guards')) as $guard) {
+        $hashName = "password_hash_". $guard;
+        session()->forget($hashName);
+      }
       session()->forget(array_unique(
         [
           'password_hash_sanctum',
