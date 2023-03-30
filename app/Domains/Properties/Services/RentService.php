@@ -125,8 +125,7 @@ class RentService {
         $query
         ->join('clients', 'clients.id', '=', 'invoices.client_id')
         ->join('rents', 'rents.id', '=', 'invoices.invoiceable_id')
-        ->groupBy(['clients.names', 'clients.id', 'invoices.debt', 'invoices.due_date', 'invoices.id', 'invoices.concept'])
-        ->take(5);
+        ->groupBy(['clients.names', 'clients.id', 'invoices.debt', 'invoices.due_date', 'invoices.id', 'invoices.concept']);
 
         return $query;
     }
@@ -188,11 +187,11 @@ class RentService {
     }
 
     public static function generateUpToDate($rent, $areInvoicesPaid = false) {
-      $dateTarget = $rent->end_date ?? date('Y-m-d');
+      $dateTarget =  now()->format('Y-m-d');
       $nextDate = $rent->next_invoice_date;
       $generatedInvoices = [];
 
-      while ($nextDate < $dateTarget) {
+      while ($nextDate && $nextDate < $dateTarget) {
         $invoiceData = [
           'date' => $nextDate,
           'is_paid' => $areInvoicesPaid
@@ -204,7 +203,7 @@ class RentService {
       }
 
       $rent->update([
-        'next_invoice_date' => $rent->end_date ? null : $nextDate,
+        'next_invoice_date' => $nextDate,
         'generated_invoice_dates' => array_merge($rent->generated_invoice_dates, $generatedInvoices)
       ]);
     }
