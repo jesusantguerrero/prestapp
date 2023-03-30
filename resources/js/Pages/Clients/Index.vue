@@ -156,6 +156,7 @@ const deleteClient = async (client: IClient) => {
           class="w-full md:flex"
           :has-filters="true"
           @clear="reset()"
+          @search="executeSearch"
           @blur="executeSearch"
         />
         <article class="flex space-x-2" v-if="type == 'lender'">

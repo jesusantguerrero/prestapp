@@ -17,7 +17,7 @@ class RentController extends InertiaController
     public function __construct(Rent $rent)
     {
         $this->model = $rent;
-        $this->searchable = ['name'];
+        $this->searchable = ['client_name', 'owner_name', 'address'];
         $this->templates = [
             "index" => 'Rents/Index',
             "create" => 'Rents/RentForm',
@@ -80,6 +80,15 @@ class RentController extends InertiaController
       }
 
       return true;
+    }
+
+    public function withPendingGeneration(RentService $rentService) {
+      return inertia($this->templates['index'], [
+        'rents' => $rentService->listWithInvoicesToGenerate(auth()->user()->current_team_id)->get(),
+        "filters" => [
+          "limit" => 0
+        ]
+      ]);
     }
 
     // Payments

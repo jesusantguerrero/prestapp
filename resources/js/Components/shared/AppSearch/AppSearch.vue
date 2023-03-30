@@ -27,6 +27,7 @@ const emit = defineEmits([
   "update:sorts",
   "update:filters",
   "update:modelValue",
+  "search",
   "clear",
   "blur",
   "focus",
@@ -87,7 +88,7 @@ const handleInput = useDebounceFn((searchText) => {
       @update:modelValue="handleInput"
       @focus="$emit('focus')"
       @blur="$emit('blur')"
-      @keydown.ctrl.enter="$emit('search')"
+      @keydown.enter.stop="$emit('search')"
     >
       <template #prefix>
         <button

@@ -50,6 +50,14 @@ class PropertyTransactionService {
         $data['payment_details'] = $formData['payment_details'];
       }
 
+      if (isset($formData['is_paid']) && $formData['is_paid']) {
+        $data['payment_details'] = [
+          'account_id' => $rent->property->account_id,
+          'concept' => "Pago {$data['concept']}",
+          'payment_method' => $data['payment_method'] ?? 'cash'
+        ];
+      }
+
       return Invoice::createDocument($data);
     }
 
