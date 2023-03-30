@@ -11,8 +11,11 @@ use Insane\Journal\Helpers\ReportHelper;
 class AccountStatWidget {
 
   public static function stats(int $teamId) {
+    $today = now()->timezone('America/Santo_Domingo')->format('Y-m-d');
+
     $loans = LoanInstallment::byTeam($teamId)
       ->where('amount_due', '>', 0)
+      ->where('due_date', '<=', $today)
       ->selectRaw('amount_due, due_date')
       ->select(DB::raw("
         sum(COALESCE(amount_due, 0)) outstanding,
@@ -23,7 +26,7 @@ class AccountStatWidget {
         END, 0)) overdue, team_id")
       )->first();
 
-      $today = now()->timezone('America/Santo_Domingo')->format('Y-m-d');
+
 
       $stats = DB::table('invoices')
       ->selectRaw('clients.names contact, clients.id contact_id, invoices.debt, invoices.due_date, invoices.id id, invoices.concept')

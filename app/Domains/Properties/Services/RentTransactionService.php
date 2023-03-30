@@ -34,7 +34,14 @@ class RentTransactionService {
 
         activity()
         ->performedOn($invoice)
-        ->withProperties(compact($rentId, $clientName, $amount, $debt, $date, $dueDate))
+        ->withProperties([
+          "rent_id" => $rentId,
+          "client_id" => $clientName,
+          "orphans" => $amount,
+          "debt" => $debt,
+          "date" => $date,
+          "dueDate" => $dueDate
+        ])
         ->log("$author deleted orphan invoice for this the rent from $rentId of $clientName");
       }
     }
