@@ -123,18 +123,18 @@ export const useServerSearch = (serverSearchData: Ref<IServerSearchData>, onUrlC
     const dates = parseDateFilters(serverSearchData)
     const state = reactive<ISearchState>({
         filters: {
-            ...serverSearchData.value.filters,
+            ...(serverSearchData.value ? serverSearchData.value.filters : {}),
             date: null
         },
         dates: {
             startDate: dates.startDate,
             endDate: dates.endDate,
         },
-        sorts: serverSearchData.value.sorts,
-        limit: serverSearchData.value.limit,
-        relationships: serverSearchData.value.relationships,
-        search: serverSearchData.value.search,
-        page: serverSearchData.value.page
+        sorts: serverSearchData.value?.sorts,
+        limit: serverSearchData.value?.limit,
+        relationships: serverSearchData.value?.relationships,
+        search: serverSearchData.value?.search,
+        page: serverSearchData.value?.page
     });
 
 
@@ -157,6 +157,7 @@ export const useServerSearch = (serverSearchData: Ref<IServerSearchData>, onUrlC
     }
 
     function parseDateFilters(options: Ref<IServerSearchData>) {
+        if (!options.value) return {}
         const dates = options?.value.filters?.date ? options.value.filters.date.split('~') : [null, null]
 
         return {

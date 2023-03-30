@@ -82,6 +82,15 @@ class RentController extends InertiaController
       return true;
     }
 
+    public function withPendingGeneration(RentService $rentService) {
+      return inertia($this->templates['index'], [
+        'rents' => $rentService->listWithInvoicesToGenerate(auth()->user()->current_team_id)->get(),
+        "filters" => [
+          "limit" => 0
+        ]
+      ]);
+    }
+
     // Payments
     public function payInvoice(Rent $rent, Invoice $invoice) {
         RentService::payInvoice($rent, $invoice, $this->getPostData());

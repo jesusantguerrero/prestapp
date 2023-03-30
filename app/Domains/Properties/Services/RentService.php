@@ -95,6 +95,15 @@ class RentService {
         'unit'
       ])->first();
     }
+
+    // stats
+    public function listWithInvoicesToGenerate($teamId) {
+      return Rent::whereNot('status', Rent::STATUS_CANCELLED)
+        ->where('team_id', $teamId)
+        ->whereRaw('next_invoice_date < curdate() AND (end_date > curdate() or end_date is null)')
+        ->with(['client', 'property', 'unit']);
+    }
+
     //  payments / invoices
     public static function invoices($teamId, $statuses = []) {
       $query = Invoice::selectRaw('

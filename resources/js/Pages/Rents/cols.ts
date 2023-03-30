@@ -27,11 +27,11 @@ export default [
             return h('div', { class: 'px-4' }, [
               h('div', { class: 'flex items-center space-x-2' }, [
                 h(ElAvatar, { shape: 'circle' }, initials),
-                h('span', clientName)
+                h('span', { class: 'text-xs'}, clientName)
               ]),
-              h('div', { class: 'flex items-center text-primary font-bold'}, [
+              h('div', { class: 'flex items-center text-primary font-bold mt-2'}, [
                 h(IconMarker, { class: 'text-primary font-bold'}),
-                h('span', row.property?.short_name)
+                h('span', { class: 'text-xs' }, row.property?.short_name)
               ]),
           ]);
         }
