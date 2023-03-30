@@ -52,6 +52,9 @@ const props = defineProps({
   bank: {
     type: Number,
   },
+  isTeamApproved: {
+    type: Boolean,
+  },
 });
 
 const welcomeCards = [
@@ -147,7 +150,7 @@ const { openTransactionModal } = useTransactionModal();
 </script>
 
 <template>
-  <DashboardTemplate :user="user">
+  <DashboardTemplate :user="user" :is-team-approved="isTeamApproved">
     <WelcomeWidget
       message="Bienvenido a ICLoan"
       :username="user.name"

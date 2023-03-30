@@ -44,6 +44,9 @@ const props = defineProps({
   pendingDraws: {
     type: Object,
   },
+  isTeamApproved: {
+    type: Boolean,
+  },
 });
 
 const propertyStats = [
@@ -146,7 +149,7 @@ const interestPerformance = {
 </script>
 
 <template>
-  <DashboardTemplate :user="user" class="pb-10">
+  <DashboardTemplate :user="user" class="pb-10" :is-team-approved="isTeamApproved">
     <header class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
       <WelcomeWidget
         message="Estadisticas de propiedades"

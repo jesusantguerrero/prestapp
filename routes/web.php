@@ -76,7 +76,7 @@ Route::middleware([
 ])->group(function () {
     Route::get('/', fn () => redirect("/dashboard"));
 
-    Route::get('/dashboard/section', DashboardController::class)->name('dashboard.section');
+    Route::get('/dashboard/{section}', DashboardController::class)->name('dashboard.section');
 
     Route::get('/search', [SearchController::class, 'index']);
      // CRM
