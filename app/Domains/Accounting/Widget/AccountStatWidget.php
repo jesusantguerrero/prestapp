@@ -33,6 +33,7 @@ class AccountStatWidget {
           'invoiceable_type' => Rent::class
         ])
         ->where('debt', '>', 0)
+        ->where('due_date', '<=', $today)
         ->selectRaw("
             COALESCE(sum(debt), 0) as outstanding,
             COALESCE(sum(
@@ -46,9 +47,6 @@ class AccountStatWidget {
           [$today, $today]
         )->join('clients', 'clients.id', '=', 'invoices.client_id')
         ->first();
-
-        dd($stats, $today);
-        // 5,30,31,58,59,60,61,62,63,67,69
 
         $stats = collect([$loans, $stats])->reduce(function($stats, $item) {
         $stats['outstanding'] += $item->outstanding;

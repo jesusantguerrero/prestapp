@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Domains\Properties\Services\RentTransactionService;
 use Illuminate\Console\Command;
 
 class RemoveOrphansInvoices extends Command
@@ -11,7 +12,7 @@ class RemoveOrphansInvoices extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'app:remove-orphans-rent-invoices {teamId}';
 
     /**
      * The console command description.
@@ -27,6 +28,9 @@ class RemoveOrphansInvoices extends Command
      */
     public function handle()
     {
+        $teamId = $this->argument('teamId');
+
+        RentTransactionService::removeOrphansInvoices($teamId);
         return Command::SUCCESS;
     }
 }
