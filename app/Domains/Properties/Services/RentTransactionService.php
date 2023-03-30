@@ -4,6 +4,7 @@ namespace App\Domains\Properties\Services;
 
 use App\Domains\Accounting\Helpers\InvoiceHelper;
 use App\Domains\Properties\Models\Rent;
+use Insane\Journal\Models\Core\Payment;
 use Insane\Journal\Models\Invoice\Invoice;
 
 class RentTransactionService {
@@ -57,6 +58,29 @@ class RentTransactionService {
         activity()
         ->performedOn($rent)
         ->log("Admin generated invoices for this rent from $rent->next_invoice_date");
+      }
+    }
+
+    public  static function fixPaymentDates($teamId) {
+      $payments = Payment::where('payments.team_id', $teamId)
+      ->where('payable_type', Invoice::class)
+      ->whereRaw('invoices.due_date <> payments.payment_date')
+      ->join('invoices', 'invoices.id', '=', 'payments.payable_id')
+      ->with(['payable'])
+      ->get();
+
+      echo "Payments to be updated ".count($payments);
+
+      foreach ($payments as $payment) {
+        $oldDate = $payment->payment_date;
+        $payment->update([
+          'payment_date' => $payment->payable->due_date
+        ]);
+        $payment->createTransaction();
+
+        activity()
+        ->performedOn($payment)
+        ->log("Admin updated payment date from $oldDate to $payment->payment_date");
       }
     }
 
