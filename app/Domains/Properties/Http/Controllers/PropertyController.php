@@ -99,12 +99,15 @@ class PropertyController extends InertiaController
       $ownerId = $filters['owner'] ?? null;
       $section = $filters['section'] ?? 'bills';
       $status = $filters['status'] ?? null;
-
+      $upToday = $filters['uptoday'] ?? null;
       $statuses = $status ? [$status] : [];
 
       $methods = [
         "bills" => fn() => ClientService::invoices($teamId, $ownerId)->get(),
-        "invoices" => fn() => RentService::invoices($teamId, $statuses)->get(),
+        "invoices" => fn() => RentService::invoices($teamId, $statuses)
+          ->orderByDesc('due_date')
+          ->where('due_date', '<=', now()->timezone('America/Santo_Domingo'))
+          ->get(),
         "commissions" => fn() => RentService::commissions($teamId)->get()
       ];
 

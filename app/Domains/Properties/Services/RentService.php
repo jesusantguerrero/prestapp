@@ -44,7 +44,8 @@ class RentService {
         $rent->client->update(['status' => ClientStatus::Active]);
         $rent->owner->checkStatus();
         PropertyTransactionService::createDepositTransaction($rent->fresh(), $rentData);
-        return PropertyTransactionService::generateFirstInvoice($rent);
+        PropertyTransactionService::generateFirstInvoice($rent);
+        RentService::generateUpToDate($rent->fresh(), true);
       });
 
     }
@@ -94,6 +95,15 @@ class RentService {
         'unit'
       ])->first();
     }
+
+    // stats
+    public function listWithInvoicesToGenerate($teamId) {
+      return Rent::whereNot('status', Rent::STATUS_CANCELLED)
+        ->where('team_id', $teamId)
+        ->whereRaw('next_invoice_date < curdate() AND (end_date > curdate() or end_date is null)')
+        ->with(['client', 'property', 'unit']);
+    }
+
     //  payments / invoices
     public static function invoices($teamId, $statuses = []) {
       $query = Invoice::selectRaw('
@@ -124,8 +134,7 @@ class RentService {
         $query
         ->join('clients', 'clients.id', '=', 'invoices.client_id')
         ->join('rents', 'rents.id', '=', 'invoices.invoiceable_id')
-        ->groupBy(['clients.names', 'clients.id', 'invoices.debt', 'invoices.due_date', 'invoices.id', 'invoices.concept'])
-        ->take(5);
+        ->groupBy(['clients.names', 'clients.id', 'invoices.debt', 'invoices.due_date', 'invoices.id', 'invoices.concept']);
 
         return $query;
     }
@@ -186,21 +195,24 @@ class RentService {
       }
     }
 
-    public static function generateUpToDate($rent) {
-      $dateTarget = $rent->end_date ?? date('Y-m-d');
+    public static function generateUpToDate($rent, $areInvoicesPaid = false) {
+      $dateTarget =  now()->format('Y-m-d');
       $nextDate = $rent->next_invoice_date;
       $generatedInvoices = [];
 
-      while ($nextDate < $dateTarget) {
-        PropertyTransactionService::createInvoice([
-          'date' => $nextDate
-        ], $rent);
+      while ($nextDate && $nextDate < $dateTarget) {
+        $invoiceData = [
+          'date' => $nextDate,
+          'is_paid' => $areInvoicesPaid
+        ];
+
+        PropertyTransactionService::createInvoice($invoiceData, $rent);
         $generatedInvoices[] = $nextDate;
         $nextDate = InvoiceHelper::getNextDate($nextDate)->format('Y-m-d');
       }
 
       $rent->update([
-        'next_invoice_date' => $rent->end_date ? null : $nextDate,
+        'next_invoice_date' => $nextDate,
         'generated_invoice_dates' => array_merge($rent->generated_invoice_dates, $generatedInvoices)
       ]);
     }

@@ -20,9 +20,9 @@ ICLoan is a Loan & Property Management Software that can handle properties with 
 
 ## ✨Features:
 
-* ### 💵 Loans:
-* ### 🏡 Property Management
-* ### 👨‍👩‍👧 Integrated Loan + Property Management dashboard**
+* 💵 Loans
+*  🏡 Property Management
+* 👨‍👩‍👧 Integrated Loan + Property Management dashboard**
 
 ## Scope
 ICLoan is an exploration in the property management area and it is a good alternative for property managers with an small portfolio. Compared to more mature software ICLoan doesnt handle 

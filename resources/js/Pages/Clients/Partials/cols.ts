@@ -21,10 +21,10 @@ export default function (t: Function) {
             const clientName = row.names + ' ' + row.lastnames
             const initials = row.names ? row.names[0] + row.lastnames[0] : '';
 
-            return h('div', { class: 'flex items-center space-x-2 px-4' }, [
+            return h('div', { class: 'flex items-center space-x-2 px-4 text-sm' }, [
                 h(ElAvatar, { shape: 'circle', width: 20, height: 20, maxWidth: 20, maxHeight: 20 }, initials),
                 h('div', { class: 'ml-2 w-full text-left'},  [
-                  h(Link, {class: 'font-bold text-primary', href: getClientLink(row)}, clientName),
+                  h(Link, {class: 'font-bold text-primary text-xs', href: getClientLink(row)}, clientName),
                   h('p', { class: 'text-body-1/80 text-sm'}, row.dni)
                 ]),
             ]);

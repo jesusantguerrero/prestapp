@@ -2,16 +2,9 @@
 
 namespace Tests\Feature\Property;
 
-use App\Domains\Accounting\Helpers\InvoiceHelper;
 use App\Domains\CRM\Enums\ClientStatus;
-use App\Domains\CRM\Models\Client;
-use App\Domains\Properties\Models\Property;
-use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Properties\Models\Rent;
 use App\Domains\Properties\Services\RentService;
-use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Insane\Journal\Models\Invoice\Invoice;
 use Tests\Feature\Property\Helpers\PropertyBase;
 
@@ -88,6 +81,42 @@ class RentTest extends PropertyBase
     $rent = Rent::first();
     $this->assertCount(1, $rent->rentInvoices);
     $this->assertEquals(3000, $rent->rentInvoices[0]->total);
+  }
+
+  public function testItShouldCreateRentWithInvoicesGenerated() {
+    $this->seed();
+    $this->actingAs($this->user);
+
+    $response = $this->post('/rents', array_merge($this->rentData, [
+      'deposit' => 12000,
+      'amount' => 6000,
+      'date' => now()->subMonths(8)->format('Y-m-d'),
+      'deposit_due' => now()->subMonths(8)->format('Y-m-d'),
+      'first_invoice_date' => now()->subMonths(7)->format('Y-m-d'),
+    ]));
+
+    $response->assertStatus(302);
+
+    $rent = Rent::first();
+    $this->assertCount(8, $rent->rentInvoices);
+  }
+
+  public function testItShouldCreateRentWithPaidInvoicesGenerated() {
+    $this->seed();
+    $this->actingAs($this->user);
+
+    $response = $this->post('/rents', array_merge($this->rentData, [
+      'deposit' => 12000,
+      'amount' => 6000,
+      'date' => now()->subMonths(8)->format('Y-m-d'),
+      'deposit_due' => now()->subMonths(8)->format('Y-m-d'),
+      'first_invoice_date' => now()->subMonths(7)->format('Y-m-d'),
+    ]));
+
+    $response->assertStatus(302);
+
+    $rent = Rent::first();
+    $this->assertCount(7, $rent->rentInvoices()->paid()->get());
   }
 
   public function testItShouldUpdateRent() {
