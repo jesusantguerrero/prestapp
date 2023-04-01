@@ -114,6 +114,7 @@ const deleteClient = async (client: IClient) => {
         <template #actions>
           <AppButton
             variant="inverse"
+            size="small"
             @click="router.visit(route('properties.create'))"
             v-if="type == 'owner'"
           >
@@ -121,6 +122,7 @@ const deleteClient = async (client: IClient) => {
           </AppButton>
           <AppButton
             variant="inverse"
+            size="small"
             @click="router.visit(route('owners.draw'))"
             v-if="type == 'owner'"
           >
@@ -128,6 +130,7 @@ const deleteClient = async (client: IClient) => {
           </AppButton>
           <AppButton
             variant="inverse-secondary"
+            size="small"
             @click="router.visit(route('properties.create'))"
             v-else
           >
@@ -135,6 +138,7 @@ const deleteClient = async (client: IClient) => {
           </AppButton>
           <AppButton
             variant="secondary"
+            size="small"
             @click="
               toggleModal({
                 data: {

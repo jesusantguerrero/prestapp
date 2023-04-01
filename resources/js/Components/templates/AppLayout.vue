@@ -271,7 +271,7 @@ function refresh() {
         </header>
 
         <!-- Page Content -->
-        <main class="pt-0 md:pt-8 mx-auto md:px-24">
+        <main class="pt-0 md:pt-8 mx-auto px-4">
           <slot />
         </main>
         <MobileMenuBar :menu="mobileMenu" @action="handleActions" />

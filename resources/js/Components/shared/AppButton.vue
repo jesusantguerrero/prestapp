@@ -2,6 +2,7 @@
   <AtButton
     class="inline-block font-bold items-center flex transition border rounded-md min-w-max"
     :class="[typeClasses]"
+    :size="size"
   >
     <component :is="icon" v-if="icon" />
     <slot v-if="!processing" />
@@ -37,6 +38,13 @@ const props = defineProps({
   },
   processing: {
     type: Boolean,
+  },
+  size: {
+    type: String,
+    default: "normal",
+    validator(value: string) {
+      return ["small", "normal", "large"].includes(value);
+    },
   },
 });
 
