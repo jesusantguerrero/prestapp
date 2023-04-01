@@ -64,10 +64,6 @@ trait Querify
         return $result;
     }
 
-    public function getServerParams() {
-        return $this->serverParams;
-    }
-
     private function getSearch($search)
     {
 
