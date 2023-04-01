@@ -59,10 +59,6 @@ const propertyStats = [
     icon: "fa-money",
     value: `${props.stats?.rented || 0} / ${props.stats?.available || 0}`,
   },
-  {
-    label: "Comisiones pagadas/mes",
-    value: formatMoney(props.paidCommissions || 0),
-  },
 ];
 
 const ownerStats = [
