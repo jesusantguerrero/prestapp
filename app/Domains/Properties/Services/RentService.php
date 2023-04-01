@@ -226,18 +226,20 @@ class RentService {
             throw new Exception("This invoice is already paid");
         }
 
-        $invoice->createPayment(array_merge($postData, [
-          "client_id" => $rent->client_id,
-          "account_id" => $formData['account_id'] ?? Account::findByDisplayId('real_state', $rent->team_id)->id,
-          "documents" => [[
-              "payable_id" => $invoice->id,
-              "payable_type" => Invoice::class,
-              "amount" => $postData['amount']
-          ]]
-        ]));
+        DB::transaction(function () use ($invoice, $postData, $rent) {
+          $invoice->createPayment(array_merge($postData, [
+            "client_id" => $rent->client_id,
+            "account_id" => $formData['account_id'] ?? Account::findByDisplayId('real_state', $rent->team_id)->id,
+            "documents" => [[
+                "payable_id" => $invoice->id,
+                "payable_type" => Invoice::class,
+                "amount" => $postData['amount'] ?? $invoice->debt
+            ]]
+          ]));
 
-        $invoice->save();
-        $rent->client->checkStatus();
+          $invoice->save();
+          $rent->client->checkStatus();
+        });
 
     }
 

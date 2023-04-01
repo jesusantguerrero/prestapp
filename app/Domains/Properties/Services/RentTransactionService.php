@@ -15,6 +15,14 @@ class RentTransactionService {
       ->whereDoesntHave('invoiceable');
     }
 
+    public static function invoicesAsOf($teamId, $date, $status = [Invoice::STATUS_OVERDUE, Invoice::STATUS_UNPAID]) {
+      return Invoice::where('invoiceable_type', Rent::class)
+      ->where('team_id', $teamId)
+      ->with(['invoiceable'])
+      ->where('due_date', '<=', $date)
+      ->whereIn('status', $status);
+    }
+
     public  static function removeOrphansInvoices($teamId) {
       $invoices = self::orphansInvoices($teamId, ['client'])->get();
       echo count($invoices);
@@ -84,6 +92,33 @@ class RentTransactionService {
       }
     }
 
+    public static function payOverdueInvoicesAsOf($teamId, $date) {
+      $invoices = self::invoicesAsOf($teamId, $date)->get();
+
+      echo "Invoices to be paid ".count($invoices);
+
+      foreach ($invoices as $invoice) {
+        if ($invoice->invoiceable) {
+          RentService::payInvoice($invoice->invoiceable, $invoice, [
+            'amount' => $invoice->debt ?? $invoice->total,
+            'payment_date' => $invoice->due_date,
+            'client_id' => $invoice->client_id,
+            'amount' => $invoice->debt,
+            'details' => 'Pago de ' . $invoice->concept,
+            'concept' => 'Pago de ' . $invoice->concept,
+          ]);
+
+          activity()
+          ->performedOn($invoice)
+          ->log("Admin paid invoice from {$invoice->client->display_name} of {$invoice->due_date}");
+        } else {
+          activity()
+          ->performedOn($invoice)
+          ->log("Admin couldn't pay invoice from {$invoice->client->display_name} of {$invoice->due_date}");
+        }
+      }
+    }
+
     public static function generateUpToDate($rent, $areInvoicesPaid = false) {
       $dateTarget =  now()->format('Y-m-d');
       $nextDate = $rent->next_invoice_date;
@@ -107,5 +142,4 @@ class RentTransactionService {
         'generated_invoice_dates' => array_merge($rent->generated_invoice_dates, $generatedInvoices)
       ]);
     }
-
 }

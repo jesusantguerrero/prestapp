@@ -5,14 +5,14 @@ namespace App\Console\Commands;
 use App\Domains\Properties\Services\RentTransactionService;
 use Illuminate\Console\Command;
 
-class GeneratePreviousRents extends Command
+class PayOverdueRentInvoices extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'app:generate-previous-invoices {teamId} {--P|paid}';
+    protected $signature = 'app:pay-overdue-rent-invoices {teamId} {date}';
 
     /**
      * The console command description.
@@ -28,11 +28,10 @@ class GeneratePreviousRents extends Command
      */
     public function handle()
     {
-
       $teamId = $this->argument('teamId');
-      $isPaid = $this->option('paid');
+      $date = $this->argument('date');
 
-      RentTransactionService::generatePendingInvoice($teamId, $isPaid);
+      RentTransactionService::payOverdueInvoicesAsOf($teamId, $date);
       return Command::SUCCESS;
     }
 }
