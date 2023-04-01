@@ -14,12 +14,9 @@ class RentReportController extends Controller
     // Tools
     public function monthlySummary(Request $request) {
       $teamId = $request->user()->current_team_id;
-      $filters = $request->query('filters');
+      $filters = $request->query('filter');
       $ownerId = $filters['owner'] ?? null;
-      $section = $filters['section'] ?? 'bills';
       $status = $filters['status'] ?? null;
-      $upToday = $filters['uptoday'] ?? null;
-      $search = $request->query('search');
       [$startDate, $endDate] = $this->getFilterDates($filters);
       $statuses = $status ? [$status] : [];
 
@@ -37,7 +34,7 @@ class RentReportController extends Controller
 
       return inertia('Properties/Transactions/InvoiceSummary',
       [
-          'invoices' => $invoices,
+          'invoices' => $invoices->groupBy('category_type'),
           'outstanding' => $invoices->sum('debt'),
           'paid' => $invoices->sum(function ($invoice) {
             return $invoice->total - $invoice->debt;
@@ -56,7 +53,7 @@ class RentReportController extends Controller
               ];
           }),
           "serverSearchOptions" => $this->getServerParams(),
-          "section" => $section
+          "section" => 'invoices'
       ]);
     }
 }

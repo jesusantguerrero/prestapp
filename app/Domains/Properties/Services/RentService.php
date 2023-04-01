@@ -119,6 +119,7 @@ class RentService {
           invoices.id id,
           invoices.status,
           invoices.invoiceable_id,
+          invoices.category_type,
           rents.address category,
           invoices.concept concept'
         )->where([

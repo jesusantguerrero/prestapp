@@ -35,7 +35,9 @@ const handleClick = (section: any, sectionName: string | number) => {
       :is-active-function="section.isActiveFunction"
       :selected-class="selectedClass"
       :label="section.label"
-    />
+    >
+      <slot name="title" :tab="section" :tabName="sectionName" />
+    </SectionNavTab>
     <div class="flex items-center justify-end py-1 ml-auto space-x-2">
       <slot name="actions" />
     </div>
