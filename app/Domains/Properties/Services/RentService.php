@@ -201,7 +201,10 @@ class RentService {
       $nextDate = $rent->next_invoice_date;
       $generatedInvoices = [];
 
-      while ($nextDate && $nextDate < $dateTarget) {
+      echo $rent->client_name . " Entering: $dateTarget - $nextDate" . PHP_EOL;
+
+      while ($nextDate && InvoiceHelper::getYearMonth($nextDate) <= InvoiceHelper::getYearMonth($dateTarget)) {
+        echo $rent->client_name . " Generated: $dateTarget - $nextDate" . PHP_EOL;
         $invoiceData = [
           'date' => $nextDate,
           'is_paid' => $areInvoicesPaid

@@ -15,10 +15,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-      $schedule->command('background:generate-invoices')->everyMinute();
-      $schedule->command('background:generate-invoices --late-fees')->everyMinute();
-      $schedule->command('background:generate-owner-distributions')->everyMinute();
-      $schedule->command('background:generate-loan-fees')->everyMinute();
+      $schedule->command('background:generate-invoices')->daily()->at('01:00');
+      $schedule->command('background:generate-invoices --late-fees')->daily()->at('01:00');
+      $schedule->command('background:generate-owner-distributions')->daily()->at('01:00');
+      $schedule->command('background:generate-loan-fees')->daily()->at('01:00');
       $schedule->command('backup:clean')->daily()->at('01:00');
       $schedule->command('backup:run --only-db')->daily()->at('01:30')->onFailure(function () {
         activity()
