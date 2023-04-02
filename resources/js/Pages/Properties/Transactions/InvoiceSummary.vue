@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, watch, nextTick, ref } from "vue";
+import { reactive, watch, nextTick, ref, computed } from "vue";
 // @ts-ignore
 import { AtBackgroundIconCard, AtDatePager } from "atmosphere-ui";
 import { router } from "@inertiajs/vue3";
@@ -15,7 +15,6 @@ import { IInvoice } from "@/Modules/invoicing/entities";
 import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
 import { usePrint } from "@/utils/usePrint";
 import Simple from "@/Pages/Journal/Invoices/printTemplates/Simple.vue";
-import ButtonGroup from "@/Components/ButtonGroup.vue";
 import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
 import {
   clientInteractions,
@@ -195,14 +194,16 @@ const onDelete = async (invoice: IInvoice) => {
 };
 
 const { t } = useI18n();
-const invoiceTypes = Object.keys(props.invoices);
-const selectedTab = ref(invoiceTypes[0]);
-const tabs = invoiceTypes.reduce((tabs: Record<string, any>, invoiceType: string) => {
-  tabs[invoiceType] = {
-    label: t(invoiceType),
-  };
-  return tabs;
-}, {});
+const invoiceTypes = computed(() => Object.keys(props.invoices));
+const selectedTab = ref(invoiceTypes.value[0]);
+const tabs = computed(() =>
+  invoiceTypes.value.reduce((tabs: Record<string, any>, invoiceType: string) => {
+    tabs[invoiceType] = {
+      label: t(invoiceType),
+    };
+    return tabs;
+  }, {})
+);
 </script>
 
 <template>
@@ -245,29 +246,8 @@ const tabs = invoiceTypes.reduce((tabs: Record<string, any>, invoiceType: string
           :value="total || 0"
         />
       </section>
-      <section class="flex space-x-4 mt-4">
-        <AppSearch
-          v-model.lazy="filters.search"
-          class="w-full md:flex"
-          :has-filters="true"
-        />
-        <BaseSelect
-          class="min-w-max"
-          :size="large"
-          :options="owners"
-          placeholder="Filtrar por dueño"
-          v-model="filters.owner"
-        />
-        <BaseSelect
-          placeholder="Filtrar"
-          :options="[]"
-          v-model="filters.status"
-          label="label"
-          track-by="name"
-        />
-      </section>
       <SectionNav
-        class="bg-base-lvl-3 w-full"
+        class="bg-base-lvl-3 w-full mt-4"
         selected-class="border-primary font-bold text-primary"
         v-model="selectedTab"
         :sections="tabs"
@@ -277,12 +257,35 @@ const tabs = invoiceTypes.reduce((tabs: Record<string, any>, invoiceType: string
             {{ tab.label }} ({{ invoices[tabName].length }})
           </h4>
         </template>
+        <template #actions>
+          <section class="flex space-x-4">
+            <AppSearch
+              v-model.lazy="filters.search"
+              class="w-full md:flex"
+              :has-filters="true"
+            />
+            <BaseSelect
+              class="min-w-max"
+              :size="large"
+              :options="owners"
+              placeholder="Filtrar por dueño"
+              v-model="filters.owner"
+            />
+            <BaseSelect
+              placeholder="Filtrar"
+              :options="[]"
+              v-model="filters.status"
+              label="label"
+              track-by="name"
+            />
+          </section>
+        </template>
       </SectionNav>
       <section v-for="(invoiceGroup, groupName) in invoices">
         <InvoiceTable
           v-if="groupName == selectedTab"
           :invoice-data="invoiceGroup"
-          class="mt-10 rounded-md bg-base-lvl-3"
+          class="rounded-md bg-base-lvl-3"
         >
           <template v-slot:actions="{ row }">
             <div class="flex justify-end items-center space-x-2s group">

@@ -37,6 +37,8 @@
           "hasPayments": "Este prestamo ya tiene pagos y no puede borrarse"
         }
     },
+    "rent": "Renta",
+    "deposit": "Deposito",
     "The percentage can't be greater than 100%": "El porcentaje no puede ser mayor a 100%",
     "This loan already has payments and can't be deleted": "Este prestamo ya tiene pagos y no puede borrarse",
     "Source account balance (:balance) is lower than loan amount (:amount), please fund your account :accountName": "El balance de la cuenta de origen (:balance) es menor al monto del prestamo (:amount), por favor transfiera a esta cuenta :accountName",
