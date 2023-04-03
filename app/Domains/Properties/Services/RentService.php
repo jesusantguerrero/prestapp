@@ -119,6 +119,7 @@ class RentService {
           invoices.id id,
           invoices.status,
           invoices.invoiceable_id,
+          invoices.category_type,
           rents.address category,
           invoices.concept concept'
         )->where([
@@ -137,6 +138,18 @@ class RentService {
         ->groupBy(['clients.names', 'clients.id', 'invoices.debt', 'invoices.due_date', 'invoices.id', 'invoices.concept']);
 
         return $query;
+    }
+
+    public static function invoiceByPaymentStatus($teamId) {
+      $startMonth = now()->startOfMonth()->format('Y-m-d');
+      $endMonth = now()->endOfMonth()->format('Y-m-d');
+
+      return  RentService::invoices($teamId)->select(DB::raw("sum(invoices.total) total, sum(invoices.total-debt) paid, sum(debt) outstanding, sum(
+        CASE
+        WHEN invoices.debt > 0 THEN 1
+        ELSE 0
+      END) outstandingInvoices"))
+      ->whereBetween('due_date', [$startMonth, $endMonth])->first();
     }
 
     public static function commissions($teamId, $statuses = []) {
@@ -200,7 +213,10 @@ class RentService {
       $nextDate = $rent->next_invoice_date;
       $generatedInvoices = [];
 
-      while ($nextDate && $nextDate < $dateTarget) {
+      echo $rent->client_name . " Entering: $dateTarget - $nextDate" . PHP_EOL;
+
+      while ($nextDate && InvoiceHelper::getYearMonth($nextDate) <= InvoiceHelper::getYearMonth($dateTarget)) {
+        echo $rent->client_name . " Generated: $dateTarget - $nextDate" . PHP_EOL;
         $invoiceData = [
           'date' => $nextDate,
           'is_paid' => $areInvoicesPaid
@@ -226,18 +242,20 @@ class RentService {
             throw new Exception("This invoice is already paid");
         }
 
-        $invoice->createPayment(array_merge($postData, [
-          "client_id" => $rent->client_id,
-          "account_id" => $formData['account_id'] ?? Account::findByDisplayId('real_state', $rent->team_id)->id,
-          "documents" => [[
-              "payable_id" => $invoice->id,
-              "payable_type" => Invoice::class,
-              "amount" => $postData['amount']
-          ]]
-        ]));
+        DB::transaction(function () use ($invoice, $postData, $rent) {
+          $invoice->createPayment(array_merge($postData, [
+            "client_id" => $rent->client_id,
+            "account_id" => $formData['account_id'] ?? Account::findByDisplayId('real_state', $rent->team_id)->id,
+            "documents" => [[
+                "payable_id" => $invoice->id,
+                "payable_type" => Invoice::class,
+                "amount" => $postData['amount'] ?? $invoice->debt
+            ]]
+          ]));
 
-        $invoice->save();
-        $rent->client->checkStatus();
+          $invoice->save();
+          $rent->client->checkStatus();
+        });
 
     }
 

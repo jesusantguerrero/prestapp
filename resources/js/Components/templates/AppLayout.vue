@@ -113,17 +113,19 @@ function refresh() {
         <div
           class="flex items-center justify-between h-16 pr-4 mx-auto sm:pr-6 lg:pr-8 text-body-1/80"
         >
-          <div class="flex items-center">
-            <AppButton @click="$emit('back')" v-if="showBackButton">
-              <IMdiChevronLeft />
-            </AppButton>
-            <h4
-              :class="[showBackButton ? 'lg:ml-2' : 'lg:ml-6']"
-              class="pl-4 md:pl-0 text-lg font-bold text-secondary"
-            >
-              {{ title }}
-            </h4>
-          </div>
+          <slot name="title">
+            <div class="flex items-center">
+              <AppButton @click="$emit('back')" v-if="showBackButton">
+                <IMdiChevronLeft />
+              </AppButton>
+              <h4
+                :class="[showBackButton ? 'lg:ml-2' : 'lg:ml-6']"
+                class="pl-4 md:pl-0 text-lg font-bold text-secondary"
+              >
+                {{ title }}
+              </h4>
+            </div>
+          </slot>
 
           <div class="flex justify-end h-16">
             <div class="flex items-center sm:ml-6">
@@ -271,7 +273,7 @@ function refresh() {
         </header>
 
         <!-- Page Content -->
-        <main class="pt-0 md:pt-8 mx-auto md:px-24">
+        <main class="pt-0 md:pt-8 mx-auto px-4">
           <slot />
         </main>
         <MobileMenuBar :menu="mobileMenu" @action="handleActions" />

@@ -8,6 +8,7 @@ use App\Domains\Properties\Http\Controllers\PropertyOwnerController;
 use App\Domains\Properties\Http\Controllers\PropertyTransactionController;
 use App\Domains\Properties\Http\Controllers\PropertyUnitController;
 use App\Domains\Properties\Http\Controllers\RentController;
+use App\Domains\Properties\Http\Controllers\RentReportController;
 use App\Domains\Properties\Http\Controllers\TenantRentController;
 use Illuminate\Support\Facades\Route;
 
@@ -42,6 +43,9 @@ Route::middleware([
     Route::delete('/rents/{rent}/invoices/{invoice}/payments/{payment}', [RentController::class, 'deletePayment']);
     Route::post('/rents/{rent}/generate-next-invoice', [RentController::class, 'generateNextInvoice']);
     Route::get('/rents/{rent}/{section}', [RentController::class, 'getSection']);
+
+    // reports
+    Route::get('/rent-reports/monthly-summary', [RentReportController::class, 'monthlySummary']);
 
     // property transactions
     Route::controller(PropertyTransactionController::class)->group(function () {

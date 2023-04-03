@@ -7,6 +7,7 @@ use App\Domains\Properties\Models\Rent;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Insane\Journal\Helpers\ReportHelper;
+use Insane\Journal\Models\Invoice\Invoice;
 
 class AccountStatWidget {
 
@@ -41,13 +42,13 @@ class AccountStatWidget {
             COALESCE(sum(debt), 0) as outstanding,
             COALESCE(sum(
             CASE
-            WHEN due_date < ? THEN debt
+            WHEN due_date < ? AND invoices.status = ? THEN debt
             ELSE 0
           END), 0) as overdue,
           GROUP_CONCAT(CASE
           WHEN due_date < ? then concat(invoices.id, ':', invoices.due_date) else '' end)
           ",
-          [$today, $today]
+          [$today, $today, Invoice::STATUS_OVERDUE]
         )->join('clients', 'clients.id', '=', 'invoices.client_id')
         ->first();
 

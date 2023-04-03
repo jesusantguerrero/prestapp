@@ -121,14 +121,14 @@ const { openTransactionModal } = useTransactionModal();
                 :value="formatMoney(paidCommissions.balance)"
               >
                 <template #footer>
-                  <p class="flex items-center text-xs text-success md:text-base" rounded>
+                  <p class="flex items-center text-xs text-success md:text-sm" rounded>
                     <IMdiArrowUpThick />
                     <span class="font-bold">
                       {{ formatMoney(accounts.cash_and_bank?.at(0)?.income ?? 0) }}
                       Recibido
                     </span>
                   </p>
-                  <p class="flex items-center text-xs text-error/70 md:text-base" rounded>
+                  <p class="flex items-center text-xs text-error/70 md:text-sm" rounded>
                     <IMdiArrowDownThick />
                     <span class="font-bold">
                       {{ formatMoney(accounts.cash_and_bank?.at(0)?.outcome ?? 0) }}
@@ -145,7 +145,7 @@ const { openTransactionModal } = useTransactionModal();
               >
                 <template #footer class="flex">
                   <Link
-                    class="flex items-center px-2 -ml-6 text-xs md:text-base text-error/70 hover:bg-error/10"
+                    class="flex items-center px-2 -ml-6 text-xs md:text-sm text-error/70 hover:bg-error/10"
                     rounded
                     href="/properties/management-tools?filters[owner]=&filters[property]=&filters[section]=invoices&filters[status]=overdue"
                   >

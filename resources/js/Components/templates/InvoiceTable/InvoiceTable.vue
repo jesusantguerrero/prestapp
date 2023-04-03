@@ -23,7 +23,7 @@ defineProps({
     :cols="cols"
     :tableData="invoiceData"
     :show-prepend="true"
-    class="mt-10 bg-base-lvl-3"
+    class="bg-base-lvl-3"
   >
     <template v-slot:date="{ scope: { row } }">
       <div>

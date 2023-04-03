@@ -37,6 +37,8 @@
           "hasPayments": "Este prestamo ya tiene pagos y no puede borrarse"
         }
     },
+    "rent": "Renta",
+    "deposit": "Deposito",
     "The percentage can't be greater than 100%": "El porcentaje no puede ser mayor a 100%",
     "This loan already has payments and can't be deleted": "Este prestamo ya tiene pagos y no puede borrarse",
     "Source account balance (:balance) is lower than loan amount (:amount), please fund your account :accountName": "El balance de la cuenta de origen (:balance) es menor al monto del prestamo (:amount), por favor transfiera a esta cuenta :accountName",
@@ -45,5 +47,17 @@
     "This client has active loans": "Este cliente tiene prestamos activos",
     "This unit is currently rented": "Esta unidad esta en renta actualmente",
     "This rent has payments and can't be eliminated": "Este contrato tiene pagos  y tienen que ser eliminados primero",
-    "This property has contracts and can't be eliminated": "Esta propiedad tiene contratos que tienen que ser eliminados primero"
+    "This property has contracts and can't be eliminated": "Esta propiedad tiene contratos que tienen que ser eliminados primero",
+    "january": "Enero",
+    "february": "Febrero",
+    "march": "Marzo",
+    "april": "Abril",
+    "may": "Mayo",
+    "june": "Junio",
+    "july": "Julio",
+    "august": "Agosto",
+    "september": "Septiembre",
+    "october": "Octubre",
+    "november": "Noviembre",
+    "december": "Diciembre"
   }

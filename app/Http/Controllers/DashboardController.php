@@ -30,16 +30,17 @@ class DashboardController extends Controller
     {
       $reportHelper = new ReportHelper();
       $teamId = $request->user()->current_team_id;
+      $startDate = now()->startOfYear()->format('Y-m-d');
+      $endDate = now()->endOfYear()->format('Y-m-d');
 
       return inertia('Dashboard/Index',
       [
-          "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId, ['real_state', 'loans', 'real_state_operative'] ,null, null, null)->all(), now()->format('Y')),
+          "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId, ['real_state', 'loans', 'real_state_operative'] ,$startDate, $endDate, null)->all(), now()->format('Y')),
           "stats" => AccountStatWidget::stats($teamId),
           'accounts' => $reportHelper->getTransactionsByAccount($teamId, ['real_state', 'loan_business', 'loans'] ,null, null, 'display_id'),
           'paidCommissions' => $reportHelper->smallBoxRevenue('real_state_operative', $teamId),
           'dailyBox' => $reportHelper->smallBoxRevenue('loan_business', $teamId),
           'realState' => Account::where(['team_id' => $teamId, 'display_id' => 'real_state'])->first(),
-          'logs' => Activity::all()->last(),
           'section' => "general",
           'pendingDraws' => OwnerService::pendingDrawsCount($teamId),
       ]);
@@ -49,15 +50,16 @@ class DashboardController extends Controller
       $reportHelper = new ReportHelper();
       $teamId = $request->user()->current_team_id;
 
+      $startDate = now()->startOfYear()->format('Y-m-d');
+      $endDate = now()->endOfYear()->format('Y-m-d');
+      $monthPassedInYear = now()->diffInMonths(now()->startOfYear());
+
       $propertyTotals = PropertyService::totalByStatusFor($teamId);
-
-      $invoices = RentService::invoices($teamId);
-
-
+      $rentTotals = RentService::invoiceByPaymentStatus($teamId);
 
       return inertia('Dashboard/Properties',
       [
-          "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId, ['real_state'] ,null, null, null)->all(), now()->format('Y')),
+          "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId, ['real_state'] ,$startDate, $endDate, null)->all(), now()->format('Y')),
           "stats" => [
             "total" => $propertyTotals->sum(),
             "available" => $propertyTotals->get(Property::STATUS_AVAILABLE),
@@ -70,13 +72,9 @@ class DashboardController extends Controller
               ->paid()
               ->sum('total')
           ],
-          "totals" => $invoices->select(DB::raw("sum(invoices.total) total, sum(invoices.total-debt) paid, sum(debt) outstanding, sum(
-            CASE
-            WHEN invoices.debt > 0 THEN 1
-            ELSE 0
-          END) outstandingInvoices"))->first(),
+          "totals" => $rentTotals,
           'pendingDraws' => OwnerService::pendingDrawsCount($teamId) ?? 0,
-          "paidCommissions" => AccountStatWidget::accountNetByPeriod($teamId, 'real_state_operative'),
+          "paidCommissions" => AccountStatWidget::accountNetByPeriod($teamId, 'real_state_operative', 'month', $monthPassedInYear),
           'section' => "realState"
       ]);
     }

@@ -52,4 +52,8 @@ class InvoiceHelper {
       $formatter = new NumberFormatter('es', NumberFormatter::SPELLOUT);
       return $formatter->format($number) . "\n";
     }
+
+    public static function getYearMonth($isoDate) {
+      return Carbon::createFromFormat('Y-m-d', $isoDate)->format('Y-m');
+    }
 }
