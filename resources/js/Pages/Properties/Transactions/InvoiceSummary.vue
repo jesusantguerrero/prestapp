@@ -9,7 +9,7 @@ import AppLayout from "@/Components/templates/AppLayout.vue";
 import InvoiceTable from "@/Components/templates/InvoiceTable";
 import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.vue";
 
-import { formatMoney } from "@/utils";
+import { formatDate, formatMoney } from "@/utils";
 import AppButton from "@/Components/shared/AppButton.vue";
 import { IInvoice } from "@/Modules/invoicing/entities";
 import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
@@ -204,10 +204,14 @@ const tabs = computed(() =>
     return tabs;
   }, {})
 );
+
+const sectionLabel = computed(() => {
+  return "Reporte rentas de" + formatDate(pageState?.dates?.startDate, "MMMM");
+});
 </script>
 
 <template>
-  <AppLayout title="Centro de pago">
+  <AppLayout :title="sectionLabel">
     <template #header>
       <PropertySectionNav>
         <template #actions>
@@ -258,7 +262,7 @@ const tabs = computed(() =>
           </h4>
         </template>
         <template #actions>
-          <section class="flex space-x-4">
+          <section class="flex space-x-4" v-if="false">
             <AppSearch
               v-model.lazy="filters.search"
               class="w-full md:flex"

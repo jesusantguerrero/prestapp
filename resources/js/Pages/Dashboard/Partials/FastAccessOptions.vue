@@ -72,6 +72,7 @@ const welcomeCards = computed(() => {
       action() {
         router.visit("/rents/create");
       },
+      extended: true,
     },
     {
       label: "Gasto de propiedad",
@@ -102,7 +103,6 @@ const welcomeCards = computed(() => {
       action() {
         router.visit("/rent-reports/monthly-summary");
       },
-      extended: true,
     },
   ];
 
