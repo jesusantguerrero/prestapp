@@ -94,7 +94,7 @@ const visibleCols = computed(() => {
 </script>
 
 <template>
-  <section class="pt-4 mb-24">
+  <section>
     <section class="flex justify-between items-center" :class="{ 'py-4': config.search }">
       <div class="w-full px-4" v-if="config.search">
         <AppSearch class="w-96" v-model="pagination.search" @search="$emit('search')" />
@@ -164,11 +164,10 @@ const visibleCols = computed(() => {
         </ElTableColumn>
       </ElTable>
     </section>
-    <section class="flex justify-between items-center py-4">
+    <section class="flex justify-between items-center py-4" v-if="config.pagination">
       <div class="w-full"></div>
       <div class="w-full flex justify-end">
         <ElPagination
-          v-if="config.pagination"
           class="w-full flex justify-end pr-4"
           background
           @current-change="$emit('paginate', $event)"

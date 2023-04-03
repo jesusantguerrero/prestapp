@@ -140,6 +140,18 @@ class RentService {
         return $query;
     }
 
+    public static function invoiceByPaymentStatus($teamId) {
+      $startMonth = now()->startOfMonth()->format('Y-m-d');
+      $endMonth = now()->endOfMonth()->format('Y-m-d');
+
+      return  RentService::invoices($teamId)->select(DB::raw("sum(invoices.total) total, sum(invoices.total-debt) paid, sum(debt) outstanding, sum(
+        CASE
+        WHEN invoices.debt > 0 THEN 1
+        ELSE 0
+      END) outstandingInvoices"))
+      ->whereBetween('due_date', [$startMonth, $endMonth])->first();
+    }
+
     public static function commissions($teamId, $statuses = []) {
       $query = InvoiceLineTax::selectRaw('
           clients.names client_name,

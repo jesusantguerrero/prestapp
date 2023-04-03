@@ -50,8 +50,52 @@ class OwnerService {
         return $query;
     }
 
-    public static function pendingDraws($teamId, $ownerId = null, $invoiceId = null) {
-      $invoices = Invoice::selectRaw('invoices.*, clients.display_name owner_name, properties.name property_name')
+    public static function withPendingDraws($teamId, $invoiceId = null) {
+      $invoices = Invoice::selectRaw("
+        count(invoices.id) month_count,
+        sum(invoices.total) as total,
+        monthname(due_date) invoice_month,
+        clients.display_name owner_name,
+        clients.id owner_id,
+        properties.name property_name
+      ")
+      ->paid()
+      ->byTeam($teamId)
+      ->where('invoiceable_type', Rent::class)
+      ->whereIn('category_type', [
+        PropertyInvoiceTypes::Rent,
+        PropertyInvoiceTypes::Deposit->value,
+        PropertyInvoiceTypes::DepositRefund->value,
+        PropertyInvoiceTypes::UtilityExpense->value,
+      ])
+      ->where(function ($query) use ($invoiceId) {
+        $query->doesntHave('relatedParents');
+        if ($invoiceId) {
+          $query->orWhere('invoice_relations.invoice_id', $invoiceId);
+        }
+      })
+      ->join('rents', 'invoiceable_id', 'rents.id')
+      ->join('properties', 'rents.property_id', 'properties.id')
+      ->join('clients', 'rents.owner_id', 'clients.id')
+      ->leftJoin('invoice_relations', 'related_invoice_id', 'invoices.id')
+      ->orderByDesc('due_date')
+      ->groupBy(DB::raw('owner_name, invoice_month'))
+      ->get();
+
+      return $invoices->groupBy('owner_name')->map(function ($byClient, $ownerName) {
+
+        return [
+          "owner_name" => $ownerName,
+          "owner_id" => $byClient->first()->owner_id,
+          "total" => $byClient->sum('month_count'),
+          "invoices" => $byClient,
+          "totalMonths" => $byClient->count()
+        ];
+      })->values();
+    }
+
+    public static function pendingDrawsInvoices($teamId, $ownerId = null, $invoiceId = null) {
+      $invoices = Invoice::selectRaw('invoices.*, monthname(due_date) invoice_month, clients.display_name owner_name, clients.id owner_id, properties.name property_name')
       ->paid()
       ->byTeam($teamId)
       ->where('invoiceable_type', Rent::class)
@@ -66,7 +110,7 @@ class OwnerService {
           if ($invoiceId) {
             $query->orWhere('invoice_relations.invoice_id', $invoiceId);
           }
-        })
+      })
       ->when($ownerId, function($query) use ($ownerId) {
         $query->where('rents.owner_id', $ownerId);
       })
@@ -74,15 +118,32 @@ class OwnerService {
       ->join('properties', 'rents.property_id', 'properties.id')
       ->join('clients', 'rents.owner_id', 'clients.id')
       ->leftJoin('invoice_relations', 'related_invoice_id', 'invoices.id')
-      ->get()
-      ->groupBy('owner_name');
+      ->orderByDesc('due_date')
+      ->get();
 
-      return $invoices->map(function ($byClient) {
-        return [
-          "owner_name" => $byClient->first()->owner_name,
-          "invoices" => $byClient,
-        ];
-      })->values();
+      if ($ownerId) {
+        return $invoices->groupBy('invoice_month')->map(fn ($months, $monthName) => [
+            "monthName" => $monthName,
+            "date" => $months->first()->due_date,
+            "owner_name" => $months->first()->owner_name,
+            "total" => $months->sum('total'),
+            "invoices" => $months,
+            "totalMonths" => $months->count()
+          ])->values();
+      } else {
+        return $invoices->map(function ($byClient) {
+          $months = $byClient->groupBy('month_name');
+
+          return [
+            "owner_name" => $byClient->first()->owner_name,
+            "owner_id" => $byClient->first()->owner_id,
+            "total" => $byClient->count(),
+            "invoices" => $months,
+            "totalMonths" => $months->count()
+          ];
+        })->values();
+      }
+
     }
 
     public static function pendingDrawsCount($teamId) {

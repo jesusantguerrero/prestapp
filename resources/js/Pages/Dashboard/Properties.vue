@@ -44,6 +44,9 @@ const props = defineProps({
   pendingDraws: {
     type: Object,
   },
+  totals: {
+    type: Object,
+  },
   isTeamApproved: {
     type: Boolean,
   },
@@ -159,7 +162,7 @@ const interestPerformance = {
               :goal="totals?.total"
               :current="totals?.paid"
               class="h-2.5 text-white rounded-md"
-              :progress-class="['bg-primary-shade-2', 'bg-primary-shade-1']"
+              :progress-class="['bg-primary', 'bg-primary/20']"
               :show-labels="false"
             >
               <template v-slot:before="{ progress }">
