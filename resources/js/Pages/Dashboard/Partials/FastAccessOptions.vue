@@ -92,6 +92,18 @@ const welcomeCards = computed(() => {
       },
       extended: true,
     },
+    {
+      label: "Reportes",
+      extended: true,
+    },
+    {
+      label: "Renta Mensual",
+      icon: "document",
+      action() {
+        router.visit("/rent-reports/monthly-summary");
+      },
+      extended: true,
+    },
   ];
 
   return options.filter((option) => props.extended || !option.extended);

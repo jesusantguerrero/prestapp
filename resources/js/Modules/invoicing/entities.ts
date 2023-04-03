@@ -5,6 +5,7 @@ export interface IInvoice {
   debt: number;
   transaction: Record<string, string>;
   payments: Record<string, string>[]
+  total: number;
 }
 
 export interface IInvoiceWithRelations extends IInvoice {

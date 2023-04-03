@@ -27,14 +27,7 @@ const listData = computed(() => {
 });
 
 const { serverSearchOptions } = toRefs(props);
-const {
-  executeSearch,
-  updateSearch,
-  changeSize,
-  paginate,
-  reset,
-  state: searchState,
-} = useServerSearch(
+const { executeSearch, updateSearch, reset, state: searchState } = useServerSearch(
   serverSearchOptions,
   (finalUrl: string) => {
     updateSearch(`/units?${finalUrl}`);

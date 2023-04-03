@@ -144,4 +144,8 @@ class InertiaController extends Controller {
     protected function getValidationRules($postData) {
         return $this->validationRules;
     }
+
+    protected function getServerParams() {
+      return $this->serverParams;
+    }
 }

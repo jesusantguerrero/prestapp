@@ -12,7 +12,7 @@ use Insane\Journal\Models\Invoice\Invoice;
 class GenerateInvoices {
 
     public static function scheduledRents() {
-      $rentWithInvoicesToCreate = Rent::whereRaw('next_invoice_date - curdate() <= 31')
+      $rentWithInvoicesToCreate = Rent::whereRaw('MONTHNAME(next_invoice_date) = MONTHNAME(curdate())')
       ->whereNotIn('status', [Rent::STATUS_CANCELLED, Rent::STATUS_PAID])
       ->get();
 

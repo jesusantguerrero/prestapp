@@ -1,6 +1,6 @@
 import { router } from '@inertiajs/vue3';
 import { format, parseISO } from "date-fns";
-import { reactive, Ref, watch }  from "vue"
+import { reactive, Ref, watch, nextTick }  from "vue"
 import { composeRangeYears } from ".";
 import { debounce } from 'lodash';
 
@@ -151,9 +151,16 @@ export const useServerSearch = (serverSearchData: Ref<IServerSearchData>, onUrlC
         { deep: true }
     );
 
-    const executeSearch = () => {
-      const url = parseParams(state)
-      onUrlChange && onUrlChange(url);
+    const executeSearch = (delay?: number) => {
+      if (!delay) {
+        const url = parseParams(state)
+        onUrlChange && onUrlChange(url);
+      } else {
+        nextTick(debounce(() => {
+          const url = parseParams(state)
+          onUrlChange && onUrlChange(url);
+        }, delay))
+      }
     }
 
     function parseDateFilters(options: Ref<IServerSearchData>) {
@@ -191,5 +198,6 @@ export const useServerSearch = (serverSearchData: Ref<IServerSearchData>, onUrlC
         changeSize,
         paginate,
         reset,
+        executeSearchWithDelay: (delay = 200) => executeSearch(delay)
     }
 }

@@ -40,14 +40,14 @@ class PropertyOwnerController extends InertiaController
       $filters = $request->query('filters');
       $ownerId = $filters ? $filters['owner'] : null;
 
-      $invoicesByClient = OwnerService::pendingDraws($teamId, $ownerId);
+      $invoicesByClient = $ownerId
+      ? OwnerService::pendingDrawsInvoices($teamId, $ownerId)
+      : OwnerService::withPendingDraws($teamId, $ownerId);
 
       return inertia('Properties/Transactions/OwnerDraws', [
         "invoices" => $invoicesByClient,
-        'outstanding' => 0,
-        'outstanding' => $invoicesByClient->sum(function ($client) {
-          return $client['invoices']->sum('total');
-        }),
+        'outstanding' => $invoicesByClient->sum('total'),
+        "owner" => $ownerId
       ]);
     }
 

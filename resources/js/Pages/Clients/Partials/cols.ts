@@ -16,7 +16,7 @@ export default function (t: Function) {
         label: 'Cliente',
         class: "text-center",
         headerClass: "text-center",
-        width: 300,
+        width: 350,
         render(row: IClient) {
             const clientName = row.names + ' ' + row.lastnames
             const initials = row.names ? row.names[0] + row.lastnames[0] : '';
@@ -30,13 +30,13 @@ export default function (t: Function) {
             ]);
         }
     },
-    {
-            name: 'cellphone',
-            label: 'Celular',
-            class: "text-center",
-            headerClass: "text-center",
-            width: 130,
-    },
+    // {
+    //         name: 'cellphone',
+    //         label: 'Celular',
+    //         class: "text-center",
+    //         headerClass: "text-center",
+    //         width: 130,
+    // },
     {
             name: 'address_details',
             label: 'Dirección',
@@ -66,7 +66,7 @@ export default function (t: Function) {
         label: 'Estado',
         align: 'center',
         class: 'text-center',
-        render(row: Any) {
+        render(row: any) {
             if (row.rent) {
               return h(ElTag, { type: getPropertyStatusColor(row.rent.status) }, t(`commons.${row.status}`))
             } else {
