@@ -206,7 +206,16 @@ const tabs = computed(() =>
 );
 
 const sectionLabel = computed(() => {
-  return "Reporte rentas de" + formatDate(pageState?.dates?.startDate, "MMMM");
+  return "Reporte rentas de " + formatDate(pageState?.dates?.startDate, "MMMM");
+});
+
+const isLoading = ref(false);
+router.on("start", (event) => {
+  isLoading.value = true;
+});
+
+router.on("finish", () => {
+  isLoading.value = false;
 });
 </script>
 
@@ -289,6 +298,7 @@ const sectionLabel = computed(() => {
         <InvoiceTable
           v-if="groupName == selectedTab"
           :invoice-data="invoiceGroup"
+          :is-loading="isLoading"
           class="rounded-md bg-base-lvl-3"
         >
           <template v-slot:actions="{ row }">

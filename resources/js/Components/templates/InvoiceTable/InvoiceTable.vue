@@ -7,32 +7,41 @@ import cols from "./cols";
 import { formatDate, formatMoney } from "@/utils";
 import { Link } from "@inertiajs/vue3";
 import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
+import { computed } from "vue";
 
-defineProps({
+const props = defineProps({
   invoiceData: {
     type: Array,
   },
   accountsEndpoint: {
     type: String,
   },
+  isLoading: {
+    type: Boolean,
+  },
+});
+
+const visibleData = computed(() => {
+  return props.isLoading ? [{}, {}, {}, {}] : props.invoiceData;
 });
 </script>
 
 <template>
   <BaseTable
     :cols="cols"
-    :tableData="invoiceData"
+    :tableData="visibleData"
     :show-prepend="true"
     class="bg-base-lvl-3"
   >
     <template v-slot:date="{ scope: { row } }">
-      <div>
+      <div v-if="!isLoading">
         <div class="font-bold text-blue-400">{{ formatDate(row.date) }}</div>
       </div>
+      <ElSkeleton :rows="1" animated v-else />
     </template>
 
     <template v-slot:concept="{ scope: { row } }">
-      <section>
+      <section v-if="!isLoading">
         <p>
           <Link
             :href="`/${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}`"
@@ -54,39 +63,48 @@ defineProps({
           </Link>
         </p>
       </section>
+      <ElSkeleton :rows="1" animated v-else />
     </template>
 
     <template v-slot:status="{ scope: { row } }">
-      <div class="font-bold capitalize text-sm" :class="getStatusColor(row.status)">
+      <div
+        class="font-bold capitalize text-sm"
+        :class="getStatusColor(row.status)"
+        v-if="!isLoading"
+      >
         <i :class="getStatusIcon(row.status)" />
         {{ getStatus(row.status) }}
       </div>
+      <ElSkeleton :rows="1" animated v-else />
     </template>
 
     <template v-slot:category="{ scope: { row } }">
-      <div class="font-bold capitalize text-primary">
+      <div class="font-bold capitalize text-primary" v-if="!isLoading">
         {{ row.category }}
       </div>
-      <p class="text-sm">
+      <p class="text-sm" v-if="!isLoading">
         {{ row.account_name }}
       </p>
+      <ElSkeleton :rows="1" animated v-else />
     </template>
 
     <template v-slot:total="{ scope: { row } }">
-      <div class="font-bold">
+      <div class="font-bold" v-if="!isLoading">
         {{ formatMoney(row.total) }}
         <p class="font-bold" :class="[row.debt > 0 ? 'text-red-500' : 'text-green-500']">
           {{ formatMoney(row.debt) }}
         </p>
       </div>
+      <ElSkeleton :rows="1" animated v-else />
     </template>
 
     <template v-slot:actions="{ scope: { row } }">
-      <slot name="actions" :row="row">
+      <slot name="actions" :row="row" v-if="!isLoading">
         <div class="flex items-center justify-end space-x-2">
           <InvoicePaymentOptions :invoice="row" :accounts-endpoint="accountsEndpoint" />
         </div>
       </slot>
+      <ElSkeleton :rows="1" animated v-else />
     </template>
   </BaseTable>
 </template>
