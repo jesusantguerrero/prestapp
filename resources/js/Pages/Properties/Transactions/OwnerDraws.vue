@@ -37,7 +37,9 @@ const filters = reactive({
 });
 
 const sectionLabel = computed(() => {
-  return `Facturas de ${props.invoices?.at?.(0)?.owner_name}`;
+  return props.owner
+    ? `Facturas de ${props.invoices?.at?.(0)?.owner_name}`
+    : "Distribucion de propietarios";
 });
 
 watch(
@@ -127,7 +129,7 @@ const drawCols = [
 
 const formData = useForm({
   client: null,
-  invoices: [] as IInvoice[],
+  invoices: [] as Record<string, string | number>[],
 });
 
 function handleSelection(selectedInvoices: IInvoice[]) {
@@ -181,6 +183,22 @@ router.on("finish", () => {
 
 <template>
   <AppLayout :title="sectionLabel">
+    <template #title>
+      <header class="flex space-x-2 px-4 py-2 items-center">
+        <AppButton
+          variant="neutral"
+          @click="filters.owner = null"
+          v-if="owner"
+          :processing="isLoading"
+          :disabled="isLoading"
+        >
+          <IMdiChevronLeft />
+        </AppButton>
+        <h4 class="font-bold text-xl text-body-1">
+          {{ sectionLabel }}
+        </h4>
+      </header>
+    </template>
     <template #header>
       <PropertySectionNav>
         <template #actions>
@@ -239,24 +257,16 @@ router.on("finish", () => {
           <section
             v-for="owner in invoices"
             @click="filters.owner = owner.owner_id"
-            class="flex justify-between mb-2 cursor-pointer transition-colors items-center px-2 hover:bg-primary/20"
+            class="flex justify-between group mb-2 cursor-pointer transition-colors items-center px-2 hover:bg-primary/20"
           >
             <h4>{{ owner.owner_name }} ({{ owner.totalMonths }}/ {{ owner.total }})</h4>
-            <AppButton>
+            <button class="group-hover:text-primary h-10">
               <IMdiChevronRight />
-            </AppButton>
+            </button>
           </section>
         </AppFormField>
 
         <template v-if="invoices?.length && owner && !isLoading">
-          <!-- <header class="flex space-x-2 px-4 py-2">
-            <button @click="filters.owner = null">
-              <IMdiChevronLeft />
-            </button>
-            <h4 class="font-bold text-2xl text-body-1">
-              {{ sectionLabel }}
-            </h4>
-          </header> -->
           <section v-for="invoiceInMonth in invoices">
             <header class="bg-primary text-center py-2 text-white capitalize">
               {{ $t(invoiceInMonth?.monthName?.toLowerCase()) }}
