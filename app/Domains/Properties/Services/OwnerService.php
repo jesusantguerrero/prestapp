@@ -95,7 +95,7 @@ class OwnerService {
     }
 
     public static function pendingDrawsInvoices($teamId, $ownerId = null, $invoiceId = null) {
-      $invoices = Invoice::selectRaw('invoices.*, monthname(due_date) invoice_month, clients.display_name owner_name, clients.id owner_id, properties.name property_name')
+      $invoices = Invoice::selectRaw('invoices.*, DATE_FORMAT(due_date, "%Y-%m-1") invoice_month, clients.display_name owner_name, clients.id owner_id, properties.name property_name')
       ->paid()
       ->byTeam($teamId)
       ->where('invoiceable_type', Rent::class)

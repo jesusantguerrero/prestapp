@@ -198,7 +198,16 @@ const interestPerformance = {
 
     <section class="mt-8 mb-24">
       <section class="flex lg:space-x-4 flex-col w-full lg:flex-row">
-        <section class="lg:w-7/12 space-y-4">
+        <article class="space-y-5 lg:w-7/12">
+          <ChartBar
+            class="bg-white shadow-md rounded-lg overflow-hidden"
+            title="Ganancias"
+            description="Ganancias por comisiones en el año"
+            :chart="interestPerformance"
+            :headerInfo="interestPerformance.headers"
+          />
+        </article>
+        <section class="lg:w-5/12 space-y-4">
           <IncomeSummaryWidget
             title="Flujo de efectivo"
             description="Movimiento de efectivo del año por mes en cuenta de inmobiliaria"
@@ -208,16 +217,6 @@ const interestPerformance = {
             :headerInfo="comparisonRevenue.headers"
           />
         </section>
-
-        <article class="order-1 space-y-5 lg:w-5/12 lg:order-2">
-          <ChartBar
-            class="bg-white shadow-md rounded-lg overflow-hidden"
-            title="Ganancias"
-            description="Ganancias por comisiones en el año"
-            :chart="interestPerformance"
-            :headerInfo="interestPerformance.headers"
-          />
-        </article>
       </section>
       <section class="flex mt-4 space-x-4">
         <PropertyInvoiceWidget class="w-full md:w-7/12" />

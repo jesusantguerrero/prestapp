@@ -12,7 +12,7 @@ class GeneratePreviousRents extends Command
      *
      * @var string
      */
-    protected $signature = 'app:generate-previous-invoices {teamId} {--P|paid}';
+    protected $signature = 'app:generate-previous-invoices {teamId} {date?} {--P|paid}';
 
     /**
      * The console command description.
@@ -29,6 +29,7 @@ class GeneratePreviousRents extends Command
     public function handle()
     {
 
+      $teamId = $this->argument('teamId');
       $teamId = $this->argument('teamId');
       $isPaid = $this->option('paid');
 
