@@ -75,11 +75,13 @@ const deleteRent = async (rent: IRent) => {
           </AppButton>
           <AppButton
           variant="neutral"
+          v-if="rents.status !== 'CANCELLED'"
           @click="router.visit(`/contacts/${rents.client_id}/tenants/rents/${rents.id}/renew`)"
         >
-          <i class="fa fa-ellipsis-h" />
+          Extender
         </AppButton>
           <AppButton
+            v-if="rents.status !== 'CANCELLED'"
             variant="error"
             class="flex flex-col items-center justify-center transition hover:text-error hover:border-red-400"
             @click="deleteRent(rents)"

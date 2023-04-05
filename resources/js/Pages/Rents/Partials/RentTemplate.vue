@@ -175,7 +175,12 @@ const generateNextInvoice = () => {
       <div
         class="w-full px-5 pt-10 pb-2 mb-5 space-y-5 text-gray-600 bg-white rounded-b-md"
       >
-        <div>Alquiler #{{ rents.id }} para {{ clientName }}</div>
+        <header class="flex justify-between">
+          <div>Alquiler #{{ rents.id }} para {{ clientName }}</div>
+          <div>
+            {{ $t(rents.status) }}
+          </div>
+        </header>
         <div class="flex space-x-2">
           <Link
             class="px-2 py-1 transition rounded-md cursor-pointer bg-gray-50 hover:bg-gray-200"

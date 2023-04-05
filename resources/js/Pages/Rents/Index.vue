@@ -16,6 +16,7 @@ import { getRangeParams } from "@/utils";
 import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
 import { IServerSearchData, useServerSearch } from "@/utils/useServerSearch";
 import { ElMessageBox } from "element-plus";
+import { rentStatus } from "@/Modules/properties/constants";
 
 interface IPaginatedData {
   data: IRent[];
@@ -44,7 +45,11 @@ const {
   }
 );
 
-const filters = ref({});
+const filters = ref({
+  status: rentStatus.find((status) => status.name === searchState.filters.status) ??
+    rentStatus[0],
+  endDate: null,
+});
 const expiringRanges = [
   {
     text: "Este mes",
@@ -63,6 +68,11 @@ const expiringRanges = [
     range: [null, 0],
   },
 ];
+
+const onStateSelected = (status: Record<string, string>) => {
+  searchState.filters.status = status.name;
+  executeSearch();
+};
 
 const setRange = (field: string, range: number[]) => {
   const params = getRangeParams(field, range);
@@ -114,6 +124,15 @@ const deleteRent = async (rent: IRent) => {
           @clear="reset()"
           @search="executeSearch"
           @blur="executeSearch"
+        />
+        <BaseSelect
+          placeholder="Filtrar"
+          :options="rentStatus"
+          v-model="filters.status"
+          label="label"
+          track-by="name"
+          size="large"
+          @update:model-value="onStateSelected"
         />
         <BaseSelect
           placeholder="Expira en"

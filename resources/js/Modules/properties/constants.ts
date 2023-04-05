@@ -58,16 +58,23 @@ export const RENT_STATUS = {
   },
   LATE: {
     label : 'en mora',
-    color: 'success'
+    color: 'warning'
   },
   PARTIALLY_PAID: {
-    label: 'Parcialmente pagado'
+    label: 'Parcialmente pagado',
+    color: 'success'
   },
   PAID: {
-    label: 'Pagado'
+    label: 'Pagado',
+    color: 'success'
   },
-  PENDING: {
-    label: 'Pendiente'
+  CANCELLED: {
+    label: 'Cancelado',
+    color: 'error'
+  },
+  EXPIRED: {
+    label: 'Vencido',
+    color: 'warning'
   }
 }
 
@@ -77,6 +84,11 @@ export const STATUS = Object.keys(PROPERTY_STATUS).reduce((keys, key: string) =>
 }, { })
 
 export const propertyStatus = Object.entries(PROPERTY_STATUS).map(([name, value]) => ({
+  name,
+  label: value.label
+}));
+
+export const rentStatus = Object.entries(RENT_STATUS).map(([name, value]) => ({
   name,
   label: value.label
 }));

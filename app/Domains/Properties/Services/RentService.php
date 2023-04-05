@@ -70,12 +70,14 @@ class RentService {
 
     public static function endTerm(Rent $rent, $formData) {
       if ($rent->status !== Rent::STATUS_CANCELLED) {
-        $rent->update(array_merge(
-          $formData,
-          ["status" => Rent::STATUS_CANCELLED
-        ]));
-        $rent->unit->update(['status' => Property::STATUS_AVAILABLE]);
-        return;
+        DB::transaction(function () use ($rent, $formData) {
+          $rent->update(array_merge(
+            $formData,
+            ["status" => Rent::STATUS_CANCELLED
+          ]));
+          $rent->unit->update(['status' => Property::STATUS_AVAILABLE]);
+        });
+        return $rent;
       }
       throw new Exception('Rent is already cancelled');
     }

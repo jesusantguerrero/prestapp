@@ -30,6 +30,7 @@
     "PENDING": "Pendiente",
     "PAID": "Pagado",
     "EXPIRED": "Vencido",
+    "CANCELLED": "Cancelado",
     "previous year": "Año anterior",
     "current year": "Este año",
     "Dashboard": "Inicio",
