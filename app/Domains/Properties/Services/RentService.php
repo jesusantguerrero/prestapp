@@ -99,13 +99,14 @@ class RentService {
       ])->first();
     }
 
-    public static function checkExpiringRents($teamId = null) {
-      $expiringRents = Rent::selectRaw('DATEDIFF(end_date, now()) AS diff_days,
-        CASE
-          WHEN DATEDIFF(end_date, now()) < 0 THEN "expired"
-          WHEN DATEDIFF(end_date, now()) > 0 AND DATEDIFF( end_date, now()) <= 31 THEN "within_month"
-          WHEN DATEDIFF(end_date, now()) > 31 AND DATEDIFF( end_date, now()) <= 60 THEN "next_month"
-          END
+    public static function expiredRents($teamId = null, $state = null) {
+      $stateRaw = 'CASE
+      WHEN DATEDIFF(end_date, now()) < 0 THEN "expired"
+      WHEN DATEDIFF(end_date, now()) > 0 AND DATEDIFF( end_date, now()) <= 31 THEN "within_month"
+      WHEN DATEDIFF(end_date, now()) > 31 AND DATEDIFF( end_date, now()) <= 60 THEN "next_month"
+      END';
+      return Rent::selectRaw("DATEDIFF(end_date, now()) AS diff_days,
+        $stateRaw
          as expire_in,
          date,
          end_date,
@@ -118,12 +119,17 @@ class RentService {
          generated_invoice_dates,
          owner_name,
          user_id
-      ')
+      ")
       ->whereNotNull('end_date')
       ->whereRaw('DATEDIFF(end_date, now()) <= 60')
       ->whereNotIn('status', [Rent::STATUS_CANCELLED])
       ->when($teamId, fn ($q) => $q->where('team_id', $teamId))
+      ->when($state, fn ($q) => $q->whereRaw("$stateRaw = '$state'"))
       ->get();
+    }
+
+    public static function checkExpiringRents($teamId = null) {
+      $expiringRents = Rent::expiredRents($teamId)->get();
 
       $expiringRents = $expiringRents->groupBy('expire_in');
 
