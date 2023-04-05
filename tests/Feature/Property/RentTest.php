@@ -4,7 +4,7 @@ namespace Tests\Feature\Property;
 
 use App\Domains\CRM\Enums\ClientStatus;
 use App\Domains\Properties\Models\Rent;
-use App\Domains\Properties\Services\RentService;
+use App\Domains\Properties\Services\RentTransactionService;
 use Insane\Journal\Models\Invoice\Invoice;
 use Tests\Feature\Property\Helpers\PropertyBase;
 
@@ -185,7 +185,7 @@ class RentTest extends PropertyBase
     ]));
 
     $rent = Rent::first();
-    RentService::generateUpToDate($rent);
+    RentTransactionService::generateUpToDate($rent);
     $this->assertCount(12, $rent->invoices()->get());
   }
 
