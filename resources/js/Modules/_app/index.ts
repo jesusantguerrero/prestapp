@@ -2,10 +2,11 @@ import { Ref } from 'vue';
 import { cloneDeep } from 'lodash';
 import { Link } from "@inertiajs/vue3"
 import IMdiPlus from '~icons/mdi/plus-thick';
+import MaterialSymbolsDashboard from '~icons/material-symbols/dashboard'
 
 export * from "./menus";
 interface IAppMenuItem {
-  icon: string;
+  icon?: string | Object;
   name: string;
   label: string;
   to: string;
@@ -16,7 +17,7 @@ interface IAppMenuItem {
 export const useAppMenu = (isTeamApproved: Ref<boolean>) => {
     const appMenu: IAppMenuItem[] =  [
         {
-            icon: 'fa fa-home',
+          icon: 'fa fa-home',
             name: 'home',
             label: 'Inicio',
             to: '/dashboard',

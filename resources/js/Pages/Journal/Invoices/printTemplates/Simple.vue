@@ -137,7 +137,13 @@ const { tableData, client, invoice, totals, totalValues, dueDays } = toRefs(stat
         :is-editing="false"
         :hidden-cols="['quantity', 'discount']"
         class="mt-10 main-grid w-full"
-      />
+      >
+        <template #prepend>
+          <div class="text-body-1 font-bold text-center text-lg py-1">
+            {{ invoice.concept }} {{ invoice.description }}
+          </div>
+        </template>
+      </InvoiceGrid>
 
       <div class="flex justify-end px-4 mt-10 text-gray-600">
         <InvoiceTotals
@@ -172,6 +178,8 @@ const { tableData, client, invoice, totals, totalValues, dueDays } = toRefs(stat
           </article>
         </section>
       </div>
+
+      <span class="stamp is-approved" v-if="invoice.debt == 0">Pagado</span>
     </div>
   </section>
 </template>
@@ -293,9 +301,44 @@ section {
   }
 }
 
+.stamp {
+  transform: rotate(12deg);
+  color: #555;
+  font-size: 3rem;
+  font-weight: 700;
+  border: 0.25rem solid #555;
+  display: inline-block;
+  padding: 0.25rem 1rem;
+  text-transform: uppercase;
+  border-radius: 1rem;
+  font-family: "Courier";
+  -webkit-mask-image: url("/grunge.png");
+  -webkit-mask-size: 944px 604px;
+  mix-blend-mode: multiply;
+}
+
+.is-approved {
+  color: #0a9928;
+  border: 0.5rem solid #0a9928;
+  -webkit-mask-position: 13rem 6rem;
+  transform: rotate(-14deg);
+  font-size: 2.5rem;
+  border-radius: 0;
+}
+
+.is-draft {
+  color: #c4c4c4;
+  border: 1rem double #c4c4c4;
+  transform: rotate(-5deg);
+  font-size: 1.5rem;
+  font-family: "Open sans", Helvetica, Arial, sans-serif;
+  border-radius: 0;
+  padding: 0.5rem;
+}
+
 @media print {
   .section-body {
-    width: 210mm;
+    width: 100%;
     display: block;
     font-size: 12px;
   }

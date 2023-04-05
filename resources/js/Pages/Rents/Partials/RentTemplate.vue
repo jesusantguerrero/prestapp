@@ -186,13 +186,13 @@ const generateNextInvoice = () => {
       <section
         class="flex flex-col md:flex-row w-full md:space-x-8 rounded-t-none border-t-none"
       >
-        <article class="w-full space-y-2" :class="[hidePanel ? '' : 'md:w-9/12']">
+        <article class="w-full space-y-2" :class="[hidePanel ? '' : 'md:w-8/12']">
           <slot />
         </article>
 
         <article
           v-if="!hidePanel"
-          class="w-full md:w-3/12 mt-4 md:mt-0 p-4 space-y-2 rounded-md bg-base-lvl-3"
+          class="w-full md:w-4/12 mt-4 md:mt-0 p-4 space-y-2 rounded-md bg-base-lvl-3"
         >
           <section class="flex space-x-4">
             <AppButton class="w-full" variant="secondary" @click="generateNextInvoice">
