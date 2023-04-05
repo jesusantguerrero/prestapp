@@ -130,20 +130,26 @@ class OwnerService {
             "invoices" => $months,
             "totalMonths" => $months->count()
           ])->values();
-      } else {
-        return $invoices->map(function ($byClient) {
-          $months = $byClient->groupBy('month_name');
-
-          return [
-            "owner_name" => $byClient->first()->owner_name,
-            "owner_id" => $byClient->first()->owner_id,
-            "total" => $byClient->count(),
-            "invoices" => $months,
-            "totalMonths" => $months->count()
-          ];
-        })->values();
       }
 
+      return $invoices;
+    }
+
+    public static function pendingDrawsInvoicesByMonths($teamId) {
+      $invoices =  OwnerService::pendingDrawsInvoices($teamId);
+
+      return $invoices->groupBy('invoice_month')
+      ->map(function ($byClient) {
+        $owners = $byClient->groupBy('owner_name');
+
+        return [
+          "owner_name" => $byClient->first()->invoice_month,
+          "year_month" => $byClient->first()->due_date,
+          "total" => $byClient->count(),
+          "owners" => $owners,
+          "totalMonths" => $owners->count()
+        ];
+      })->values();
     }
 
     public static function pendingDrawsCount($teamId) {
@@ -152,6 +158,25 @@ class OwnerService {
       ->where('category_type', PropertyInvoiceTypes::OwnerDistribution->value)
       ->unpaid()
       ->count();
+    }
+
+    public  static function payOwnerDraftAsOf($teamId, $date) {
+      $months = OwnerService::pendingDrawsInvoicesByMonths($teamId)->sortBy('year_month')->values();
+      echo "Months covered".count($months);
+
+      foreach ($months as $month) {
+        foreach ($month['owners'] as $ownerInvoices) {
+          $owner = Client::find($ownerInvoices->first()->owner_id);
+          (new OwnerDistributionService($owner))->fromService($ownerInvoices);
+
+          $invoiceCount = count($ownerInvoices);
+          dd($month);
+
+          activity()
+          ->performedOn($owner)
+          ->log("Admin generated owner distribution of {$month['invoice_month']} for $owner->display_name with {$invoiceCount}");
+        }
+      }
     }
 
 }
