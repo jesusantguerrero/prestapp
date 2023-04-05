@@ -30,10 +30,11 @@ class GeneratePreviousRents extends Command
     {
 
       $teamId = $this->argument('teamId');
-      $teamId = $this->argument('teamId');
+      $date = $this->argument('date');
       $isPaid = $this->option('paid');
 
-      RentTransactionService::generatePendingInvoice($teamId, $isPaid);
+      // TODO: write test
+      RentTransactionService::generatePendingInvoice($teamId, $isPaid, $date);
       return Command::SUCCESS;
     }
 }

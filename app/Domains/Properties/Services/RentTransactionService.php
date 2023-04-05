@@ -55,7 +55,7 @@ class RentTransactionService {
       }
     }
 
-    public  static function generatePendingInvoice($teamId, $paidDate = false) {
+    public  static function generatePendingInvoice($teamId, $isPaid, $paidDate = false) {
       $rents = (new RentService())->listWithInvoicesToGenerate($teamId)->get();
 
       echo "Rents to be updated ".count($rents);
@@ -128,12 +128,14 @@ class RentTransactionService {
       echo "rent of $rent->client_name will be updated until $dateTarget" . PHP_EOL;
 
 
-
       while ($nextDate && $nextDate < $dateTarget) {
+        $markAsPaid = $areInvoicesPaid && (!$paidUntil || $paidUntil >= $nextDate);
         $invoiceData = [
           'date' => $nextDate,
-          'is_paid' => $areInvoicesPaid && (!$paidUntil || $paidUntil <= $nextDate)
+          'is_paid' => (boolean) $markAsPaid
         ];
+
+        echo "Date $nextDate $markAsPaid:  $paidUntil $nextDate" . PHP_EOL;
 
         PropertyTransactionService::createInvoice($invoiceData, $rent);
         $generatedInvoices[] = $nextDate;
