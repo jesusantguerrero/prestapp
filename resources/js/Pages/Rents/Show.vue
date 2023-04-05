@@ -57,7 +57,7 @@ const deleteRent = async (rent: IRent) => {
             Estatus:
             {{ $t(`commons.${rents.status}`) }}
           </p>
-          <p class="hover:bg-base-lvl-1 cursor-pointer py-2">
+          <p class="py-2 cursor-pointer hover:bg-base-lvl-1">
             Deposito {{ formatMoney(rents.deposit) }}
           </p>
         </section>
@@ -74,8 +74,14 @@ const deleteRent = async (rent: IRent) => {
             Terminar Contrato
           </AppButton>
           <AppButton
+          variant="neutral"
+          @click="router.visit(`/contacts/${rents.client_id}/tenants/rents/${rents.id}/renew`)"
+        >
+          <i class="fa fa-ellipsis-h" />
+        </AppButton>
+          <AppButton
             variant="error"
-            class="hover:text-error transition items-center flex flex-col justify-center hover:border-red-400"
+            class="flex flex-col items-center justify-center transition hover:text-error hover:border-red-400"
             @click="deleteRent(rents)"
           >
             <IMdiTrash />
@@ -87,10 +93,10 @@ const deleteRent = async (rent: IRent) => {
     <WelcomeWidget message="Detalles de propiedad" class="w-full text-body-1">
       <template #content>
         <UnitTitle
-          class="mt-4 hover:bg-white cursor-pointer px-4 py-2 bg-white rounded-md"
+          class="px-4 py-2 mt-4 bg-white rounded-md cursor-pointer hover:bg-white"
           :title="rents.address + ' ' + rents.unit?.name"
           :owner-name="rents.owner_name"
-          :owner-link="`/contacts/${rents.property.owner_id}/owners`"
+          :owner-link="`/contacts/${rents.property?.owner_id}/owners`"
           :tenant-name="formatMoney(rents.amount)"
         />
       </template>

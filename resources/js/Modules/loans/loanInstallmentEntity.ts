@@ -78,11 +78,11 @@ export class LoanTable {
 
     calculatePayment() {
         const interestRate = this.getFrequencyRate();
-        return MathHelper.loanPayment({
+        return interestRate ? MathHelper.loanPayment({
             interestRate,
             capital: this.capital,
             installments: this.count
-        })
+        }) : this.capital;
     }
 
     getMonthlyPayment() {
@@ -124,6 +124,7 @@ export class LoanTable {
             this.totalDebt += this.payment;
             this.totalInterest += interest;
             balance = finalBalance;
+            console.log(dueDate);
             dueDate = this.nextDateCalculator(dueDate, this.frequency);
         }
     }

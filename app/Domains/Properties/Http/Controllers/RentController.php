@@ -134,8 +134,10 @@ class RentController extends InertiaController
     }
 
     public function invoices(Rent $rent) {
+      $page = request()->query('page') ?? 1;
+
       return [
-        "invoices" => $rent->rentInvoices,
+        "invoices" => $rent->rentInvoices()->orderByDesc('due_date')->limit(25)->paginate($page),
       ];
     }
 

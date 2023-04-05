@@ -54,8 +54,8 @@ class TenantRentController extends Controller
 
   public function renewRentAction(Client $client, Rent $rent, Request $request) {
     try {
-      RentService::extend($rent, $request->only(['end_date', 'amount']));
-      return redirect("/clients/$client->id/contracts");
+      RentService::extend($rent, $request->only(['end_date', 'amount', 'paid_until']));
+      return redirect("/rents/$rent->id");
     } catch (Exception $e) {
       back()->withErrors(["error" => $e->getMessage()]);
     }

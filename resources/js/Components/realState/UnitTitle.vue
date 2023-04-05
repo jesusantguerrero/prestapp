@@ -6,21 +6,21 @@ defineProps<{
   title: string;
   ownerName: string;
   ownerLink?: string;
-  tenantName: string;
+  tenantName: string | number;
   price?: string;
-  detailDisplay: "col" | "row";
+  detailDisplay?: "col" | "row";
 }>();
 </script>
 
 <template>
   <section class="flex text-secondary">
-    <div class="rounded-md bg-base-lvl-2 w-10 border flex justify-center items-center">
+    <div class="flex items-center justify-center w-10 border rounded-md bg-base-lvl-2">
       <IMdiHomeFloor1 class="text-2xl" />
     </div>
     <article class="ml-2">
       <h4 class="font-bold">
         {{ title }}
-        <span v-if="price" class="text-success font-bold">{{ price }}</span>
+        <span v-if="price" class="font-bold text-success">{{ price }}</span>
       </h4>
       <section
         class="flex"

@@ -48,7 +48,7 @@ class RentService {
         $rent->owner->checkStatus();
         PropertyTransactionService::createDepositTransaction($rent->fresh(), $rentData);
         PropertyTransactionService::generateFirstInvoice($rent);
-        RentService::generateUpToDate($rent->fresh(), true);
+        RentTransactionService::generateUpToDate($rent->fresh(), true);
       });
 
     }
@@ -81,8 +81,12 @@ class RentService {
     }
 
     public static function extend(Rent $rent, $formData) {
-      if ($rent->status == Rent::STATUS_ACTIVE) {
+      if ($rent->status == Rent::STATUS_ACTIVE || $rent->status == Rent::STATUS_EXPIRED) {
+        $isExpired = now()->format('Y-m-d') > $rent->end_date;
         $rent->update($formData);
+        if ($isExpired) {
+          RentTransactionService::generateUpToDate($rent, isset($formData['paid_until']), $formData['paid_until'] ?? null);
+        }
         return;
       }
       throw new Exception('Rent is cant be extended/ ');
@@ -115,6 +119,7 @@ class RentService {
          id,
          owner_id,
          client_id,
+         team_id,
          property_id,
          generated_invoice_dates,
          owner_name,
@@ -160,6 +165,22 @@ class RentService {
         ->log("System notified about {$count} in $state status");
 
         echo "System notified about {$count} in $state status";
+      }
+    }
+
+    public static function updateExpiredRents($teamId = null) {
+      $expiredRents = RentService::expiredRents($teamId, 'expired');
+
+      foreach ($expiredRents as $expiredRent) {
+          $expiredRent->update([
+            'status' => Rent::STATUS_EXPIRED,
+            'next_invoice_date' => null,
+          ]);
+
+          activity()
+          ->causedBy($expiredRent)
+          ->log("System changed status of {$expiredRent->client_name} because expired on {$expiredRent->end_date}");
+
       }
     }
 
@@ -263,7 +284,7 @@ class RentService {
 
     public static function generateNextInvoice($rent) {
       if ($rent->end_date) {
-        self::generateUpToDate($rent);
+        RentTransactionService::generateUpToDate($rent);
       } else {
         PropertyTransactionService::createInvoice([
           'date' => $rent->next_invoice_date
@@ -273,31 +294,6 @@ class RentService {
           'generated_invoice_dates' => array_merge($rent->generated_invoice_dates, [$rent->next_invoice_date])
         ]);
       }
-    }
-
-    public static function generateUpToDate($rent, $areInvoicesPaid = false) {
-      $dateTarget =  now()->format('Y-m-d');
-      $nextDate = $rent->next_invoice_date;
-      $generatedInvoices = [];
-
-      echo $rent->client_name . " Entering: $dateTarget - $nextDate" . PHP_EOL;
-
-      while ($nextDate && InvoiceHelper::getYearMonth($nextDate) <= InvoiceHelper::getYearMonth($dateTarget)) {
-        echo $rent->client_name . " Generated: $dateTarget - $nextDate" . PHP_EOL;
-        $invoiceData = [
-          'date' => $nextDate,
-          'is_paid' => $areInvoicesPaid
-        ];
-
-        PropertyTransactionService::createInvoice($invoiceData, $rent);
-        $generatedInvoices[] = $nextDate;
-        $nextDate = InvoiceHelper::getNextDate($nextDate)->format('Y-m-d');
-      }
-
-      $rent->update([
-        'next_invoice_date' => $nextDate,
-        'generated_invoice_dates' => array_merge($rent->generated_invoice_dates, $generatedInvoices)
-      ]);
     }
 
     public static function payInvoice(Rent $rent, Invoice $invoice, mixed $postData) {

@@ -15,6 +15,14 @@ export const formatDate = (stringDate: string|Date, formatText = 'd MMM, yyyy') 
     return stringDate ?? emptyDate
   }
 }
+export const parseDate = (stringDate: string|Date): Date => {
+  try {
+    const date = typeof stringDate == 'string' ? parseISO(stringDate) : stringDate;
+    return date;
+  } catch (err) {
+    return stringDate
+  }
+}
 
 /**
  * Creates a list of a range of years between 'from' and 'to'
@@ -55,8 +63,16 @@ export const getRangeParams = (field: string, range: number[]|null, direction = 
 
     if (!range) return '';
 
-    const rangeString = range
+    let rangeString = range
       .map((dateCount) => dateToIso(method(date, dateCount)))
       .join("~");
+
+      debugger;
+
+    if (range.at(0) == null && range[1] !== null) {
+      rangeString = '<' + dateToIso(method(date, range[1]))
+    } else if (!range.at(1) !== null) {
+      rangeString = '>' + dateToIso(method(date, range[0]))
+    }
     return `filter[${field}]=${rangeString}`;
 }

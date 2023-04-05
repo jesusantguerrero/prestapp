@@ -58,6 +58,10 @@ const expiringRanges = [
     text: "Last 6 months",
     range: [180, 0],
   },
+  {
+    text: "Expired",
+    range: [null, 0],
+  },
 ];
 
 const setRange = (field: string, range: number[]) => {
@@ -125,7 +129,7 @@ const deleteRent = async (rent: IRent) => {
         >
       </section>
       <AtTable
-        class="bg-white rounded-md text-body-1 mt-4"
+        class="mt-4 bg-white rounded-md text-body-1"
         :table-data="listData"
         :cols="cols"
         :pagination="searchState"
@@ -136,18 +140,18 @@ const deleteRent = async (rent: IRent) => {
         :config="tableConfig"
       >
         <template v-slot:actions="{ scope: { row } }" class="flex">
-          <div class="flex justify-end items-center">
+          <div class="flex items-center justify-end">
             <UnitTag :status="row.status" />
 
             <Link
-              class="relative inline-block cursor-pointer ml-4 hover:bg-primary hover:text-white px-5 py-2 overflow-hidden font-bold text-body transition rounded-md focus:outline-none hover:bg-opacity-80 min-w-max"
+              class="relative inline-block px-5 py-2 ml-4 overflow-hidden font-bold transition rounded-md cursor-pointer hover:bg-primary hover:text-white text-body focus:outline-none hover:bg-opacity-80 min-w-max"
               :href="`/rents/${row.id}`"
             >
               <IMdiChevronRight />
             </Link>
             <div class="flex">
               <AppButton
-                class="hover:text-primary transition items-center flex flex-col justify-center hover:border-primary-400"
+                class="flex flex-col items-center justify-center transition hover:text-primary hover:border-primary-400"
                 variant="neutral"
                 @click="router.visit(`/property/${row.property_id}`)"
               >
@@ -158,7 +162,7 @@ const deleteRent = async (rent: IRent) => {
             </div>
             <AppButton
               variant="neutral"
-              class="hover:text-error transition items-center flex flex-col justify-center hover:border-red-400"
+              class="flex flex-col items-center justify-center transition hover:text-error hover:border-red-400"
               @click="deleteRent(row)"
             >
               <IMdiTrash />
