@@ -1,12 +1,16 @@
 import { addDays, format, parseISO, subDays } from "date-fns"
-import { computed } from "vue";
+import { es } from "date-fns/locale"
 export * from "./formatMoney";
 
 export const formatDate = (stringDate: string|Date, formatText = 'd MMM, yyyy') => {
   const emptyDate = '-- --- ----'
+  const dateOptions = {
+    locale: es
+  }
 
   try {
-    return typeof stringDate == 'string' ? format(parseISO(stringDate), formatText) : format(stringDate, formatText);
+    const date = typeof stringDate == 'string' ? parseISO(stringDate) : stringDate;
+    return format(date, formatText, dateOptions);
   } catch (err) {
     return stringDate ?? emptyDate
   }
@@ -48,9 +52,9 @@ export const dateToIso = (date: Date | null) => {
 export const getRangeParams = (field: string, range: number[]|null, direction = 'back') => {
     const date = new Date();
     const method = direction == 'back' ? subDays : addDays;
-    
+
     if (!range) return '';
-    
+
     const rangeString = range
       .map((dateCount) => dateToIso(method(date, dateCount)))
       .join("~");

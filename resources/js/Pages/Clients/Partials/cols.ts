@@ -3,9 +3,9 @@ import { h } from "vue";
 import { ElAvatar, ElTag } from "element-plus"
 import { getClientLink } from "@/Modules/clients/constants";
 // @ts-ignore
-import { getPropertyStatus, getPropertyStatusColor } from "@/Modules/properties/constants";
+import { getPropertyStatusColor } from "@/Modules/properties/constants";
 import IconMarker from '@/Components/icons/IconMarker.vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import UnitTitle from '@/Components/realState/UnitTitle.vue';
 import { formatMoney } from '@/utils';
 
@@ -42,14 +42,19 @@ export default function (t: Function) {
             label: 'Dirección',
             class: "text-left",
             headerClass: "text-left",
-            width: 300,
+            width: 400,
             render(row: IClient) {
               const address = row.rent ? row.rent.property.short_name : row.address_details
               if (row.rent) {
                 return h(UnitTitle, {
+                  class: 'cursor-pointer',
                   title:  row.rent.address,
                   ownerName: row.rent.owner_name,
                   tenantName: formatMoney(row.rent?.amount),
+                  detailDisplay: 'col',
+                  onClick() {
+                    router.visit(`/rents/${row.rent.id}`)
+                  }
                 })
               }
 

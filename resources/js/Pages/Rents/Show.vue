@@ -46,6 +46,10 @@ const deleteRent = async (rent: IRent) => {
             {{ formatDate(rents.date) }}
           </p>
           <p>
+            Contrato hasta:
+            {{ formatDate(rents.end_date) }}
+          </p>
+          <p>
             Proximo pago:
             {{ formatDate(rents.next_invoice_date) }}
           </p>

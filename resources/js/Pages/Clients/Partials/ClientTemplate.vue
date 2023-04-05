@@ -215,7 +215,7 @@ const sectionName = computed(() => {
                   class="w-full"
                   @click="clientInteractions.generateOwnerDistribution(clients.id)"
                 >
-                  Generar de propiedades
+                  Generar factura de propiedades
                 </AppButton>
               </section>
               <slot name="options">

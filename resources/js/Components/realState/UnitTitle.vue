@@ -8,6 +8,7 @@ defineProps<{
   ownerLink?: string;
   tenantName: string;
   price?: string;
+  detailDisplay: "col" | "row";
 }>();
 </script>
 
@@ -21,7 +22,10 @@ defineProps<{
         {{ title }}
         <span v-if="price" class="text-success font-bold">{{ price }}</span>
       </h4>
-      <section class="flex items-center">
+      <section
+        class="flex"
+        :class="[detailDisplay == 'col' ? 'flex-col items-start' : 'items-center']"
+      >
         <span v-if="!ownerLink"> {{ ownerName }}</span>
         <Link v-else :href="ownerLink"> {{ ownerName }}</Link>
         <template v-if="tenantName">

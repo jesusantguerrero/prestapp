@@ -12,7 +12,7 @@ class GeneratePreviousRents extends Command
      *
      * @var string
      */
-    protected $signature = 'app:generate-previous-invoices {teamId} {--P|paid}';
+    protected $signature = 'app:generate-previous-invoices {teamId} {date?} {--P|paid}';
 
     /**
      * The console command description.
@@ -30,9 +30,11 @@ class GeneratePreviousRents extends Command
     {
 
       $teamId = $this->argument('teamId');
+      $date = $this->argument('date');
       $isPaid = $this->option('paid');
 
-      RentTransactionService::generatePendingInvoice($teamId, $isPaid);
+      // TODO: write test
+      RentTransactionService::generatePendingInvoice($teamId, $isPaid, $date);
       return Command::SUCCESS;
     }
 }

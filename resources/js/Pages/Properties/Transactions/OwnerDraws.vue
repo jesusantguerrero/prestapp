@@ -269,7 +269,7 @@ router.on("finish", () => {
         <template v-if="invoices?.length && owner && !isLoading">
           <section v-for="invoiceInMonth in invoices">
             <header class="bg-primary text-center py-2 text-white capitalize">
-              {{ $t(invoiceInMonth?.monthName?.toLowerCase()) }}
+              {{ formatDate(invoiceInMonth?.monthName, "MMMM") }}
               {{ formatDate(invoiceInMonth?.date, "yyyy") }} ({{
                 invoiceInMonth.invoices.length
               }})
