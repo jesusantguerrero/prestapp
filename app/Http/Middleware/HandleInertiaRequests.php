@@ -51,7 +51,13 @@ class HandleInertiaRequests extends Middleware
                 ->orderBy('index')
                 ->with('subCategories')
                 ->get() : [''],
-            "isTeamApproved" => config('atmosphere.superadmin.email') === $user?->email || $team?->approved_at
+            "isTeamApproved" => config('atmosphere.superadmin.email') === $user?->email || $team?->approved_at,
+            'unreadNotifications' => function() use ($user) {
+              return [
+                "count" => $user ? $user->unreadNotifications->count() : 0,
+                "data" => $user ? $user->unreadNotifications : []
+              ];
+            },
         ]);
     }
 }

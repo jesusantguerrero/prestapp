@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 class ClientController extends InertiaController
 {
   use ClientTabs;
-  use ClientTenant;
 
   public function __construct(Client $client)
   {

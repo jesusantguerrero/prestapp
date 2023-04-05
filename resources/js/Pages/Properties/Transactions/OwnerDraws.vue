@@ -184,7 +184,7 @@ router.on("finish", () => {
 <template>
   <AppLayout :title="sectionLabel">
     <template #title>
-      <header class="flex space-x-2 px-4 py-2 items-center">
+      <header class="flex items-center px-4 py-2 space-x-2">
         <AppButton
           variant="neutral"
           @click="filters.owner = null"
@@ -194,7 +194,7 @@ router.on("finish", () => {
         >
           <IMdiChevronLeft />
         </AppButton>
-        <h4 class="font-bold text-xl text-body-1">
+        <h4 class="text-xl font-bold text-body-1">
           {{ sectionLabel }}
         </h4>
       </header>
@@ -233,7 +233,7 @@ router.on("finish", () => {
       </PropertySectionNav>
     </template>
 
-    <div class="mt-16 mx-auto sm:px-6 lg:px-8">
+    <div class="mx-auto mt-16 sm:px-6 lg:px-8">
       <section class="flex space-x-4">
         <AtBackgroundIconCard
           class="w-full bg-white border h-28 text-body-1"
@@ -252,15 +252,15 @@ router.on("finish", () => {
         />
       </section>
 
-      <div class="mt-4 bg-base-lvl-3 rounded-md overflow-hidden">
+      <div class="mt-4 overflow-hidden rounded-md bg-base-lvl-3">
         <AppFormField label="Propietario" v-if="!owner && !isLoading">
           <section
             v-for="owner in invoices"
             @click="filters.owner = owner.owner_id"
-            class="flex justify-between group mb-2 cursor-pointer transition-colors items-center px-2 hover:bg-primary/20"
+            class="flex items-center justify-between px-2 mb-2 transition-colors cursor-pointer group hover:bg-primary/20"
           >
             <h4>{{ owner.owner_name }} ({{ owner.totalMonths }}/ {{ owner.total }})</h4>
-            <button class="group-hover:text-primary h-10">
+            <button class="h-10 group-hover:text-primary">
               <IMdiChevronRight />
             </button>
           </section>
@@ -268,7 +268,7 @@ router.on("finish", () => {
 
         <template v-if="invoices?.length && owner && !isLoading">
           <section v-for="invoiceInMonth in invoices">
-            <header class="bg-primary text-center py-2 text-white capitalize">
+            <header class="py-2 text-center text-white capitalize bg-primary">
               {{ formatDate(invoiceInMonth?.monthName, "MMMM") }}
               {{ formatDate(invoiceInMonth?.date, "yyyy") }} ({{
                 invoiceInMonth.invoices.length
@@ -289,7 +289,7 @@ router.on("finish", () => {
                   <p>
                     <Link
                       :href="`/${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}`"
-                      class="text-blue-400 capitalize border-b border-blue-400 border-dashed cursor-pointer text-sm"
+                      class="text-sm text-blue-400 capitalize border-b border-blue-400 border-dashed cursor-pointer"
                     >
                       {{ row.description }}
                       <span class="font-bold text-gray-300">
@@ -299,10 +299,10 @@ router.on("finish", () => {
                   </p>
                   <p>
                     <Link
-                      class="text-sm text-body-1 mt-2"
+                      class="mt-2 text-sm text-body-1"
                       :href="`/clients/${row.client_id || row.contact_id}`"
                     >
-                      <i class="fa fa-user text-xs" />
+                      <i class="text-xs fa fa-user" />
                       {{ row.owner_name }}
                     </Link>
                   </p>
@@ -336,10 +336,10 @@ router.on("finish", () => {
           </footer>
         </template>
 
-        <p class="h-48 flex items-center justify-center" v-else-if="!isLoading">
+        <p class="flex items-center justify-center h-48" v-else-if="!isLoading">
           {{ emptyLabel }}
         </p>
-        <section class="py-4 px-2" v-if="isLoading">
+        <section class="px-2 py-4" v-if="isLoading">
           <ElSkeleton :rows="5" animated />
         </section>
       </div>

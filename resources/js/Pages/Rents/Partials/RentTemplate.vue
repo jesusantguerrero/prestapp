@@ -94,11 +94,17 @@ const refresh = () => {
   router.reload();
 };
 
+const isGeneratingInvoices = ref(false);
 const generateNextInvoice = () => {
-  router.post(`/rents/${props.rents.id}/generate-next-invoice`, {
+  if (isGeneratingInvoices.value) return
+  isGeneratingInvoices.value = true
+  router.post(`/rents/${props.rents.id}/generate-next-invoice`, { }, {
     onSuccess() {
       refresh();
     },
+    onFinish() {
+      isGeneratingInvoices.value = false
+    }
   });
 };
 </script>
@@ -169,7 +175,12 @@ const generateNextInvoice = () => {
       <div
         class="w-full px-5 pt-10 pb-2 mb-5 space-y-5 text-gray-600 bg-white rounded-b-md"
       >
-        <div>Alquiler #{{ rents.id }} para {{ clientName }}</div>
+        <header class="flex justify-between">
+          <div>Alquiler #{{ rents.id }} para {{ clientName }}</div>
+          <div>
+            {{ $t(rents.status) }}
+          </div>
+        </header>
         <div class="flex space-x-2">
           <Link
             class="px-2 py-1 transition rounded-md cursor-pointer bg-gray-50 hover:bg-gray-200"
@@ -184,7 +195,7 @@ const generateNextInvoice = () => {
         </div>
       </div>
       <section
-        class="flex flex-col md:flex-row w-full md:space-x-8 rounded-t-none border-t-none"
+        class="flex flex-col w-full rounded-t-none md:flex-row md:space-x-8 border-t-none"
       >
         <article class="w-full space-y-2" :class="[hidePanel ? '' : 'md:w-8/12']">
           <slot />
@@ -192,10 +203,16 @@ const generateNextInvoice = () => {
 
         <article
           v-if="!hidePanel"
-          class="w-full md:w-4/12 mt-4 md:mt-0 p-4 space-y-2 rounded-md bg-base-lvl-3"
+          class="w-full p-4 mt-4 space-y-2 rounded-md md:w-4/12 md:mt-0 bg-base-lvl-3"
         >
           <section class="flex space-x-4">
-            <AppButton class="w-full" variant="secondary" @click="generateNextInvoice">
+            <AppButton
+              class="w-full"
+              variant="secondary"
+              @click="generateNextInvoice"
+              :disabled="isGeneratingInvoices"
+              :processing="isGeneratingInvoices"
+            >
               Generar proximo pago
             </AppButton>
           </section>

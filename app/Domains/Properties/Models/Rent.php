@@ -23,6 +23,7 @@ class Rent extends Transactionable implements IPayableDocument {
     const STATUS_PARTIALLY_PAID = 'PARTIALLY_PAID';
     const STATUS_GRACE = 'GRACE';
     const STATUS_CANCELLED = 'CANCELLED';
+    const STATUS_EXPIRED = 'EXPIRED';
 
     const COMMISSION_PERCENTAGE = 'PERCENTAGE';
     const COMMISSION_FIXED = 'FIXED';
@@ -96,6 +97,12 @@ class Rent extends Transactionable implements IPayableDocument {
 
     public function invoices() {
       return $this->morphMany(Invoice::class, 'invoiceable')->orderBy('due_date', 'desc');
+    }
+
+    public function postExpirationInvoices() {
+      return $this->invoices()
+      ->where('due_date', '>', $this->end_date)
+      ->get();
     }
 
     public function payments()
@@ -203,16 +210,18 @@ class Rent extends Transactionable implements IPayableDocument {
 
     public static function checkStatus($payable) {
       $debt = $payable->total - $payable->amount_paid;
-      if ($debt > 0 && $debt < $payable->amount) {
-          $status = self::STATUS_PARTIALLY_PAID;
+      if ($payable->status == self::STATUS_EXPIRED) {
+        $status = $payable->status;
+      } else if ($debt > 0 && $debt < $payable->amount) {
+        $status = self::STATUS_PARTIALLY_PAID;
       } elseif ($debt && $payable->hasLateInvoices()) {
-          $status = self::STATUS_LATE;
+        $status = self::STATUS_LATE;
       } elseif ($debt == 0 && !$payable->move_out_at) {
-          $status = self::STATUS_ACTIVE;
+        $status = self::STATUS_ACTIVE;
       } elseif ($payable->move_out_at) {
-          $status = self::STATUS_CANCELLED;
+        $status = self::STATUS_CANCELLED;
       } else {
-          $status = $payable->status;
+        $status = $payable->status;
       }
       return $status;
     }

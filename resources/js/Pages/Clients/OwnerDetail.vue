@@ -3,8 +3,8 @@ import { IClientSaved } from "@/Modules/clients/clientEntity";
 import ClientTemplate from "./Partials/ClientTemplate.vue";
 import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 import UnitTitle from "@/Components/realState/UnitTitle.vue";
-import { ClientProfile } from "./Partials/ClientProfile";
 import ClientForm from "./Partials/ClientForm.vue";
+import { formatMoney } from "@/utils";
 
 export interface Props {
   clients: IClientSaved;
@@ -39,27 +39,20 @@ const props = withDefaults(defineProps<Props>(), {
       <InvoiceCard v-for="invoice in props.clients.invoices" :invoice="invoice" />
     </article>
 
-    <article v-else class="shadow-md rounded-md overflow-hidden">
+    <article v-else class="overflow-hidden rounded-md shadow-md">
       <ClientForm :form-data="clients" :disabled="true" type="owner" />
     </article>
 
     <template #options>
       <slot name="options">
-        <section class="space-y-4 flex flex-col">
-          <EmptyAddTool>
-            <ClientProfile
-              v-for="lease in leases"
-              :name="lease.client_name"
-              type="owner"
-              :id="lease.client_id"
-            />
-          </EmptyAddTool>
+        <section class="flex flex-col space-y-4">
           <UnitTitle
-            tenant-name=" "
             v-for="lease in leases"
-            class="mt-4 hover:bg-white cursor-pointer px-4 py-2 bg-white rounded-md flex-col"
+            class="flex-col px-4 py-2 mt-4 bg-white rounded-md cursor-pointer hover:bg-white"
             :title="lease.address"
             :owner-name="lease.client_name"
+            :tenant-name="formatMoney(lease.amount)"
+            @click="router.visit(`/rents/${lease.id}`)"
           />
         </section>
       </slot>

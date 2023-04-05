@@ -14,6 +14,7 @@ use App\Http\Controllers\CRM\ClientController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -79,6 +80,10 @@ Route::middleware([
     Route::get('/dashboard/{section}', DashboardController::class)->name('dashboard.section');
 
     Route::get('/search', [SearchController::class, 'index']);
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::patch('/notifications', [NotificationController::class, 'update']);
+    Route::put('/notifications/{id}', [NotificationController::class, 'update']);
+
      // CRM
     Route::resource('/clients', ClientController::class);
     Route::get('/contacts/{type}', [ClientController::class, 'byTypes']);

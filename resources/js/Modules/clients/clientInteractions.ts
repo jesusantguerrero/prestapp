@@ -25,6 +25,14 @@ class ClientInteractions {
     }
 
     generateOwnerDistribution(ownerId: number, invoiceId?: number) {
+      if (!invoiceId) {
+        router.visit(`/owners/draws?filters[owner]=${ownerId}`)
+      } else {
+        this.generateAutoOwnerDistribution(ownerId, invoiceId)
+      }
+    }
+
+    generateAutoOwnerDistribution(ownerId: number, invoiceId?: number) {
       InteractionsState.isGeneratingDistribution = true;
       const url = `/clients/${ownerId}/owner-distributions`
       if (invoiceId) {

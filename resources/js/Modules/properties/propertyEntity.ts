@@ -4,6 +4,8 @@ import { IClient } from "../clients/clientEntity";
 export interface IProperty {
     owner: IClient;
     owner_id: number;
+    name: string;
+    property_type: string;
     // basic info
     address: string;
     // payment details
@@ -30,16 +32,19 @@ export interface IRent {
   unit_id: number;
   client_id: number;
   client: IClient;
-  status: number;
+  status: string;
   deposit: string;
   address: string;
   owner_name: string;
-  date: Date;
+  client_name: string;
+  date:  Date | string;
+  end_date: string |Date;
   next_invoice_date: Date;
   commission_paid?: number;
   paid?: number;
   total: number
   property?: IProperty;
+  unit?: IUnit;
   owner?: IClient;
   amount: number
 }
