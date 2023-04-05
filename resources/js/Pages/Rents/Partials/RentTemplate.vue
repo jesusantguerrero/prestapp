@@ -94,11 +94,17 @@ const refresh = () => {
   router.reload();
 };
 
+const isGeneratingInvoices = ref(false);
 const generateNextInvoice = () => {
-  router.post(`/rents/${props.rents.id}/generate-next-invoice`, {
+  if (isGeneratingInvoices.value) return
+  isGeneratingInvoices.value = true
+  router.post(`/rents/${props.rents.id}/generate-next-invoice`, { }, {
     onSuccess() {
       refresh();
     },
+    onFinish() {
+      isGeneratingInvoices.value = false
+    }
   });
 };
 </script>
@@ -195,7 +201,13 @@ const generateNextInvoice = () => {
           class="w-full p-4 mt-4 space-y-2 rounded-md md:w-4/12 md:mt-0 bg-base-lvl-3"
         >
           <section class="flex space-x-4">
-            <AppButton class="w-full" variant="secondary" @click="generateNextInvoice">
+            <AppButton
+              class="w-full"
+              variant="secondary"
+              @click="generateNextInvoice"
+              :disabled="isGeneratingInvoices"
+              :processing="isGeneratingInvoices"
+            >
               Generar proximo pago
             </AppButton>
           </section>

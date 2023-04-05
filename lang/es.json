@@ -29,6 +29,7 @@
     "RENTED": "Rentada",
     "PENDING": "Pendiente",
     "PAID": "Pagado",
+    "EXPIRED": "Vencido",
     "previous year": "Año anterior",
     "current year": "Este año",
     "Dashboard": "Inicio",

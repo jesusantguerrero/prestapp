@@ -125,7 +125,7 @@ class RentTransactionService {
       if ($rent->end_date) {
         $dateTarget = $dateTarget >= $rent->end_date ? $rent->end_date : $dateTarget;
       }
-      $nextDate = $rent->next_invoice_date;
+      $nextDate = $rent->next_invoice_date ?? $rent->rentInvoices()->latest('due_date')->first()->due_date;
       $generatedInvoices = [];
 
       echo "rent of $rent->client_name will be updated until $dateTarget: $rent->end_date" . PHP_EOL;
