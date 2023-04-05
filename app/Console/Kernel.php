@@ -19,6 +19,7 @@ class Kernel extends ConsoleKernel
       $schedule->command('background:generate-invoices --late-fees')->daily()->at('01:00');
       $schedule->command('background:generate-owner-distributions')->daily()->at('01:00');
       $schedule->command('background:generate-loan-fees')->daily()->at('01:00');
+      $schedule->command('background:check-expiring-rents')->monthlyOn(1, '01:00');
       $schedule->command('backup:clean')->daily()->at('01:00');
       $schedule->command('backup:run --only-db')->daily()->at('01:30')->onFailure(function () {
         activity()

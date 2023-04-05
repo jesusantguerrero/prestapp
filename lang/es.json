@@ -59,5 +59,8 @@
     "september": "Septiembre",
     "october": "Octubre",
     "november": "Noviembre",
-    "december": "Diciembre"
+    "december": "Diciembre",
+    "expired" : "vencido",
+    "You have :count contracts :state" : "Tienes :count contratos :state",
+    "You have :count contracts close to expire within :days": "Tiene :count contratos proximos a expirar en :days dias"
   }

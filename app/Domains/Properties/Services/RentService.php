@@ -8,6 +8,9 @@ use App\Domains\CRM\Models\Client;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Properties\Models\Rent;
+use App\Models\Team;
+use App\Models\User;
+use App\Notifications\ExpiringRentNotice;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Insane\Journal\Models\Core\Account;
@@ -94,6 +97,64 @@ class RentService {
         'property',
         'unit'
       ])->first();
+    }
+
+    public static function checkExpiringRents($teamId = null) {
+      $expiringRents = Rent::selectRaw('DATEDIFF(end_date, now()) AS diff_days,
+        CASE
+          WHEN DATEDIFF(end_date, now()) < 0 THEN "expired"
+          WHEN DATEDIFF(end_date, now()) > 0 AND DATEDIFF( end_date, now()) <= 31 THEN "within_month"
+          WHEN DATEDIFF(end_date, now()) > 31 AND DATEDIFF( end_date, now()) <= 60 THEN "next_month"
+          END
+         as expire_in,
+         date,
+         end_date,
+         client_name,
+         address,
+         id,
+         owner_id,
+         client_id,
+         property_id,
+         generated_invoice_dates,
+         owner_name,
+         user_id
+      ')
+      ->whereNotNull('end_date')
+      ->whereRaw('DATEDIFF(end_date, now()) <= 60')
+      ->whereNotIn('status', [Rent::STATUS_CANCELLED])
+      ->when($teamId, fn ($q) => $q->where('team_id', $teamId))
+      ->get();
+
+      $expiringRents = $expiringRents->groupBy('expire_in');
+
+
+      foreach ($expiringRents as $state => $rentGroup) {
+        $states = [
+          "expired" => 'expired',
+          'within_month' => '30',
+          'next_month' => '60'
+        ];
+
+        User::find($rentGroup->first()->user_id)->notify(new ExpiringRentNotice([
+          'key' => $state,
+          'link' => '/rents?filter[end_date]=<'.now()->addDays(60)->format('Y-m-d'),
+          'type' => 'rent',
+          "rents" => $rentGroup,
+          'date' => now()->format('Y-m-d'),
+          'message' => $state == 'expired'
+          ? __('You have :count contracts :state', ['count' => $rentGroup->count(), 'state' => __($state)])
+          : __('You have :count contracts close to expire within :days', ['count' => $rentGroup->count(), 'days' => $states[$state]])
+        ]));
+        $count = count($rentGroup);
+        activity()
+        ->causedBy(Team::find($rentGroup->first()->team_id))
+        ->withProperties([
+          "rents" => $rentGroup,
+        ])
+        ->log("System notified about {$count} in $state status");
+
+        echo "System notified about {$count} in $state status";
+      }
     }
 
     // stats

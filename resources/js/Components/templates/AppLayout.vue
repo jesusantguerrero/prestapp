@@ -120,7 +120,7 @@ function refresh() {
               </AppButton>
               <h4
                 :class="[showBackButton ? 'lg:ml-2' : 'lg:ml-6']"
-                class="pl-4 md:pl-0 text-lg font-bold text-secondary"
+                class="pl-4 text-lg font-bold md:pl-0 text-secondary"
               >
                 {{ title }}
               </h4>
@@ -129,19 +129,20 @@ function refresh() {
 
           <div class="flex justify-end h-16">
             <div class="flex items-center sm:ml-6">
-              <!-- <AppResourceSearch class="hidden md:block mr-2" /> -->
+              <!-- <AppResourceSearch class="hidden mr-2 md:block" /> -->
 
               <AddNewButton
                 class="hidden mr-2 md:inline-block"
                 v-if="!isOnboarding && isTeamApproved"
               >
-                <AppButton class="hidden md:flex px-1 items-center mr-4 ml-2">
+                <AppButton class="items-center hidden px-1 ml-2 mr-4 md:flex">
                   <IMdiPlus class="mr-2" />
                   {{ $t("commons.new") }}
                 </AppButton>
               </AddNewButton>
               <AppNotificationBell
-                :notifications="pageProps.unreadNotifications"
+                :count="pageProps.unreadNotifications.count"
+                :notifications="pageProps.unreadNotifications.data"
                 @click="$router.visit('/notifications')"
               />
               <!-- Settings Dropdown -->
@@ -149,7 +150,7 @@ function refresh() {
                 <Dropdown align="right" width="48">
                   <template #trigger>
                     <button
-                      class="flex text-sm w-8 h-8 bg-base-lvl-3 items-center justify-center transition border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300"
+                      class="flex items-center justify-center w-8 h-8 text-sm transition border-2 border-transparent rounded-full bg-base-lvl-3 focus:outline-none focus:border-gray-300"
                     >
                       <IMdiQuestionMark />
                     </button>
@@ -253,7 +254,7 @@ function refresh() {
         >
           <template #brand>
             <!-- Logo -->
-            <h1 class="flex items-center w-full shrink-0 px-7 text-gray-100">
+            <h1 class="flex items-center w-full text-gray-100 shrink-0 px-7">
               <Link :href="route('dashboard')" class="flex items-center space-x-2">
                 <ApplicationMark class="block w-auto h-9" />
                 <span class="text-xl font-bold"> ICLoan </span>
@@ -273,7 +274,7 @@ function refresh() {
         </header>
 
         <!-- Page Content -->
-        <main class="pt-0 md:pt-8 mx-auto px-4">
+        <main class="px-4 pt-0 mx-auto md:pt-8">
           <slot />
         </main>
         <MobileMenuBar :menu="mobileMenu" @action="handleActions" />
