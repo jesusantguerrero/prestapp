@@ -100,7 +100,7 @@ class RentService {
     public function listWithInvoicesToGenerate($teamId) {
       return Rent::whereNot('status', Rent::STATUS_CANCELLED)
         ->where('team_id', $teamId)
-        ->whereRaw('next_invoice_date < curdate() AND (end_date > curdate() or end_date is null)')
+        ->whereRaw('next_invoice_date < curdate()')
         ->with(['client', 'property', 'unit']);
     }
 
