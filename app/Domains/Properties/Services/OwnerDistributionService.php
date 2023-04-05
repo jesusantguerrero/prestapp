@@ -41,6 +41,10 @@ class OwnerDistributionService {
       $this->storeOwnerDistribution($this->client, $invoices);
     }
 
+    public function fromService(mixed $invoices) {
+      $this->storeOwnerDistribution($this->client, $invoices);
+    }
+
     public function updateFromRequest(mixed $formData, int $drawBillId) {
       $ownerDrawBill = $this->client->invoices()->where('id', $drawBillId)->with(['relatedChilds'])->first();
       $selectedInvoices = collect($formData['selectedInvoices']);

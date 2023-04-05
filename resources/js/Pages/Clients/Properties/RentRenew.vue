@@ -1,21 +1,26 @@
 <script setup lang="ts">
 import { useForm } from "@inertiajs/vue3";
+// @ts-ignore
 import { AtButton, AtField } from "atmosphere-ui";
 import { Action, ElDatePicker, ElMessageBox } from "element-plus";
+import { parseDate, formatDate } from "@/utils";
 
-import AppButton from "../../../Components/shared/AppButton.vue";
-import InvoiceCard from "../../../Components/templates/InvoiceCard.vue";
+import AppButton from "@/Components/shared/AppButton.vue";
 import ClientTemplate from "../Partials/ClientTemplate.vue";
 
-import { IClient } from "../../../Modules/clients/clientEntity";
+import { IClientSaved } from "@/Modules/clients/clientEntity";
 import AppFormField from "@/Components/shared/AppFormField.vue";
-import { parseISO } from "date-fns";
+import { IProperty, IRent } from "@/Modules/properties/propertyEntity";
+import { ref, watchEffect } from "vue";
+import { differenceInMonths } from "date-fns";
+import { generateInstallments } from "@/Modules/loans/features";
+import BaseSelect from "@/Components/shared/BaseSelect.vue";
 
 export interface Props {
-  clients: IClient;
+  clients: IClientSaved;
   currentTab: string;
-  rent: Object;
-  property: Object;
+  rent: IRent;
+  property: IProperty;
   pendingInvoices: any[];
   depositsToReturn: any[];
 }
@@ -24,9 +29,26 @@ const props = withDefaults(defineProps<Props>(), {
   currentTab: "summary",
 });
 
-const endRentForm = useForm({
-  end_date: parseISO(props.rent.end_date),
+const formData = useForm({
+  end_date: parseDate(props.rent.end_date),
   amount: props.rent.amount,
+  has_paid: false,
+  paid_until: null
+});
+
+const paymentSchedule = ref()
+watchEffect(() => {
+  const date = formatDate(parseDate(props.rent.end_date), "yyyy-MM-dd");
+  const count = differenceInMonths(formData.end_date, parseDate(props.rent.end_date));
+  if (formData.amount && count) {
+    paymentSchedule.value = generateInstallments({
+      interest_rate: 0,
+      amount: formData.amount,
+      repayment_count: count,
+      first_repayment_date: date,
+      frequency: 'MONTHLY',
+    }).payments;
+  }
 });
 
 const onSubmit = () => {
@@ -36,7 +58,10 @@ const onSubmit = () => {
     showCancelButton: true,
     callback: (action: Action) => {
       if (action === "confirm") {
-        endRentForm.put(
+        formData.transform((data) => ({
+          ...data,
+          paid_until: data.paid_until.due_date
+        })).put(
           route("tenant.renew-rent-action", {
             client: props.clients,
             rent: props.rent,
@@ -74,15 +99,42 @@ const onSubmit = () => {
 
       <section>
         <h4 class="mb-4 text-lg font-bold">Datos de renovacion</h4>
-        <section class="flex">
+        <section class="flex space-x-2">
           <AppFormField label="Fecha de finalización">
-            <ElDatePicker v-model="endRentForm.end_date" size="large" />
+            <section class="h-10 form-custom-group">
+              <ElDatePicker v-model="formData.end_date" size="large" />
+                <button
+                  class="w-32 h-full px-2 transition"
+                  :class="[
+                    formData.has_paid
+                      ? 'bg-success text-white font-bold'
+                      : 'bg-base-lvl-2 text-body-1',
+                  ]"
+                  @click="formData.has_paid = !formData.has_paid"
+                >
+                  {{ formData.has_paid ? "Con Pagos" : "Sin Pagos" }}
+                </button>
+            </section>
+          </AppFormField>
+          <AppFormField
+            label="Ultimo pago registrado"
+            class="w-full"
+            v-if="paymentSchedule && formData.has_paid"
+            >
+            <BaseSelect
+            placeholder="Ultimo pago"
+            :options="paymentSchedule"
+            v-model="formData.paid_until"
+            label="due_date"
+            track-by="due_date"
+            size="large"
+          />
           </AppFormField>
           <AppFormField
             label="Mensualidad"
             class="w-full"
             :number-format="true"
-            v-model="endRentForm.amount"
+            v-model="formData.amount"
           />
         </section>
       </section>
@@ -91,12 +143,20 @@ const onSubmit = () => {
         <AtButton
           class="font-bold transition border text-body-1 hover:text-error hover:border-error"
           rounded
+          :disabled="formData.processing"
         >
           Cancelar
         </AtButton>
 
         <section class="space-x-2">
-          <AppButton variant="secondary" @click="onSubmit"> Extender Contrato </AppButton>
+          <AppButton
+            variant="secondary"
+            @click="onSubmit"
+            :processing="formData.processing"
+            :disabled="formData.processing"
+          >
+              Extender Contrato
+          </AppButton>
         </section>
       </footer>
     </main>

@@ -55,13 +55,14 @@ class RentTransactionService {
       }
     }
 
-    public  static function generatePendingInvoice($teamId, $isPaid = false) {
+    public  static function generatePendingInvoice($teamId, $isPaid, $paidDate = false) {
       $rents = (new RentService())->listWithInvoicesToGenerate($teamId)->get();
 
       echo "Rents to be updated ".count($rents);
 
       foreach ($rents as $rent) {
-        self::generateUpToDate($rent, $isPaid);
+        $isPaid = (boolean) $paidDate;
+        self::generateUpToDate($rent, $isPaid, $paidDate);
 
         activity()
         ->performedOn($rent)
@@ -119,18 +120,24 @@ class RentTransactionService {
       }
     }
 
-    public static function generateUpToDate($rent, $areInvoicesPaid = false) {
-      $dateTarget =  now()->format('Y-m-d');
-      $nextDate = $rent->next_invoice_date;
+    public static function generateUpToDate($rent, $areInvoicesPaid = false, $paidUntil = null) {
+      $dateTarget = now()->format('Y-m-d');
+      if ($rent->end_date) {
+        $dateTarget = $dateTarget >= $rent->end_date ? $rent->end_date : $dateTarget;
+      }
+      $nextDate = $rent->next_invoice_date ?? $rent->rentInvoices()->latest('due_date')->first()->due_date;
       $generatedInvoices = [];
 
-      echo "rent of $rent->client_name will be updated until $dateTarget" . PHP_EOL;
+      echo "rent of $rent->client_name will be updated until $dateTarget: $rent->end_date" . PHP_EOL;
 
-      while ($nextDate && $nextDate < $dateTarget) {
+      while ($nextDate && InvoiceHelper::getYearMonth($nextDate) <= InvoiceHelper::getYearMonth($dateTarget)) {
+        $markAsPaid = $areInvoicesPaid && (!$paidUntil || $paidUntil >= $nextDate);
         $invoiceData = [
           'date' => $nextDate,
-          'is_paid' => $areInvoicesPaid
+          'is_paid' => (boolean) $markAsPaid
         ];
+
+        echo "Date $nextDate $markAsPaid:  $paidUntil $nextDate" . PHP_EOL;
 
         PropertyTransactionService::createInvoice($invoiceData, $rent);
         $generatedInvoices[] = $nextDate;
@@ -141,5 +148,30 @@ class RentTransactionService {
         'next_invoice_date' => $nextDate,
         'generated_invoice_dates' => array_merge($rent->generated_invoice_dates, $generatedInvoices)
       ]);
+    }
+
+    public static function removeExpirationInvoices($teamId = null) {
+      $expiredRents = RentService::expiredRents($teamId, 'expired');
+
+      foreach ($expiredRents as $expiredRent) {
+        $postExpirationInvoices = $expiredRent->postExpirationInvoices();
+        $count = count($postExpirationInvoices);
+        echo "$expiredRent->client_name has {$count} invoices post expiration from {$postExpirationInvoices->last()?->due_date} to {$postExpirationInvoices->first()?->due_date}" . PHP_EOL;
+
+        if ($count) {
+          Invoice::destroy($postExpirationInvoices->pluck('id'));
+          $generatedInvoiceDates = $expiredRent->rentInvoices()->select(['id', 'due_date'])->pluck('due_date')->all();
+
+          $expiredRent->update([
+            'status' => Rent::STATUS_EXPIRED,
+            'next_invoice_date' => null,
+            'generated_invoice_dates' => $generatedInvoiceDates
+          ]);
+
+          activity()
+          ->causedBy($expiredRent)
+          ->log("System removed {$count} invoices generated after {$expiredRent->end_date}");
+        }
+      }
     }
 }

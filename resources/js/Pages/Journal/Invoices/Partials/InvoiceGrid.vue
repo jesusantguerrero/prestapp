@@ -119,22 +119,24 @@ const { renderedCols, cleaveOptions } = toRefs(state);
 
 <template>
   <div class="w-full">
+    <slot name="prepend" />
     <AtTable
       :hidden-cols="hiddenCols"
       :cols="renderedCols"
       :tableData="tableData"
       :hide-empty-text="true"
     >
-      <template v-slot:item="{ scope }">
+      <template v-slot:item="{ scope: { row, col } }">
         <div class="d-flex">
           <AtInput
             name=""
-            v-model="scope.row.concept"
+            v-model="row.concept"
             class="form-control"
             rounded
             v-if="isEditing"
           />
-          <span v-else> {{ scope.row.concept }}</span>
+          <span v-if="col.render" v-html="col.render(row)" />
+          <span v-else> {{ row.concept }}</span>
         </div>
       </template>
 

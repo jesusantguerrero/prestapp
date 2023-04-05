@@ -1,14 +1,26 @@
 import { addDays, format, parseISO, subDays } from "date-fns"
-import { computed } from "vue";
+import { es } from "date-fns/locale"
 export * from "./formatMoney";
 
 export const formatDate = (stringDate: string|Date, formatText = 'd MMM, yyyy') => {
   const emptyDate = '-- --- ----'
+  const dateOptions = {
+    locale: es
+  }
 
   try {
-    return typeof stringDate == 'string' ? format(parseISO(stringDate), formatText) : format(stringDate, formatText);
+    const date = typeof stringDate == 'string' ? parseISO(stringDate) : stringDate;
+    return format(date, formatText, dateOptions);
   } catch (err) {
     return stringDate ?? emptyDate
+  }
+}
+export const parseDate = (stringDate: string|Date): Date => {
+  try {
+    const date = typeof stringDate == 'string' ? parseISO(stringDate) : stringDate;
+    return date;
+  } catch (err) {
+    return stringDate
   }
 }
 
@@ -48,11 +60,19 @@ export const dateToIso = (date: Date | null) => {
 export const getRangeParams = (field: string, range: number[]|null, direction = 'back') => {
     const date = new Date();
     const method = direction == 'back' ? subDays : addDays;
-    
+
     if (!range) return '';
-    
-    const rangeString = range
+
+    let rangeString = range
       .map((dateCount) => dateToIso(method(date, dateCount)))
       .join("~");
+
+      debugger;
+
+    if (range.at(0) == null && range[1] !== null) {
+      rangeString = '<' + dateToIso(method(date, range[1]))
+    } else if (!range.at(1) !== null) {
+      rangeString = '>' + dateToIso(method(date, range[0]))
+    }
     return `filter[${field}]=${rangeString}`;
 }

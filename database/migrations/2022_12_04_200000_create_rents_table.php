@@ -67,7 +67,8 @@ return new class extends Migration
                 Rent::STATUS_PAID,
                 Rent::STATUS_GRACE,
                 Rent::STATUS_LATE,
-                Rent::STATUS_CANCELLED
+                Rent::STATUS_CANCELLED,
+                Rent::STATUS_EXPIRED,
             ])->default(Rent::STATUS_ACTIVE);
             $table->timestamps();
         });

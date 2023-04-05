@@ -8,6 +8,9 @@ use App\Domains\CRM\Models\Client;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Properties\Models\Rent;
+use App\Models\Team;
+use App\Models\User;
+use App\Notifications\ExpiringRentNotice;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Insane\Journal\Models\Core\Account;
@@ -45,7 +48,7 @@ class RentService {
         $rent->owner->checkStatus();
         PropertyTransactionService::createDepositTransaction($rent->fresh(), $rentData);
         PropertyTransactionService::generateFirstInvoice($rent);
-        RentService::generateUpToDate($rent->fresh(), true);
+        RentTransactionService::generateUpToDate($rent->fresh(), true);
       });
 
     }
@@ -67,19 +70,25 @@ class RentService {
 
     public static function endTerm(Rent $rent, $formData) {
       if ($rent->status !== Rent::STATUS_CANCELLED) {
-        $rent->update(array_merge(
-          $formData,
-          ["status" => Rent::STATUS_CANCELLED
-        ]));
-        $rent->unit->update(['status' => Property::STATUS_AVAILABLE]);
-        return;
+        DB::transaction(function () use ($rent, $formData) {
+          $rent->update(array_merge(
+            $formData,
+            ["status" => Rent::STATUS_CANCELLED
+          ]));
+          $rent->unit->update(['status' => Property::STATUS_AVAILABLE]);
+        });
+        return $rent;
       }
       throw new Exception('Rent is already cancelled');
     }
 
     public static function extend(Rent $rent, $formData) {
-      if ($rent->status == Rent::STATUS_ACTIVE) {
+      if ($rent->status == Rent::STATUS_ACTIVE || $rent->status == Rent::STATUS_EXPIRED) {
+        $isExpired = now()->format('Y-m-d') > $rent->end_date;
         $rent->update($formData);
+        if ($isExpired) {
+          RentTransactionService::generateUpToDate($rent, isset($formData['paid_until']), $formData['paid_until'] ?? null);
+        }
         return;
       }
       throw new Exception('Rent is cant be extended/ ');
@@ -96,11 +105,92 @@ class RentService {
       ])->first();
     }
 
+    public static function expiredRents($teamId = null, $state = null) {
+      $stateRaw = 'CASE
+      WHEN DATEDIFF(end_date, now()) < 0 THEN "expired"
+      WHEN DATEDIFF(end_date, now()) > 0 AND DATEDIFF( end_date, now()) <= 31 THEN "within_month"
+      WHEN DATEDIFF(end_date, now()) > 31 AND DATEDIFF( end_date, now()) <= 60 THEN "next_month"
+      END';
+      return Rent::selectRaw("DATEDIFF(end_date, now()) AS diff_days,
+        $stateRaw
+         as expire_in,
+         date,
+         end_date,
+         client_name,
+         address,
+         id,
+         owner_id,
+         client_id,
+         team_id,
+         property_id,
+         generated_invoice_dates,
+         owner_name,
+         user_id
+      ")
+      ->whereNotNull('end_date')
+      ->whereRaw('DATEDIFF(end_date, now()) <= 60')
+      ->whereNotIn('status', [Rent::STATUS_CANCELLED])
+      ->when($teamId, fn ($q) => $q->where('team_id', $teamId))
+      ->when($state, fn ($q) => $q->whereRaw("$stateRaw = '$state'"))
+      ->get();
+    }
+
+    public static function checkExpiringRents($teamId = null) {
+      $expiringRents = Rent::expiredRents($teamId)->get();
+
+      $expiringRents = $expiringRents->groupBy('expire_in');
+
+
+      foreach ($expiringRents as $state => $rentGroup) {
+        $states = [
+          "expired" => 'expired',
+          'within_month' => '30',
+          'next_month' => '60'
+        ];
+
+        User::find($rentGroup->first()->user_id)->notify(new ExpiringRentNotice([
+          'key' => $state,
+          'link' => '/rents?filter[end_date]=<'.now()->addDays(60)->format('Y-m-d'),
+          'type' => 'rent',
+          "rents" => $rentGroup,
+          'date' => now()->format('Y-m-d'),
+          'message' => $state == 'expired'
+          ? __('You have :count contracts :state', ['count' => $rentGroup->count(), 'state' => __($state)])
+          : __('You have :count contracts close to expire within :days', ['count' => $rentGroup->count(), 'days' => $states[$state]])
+        ]));
+        $count = count($rentGroup);
+        activity()
+        ->causedBy(Team::find($rentGroup->first()->team_id))
+        ->withProperties([
+          "rents" => $rentGroup,
+        ])
+        ->log("System notified about {$count} in $state status");
+
+        echo "System notified about {$count} in $state status";
+      }
+    }
+
+    public static function updateExpiredRents($teamId = null) {
+      $expiredRents = RentService::expiredRents($teamId, 'expired');
+
+      foreach ($expiredRents as $expiredRent) {
+          $expiredRent->update([
+            'status' => Rent::STATUS_EXPIRED,
+            'next_invoice_date' => null,
+          ]);
+
+          activity()
+          ->causedBy($expiredRent)
+          ->log("System changed status of {$expiredRent->client_name} because expired on {$expiredRent->end_date}");
+
+      }
+    }
+
     // stats
     public function listWithInvoicesToGenerate($teamId) {
       return Rent::whereNot('status', Rent::STATUS_CANCELLED)
         ->where('team_id', $teamId)
-        ->whereRaw('next_invoice_date < curdate() AND (end_date > curdate() or end_date is null)')
+        ->whereRaw('(next_invoice_date < curdate() or next_invoice_date is null)')
         ->with(['client', 'property', 'unit']);
     }
 
@@ -196,7 +286,7 @@ class RentService {
 
     public static function generateNextInvoice($rent) {
       if ($rent->end_date) {
-        self::generateUpToDate($rent);
+        RentTransactionService::generateUpToDate($rent);
       } else {
         PropertyTransactionService::createInvoice([
           'date' => $rent->next_invoice_date
@@ -206,31 +296,6 @@ class RentService {
           'generated_invoice_dates' => array_merge($rent->generated_invoice_dates, [$rent->next_invoice_date])
         ]);
       }
-    }
-
-    public static function generateUpToDate($rent, $areInvoicesPaid = false) {
-      $dateTarget =  now()->format('Y-m-d');
-      $nextDate = $rent->next_invoice_date;
-      $generatedInvoices = [];
-
-      echo $rent->client_name . " Entering: $dateTarget - $nextDate" . PHP_EOL;
-
-      while ($nextDate && InvoiceHelper::getYearMonth($nextDate) <= InvoiceHelper::getYearMonth($dateTarget)) {
-        echo $rent->client_name . " Generated: $dateTarget - $nextDate" . PHP_EOL;
-        $invoiceData = [
-          'date' => $nextDate,
-          'is_paid' => $areInvoicesPaid
-        ];
-
-        PropertyTransactionService::createInvoice($invoiceData, $rent);
-        $generatedInvoices[] = $nextDate;
-        $nextDate = InvoiceHelper::getNextDate($nextDate)->format('Y-m-d');
-      }
-
-      $rent->update([
-        'next_invoice_date' => $nextDate,
-        'generated_invoice_dates' => array_merge($rent->generated_invoice_dates, $generatedInvoices)
-      ]);
     }
 
     public static function payInvoice(Rent $rent, Invoice $invoice, mixed $postData) {

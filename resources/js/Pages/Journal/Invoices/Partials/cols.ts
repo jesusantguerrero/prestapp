@@ -1,4 +1,5 @@
-import { formatMoney } from "@/utils";
+import { formatDate, formatMoney } from "@/utils";
+import { es } from "date-fns/locale";
 
 export default [
   {
@@ -7,7 +8,12 @@ export default [
     type: "custom",
     fixed: "true",
     class: "text-left",
-    headerClass: 'text-left'
+    headerClass: 'text-left',
+    render(row: any) {
+      const date = row.concept?.slice(-10);
+      const dateString = formatDate(date, 'MMMM') ?? ''
+      return `${row.concept} ${dateString}`
+    }
   },
   {
     label: "Cant.",
@@ -34,14 +40,14 @@ export default [
     headerClass: 'text-right'
   },
   {
-    label: "Descuento",
+    label: "Descuento de abogado",
     name: "taxes",
     width: "150",
     type: "custom",
     class: "text-center",
     headerClass: 'text-center',
     render(row) {
-      return row.taxes?.map(row => row.label + ' ' + row.rate + '%').join(', ')
+      return row.taxes?.map(row => `${formatMoney(row.amount)} ${!row.isFixed &&  '(' + row.rate + '%)'}`).join(', ')
     }
   },
   {
