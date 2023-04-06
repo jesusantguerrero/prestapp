@@ -279,6 +279,7 @@ class RentService {
           invoices.invoiceable_id,
           invoices.category_type,
           rents.address category,
+          invoices.description description,
           invoices.concept concept'
         )->where([
           'invoices.team_id' => $teamId,
