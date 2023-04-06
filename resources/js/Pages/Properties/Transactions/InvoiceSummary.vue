@@ -348,6 +348,7 @@ router.on("finish", () => {
                 </AppButton>
                 <AppButton
                   @click="deleteRentPayments(row)"
+                  :disabled="deletePaymentForm.processing"
                   variant="error"
                   class="flex items-center justify-center"
                   v-else

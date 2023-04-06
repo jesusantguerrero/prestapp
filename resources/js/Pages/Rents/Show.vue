@@ -63,7 +63,7 @@ const deleteRent = async (rent: IRent) => {
         </section>
       </template>
       <template #actions>
-        <section class="flex">
+        <section class="flex space-x-2">
           <AppButton
             variant="neutral"
             class="hover:bg-error hover:text-white"
@@ -74,12 +74,18 @@ const deleteRent = async (rent: IRent) => {
             Terminar Contrato
           </AppButton>
           <AppButton
-          variant="neutral"
-          v-if="rents.status !== 'CANCELLED'"
-          @click="router.visit(`/contacts/${rents.client_id}/tenants/rents/${rents.id}/renew`)"
-        >
-          Extender
-        </AppButton>
+            variant="neutral"
+            class="hover:bg-success hover:text-white"
+            v-if="rents.status !== 'CANCELLED'"
+            @click="
+              router.visit(`/contacts/${rents.client_id}/tenants/rents/${rents.id}/renew`)
+            "
+          >
+            <IClarityContractLine class="mr-2" />
+            <span class="capitalize">
+              {{ $t("extend rent") }}
+            </span>
+          </AppButton>
           <AppButton
             v-if="rents.status !== 'CANCELLED'"
             variant="error"

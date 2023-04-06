@@ -128,7 +128,7 @@ const handleUpdate = (data: Record<string, any>) => {
 const onFinished = () => {
   const data = {
     ...rentForm,
-    deposit_due: formatDate(rentForm.deposit_due, "y-M-d"),
+    deposit_due: formatDate(rentForm.deposit_due, "yyyy-MM-dd"),
     date: formatDate(rentForm.date, "yyyy-MM-dd"),
     first_invoice_date: dateToIso(rentForm.first_invoice_date),
     next_invoice_date: dateToIso(rentForm.next_invoice_date),

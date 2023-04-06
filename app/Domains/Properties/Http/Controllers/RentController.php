@@ -61,9 +61,11 @@ class RentController extends InertiaController
         return RentService::createRent($postData);
     }
 
+
+
     protected function updateResource($resource, $postData)
     {
-        $resource->update(RentService::allowedUpdate($postData));
+        RentService::updateRent($resource, $postData);
         return $resource;
     }
 
@@ -74,13 +76,15 @@ class RentController extends InertiaController
       ];
     }
 
-    public function validateDelete(Request $request, $rent) {
-      if ($rent->payments()->count()) {
-        throw new Exception(__("This rent has payments and can't be eliminated"));
+    public function destroy(Request $request, int $id) {
+      $resource = $this->model::findOrFail($id);
+      try {
+        RentService::removeRent($resource);
+        return redirect()->back();
+      } catch (Exception $e) {
+        return redirect()->back()->withErrors(['default' => $e->getMessage()]);
       }
-
-      return true;
-    }
+  }
 
     public function withPendingGeneration(RentService $rentService) {
       return inertia($this->templates['index'], [

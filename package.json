@@ -6,6 +6,7 @@
         "test:unit": "vitest"
     },
     "devDependencies": {
+        "@iconify-json/clarity": "^1.1.8",
         "@iconify-json/eos-icons": "^1.1.6",
         "@iconify-json/ic": "^1.1.13",
         "@iconify-json/material-symbols": "^1.1.36",
