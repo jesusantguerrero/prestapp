@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watch, computed, ref } from "vue";
+import { reactive, watch, computed, ref, h } from "vue";
 import { AtBackgroundIconCard } from "atmosphere-ui";
 import { Link, router, useForm } from "@inertiajs/vue3";
 
@@ -8,7 +8,7 @@ import PropertySectionNav from "../Partials/PropertySectionNav.vue";
 
 import { formatMoney, formatDate } from "@/utils";
 import BaseTable from "@/Components/shared/BaseTable.vue";
-import { ElNotification, TableColumnCtx } from "element-plus";
+import { ElMessageBox, ElNotification, TableColumnCtx } from "element-plus";
 import AppButton from "@/Components/shared/AppButton.vue";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
 import AppFormField from "@/Components/shared/AppFormField.vue";
@@ -130,11 +130,13 @@ const drawCols = [
 const formData = useForm({
   client: null,
   invoices: [] as Record<string, string | number>[],
+  description: "",
 });
 
 function handleSelection(selectedInvoices: IInvoice[]) {
   formData.invoices = selectedInvoices.map((invoice) => ({
     id: invoice.id,
+    due_date: invoice.due_date,
     total: invoice.total,
   }));
 }
@@ -148,14 +150,31 @@ function createOwnerDistribution() {
     });
     return;
   }
-  formData.post(`/owners/${filters.owner}/draws`, {
-    onSuccess() {
-      ElNotification({
-        title: "Creada",
-        message: "Factura de propiedad creada con exito",
-        type: "success",
-      });
-    },
+
+  const monthName = formatDate(formData.invoices.at(0).due_date, "MMMM, yyyy");
+
+  formData.description = ` ${props.invoices?.at?.(0)?.owner_name} (${monthName})`;
+
+  ElMessageBox({
+    title: "Selecciona descripcion",
+    message: () =>
+      h(AppFormField, {
+        label: "Descripcion de factura",
+        modelValue: formData.description,
+        onUpdateModelValue: (val: string) => {
+          formData.description = val;
+        },
+      }),
+  }).then(() => {
+    formData.post(`/owners/${filters.owner}/draws`, {
+      onSuccess() {
+        ElNotification({
+          title: "Creada",
+          message: "Factura de propiedad creada con exito",
+          type: "success",
+        });
+      },
+    });
   });
 }
 

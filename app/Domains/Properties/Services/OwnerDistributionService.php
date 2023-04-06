@@ -38,7 +38,7 @@ class OwnerDistributionService {
     public function fromRequest(mixed $formData) {
       $selectedInvoices = collect($formData['invoices']);
       $invoices = Invoice::whereIn('id', $selectedInvoices->pluck('id')->toArray())->get();
-      $this->storeOwnerDistribution($this->client, $invoices);
+      $this->storeOwnerDistribution($this->client, $invoices, null, $formData);
     }
 
     public function fromService(mixed $invoices) {
@@ -52,7 +52,7 @@ class OwnerDistributionService {
       $this->storeOwnerDistribution($this->client, $invoices, $ownerDrawBill);
     }
 
-    public function storeOwnerDistribution(Client $client, $invoices, $ownerDrawBill = null) {
+    public function storeOwnerDistribution(Client $client, $invoices, $ownerDrawBill = null, $formData = []) {
 
       [
         "items" => $items,
