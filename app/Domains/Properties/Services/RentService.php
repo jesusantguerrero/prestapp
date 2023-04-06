@@ -85,7 +85,10 @@ class RentService {
     public static function extend(Rent $rent, $formData) {
       if ($rent->status == Rent::STATUS_ACTIVE || $rent->status == Rent::STATUS_EXPIRED) {
         $isExpired = now()->format('Y-m-d') > $rent->end_date;
-        $rent->update($formData);
+        $rent->update(array_merge($formData, [
+          'status' => Rent::STATUS_ACTIVE,
+          'generated_invoice_dates' => $rent->rentInvoices()->select(['id', 'due_date'])->pluck('due_date')->all(),
+        ]));
         if ($isExpired) {
           RentTransactionService::generateUpToDate($rent, isset($formData['paid_until']), $formData['paid_until'] ?? null);
         }

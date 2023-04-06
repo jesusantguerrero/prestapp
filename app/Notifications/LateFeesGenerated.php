@@ -59,6 +59,7 @@ class LateFeesGenerated extends Notification
     {
         return [
           'action' => "/loans/repayments?filter[status]=" . LoanInstallment::STATUS_LATE,
+          'link' => "/loans/repayments?filter[status]=" . LoanInstallment::STATUS_LATE,
           'message' => "Se han generado $this->repaymentCount moras de pagos de prestamos",
           'data' => []
         ];
