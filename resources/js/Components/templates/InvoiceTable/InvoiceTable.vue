@@ -75,12 +75,12 @@ const visibleData = computed(() => {
           </span>
           <AtInput v-model="row.description" v-else />
           <span class="ml-2">
-            <button
+            <!-- <button
               class="cursor-pointer hover:text-primary"
               @click="row.isEditing = !row.isEditing"
             >
               <IMdiEdit />
-            </button>
+            </button> -->
           </span>
         </p>
       </section>
