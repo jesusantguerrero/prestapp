@@ -42,6 +42,7 @@ class ClientService {
         invoices.number,
         invoices.status,
         invoices.total,
+        invoices.description,
         invoices.category_type category,
         accounts.name account_name")
         ->where([

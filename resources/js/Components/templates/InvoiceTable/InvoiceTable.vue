@@ -1,13 +1,15 @@
 <script setup lang="ts">
+import { computed } from "vue";
+import { Link } from "@inertiajs/vue3";
 // @ts-ignore
-import BaseTable from "@/Components/shared/BaseTable.vue";
-import InvoicePaymentOptions from "@/Components/templates/InvoicePaymentOptions.vue";
+import { AtInput } from "atmosphere-ui";
 
+import BaseTable from "@/Components/shared/BaseTable.vue";
+
+import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
+import InvoicePaymentOptions from "@/Components/templates/InvoicePaymentOptions.vue";
 import cols from "./cols";
 import { formatDate, formatMoney } from "@/utils";
-import { Link } from "@inertiajs/vue3";
-import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
-import { computed } from "vue";
 
 const props = defineProps({
   invoiceData: {
@@ -45,12 +47,17 @@ const visibleData = computed(() => {
         <p>
           <Link
             :href="`/${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}`"
-            class="text-blue-400 capitalize border-b border-blue-400 border-dashed cursor-pointer text-sm"
+            class="text-blue-400 inline-flex capitalize border-b justify-between border-blue-400 border-dashed cursor-pointer text-sm"
           >
-            {{ row.concept }}
-            <span class="font-bold text-gray-300">
-              {{ row.series }} #{{ row.number }}
-            </span>
+            <section>
+              {{ row.concept }}
+              <span class="font-bold text-gray-300">
+                {{ row.series }} #{{ row.number }}
+              </span>
+            </section>
+            <!-- <span class="ml-2">
+              <IMdiEdit />
+            </span> -->
           </Link>
         </p>
         <p>
@@ -61,6 +68,20 @@ const visibleData = computed(() => {
             <i class="fa fa-user text-xs" />
             {{ row.client_name }}
           </Link>
+        </p>
+        <p class="flex items-center">
+          <span v-if="!row.isEditing">
+            {{ row.description }}
+          </span>
+          <AtInput v-model="row.description" v-else />
+          <span class="ml-2">
+            <!-- <button
+              class="cursor-pointer hover:text-primary"
+              @click="row.isEditing = !row.isEditing"
+            >
+              <IMdiEdit />
+            </button> -->
+          </span>
         </p>
       </section>
       <ElSkeleton :rows="1" animated v-else />
