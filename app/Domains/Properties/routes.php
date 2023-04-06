@@ -30,6 +30,7 @@ Route::middleware([
 
     // Units
     Route::controller(PropertyUnitController::class)->group(function() {
+      Route::get('units/bad-unit-status', 'listBadState');
       Route::get('units', 'index');
       Route::post('properties/{property}/units', 'addUnit');
       Route::put('properties/{property}/units/{propertyUnit}', 'updateUnit');
