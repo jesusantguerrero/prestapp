@@ -18,7 +18,7 @@ const props = withDefaults(defineProps<{
 });
 
 const visibleNotifications = computed(() => {
-    return props.notifications.slice(0, props.toShow);
+  return props.notifications.filter(notification => notification.data?.message).slice(0, props.toShow);
 });
 
 const seeMoreLength = computed(() => {

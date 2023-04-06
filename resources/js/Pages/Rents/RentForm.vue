@@ -8,7 +8,7 @@ import { IClient } from "@/Modules/clients/clientEntity";
 import RentFormTemplate from "./Partials/RentFormTemplate.vue";
 
 const props = defineProps<{
-  rents: IRent[];
+  rents: IRent;
   properties: IProperty[];
   client: IClient;
   unit: IUnit;
@@ -18,13 +18,17 @@ const props = defineProps<{
 const rentForm = useForm({ ...(props.rents ?? {}) });
 
 const onSubmit = (formData: Record<string, any>) => {
+  const url = props.rents.id ? route("rents.update", props.rents) : route("rents.store");
+  const method = props.rents.id ? "put" : "post";
   rentForm
     .transform(() => ({
       ...formData,
     }))
-    .post(route("rents.store"), {
+    .submit(method, url, {
       onSuccess() {
-        router.visit(`/rents`);
+        props.rents.id
+          ? router.visit(`/rents/${props.rents.id}`)
+          : router.visit(`/rents`);
       },
     });
 };

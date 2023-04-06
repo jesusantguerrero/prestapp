@@ -12,15 +12,16 @@ use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Services\OwnerService;
 use App\Domains\Properties\Services\PropertyService;
 use App\Domains\Properties\Services\RentService;
+use App\Http\Controllers\Traits\HasEnrichedRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Insane\Journal\Helpers\ReportHelper;
 use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Invoice\Invoice;
-use Spatie\Activitylog\Models\Activity;
 
 class DashboardController extends Controller
 {
+    use HasEnrichedRequest;
+
     public function __invoke(Request $request, $section = "general")
     {
       return $this->$section($request);
@@ -30,19 +31,22 @@ class DashboardController extends Controller
     {
       $reportHelper = new ReportHelper();
       $teamId = $request->user()->current_team_id;
-      $startDate = now()->startOfYear()->format('Y-m-d');
-      $endDate = now()->endOfYear()->format('Y-m-d');
+      $filters = $request->query('filter');
+      [$startDate, $endDate] = $this->getFilterDates($filters);
+      $startYear = now()->startOfYear()->format('Y-m-d');
+      $endYear = now()->endOfYear()->format('Y-m-d');
 
       return inertia('Dashboard/Index',
       [
-          "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId, ['real_state', 'loans', 'real_state_operative'] ,$startDate, $endDate, null)->all(), now()->format('Y')),
-          "stats" => AccountStatWidget::stats($teamId),
+          "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId, ['real_state', 'loans', 'real_state_operative'] ,$startYear, $endYear, null)->all(), now()->format('Y')),
+          "stats" => AccountStatWidget::stats($teamId, $startDate, $endDate),
           'accounts' => $reportHelper->getTransactionsByAccount($teamId, ['real_state', 'loan_business', 'loans'] ,null, null, 'display_id'),
           'paidCommissions' => $reportHelper->smallBoxRevenue('real_state_operative', $teamId),
           'dailyBox' => $reportHelper->smallBoxRevenue('loan_business', $teamId),
           'realState' => Account::where(['team_id' => $teamId, 'display_id' => 'real_state'])->first(),
           'section' => "general",
           'pendingDraws' => OwnerService::pendingDrawsCount($teamId),
+          "serverSearchOptions" => $this->getServerParams(),
       ]);
     }
 
@@ -75,7 +79,8 @@ class DashboardController extends Controller
           "totals" => $rentTotals,
           'pendingDraws' => OwnerService::pendingDrawsCount($teamId) ?? 0,
           "paidCommissions" => AccountStatWidget::accountNetByPeriod($teamId, 'real_state_operative', 'month', $monthPassedInYear),
-          'section' => "realState"
+          'section' => "realState",
+          "serverSearchOptions" => $this->getServerParams(),
       ]);
     }
 
@@ -92,7 +97,8 @@ class DashboardController extends Controller
           "loanPaidInterest" => LoanService::paidInterestFor($teamId),
           "paidInterest" => LoanService::paidInterestByPeriod($teamId),
           'bank' => $reportHelper->smallBoxRevenue('loan_business', $teamId),
-          'section' => "loans"
+          'section' => "loans",
+          "serverSearchOptions" => $this->getServerParams(),
       ]);
     }
 }

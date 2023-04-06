@@ -33,10 +33,10 @@ const formData = useForm({
   end_date: parseDate(props.rent.end_date),
   amount: props.rent.amount,
   has_paid: false,
-  paid_until: null
+  paid_until: null,
 });
 
-const paymentSchedule = ref()
+const paymentSchedule = ref();
 watchEffect(() => {
   const date = formatDate(parseDate(props.rent.end_date), "yyyy-MM-dd");
   const count = differenceInMonths(formData.end_date, parseDate(props.rent.end_date));
@@ -46,7 +46,7 @@ watchEffect(() => {
       amount: formData.amount,
       repayment_count: count,
       first_repayment_date: date,
-      frequency: 'MONTHLY',
+      frequency: "MONTHLY",
     }).payments;
   }
 });
@@ -58,15 +58,17 @@ const onSubmit = () => {
     showCancelButton: true,
     callback: (action: Action) => {
       if (action === "confirm") {
-        formData.transform((data) => ({
-          ...data,
-          paid_until: data.paid_until.due_date
-        })).put(
-          route("tenant.renew-rent-action", {
-            client: props.clients,
-            rent: props.rent,
-          })
-        );
+        formData
+          .transform((data) => ({
+            ...data,
+            paid_until: data.paid_until?.due_date,
+          }))
+          .put(
+            route("tenant.renew-rent-action", {
+              client: props.clients,
+              rent: props.rent,
+            })
+          );
       }
     },
   });
@@ -103,32 +105,32 @@ const onSubmit = () => {
           <AppFormField label="Fecha de finalización">
             <section class="h-10 form-custom-group">
               <ElDatePicker v-model="formData.end_date" size="large" />
-                <button
-                  class="w-32 h-full px-2 transition"
-                  :class="[
-                    formData.has_paid
-                      ? 'bg-success text-white font-bold'
-                      : 'bg-base-lvl-2 text-body-1',
-                  ]"
-                  @click="formData.has_paid = !formData.has_paid"
-                >
-                  {{ formData.has_paid ? "Con Pagos" : "Sin Pagos" }}
-                </button>
+              <button
+                class="w-32 h-full px-2 transition"
+                :class="[
+                  formData.has_paid
+                    ? 'bg-success text-white font-bold'
+                    : 'bg-base-lvl-2 text-body-1',
+                ]"
+                @click="formData.has_paid = !formData.has_paid"
+              >
+                {{ formData.has_paid ? "Con Pagos" : "Sin Pagos" }}
+              </button>
             </section>
           </AppFormField>
           <AppFormField
             label="Ultimo pago registrado"
             class="w-full"
             v-if="paymentSchedule && formData.has_paid"
-            >
+          >
             <BaseSelect
-            placeholder="Ultimo pago"
-            :options="paymentSchedule"
-            v-model="formData.paid_until"
-            label="due_date"
-            track-by="due_date"
-            size="large"
-          />
+              placeholder="Ultimo pago"
+              :options="paymentSchedule"
+              v-model="formData.paid_until"
+              label="due_date"
+              track-by="due_date"
+              size="large"
+            />
           </AppFormField>
           <AppFormField
             label="Mensualidad"
@@ -155,7 +157,7 @@ const onSubmit = () => {
             :processing="formData.processing"
             :disabled="formData.processing"
           >
-              Extender Contrato
+            Extender Contrato
           </AppButton>
         </section>
       </footer>

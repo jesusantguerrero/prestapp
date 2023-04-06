@@ -53,7 +53,7 @@ export function composeRangeYears(from: number|string, to: number|string = new D
 }
 
 export const dateToIso = (date: Date | null) => {
-  return date ? formatDate(date, "y-M-d") : null;
+  return date ? formatDate(date, "yyyy-MM-dd") : null;
 };
 
 
@@ -66,8 +66,6 @@ export const getRangeParams = (field: string, range: number[]|null, direction = 
     let rangeString = range
       .map((dateCount) => dateToIso(method(date, dateCount)))
       .join("~");
-
-      debugger;
 
     if (range.at(0) == null && range[1] !== null) {
       rangeString = '<' + dateToIso(method(date, range[1]))

@@ -11,12 +11,15 @@ use Insane\Journal\Models\Invoice\Invoice;
 
 class AccountStatWidget {
 
-  public static function stats(int $teamId) {
+  public static function stats(int $teamId, $startDate = null, $endDate = null) {
     $today = now()->timezone('America/Santo_Domingo')->format('Y-m-d');
+
 
     $loans = LoanInstallment::byTeam($teamId)
       ->where('amount_due', '>', 0)
-      ->where('due_date', '<=', $today)
+      ->when($startDate, fn ($q) => $q->where('due_date', '>=', $startDate))
+      ->when($endDate, fn ($q) => $q->where('due_date', '<=', $endDate))
+      ->when($endDate && $startDate, fn ($q) => $q->where('due_date', '<=', $today))
       ->selectRaw('amount_due, due_date')
       ->select(DB::raw("
         sum(COALESCE(amount_due, 0)) outstanding,
@@ -37,19 +40,37 @@ class AccountStatWidget {
           'invoiceable_type' => Rent::class
         ])
         ->where('debt', '>', 0)
-        ->where('due_date', '<=', $today)
+        ->when($endDate, fn ($q) => $q->where('due_date', '<=', $endDate))
+        ->when($endDate && $startDate, fn ($q) => $q->where('due_date', '<=', $today))
         ->selectRaw("
-            COALESCE(sum(debt), 0) as outstanding,
-            COALESCE(sum(
+          COALESCE(sum(debt), 0) as outstanding,
+          COALESCE(sum(
             CASE
             WHEN due_date < ? AND invoices.status = ? THEN debt
             ELSE 0
           END), 0) as overdue,
+          COALESCE(sum(
+            CASE
+            WHEN due_date > ? AND due_date < ? AND invoices.status = ? THEN debt
+            ELSE 0
+          END), 0) as overdue_in_month,
+          COALESCE(sum(
+            CASE
+            WHEN due_date >= ? AND due_date <= ? THEN debt
+            ELSE 0
+          END), 0) as outstanding_in_month,
           GROUP_CONCAT(CASE
           WHEN due_date < ? then concat(invoices.id, ':', invoices.due_date) else '' end)
           ",
-          [$today, $today, Invoice::STATUS_OVERDUE]
-        )->join('clients', 'clients.id', '=', 'invoices.client_id')
+          [$endDate ?? $today,
+          $endDate ?? $today,
+          Invoice::STATUS_OVERDUE,
+          $startDate,
+          $endDate,
+          Invoice::STATUS_OVERDUE,
+          $startDate,
+          $endDate
+        ])->join('clients', 'clients.id', '=', 'invoices.client_id')
         ->first();
 
         $stats = collect([$loans, $stats])->reduce(function($stats, $item) {

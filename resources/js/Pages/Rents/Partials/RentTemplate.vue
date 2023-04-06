@@ -96,16 +96,20 @@ const refresh = () => {
 
 const isGeneratingInvoices = ref(false);
 const generateNextInvoice = () => {
-  if (isGeneratingInvoices.value) return
-  isGeneratingInvoices.value = true
-  router.post(`/rents/${props.rents.id}/generate-next-invoice`, { }, {
-    onSuccess() {
-      refresh();
-    },
-    onFinish() {
-      isGeneratingInvoices.value = false
+  if (isGeneratingInvoices.value) return;
+  isGeneratingInvoices.value = true;
+  router.post(
+    `/rents/${props.rents.id}/generate-next-invoice`,
+    {},
+    {
+      onSuccess() {
+        refresh();
+      },
+      onFinish() {
+        isGeneratingInvoices.value = false;
+      },
     }
-  });
+  );
 };
 </script>
 

@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { IClientSaved } from "@/Modules/clients/clientEntity";
+import { router } from "@inertiajs/vue3";
+
 import ClientTemplate from "./Partials/ClientTemplate.vue";
 import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 import UnitTitle from "@/Components/realState/UnitTitle.vue";
 import ClientForm from "./Partials/ClientForm.vue";
+
 import { formatMoney } from "@/utils";
+import { IClientSaved } from "@/Modules/clients/clientEntity";
 
 export interface Props {
   clients: IClientSaved;
@@ -30,6 +33,7 @@ const props = withDefaults(defineProps<Props>(), {
     :tabs="{
       '': 'Detalles',
       transactions: 'Transacciones',
+      properties: 'Propiedades',
     }"
   >
     <article
@@ -37,6 +41,21 @@ const props = withDefaults(defineProps<Props>(), {
       class="px-4 py-2 space-y-4 rounded-md shadow-md bg-base-lvl-3"
     >
       <InvoiceCard v-for="invoice in props.clients.invoices" :invoice="invoice" />
+    </article>
+
+    <article
+      v-else-if="currentTab == 'properties'"
+      class="px-4 py-2 space-y-4 rounded-md shadow-md bg-base-lvl-3"
+    >
+      <UnitTitle
+        class="px-4 py-2 mt-4 bg-white rounded-md cursor-pointer hover:bg-white"
+        :title="property.name"
+        :owner-name="property.address"
+        :owner-link="''"
+        :tenant-name="''"
+        v-for="property in props.clients.properties"
+        @click="router.visit(`/properties/${property.id}`)"
+      />
     </article>
 
     <article v-else class="overflow-hidden rounded-md shadow-md">
