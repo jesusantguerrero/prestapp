@@ -93,11 +93,15 @@ class RentController extends InertiaController
 
     // Payments
     public function payInvoice(Rent $rent, Invoice $invoice) {
-        RentService::payInvoice($rent, $invoice, $this->getPostData());
+      RentService::payInvoice($rent, $invoice, $this->getPostData());
+    }
+
+    public function deleteInvoicePayments(Rent $rent, Invoice $invoice) {
+      RentService::deleteInvoicePayments($rent, $invoice);
     }
 
     public function deletePayment(Rent $rent, Invoice $invoice, Payment $payment) {
-        RentService::deletePayment($rent, $invoice, $payment);
+      RentService::deletePayment($rent, $invoice, $payment);
     }
 
     public function generateNextInvoice(Rent $rent) {

@@ -2,7 +2,7 @@
 import { reactive, watch, nextTick, ref, computed } from "vue";
 // @ts-ignore
 import { AtBackgroundIconCard, AtDatePager } from "atmosphere-ui";
-import { router } from "@inertiajs/vue3";
+import { router, useForm } from "@inertiajs/vue3";
 
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
@@ -209,9 +209,29 @@ const sectionLabel = computed(() => {
   return "Reporte rentas de " + formatDate(pageState?.dates?.startDate, "MMMM");
 });
 
+const deletePaymentForm = useForm({});
+const deleteRentPayments = async (invoice: IInvoice) => {
+  const isValid = await ElMessageBox.confirm(
+    `Estas seguro de eliminar los pagos de factura de ${invoice.client_name}?`,
+    "Eliminar pago de factura"
+  );
+  if (isValid) {
+    deletePaymentForm.delete(
+      `/rents/${invoice.invoiceable_id}/invoices/${invoice.id}/payments`,
+      {
+        onSuccess() {
+          router.reload();
+        },
+      }
+    );
+  }
+};
+
 const isLoading = ref(false);
 router.on("start", (event) => {
-  isLoading.value = true;
+  if (event.detail.visit.method !== "delete") {
+    isLoading.value = true;
+  }
 });
 
 router.on("finish", () => {
@@ -325,6 +345,15 @@ router.on("finish", () => {
                   title="Pagar"
                 >
                   <IIcSharpPayment />
+                </AppButton>
+                <AppButton
+                  @click="deleteRentPayments(row)"
+                  variant="error"
+                  class="flex items-center justify-center"
+                  v-else
+                  title="Eliminar pago"
+                >
+                  <IMdiReceiptTextRemove />
                 </AppButton>
                 <div class="flex space-x-2">
                   <AppButton

@@ -210,6 +210,7 @@ class RentService {
           invoices.due_date,
           invoices.total,
           invoices.id id,
+          invoices.type type,
           invoices.status,
           invoices.invoiceable_id,
           invoices.category_type,
@@ -333,6 +334,18 @@ class RentService {
         }
 
         $payment->delete();
+        $invoice->save();
+        $rent->client->checkStatus();
+
+    }
+
+    public static function deleteInvoicePayments(Rent $rent, Invoice $invoice) {
+        if ($invoice->invoiceable_id != $rent->id || $invoice->invoiceable_type !== Rent::class) {
+          throw new Exception("This invoice doesn't belongs to this rent");
+        }
+
+        Payment::destroy($invoice->payments->pluck('id'));
+
         $invoice->save();
         $rent->client->checkStatus();
 
