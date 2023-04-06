@@ -60,6 +60,8 @@ class InvoiceGenerated extends Notification
         return [
           'invoice_id' => $this->invoice->id,
           'amount' => $this->invoice->debt,
+          'link' => "/invoices/$this->invoice->id",
+          'message' => "An invoice for {$this->invoice->client->display_name} was generated",
           'type' => $this->invoice->category_type,
           'date' => $this->invoice->due_date,
         ];
