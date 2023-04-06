@@ -64,8 +64,12 @@ class PropertyUnit extends Model {
       return $this->belongsTo(Property::class);
     }
 
+    public function contracts() {
+      return $this->hasMany(Rent::class, 'unit_id');
+    }
+
     public function contract() {
-      return $this->hasOne(Rent::class, 'unit_id')->latestOfMany('created_at');
+      return $this->hasOne(Rent::class, 'unit_id')->whereNotIn('status', [Rent::STATUS_EXPIRED, Rent::STATUS_CANCELLED])->latestOfMany('created_at');
     }
 
     public function getClientNameAttribute() {

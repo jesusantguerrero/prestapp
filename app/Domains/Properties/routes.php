@@ -30,6 +30,7 @@ Route::middleware([
 
     // Units
     Route::controller(PropertyUnitController::class)->group(function() {
+      Route::get('units/bad-unit-status', 'listBadState');
       Route::get('units', 'index');
       Route::post('properties/{property}/units', 'addUnit');
       Route::put('properties/{property}/units/{propertyUnit}', 'updateUnit');
@@ -40,6 +41,7 @@ Route::middleware([
     Route::resource('rents', RentController::class);
     Route::get('rents/advanced-filter/pending-generation', [RentController::class, 'withPendingGeneration']);
     Route::post('/rents/{rent}/invoices/{invoice}/payments', [RentController::class, 'payInvoice']);
+    Route::delete('/rents/{rent}/invoices/{invoice}/payments', [RentController::class, 'deleteInvoicePayments']);
     Route::delete('/rents/{rent}/invoices/{invoice}/payments/{payment}', [RentController::class, 'deletePayment']);
     Route::post('/rents/{rent}/generate-next-invoice', [RentController::class, 'generateNextInvoice']);
     Route::get('/rents/{rent}/{section}', [RentController::class, 'getSection']);

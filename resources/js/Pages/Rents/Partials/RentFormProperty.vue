@@ -4,7 +4,7 @@ import { computed, toRefs } from "vue";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import FormSection from "./FormSection.vue";
 
-import { IUnit } from "@/Modules/properties/propertyEntity";
+import { IProperty, IUnit } from "@/Modules/properties/propertyEntity";
 import { useReactiveForm } from "@/utils/useReactiveForm";
 import AppFormField from "@/Components/shared/AppFormField.vue";
 import { formatMoney } from "@/utils";
@@ -35,6 +35,10 @@ const availableUnits = computed(() => {
 const unitLabel = (unit: IUnit) => {
   return `${unit.name} (${formatMoney(unit.price)})`;
 };
+
+const propertyLabel = (property: IProperty) => {
+  return `${property.name} (${property.address})`;
+};
 </script>
 
 <template>
@@ -47,6 +51,7 @@ const unitLabel = (unit: IUnit) => {
           placeholder="Selecciona una propiedad"
           label="name"
           track-by="id"
+          :custom-label="propertyLabel"
         />
       </AppFormField>
       <AppFormField class="w-full" v-if="formData.property" label="Unidad">

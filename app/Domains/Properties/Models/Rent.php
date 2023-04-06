@@ -237,4 +237,14 @@ class Rent extends Transactionable implements IPayableDocument {
     public function getTotal($formData = []) {
       return $this->invoices()->sum('total');
     }
+
+    public function isActive() {
+      return array_search($this->status, [
+        Rent::STATUS_ACTIVE,
+        Rent::STATUS_GRACE,
+        Rent::STATUS_LATE,
+        Rent::STATUS_PARTIALLY_PAID,
+        Rent::STATUS_PAID,
+      ]);
+    }
 }

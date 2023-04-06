@@ -5,6 +5,7 @@ namespace App\Domains\Properties\Http\Controllers;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Properties\Services\PropertyService;
+use App\Domains\Properties\Services\PropertyUnitService;
 use App\Http\Controllers\InertiaController;
 use Exception;
 
@@ -50,6 +51,18 @@ class PropertyUnitController extends InertiaController
     try {
       $postData = request()->only(['name', 'price', 'description', 'bedrooms', 'area', 'bathrooms']);
       PropertyService::updateUnit($propertyUnit, $postData);
+    } catch (Exception $e) {
+      return redirect()->back()->withErrors($e->getMessage());
+    }
+  }
+
+  public function listBadState(PropertyUnitService $propertyUnitService) {
+    try {
+      return inertia('Properties/UnitList', [
+        'units' => $propertyUnitService
+        ->withBadStatus(auth()->user()->current_team_id)
+        ->with(['property', 'owner', 'contract', 'contract.client'])->get()
+      ]);
     } catch (Exception $e) {
       return redirect()->back()->withErrors($e->getMessage());
     }

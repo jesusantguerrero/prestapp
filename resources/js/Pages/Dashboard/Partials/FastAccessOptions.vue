@@ -108,8 +108,6 @@ const welcomeCards = computed(() => {
 
   return options.filter((option) => props.extended || !option.extended);
 });
-
-const { openTransactionModal } = useTransactionModal();
 </script>
 
 <template>
@@ -121,12 +119,14 @@ const { openTransactionModal } = useTransactionModal();
         :class="[extended ? 'text-body-1/50' : 'text-primary']"
         @click="card.action()"
       >
-        <IMdiUserOutline class="text-4xl" v-if="card.icon == 'contact'" />
-        <IMdiMoney class="text-4xl" v-if="card.icon == 'money'" />
-        <IMdiHomeCityOutline class="text-4xl" v-if="card.icon == 'home'" />
-        <IMdiFileDocument class="text-4xl" v-if="card.icon == 'document'" />
-        <IMdiCalculator class="text-4xl" v-if="card.icon == 'calculator'" />
-        <IMdiUsers class="text-4xl" v-if="card.icon == 'users'" />
+        <div class="icon-container" :class="extended ? 'text-2xl' : 'text-4xl'">
+          <IMdiUserOutline v-if="card.icon == 'contact'" />
+          <IMdiMoney v-if="card.icon == 'money'" />
+          <IMdiHomeCityOutline v-if="card.icon == 'home'" />
+          <IMdiFileDocument v-if="card.icon == 'document'" />
+          <IMdiCalculator v-if="card.icon == 'calculator'" />
+          <IMdiUsers v-if="card.icon == 'users'" />
+        </div>
 
         <p class="text-sm font-bold text-body-1/50 group-hover:text-primary">
           {{ card.label }}

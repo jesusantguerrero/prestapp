@@ -60,7 +60,7 @@ const sectionName = computed(() => {
 <template>
   <AppLayout :title="`${sectionName} / ${clients.fullName}`">
     <template #header>
-      <PropertySectionNav v-if="!clients.is_lender" />
+      <PropertySectionNav v-if="type == 'owner'" />
       <LoanSectionNav v-else />
     </template>
 
