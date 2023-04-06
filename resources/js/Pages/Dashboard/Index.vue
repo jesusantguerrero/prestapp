@@ -139,7 +139,7 @@ const { openTransactionModal } = useTransactionModal();
               </SectionFooterCard>
               <SectionFooterCard
                 title="Balance pendiente"
-                :value="formatMoney(stats.outstanding)"
+                :value="`${formatMoney(stats.outstanding)} (${formatMoney(stats.outstanding_in_month)})`"
                 class="md:pl-6"
                 value-link="/properties/management-tools?filters[owner]=&filters[property]=&filters[section]=invoices"
               >
@@ -167,7 +167,7 @@ const { openTransactionModal } = useTransactionModal();
         </WelcomeWidget>
         <Link
           href="/properties/management-tools"
-          class="flex items-center hover:text-primary hover:font-bold transition-all justify-center w-full h-10 mt-4 rounded-md shadow-sm bg-base-lvl-3 md:mt-4"
+          class="flex items-center justify-center w-full h-10 mt-4 transition-all rounded-md shadow-sm hover:text-primary hover:font-bold bg-base-lvl-3 md:mt-4"
         >
           Distribución a propietarios pendientes
           <IMdiChevronRight />
@@ -176,7 +176,7 @@ const { openTransactionModal } = useTransactionModal();
       </div>
       <WelcomeWidget
         message="Accesos Rapidos"
-        class="hidden md:block w-full mt-4 md:mt-0 md:w-3/12"
+        class="hidden w-full mt-4 md:block md:mt-0 md:w-3/12"
       >
         <template #content>
           <FastAccessOptions />
