@@ -67,8 +67,6 @@ export const getRangeParams = (field: string, range: number[]|null, direction = 
       .map((dateCount) => dateToIso(method(date, dateCount)))
       .join("~");
 
-      debugger;
-
     if (range.at(0) == null && range[1] !== null) {
       rangeString = '<' + dateToIso(method(date, range[1]))
     } else if (!range.at(1) !== null) {
