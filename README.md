@@ -14,6 +14,10 @@
 	</strong>
 </p>
 
+> ⚠️ ICLoan is in Alpha (Under heavy development):
+
+> It is already quite usable, but it isn't ready for production yet. We recommend you use the demo to take a look feedback are aprecciated but maybe wont be inmmiadiatelly addressed at this stage since I have the idea in exploration phase.
+
 ## About ICLoan
 ICLoan is a Loan & Property Management Software that can handle properties with multiple units, owner distribution, rental contracts and rental expenses along with loan with rates.
 
