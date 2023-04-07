@@ -99,7 +99,6 @@ class PropertyController extends InertiaController
       $ownerId = $filters['owner'] ?? null;
       $section = $filters['section'] ?? 'bills';
       $status = $filters['status'] ?? null;
-      $upToday = $filters['uptoday'] ?? null;
       $statuses = $status ? [$status] : [];
 
       $methods = [

@@ -18,15 +18,15 @@ const props = defineProps<{
 const rentForm = useForm({ ...(props.rents ?? {}) });
 
 const onSubmit = (formData: Record<string, any>) => {
-  const url = props.rents.id ? route("rents.update", props.rents) : route("rents.store");
-  const method = props.rents.id ? "put" : "post";
+  const url = props.rents?.id ? route("rents.update", props.rents) : route("rents.store");
+  const method = props.rents?.id ? "put" : "post";
   rentForm
     .transform(() => ({
       ...formData,
     }))
     .submit(method, url, {
       onSuccess() {
-        props.rents.id
+        props.rents?.id
           ? router.visit(`/rents/${props.rents.id}`)
           : router.visit(`/rents`);
       },
