@@ -3,6 +3,7 @@ import { Link } from "@inertiajs/vue3"
 import IMdiPlus from '~icons/mdi/plus-thick';
 import MaterialSymbolsDashboard from '~icons/material-symbols/dashboard'
 import { MaybeRef } from "@vueuse/core";
+import { MODULES, getSectionMenu } from './menus';
 
 export * from "./menus";
 interface IAppMenuItem {
@@ -32,6 +33,7 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
             isActiveFunction(url: string, currentPath: string) {
                return /loans|lender/.test(currentPath)
             },
+            items: getSectionMenu(MODULES.LOAN),
             hidden: !isTeamApproved.value,
         },
         {
@@ -43,6 +45,7 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
             isActiveFunction(url: string, currentPath: string) {
               return /properties|units|tenant|owner/.test(currentPath)
             },
+            items: getSectionMenu(MODULES.PROPERTY),
             hidden: !isTeamApproved.value,
 
         },
@@ -63,8 +66,9 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
           as: Link,
           isActiveFunction(url: string, currentPath: string) {
             return /statements/.test(currentPath)
-         },
-         hidden: true,
+          },
+          items: getSectionMenu(MODULES.REPORT),
+
       },
     ].filter(item => !item?.hidden);
 

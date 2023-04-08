@@ -241,7 +241,8 @@ function refresh() {
       </template>
       <template #aside>
         <AtSide
-          class="border-none shadow-none text-bold bg-secondary"
+          v-auto-animate
+          class="border-none shadow-none text-secondary text-bold bg-secondary"
           title="ICLoan"
           :is-expanded="isExpanded"
           @update:isExpanded="isExpanded = $event"
@@ -251,16 +252,16 @@ function refresh() {
           brand-container-class="py-2"
           nav-container-class="px-2 pt-1 space-y-2 border-t border-base-lvl-3/20"
           icon-class="text-gray-100 transition hover:text-primary hover:bg-base-lvl-3/10"
-          item-class="px-5 py-[0.80rem] rounded-md font-bold text-gray-100 w-54 hover:text-primary-shade-1 hover:bg-base-lvl-3/10"
-          item-active-class="text-primary bg-base-lvl-3/10"
+          item-class="px-5 rounded-md font-bold text-sm text-gray-200 w-54 hover:text-white hover:bg-base-lvl-3/20"
+          item-active-class="text-white rounded-md text-sm bg-base-lvl-3/10"
           is-expandable
         >
           <template #brand>
             <!-- Logo -->
             <h1 class="flex items-center w-full text-gray-100 shrink-0 px-7">
               <Link :href="route('dashboard')" class="flex items-center space-x-2">
-                <ApplicationMark class="block w-auto h-9" />
-                <span class="text-xl font-bold"> ICLoan </span>
+                <ApplicationMark class="block w-104 h-14" />
+                <span class="text-xl font-bold text-white"> ICLoan </span>
               </Link>
             </h1>
           </template>

@@ -101,7 +101,7 @@ module.exports = {
         "primary-shade-2": "#47A9F1",
         "primary-shade-3": "#47A9F1",
         "primary-shade-4": "#47A9F1",
-        "secondary": "#0C165B",
+        "secondary": "#7069DE",
         "accent": "#5F47DD",
         "highlight": "#00E3DC",
         "neutral": "#ECEEF5",
