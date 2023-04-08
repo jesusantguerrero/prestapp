@@ -2,15 +2,17 @@ import { IClientSaved } from './../clients/clientEntity';
 import { IClient } from "../clients/clientEntity";
 
 export interface IProperty {
-    owner: IClient;
+    owner: IClientSaved;
     owner_id: number;
     name: string;
+    short_name: string;
     property_type: string;
     // basic info
     address: string;
     // payment details
     price: number
     units: IUnit[]
+    contract?: IRent
 }
 
 export interface IUnit {

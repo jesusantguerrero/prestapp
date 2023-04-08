@@ -1,8 +1,8 @@
-import { Ref } from 'vue';
 import { cloneDeep } from 'lodash';
 import { Link } from "@inertiajs/vue3"
 import IMdiPlus from '~icons/mdi/plus-thick';
 import MaterialSymbolsDashboard from '~icons/material-symbols/dashboard'
+import { MaybeRef } from "@vueuse/core";
 
 export * from "./menus";
 interface IAppMenuItem {
@@ -14,19 +14,19 @@ interface IAppMenuItem {
   hidden?: boolean;
   isActiveFunction?: (url: string, currentPath: string) => boolean
 }
-export const useAppMenu = (isTeamApproved: Ref<boolean>) => {
+export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
     const appMenu: IAppMenuItem[] =  [
         {
-          icon: 'fa fa-home',
+            icon: MaterialSymbolsDashboard,
             name: 'home',
-            label: 'Inicio',
+            label: t('Home'),
             to: '/dashboard',
             as: Link
         },
         {
             icon: 'fas fa-money-check-alt',
-            label: 'Prestamos',
-            name: 'prestamos',
+            label: t('Loans'),
+            name: 'loans',
             to: '/loans',
             as: Link,
             isActiveFunction(url: string, currentPath: string) {
@@ -36,7 +36,8 @@ export const useAppMenu = (isTeamApproved: Ref<boolean>) => {
         },
         {
             icon: 'fas fa-building',
-            label:'Propiedades',
+            name: 'properties',
+            label:t('Properties'),
             to: '/units?filter[status]=RENTED',
             as: Link,
             isActiveFunction(url: string, currentPath: string) {
@@ -47,7 +48,7 @@ export const useAppMenu = (isTeamApproved: Ref<boolean>) => {
         },
         {
             icon: 'fas fa-calculator',
-            label: 'Contabilidad',
+            label: t('Accounting'),
             to: '/invoices?filter[type]=expense|invoice',
             as: Link,
             isActiveFunction(url:string, currentPath: string) {
@@ -57,7 +58,7 @@ export const useAppMenu = (isTeamApproved: Ref<boolean>) => {
         },
         {
           icon: 'fas fa-chart-bar',
-          label:'Reportes',
+          label:t('Reports'),
           to: '/statements',
           as: Link,
           isActiveFunction(url: string, currentPath: string) {
@@ -78,13 +79,13 @@ export const useAppMenu = (isTeamApproved: Ref<boolean>) => {
     const headerMenu =  [
         {
             icon: 'fas fa-question',
-            label: 'Ayuda y Soporte',
+            label: t('Help & support'),
             to: '/help',
             as: Link
         },
         {
             icon: 'fas fa-cogs',
-            label: 'Configuración',
+            label: t('Configuration'),
             name: 'settings',
             to: '/settings',
             as: Link
