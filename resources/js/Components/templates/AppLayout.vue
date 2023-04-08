@@ -22,8 +22,9 @@ import { useAppMenu } from "@/Modules/_app";
 import { useSelect } from "@/Modules/shared/useSelects";
 import { useLocalStorage } from "@vueuse/core";
 import MobileMenuBar from "../mobile/MobileMenuBar.vue";
+import { useI18n } from "vue-i18n";
 
-const props = defineProps({
+defineProps({
   title: String,
   showBackButton: Boolean,
   isOnboarding: Boolean,
@@ -48,8 +49,10 @@ const isTeamApproved = computed(() => {
 
 provide("isTeamApproved", isTeamApproved);
 
-const { appMenu: currentMenu, headerMenu, mobileMenu } = useAppMenu(isTeamApproved);
+const { t } = useI18n();
+const { appMenu: currentMenu, headerMenu, mobileMenu } = useAppMenu(isTeamApproved, t);
 const { categoryOptions: transformCategoryOptions } = useSelect();
+
 transformCategoryOptions(pageProps?.categories, "sub_categories", "categoryOptions");
 transformCategoryOptions(
   pageProps?.accounts,

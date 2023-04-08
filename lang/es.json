@@ -7,6 +7,13 @@
     "validation": {
       "unique": ""
     },
+    "Home": "Inicio",
+    "Loans": "Prestamos",
+    "Properties": "Propiedades",
+    "Accounting": "Contabilidad",
+    "Reports": "Reportes",
+    "Help & support": "Ayuda y Soporte",
+    "Configuration": "Configuración",
     "approval": {
       "consultantPending": {
           "content": "Your account is currently unverified and your application is pending approval. Please check back again within 24 hours."

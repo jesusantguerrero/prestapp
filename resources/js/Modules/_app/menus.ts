@@ -57,7 +57,10 @@ const menus = {
     [MODULES.PROPERTY]: [
     {
         label: 'Propiedades',
-        url: '/units/'
+        url: '/units/',
+        isActiveFunction(currentPath: string) {
+          return /properties|units/.test(currentPath)
+        },
     },
     {
         label: 'Contratos',
