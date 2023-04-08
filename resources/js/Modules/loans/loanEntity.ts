@@ -35,6 +35,8 @@ export interface IPayment {
   payable_id: number;
   amount: number;
   payment_date: Date;
+  account_id: number;
+  concept: string;
 }
 
 export interface ILoanWithPayments extends ILoan {

@@ -2,13 +2,7 @@
 import { format as formatDate } from "date-fns";
 import parseISO from "date-fns/esm/fp/parseISO/index.js";
 import { useForm, router } from "@inertiajs/vue3";
-import {
-  AtInput,
-  AtField,
-  AtFieldCheck,
-  AtSelect,
-  AtSimpleSelect,
-} from "atmosphere-ui";
+import { AtInput, AtField, AtFieldCheck, AtSelect, AtSimpleSelect } from "atmosphere-ui";
 import { computed, reactive, toRefs, watch, inject, toRaw } from "vue";
 
 import AppButton from "@/Components/shared/AppButton.vue";
@@ -16,7 +10,8 @@ import InvoiceTotals from "./InvoiceTotals.vue";
 import InvoiceGrid from "./InvoiceGrid.vue";
 
 import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
-import { ElMessageBox } from "element-plus";
+import { ElCollapse, ElCollapseItem, ElMessageBox, ElNotification } from "element-plus";
+import { IPayment } from "@/Modules/loans/loanEntity";
 
 const props = defineProps({
   type: {
@@ -44,21 +39,21 @@ const labels = {
   },
 };
 
-const getLabel = (key) => labels[props.type.toLowerCase()][key];
+const getLabel = (key: string) => labels[props.type.toLowerCase()][key];
 
-const state = reactive({
+const state: any = reactive({
   totalValues: {},
   totals: {
     subtotalField: "subtotal",
     totalField: "amount",
     discountField: "discountTotal",
-    subtotalFormula(row) {
+    subtotalFormula(row: Record<string, number>) {
       return row.quantity * row.price;
     },
-    totalFormula(row) {
+    totalFormula(row: Record<string, number>) {
       return row.quantity * row.price;
     },
-    discountFormula(row) {
+    discountFormula(row: Record<string, number>) {
       return row.quantity * row.price;
     },
   },
@@ -97,7 +92,7 @@ const state = reactive({
   }),
 });
 
-const setInvoiceData = (data) => {
+const setInvoiceData = (data: Record<string, any>) => {
   if (data) {
     data.date = parseISO(data.date) || new Date();
     data.due_date = parseISO(data.due_date) || new Date();
@@ -133,7 +128,7 @@ const reload = () => {
 };
 
 const { openModal } = usePaymentModal();
-const editPayment = (payment) => {
+const editPayment = (payment: IPayment) => {
   openModal({
     data: {
       title: `Pagar ${invoice.concept}`,
@@ -156,7 +151,7 @@ const removePayment = async (payment: Record<string, string>) => {
   router.delete(`/payments/${payment.id}`, {
     onSuccess() {
       ElNotification({
-        message: `Pago ${unit.name} borrada con exito`,
+        message: `Pago ${payment.due_date} borrada con exito`,
         title: "Pago eliminada",
         type: "success",
       });
@@ -164,7 +159,7 @@ const removePayment = async (payment: Record<string, string>) => {
   });
 };
 
-const setRequestData = (data) => {
+const setRequestData = (data: Record<string, any>): Record<string, any> => {
   const requestData = {
     ...data,
     items: state.tableData
@@ -195,7 +190,12 @@ const setRequestData = (data) => {
   return requestData;
 };
 
-const sendRequest = (method, url, formData, message) => {
+const sendRequest = (
+  method: string,
+  url: string,
+  formData: Record<string, any>,
+  message: string
+) => {
   return router[method](url, formData, {
     onSuccess() {
       const section = formData.type == "EXPENSE" ? "bills" : "invoices";
@@ -204,7 +204,7 @@ const sendRequest = (method, url, formData, message) => {
   });
 };
 
-const saveForm = (status) => {
+const saveForm = (status: number) => {
   const formData = setRequestData({
     ...state.invoice,
     type: props.type,
@@ -236,7 +236,7 @@ const markAsPaid = () => {
   );
 };
 
-const cloneInvoice = (status) => {
+const cloneInvoice = (status: number) => {
   const formData = setRequestData(state.invoice);
   if (status) {
     formData.status = 2;
@@ -255,12 +255,12 @@ const cloneInvoice = (status) => {
     });
 };
 
-const handleImageChange = (file) => {
+const handleImageChange = (file: File) => {
   state.imageUrl = URL.createObjectURL(file.raw);
   state.invoice.logo = file;
 };
 
-const onTaxesUpdated = ({ rowIndex, taxes }) => {
+const onTaxesUpdated = ({ rowIndex, taxes }: { rowIndex: number; taxes: any[] }) => {
   state.tableData[rowIndex].taxes = taxes;
 };
 
