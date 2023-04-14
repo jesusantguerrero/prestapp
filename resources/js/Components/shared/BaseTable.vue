@@ -101,7 +101,7 @@ const visibleCols = computed(() => {
       </div>
       <ElPagination
         v-if="config.pagination"
-        class="w-full flex justify-end pr-4"
+        class="w-full flex justify-end pr-4 py-4"
         background
         @current-change="$emit('paginate', $event)"
         @size-change="$emit('size-change', $event)"

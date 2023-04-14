@@ -28,15 +28,15 @@ const props = withDefaults(
     serverSearchOptions: IServerSearchData;
   }>(),
   {
-    serverSearchOptions: () => ({
-      filters: {},
+    serverSearchOptions: {
+      filters: "",
       dates: {},
       sorts: "",
       limit: 10,
       relationships: "",
       search: "",
       page: 1,
-    }),
+    },
   }
 );
 
@@ -66,6 +66,7 @@ const {
   updateSearch,
   changeSize,
   paginate,
+  hasFilters,
   reset,
   state: searchState,
 } = useServerSearch(
@@ -104,6 +105,8 @@ const deleteClient = async (client: IClient) => {
     });
   }
 };
+
+const { openModal } = useToggleModal("contact");
 </script>
 
 <template>
@@ -158,7 +161,7 @@ const deleteClient = async (client: IClient) => {
         <AppSearch
           v-model.lazy="searchState.search"
           class="w-full md:flex"
-          :has-filters="true"
+          :has-filters="hasFilters"
           @clear="reset()"
           @search="executeSearch"
           @blur="executeSearch"
@@ -204,6 +207,14 @@ const deleteClient = async (client: IClient) => {
         :clients="listData"
         :pagination="searchState"
         :total="paginationTotal"
+        @edit="
+          openModal({
+            data: {
+              formData: $event,
+            },
+            isOpen: true,
+          })
+        "
         @delete="deleteClient"
         @search="executeSearch"
         @paginate="paginate"
