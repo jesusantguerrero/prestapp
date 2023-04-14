@@ -267,7 +267,11 @@ defineExpose({
     <div class="section-body">
       <div class="invoice-body">
         <ElCollapse v-model="activeSections" class="w-full">
-          <ElCollapseItem :title="$t('Logo, concept and description')" name="header">
+          <ElCollapseItem
+            :title="$t('Logo, concept and description')"
+            name="header"
+            :expanded="true"
+          >
             <div class="invoice-header-details">
               <el-upload
                 class="avatar-uploader"

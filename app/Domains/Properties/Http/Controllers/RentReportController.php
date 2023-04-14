@@ -32,9 +32,17 @@ class RentReportController extends Controller
       $method = $methods['invoices'];
       $invoices = $method();
 
-      return inertia('Properties/Transactions/InvoiceSummary',
+      $invoicesByOwners = $invoices->groupBy(['category_type', 'owner_name'])
+      ->map(function ($category) {
+        return [
+          "total" => $category->flatten()->count(),
+          "owners" => $category->all(),
+        ];
+      });
+
+      return inertia('Rents/Reports/RentSummary',
       [
-          'invoices' => $invoices->groupBy('category_type'),
+          'invoices' => $invoicesByOwners,
           'outstanding' => $invoices->sum('debt'),
           'paid' => $invoices->sum(function ($invoice) {
             return $invoice->total - $invoice->debt;

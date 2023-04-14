@@ -77,5 +77,6 @@
     "save invoice": "Guardar factura",
     "Logo, concept and description": "Logo, concepto y descripción",
     "concept": "Concepto",
-    "description": "Descripción"
+    "description": "Descripción",
+    ":owner, (:invoiceCount) invoices": "{owner}, ({invoiceCount} facturas)"
   }
