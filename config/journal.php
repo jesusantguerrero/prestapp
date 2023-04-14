@@ -783,7 +783,7 @@ return [
             "depth" => 0,
         ]
     ],
-    "invoice_category_types" => [
+    "document_types" => [
       PropertyInvoiceTypes::Deposit,
       PropertyInvoiceTypes::DepositRefund,
       PropertyInvoiceTypes::DepositApply,

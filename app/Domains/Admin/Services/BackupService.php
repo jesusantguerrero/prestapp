@@ -48,7 +48,9 @@ class BackupService {
   }
 
   public function generate() {
-    GenerateBackup::dispatch();
+    GenerateBackup::dispatch()
+    ->delay(now()->addSeconds(30));
+
     return activity()
     ->causedBy(auth()->user())
     ->log("Admin started to generate backup");

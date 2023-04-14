@@ -12,6 +12,7 @@ use Insane\Journal\Models\Core\Category;
 use Insane\Journal\Models\Core\Tax;
 use Insane\Journal\Models\Invoice\Invoice;
 use Insane\Journal\Models\Product\Product;
+use Insane\Journal\Services\InvoiceService;
 use Exception;
 
 class InvoiceController
@@ -119,7 +120,6 @@ class InvoiceController
     {
       try {
         $invoice = $this->getInvoiceSecured($invoiceId);
-        $path = config('journal.invoices_inertia_path') . '/Show' ;
         $invoiceData = $invoice->getInvoiceData();
 
         return inertia('Journal/Invoices/Show', [
@@ -137,46 +137,27 @@ class InvoiceController
     *
     * @return \Illuminate\Http\Response
     */
-    public function edit(int $invoiceId)
+    public function edit(int $invoiceId, InvoiceService $invoiceService)
     {
       try {
         $invoice = $this->getInvoiceSecured($invoiceId);
-        return inertia(config('journal.invoices_inertia_path') . '/Edit', [
-            'invoice' => $invoice->getInvoiceData(),
-            'products' => Product::where([
-                'team_id' => $invoice->team_id
-            ])->with(['price'])->get(),
-            "categories" => Category::where([
-                'depth' => 1
-            ])->with([
-                'subCategories',
-                'accounts' => function ($query) use ($invoice) {
-                    $query->where('team_id', '=', $invoice->team_id);
-                },
-                'accounts.lastTransactionDate'
-            ])->get(),
-            'type' => $invoice->type,
-            'clients' => Journal::listClientsOf($invoice->team_id),
-            'availableTaxes' => Tax::where("team_id", $invoice->team_id)->get(),
-        ]);
+        return inertia(config('journal.invoices_inertia_path') . '/Edit',
+          $invoiceService->getEditableData($invoice)
+        );
       } catch (Exception $e) {
         return redirect('/invoices');
       }
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Invoice $invoice, Request $request)
+    public function update(Invoice $invoice, InvoiceService $invoiceService)
     {
-      if ($invoice->team_id != $request->user()->current_team_id) return;
-        $postData = $request->post();
-        $invoice->updateDocument($postData);
-        return Redirect("/invoices/$invoice->id/edit");
+        try {
+          if ($invoice->team_id != request()->user()->current_team_id) return;
+          $invoiceService->update($invoice, request()->post());
+          return Redirect("/invoices/$invoice->id/edit");
+        } catch (Exception $e) {
+          return redirect()->back()->withErrors(['default' => $e->getMessage()]);
+        }
     }
 
 
