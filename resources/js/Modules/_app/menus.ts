@@ -9,6 +9,7 @@ import ClarityBankLine from '~icons/clarity/bank-line'
 export const MODULES = {
     CRM: 'CRM',
     LOAN: 'loan',
+    INVOICING: 'invoicing',
     PROPERTY: 'property',
     ACCOUNTING: 'accounting',
     ADMIN: 'admin',
@@ -109,38 +110,63 @@ const menus = {
         icon: IcOutlineRealEstateAgent,
       }
     ],
-    [MODULES.ACCOUNTING]: [{
+    [MODULES.INVOICING]: [
+      // {
+      //     label: 'Estimates',
+      //     to: '/properties/overview',
+      //     as: Link,
+      // },
+      {
+          label: 'Invoices',
+          to: '/invoices',
+          as: Link,
+      },
+      {
+          label: 'Payments',
+          to: '/payments',
+          as: Link,
+      },
+      {
+        label: 'Expenses',
+        to: '/bills',
+        as: Link,
+      }
+    ],
+    [MODULES.ACCOUNTING]: [
+      {
         label: 'Banco',
         to: '/properties/overview'
-    },
-    {
-        label: 'Transacciones',
-        to: '/invoices?filter[type]=expense|invoice',
-    },
-    {
-      label: 'Cuentas',
-      to: '/accounts'
-    }],
-    [MODULES.ADMIN]: [{
+      },
+      {
+          label: 'Transacciones',
+          to: '/invoices?filter[type]=expense|invoice',
+      },
+      {
+        label: 'Cuentas',
+        to: '/accounts'
+      }
+    ],
+    [MODULES.ADMIN]: [
+      {
         label: 'Dashboard',
         to: '/admin',
         isActiveFunction(currentPath: string) {
           return '/admin' == currentPath;
         },
-    },
-    {
+      },
+      {
         label: 'Teams',
         to: '/admin/teams',
-    },
-    {
+      },
+      {
         label: 'Commands',
         to: '/admin/commands',
-    },
-    {
+      },
+      {
         label: 'Backups',
         to: '/admin/backups',
-    }
-  ]
+      }
+    ]
 }
 
 

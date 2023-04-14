@@ -57,6 +57,7 @@
     "This unit is currently rented": "Esta unidad esta en renta actualmente",
     "This rent has payments and can't be eliminated": "Este contrato tiene pagos  y tienen que ser eliminados primero",
     "This property has contracts and can't be eliminated": "Esta propiedad tiene contratos que tienen que ser eliminados primero",
+    "The payment entered is more than the total amount due for this invoice. Please check and retry": "El pago de la factura es mayor al total de la factura, por favor revise e intente de nuevo",
     "january": "Enero",
     "february": "Febrero",
     "march": "Marzo",
@@ -72,5 +73,9 @@
     "expired" : "vencido",
     "You have :count contracts :state" : "Tienes :count contratos :state",
     "You have :count contracts close to expire within :days": "Tiene :count contratos proximos a expirar en :days dias",
-    "extend rent": "extender contrato"
+    "extend rent": "extender contrato",
+    "save invoice": "Guardar factura",
+    "Logo, concept and description": "Logo, concepto y descripción",
+    "concept": "Concepto",
+    "description": "Descripción"
   }

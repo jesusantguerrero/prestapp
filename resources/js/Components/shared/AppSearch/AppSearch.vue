@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// @ts-ignore
 import { AtInput } from "atmosphere-ui";
 import { ref } from "vue";
 import { useDebounceFn } from "@vueuse/shared";

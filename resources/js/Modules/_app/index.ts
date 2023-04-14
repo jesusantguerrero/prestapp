@@ -61,6 +61,17 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
         },
         {
           icon: 'fas fa-chart-bar',
+          label:t('Invoice'),
+          to: '/statements',
+          as: Link,
+          hidden: true,
+          isActiveFunction(url: string, currentPath: string) {
+            return /invoice/.test(currentPath)
+          },
+          items: getSectionMenu(MODULES.INVOICING),
+        },
+        {
+          icon: 'fas fa-chart-bar',
           label:t('Reports'),
           to: '/statements',
           as: Link,
@@ -68,7 +79,6 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
             return /statements/.test(currentPath)
           },
           items: getSectionMenu(MODULES.REPORT),
-
       },
     ].filter(item => !item?.hidden);
 

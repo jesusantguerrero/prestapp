@@ -143,6 +143,7 @@ function refresh() {
                   {{ $t("commons.new") }}
                 </AppButton>
               </AddNewButton>
+              <AppResourceSearch v-if="false" />
               <AppNotificationBell
                 :count="pageProps.unreadNotifications.count"
                 :notifications="pageProps.unreadNotifications.data"

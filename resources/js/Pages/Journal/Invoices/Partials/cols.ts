@@ -53,7 +53,7 @@ export default [
   {
     label: "Total",
     name: "amount",
-    width: "120",
+    width: 80,
     type: "calc",
     class: "text-right",
     headerClass: 'text-right',

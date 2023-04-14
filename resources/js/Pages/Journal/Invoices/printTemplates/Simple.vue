@@ -179,7 +179,7 @@ const { tableData, client, invoice, totals, totalValues, dueDays } = toRefs(stat
         </section>
       </div>
 
-      <span class="stamp is-approved" v-if="invoice.debt == 0">Pagado</span>
+      <span class="stamp is-approved mt-8" v-if="invoice.debt == 0">Pagado</span>
     </div>
   </section>
 </template>

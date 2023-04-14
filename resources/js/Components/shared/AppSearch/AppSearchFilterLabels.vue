@@ -1,4 +1,4 @@
-<script setup>
+<script lang="ts" setup>
 import { computed } from "vue";
 import IconClose from "@/components/icons/IconClose.vue";
 
