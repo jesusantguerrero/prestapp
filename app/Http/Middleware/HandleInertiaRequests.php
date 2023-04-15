@@ -40,6 +40,7 @@ class HandleInertiaRequests extends Middleware
     {
         $user = $request->user();
         $team = $user ? $user->currentTeam : null;
+        $isAdmin = config('atmosphere.superadmin.email') === $user?->email;
 
         return array_merge(parent::share($request), [
             "accounts" => $team ? Account::getByDetailTypes($team->id) : [],
@@ -51,13 +52,14 @@ class HandleInertiaRequests extends Middleware
                 ->orderBy('index')
                 ->with('subCategories')
                 ->get() : [''],
-            "isTeamApproved" => config('atmosphere.superadmin.email') === $user?->email || $team?->approved_at,
+            "isTeamApproved" => $isAdmin || $team?->approved_at,
             'unreadNotifications' => function() use ($user) {
               return [
                 "count" => $user ? $user->unreadNotifications->count() : 0,
                 "data" => $user ? $user->unreadNotifications : []
               ];
             },
+            "isAdmin" => $isAdmin
         ]);
     }
 }

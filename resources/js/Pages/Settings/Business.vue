@@ -10,7 +10,7 @@
 
     <main class="h-auto py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
       <div class="w-full px-5 py-10 space-y-5 bg-white divide-y divide-gray-200">
-        <section class="pb-2 w-6/12">
+        <section class="pb-2 w-full">
           <article class="md:w-full">
             <h2 class="my-4 font-bold text-primary">Registro Legal</h2>
             <AppFormField label="Nombre de Empresa" v-model="formData.business_name" />

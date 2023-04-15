@@ -32,9 +32,17 @@ class RentReportController extends Controller
       $method = $methods['invoices'];
       $invoices = $method();
 
-      return inertia('Properties/Transactions/InvoiceSummary',
+      $invoicesByOwners = $invoices->groupBy(['category_type', 'owner_name'])
+      ->map(function ($category) {
+        return [
+          "total" => $category->flatten()->count(),
+          "owners" => $category->all(),
+        ];
+      });
+
+      return inertia('Rents/Reports/RentSummary',
       [
-          'invoices' => $invoices->groupBy('category_type'),
+          'invoices' => $invoicesByOwners,
           'outstanding' => $invoices->sum('debt'),
           'paid' => $invoices->sum(function ($invoice) {
             return $invoice->total - $invoice->debt;
@@ -54,6 +62,50 @@ class RentReportController extends Controller
           }),
           "serverSearchOptions" => $this->getServerParams(),
           "section" => 'invoices'
+      ]);
+    }
+
+     // Tools
+     public function management(Request $request) {
+      $teamId = $request->user()->current_team_id;
+      $filters = $request->query('filters');
+      $ownerId = $filters['owner'] ?? null;
+      $section = $filters['section'] ?? 'bills';
+      $status = $filters['status'] ?? null;
+      $statuses = $status ? [$status] : [];
+
+      $methods = [
+        "bills" => fn() => ClientService::invoices($teamId, $ownerId)->get(),
+        "invoices" => fn() => RentService::invoices($teamId, $statuses)
+          ->orderByDesc('due_date')
+          ->where('due_date', '<=', now()->timezone('America/Santo_Domingo'))
+          ->get(),
+        "commissions" => fn() => RentService::commissions($teamId)->get()
+      ];
+
+      $method = $methods[$section];
+      $invoices = $method();
+
+      return inertia('Properties/Transactions/ManagementTools',
+      [
+          'invoices' => $invoices,
+          'outstanding' => $invoices->sum('debt'),
+          'paid' => $invoices->sum(function ($invoice) {
+            return $invoice->total - $invoice->debt;
+          }),
+          'owners' => $invoices->map(function($invoice) {
+            return [
+              "value" => $invoice->client_id,
+              "label" => $invoice->client_name,
+            ];
+          })->unique('value')->values(),
+          'properties' => $invoices->map(function($invoice) {
+              return [
+                "value" => $invoice->client_id,
+                "label" => $invoice->client_name,
+              ];
+          }),
+          "section" => $section
       ]);
     }
 }

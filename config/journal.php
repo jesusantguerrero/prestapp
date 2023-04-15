@@ -1,5 +1,8 @@
 <?php
 
+use App\Domains\Loans\Enums\LoanInvoiceTypes;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
+
 return [
     "accounts_inertia_path" => "Journal/Accounts",
     "statements_inertia_path" => "Journal/Statements",
@@ -780,4 +783,17 @@ return [
             "depth" => 0,
         ]
     ],
+    "document_types" => [
+      PropertyInvoiceTypes::Deposit,
+      PropertyInvoiceTypes::DepositRefund,
+      PropertyInvoiceTypes::DepositApply,
+      PropertyInvoiceTypes::DepositRefund,
+      PropertyInvoiceTypes::OwnerContribution,
+      PropertyInvoiceTypes::OwnerDistribution,
+      PropertyInvoiceTypes::Charge,
+      PropertyInvoiceTypes::Fee,
+      PropertyInvoiceTypes::LateFee,
+      PropertyInvoiceTypes::Rent,
+      LoanInvoiceTypes::PaymentAgreement
+    ]
 ];

@@ -1,4 +1,4 @@
-import { IClient } from './../../Modules/clients/clientEntity';
+import { IClient } from '@/Modules/clients/clientEntity';
 import { h } from "vue";
 import { ElAvatar, ElTag } from "element-plus"
 import { getClientLink } from "@/Modules/clients/constants";
@@ -30,13 +30,6 @@ export default function (t: Function) {
             ]);
         }
     },
-    // {
-    //         name: 'cellphone',
-    //         label: 'Celular',
-    //         class: "text-center",
-    //         headerClass: "text-center",
-    //         width: 130,
-    // },
     {
             name: 'address_details',
             label: 'Dirección',

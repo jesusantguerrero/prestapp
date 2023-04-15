@@ -35,7 +35,7 @@ const isActive = computed(() => {
   const regex = new RegExp(props.value ?? "");
   const currentPath = window.location.pathname;
 
-  if (props.value?.startsWith("/")) {
+  if (props.value?.startsWith?.("/")) {
     return props.isActiveFunction
       ? props.isActiveFunction(currentPath)
       : regex.test(currentPath);

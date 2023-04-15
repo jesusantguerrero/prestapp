@@ -18,7 +18,7 @@ interface IPaginatedData {
 }
 
 const props = defineProps<{
-  teams: IRent[] | IPaginatedData;
+  users: IRent[] | IPaginatedData;
   serverSearchOptions: IServerSearchData;
   user: Record<string, string>;
 }>();
@@ -34,7 +34,7 @@ const {
 } = useServerSearch(
   serverSearchOptions,
   (finalUrl: string) => {
-    updateSearch(`/admin/teams?${finalUrl}`);
+    updateSearch(`/admin/users?${finalUrl}`);
   },
   {
     manual: true,
@@ -42,7 +42,7 @@ const {
 );
 
 const listData = computed(() => {
-  return Array.isArray(props.teams) ? props.teams : props.teams.data;
+  return Array.isArray(props.users) ? props.users : props.users.data;
 });
 
 const tableConfig = {
@@ -78,7 +78,7 @@ const deleteTeam = () => {};
         :table-data="listData"
         :cols="cols"
         :pagination="searchState"
-        :total="teams.total"
+        :total="users.total"
         @search="executeSearch"
         @paginate="paginate"
         @size-change="changeSize"
@@ -94,14 +94,6 @@ const deleteTeam = () => {};
             >
               <IMdiChevronRight />
             </Link>
-            <AppButton
-              variant="success"
-              @click="approveTeam(row)"
-              title="Remove team"
-              v-if="!row.approved_at"
-            >
-              <IMdiCheck />
-            </AppButton>
             <AppButton
               variant="neutral"
               class="hover:text-error transition items-center flex flex-col justify-center hover:border-red-400"

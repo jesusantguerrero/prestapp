@@ -22,7 +22,7 @@
   </main>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 defineProps({
   navClass: {
     type: [String, Object],
