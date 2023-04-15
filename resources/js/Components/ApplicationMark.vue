@@ -4,7 +4,7 @@
 
 <style lang="scss">
 .app-logo {
-  background-image: url("/logo.svg");
+  background-image: url("/logo-custom.svg");
   background-size: cover;
 }
 </style>

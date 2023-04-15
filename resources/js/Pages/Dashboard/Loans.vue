@@ -1,10 +1,10 @@
 <script setup lang="ts">
+// @ts-ignore
 import { AtBackgroundIconCard, AtButton } from "atmosphere-ui";
 
 import IncomeSummaryWidget from "@/Pages/Dashboard/Partials/IncomeSummaryWidget.vue";
 import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
 import NextPaymentsWidget from "@/Pages/Loans/NextPaymentsWidget.vue";
-import DashboardTemplate from "./Partials/DashboardTemplate.vue";
 import ChartBar from "./Partials/ChartBar.vue";
 
 import { formatMoney } from "@/utils/formatMoney";
@@ -47,17 +47,17 @@ const props = defineProps({
     type: Number,
   },
   paidInterest: {
-    type: Array,
+    type: Object,
   },
   bank: {
-    type: Number,
+    type: Object,
   },
   isTeamApproved: {
     type: Boolean,
   },
 });
 
-const welcomeCards = [
+const welcomeCards: ICard[] = [
   {
     label: "Clientes con Prestamos",
     value: props.activeLoanClients,
@@ -105,11 +105,11 @@ const comparisonRevenue = {
   series: [
     {
       name: "Año anterior",
-      data: props.revenue.previousYear.values.map((item) => item.total),
+      data: props.revenue.previousYear.values.map((item: any) => item.total),
     },
     {
       name: "Este año",
-      data: props.revenue.currentYear.values.map((item) => item.total),
+      data: props.revenue.currentYear.values.map((item: any) => item.total),
     },
   ],
 };
@@ -117,8 +117,8 @@ const comparisonRevenue = {
 const interestPerformance = {
   headers: {
     gapName: "Year",
-    month: props.paidInterest.months.at(-1).outcome,
-    avg: props.paidInterest.avg,
+    month: props.paidInterest?.months.at(-1).outcome,
+    avg: props.paidInterest?.avg,
     current: props.paidInterest?.year,
   },
   options: {
@@ -140,7 +140,7 @@ const interestPerformance = {
   series: [
     {
       name: "Ganancias intereses",
-      data: props.paidInterest.months.map((item) => item.outcome),
+      data: props.paidInterest?.months.map((item: any) => item.outcome),
     },
   ],
 };
@@ -149,8 +149,17 @@ const summaryType = ref("cash-flow");
 const { openTransactionModal } = useTransactionModal();
 </script>
 
+<script lang="ts">
+import DashboardTemplate from "./Partials/DashboardTemplate.vue";
+import { ICard } from "@/types";
+
+export default {
+  layout: DashboardTemplate,
+};
+</script>
+
 <template>
-  <DashboardTemplate :user="user" :is-team-approved="isTeamApproved">
+  <main>
     <WelcomeWidget
       message="Bienvenido a ICLoan"
       :username="user.name"
@@ -204,7 +213,7 @@ const { openTransactionModal } = useTransactionModal();
         <AtBackgroundIconCard
           class="text-white bg-secondary h-36"
           icon="fas fa-wallet"
-          :value="formatMoney(props.bank.balance | 0)"
+          :value="formatMoney(bank?.balance ?? 0)"
           title="Balance cuenta prestamos"
         >
           <template #action>
@@ -254,5 +263,5 @@ const { openTransactionModal } = useTransactionModal();
         </NextPaymentsWidget>
       </article>
     </section>
-  </DashboardTemplate>
+  </main>
 </template>
