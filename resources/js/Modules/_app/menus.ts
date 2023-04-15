@@ -159,6 +159,10 @@ const menus = {
         to: '/admin/teams',
       },
       {
+        label: 'Users',
+        to: '/admin/users',
+      },
+      {
         label: 'Commands',
         to: '/admin/commands',
       },

@@ -219,6 +219,9 @@ function refresh() {
                     </div>
 
                     <DropdownLink :href="route('profile.show')"> Profile </DropdownLink>
+                    <DropdownLink href="/admin" v-if="$page.props.isAdmin">
+                      Admin
+                    </DropdownLink>
 
                     <DropdownLink
                       v-if="$page.props.jetstream.hasApiFeatures"
