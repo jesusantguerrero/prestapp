@@ -2,20 +2,22 @@
 // @ts-ignore: its my template
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import { router } from "@inertiajs/core";
-import { ILoan } from "@/Modules/loans/loanEntity";
+import { Link } from "@inertiajs/vue3";
 import { computed, toRefs, ref } from "vue";
-import cols from "./Partials/propertyCols";
+
 import AtTable from "@/Components/shared/BaseTable.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
-import { Link } from "@inertiajs/vue3";
 import PropertySectionNav from "./Partials/PropertySectionNav.vue";
-import { IPaginatedData } from "@/utils/constants";
 import BudgetProgress from "@/Components/BudgetProgress.vue";
 import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
-import { IServerSearchData, useServerSearch } from "@/utils/useServerSearch";
 import ButtonGroup from "@/Components/ButtonGroup.vue";
+
+import { ILoan } from "@/Modules/loans/loanEntity";
+import { IPaginatedData } from "@/utils/constants";
+import { IServerSearchData, useServerSearch } from "@/utils/useServerSearch";
 import { ElMessageBox } from "element-plus";
 import { IProperty } from "@/Modules/properties/propertyEntity";
+import cols from "./Partials/propertyCols";
 
 const props = defineProps<{
   properties: ILoan[] | IPaginatedData<ILoan>;

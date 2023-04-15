@@ -3,12 +3,14 @@
     <template #header>
       <AccountingSectionNav>
         <template #actions>
-          <AppButton @click="saveForm(true)" variant="inverse">Guardar Factura</AppButton>
+          <AppButton @click="saveForm(true)" variant="inverse">
+            {{ $t("save invoice") }}
+          </AppButton>
         </template>
       </AccountingSectionNav>
     </template>
 
-    <div class="py-10 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <div class="py-10 mx-auto sm:px-6 lg:px-8">
       <InvoiceTemplate
         ref="InvoiceTemplateForm"
         :is-editing="true"

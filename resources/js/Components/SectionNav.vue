@@ -16,8 +16,8 @@ withDefaults(
 const emit = defineEmits(["update:modelValue"]);
 
 const handleClick = (section: any, sectionName: string | number) => {
-  if (section.url) {
-    router.visit(section.url);
+  if (section.url || section.to) {
+    router.visit(section.url || section.to);
   } else {
     emit("update:modelValue", section.value || sectionName);
   }
@@ -31,7 +31,7 @@ const handleClick = (section: any, sectionName: string | number) => {
       @click="handleClick(section, sectionName)"
       :current-value="modelValue"
       :key="section.url ?? section.value ?? sectionName"
-      :value="section.url ?? section.value ?? sectionName"
+      :value="section.url ?? section.to ?? section.value ?? sectionName"
       :is-active-function="section.isActiveFunction"
       :selected-class="selectedClass"
       :label="section.label"

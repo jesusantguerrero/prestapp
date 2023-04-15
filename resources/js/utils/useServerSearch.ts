@@ -1,6 +1,6 @@
 import { router } from '@inertiajs/vue3';
 import { format, parseISO } from "date-fns";
-import { reactive, Ref, watch, nextTick }  from "vue"
+import { reactive, Ref, watch, nextTick, computed }  from "vue"
 import { composeRangeYears } from ".";
 import { debounce } from 'lodash';
 
@@ -191,8 +191,13 @@ export const useServerSearch = (serverSearchData: Ref<IServerSearchData>, onUrlC
       executeSearch();
     }
 
+    const hasFilters = computed(() => {
+      return Boolean(state.search?.length)
+    })
+
     return {
         state,
+        hasFilters,
         executeSearch,
         updateSearch,
         changeSize,

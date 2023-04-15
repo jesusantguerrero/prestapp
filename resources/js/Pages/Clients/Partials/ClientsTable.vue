@@ -67,6 +67,13 @@ getClientLink;
           </div>
           <AppButton
             variant="neutral"
+            class="hover:text-success transition items-center flex flex-col justify-center hover:border-success"
+            @click="$emit('edit', row)"
+          >
+            <IMdiEdit />
+          </AppButton>
+          <AppButton
+            variant="neutral"
             class="hover:text-error transition items-center flex flex-col justify-center hover:border-red-400"
             @click="$emit('delete', row)"
           >

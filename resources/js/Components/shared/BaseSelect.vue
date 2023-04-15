@@ -127,6 +127,17 @@ const handleSearch = debounce((query) => {
 .multiselect__single,
 .multiselect__input {
   @apply bg-base-lvl-2;
+  margin-bottom: 0 !important;
+}
+
+.multiselect__single {
+  display: inline-flex;
+}
+
+.multiselect__tags {
+  padding-top: 0 !important;
+  display: flex !important;
+  align-items: center;
 }
 
 .multiselect__content-wrapper {
@@ -144,5 +155,10 @@ const handleSearch = debounce((query) => {
     width: 8px;
     height: 10px;
   }
+}
+
+.multiselect__select,
+.multiselect__tags {
+  height: 48px !important;
 }
 </style>

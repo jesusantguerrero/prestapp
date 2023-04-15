@@ -1,15 +1,8 @@
 <script lang="ts" setup>
-import { format as formatDate, toDate } from "date-fns";
+import { format as formatDate } from "date-fns";
 import parseISO from "date-fns/esm/fp/parseISO/index.js";
 import { useForm, router } from "@inertiajs/vue3";
-import {
-  AtInput,
-  AtButton,
-  AtField,
-  AtFieldCheck,
-  AtSelect,
-  AtSimpleSelect,
-} from "atmosphere-ui";
+import { AtInput, AtField, AtFieldCheck, AtSelect, AtSimpleSelect } from "atmosphere-ui";
 import { computed, reactive, toRefs, watch, inject, toRaw } from "vue";
 
 import AppButton from "@/Components/shared/AppButton.vue";
@@ -17,7 +10,16 @@ import InvoiceTotals from "./InvoiceTotals.vue";
 import InvoiceGrid from "./InvoiceGrid.vue";
 
 import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
-import { ElMessageBox } from "element-plus";
+import {
+  ElCollapse,
+  ElCollapseItem,
+  ElDatePicker,
+  ElMessageBox,
+  ElNotification,
+} from "element-plus";
+import { IPayment } from "@/Modules/loans/loanEntity";
+import AccountSelect from "@/Components/shared/Selects/AccountSelect.vue";
+import BaseSelect from "@/Components/shared/BaseSelect.vue";
 
 const props = defineProps({
   type: {
@@ -45,21 +47,21 @@ const labels = {
   },
 };
 
-const getLabel = (key) => labels[props.type.toLowerCase()][key];
+const getLabel = (key: string) => labels[props.type.toLowerCase()][key];
 
-const state = reactive({
+const state: any = reactive({
   totalValues: {},
   totals: {
     subtotalField: "subtotal",
     totalField: "amount",
     discountField: "discountTotal",
-    subtotalFormula(row) {
+    subtotalFormula(row: Record<string, number>) {
       return row.quantity * row.price;
     },
-    totalFormula(row) {
+    totalFormula(row: Record<string, number>) {
       return row.quantity * row.price;
     },
-    discountFormula(row) {
+    discountFormula(row: Record<string, number>) {
       return row.quantity * row.price;
     },
   },
@@ -69,6 +71,7 @@ const state = reactive({
     concept: null,
     date: new Date(),
     due_date: new Date(),
+    client: null,
     client_id: null,
     footer: null,
     notes: null,
@@ -88,7 +91,6 @@ const state = reactive({
   },
   activeSections: [],
   tableData: [],
-  client: null,
   imageUrl: "",
   isDraft: computed(() => {
     return !state.invoice.status || state.invoice.status.toLowerCase() == "draft";
@@ -98,7 +100,7 @@ const state = reactive({
   }),
 });
 
-const setInvoiceData = (data) => {
+const setInvoiceData = (data: Record<string, any>) => {
   if (data) {
     data.date = parseISO(data.date) || new Date();
     data.due_date = parseISO(data.due_date) || new Date();
@@ -107,7 +109,6 @@ const setInvoiceData = (data) => {
       state.invoice[key] = data[key];
     });
 
-    state.client = data.client;
     state.tableData =
       data.lines
         .sort((a, b) => (a.index > b.index ? 1 : -1))
@@ -127,14 +128,8 @@ watch(
   { immediate: true }
 );
 
-const reload = () => {
-  setTimeout(() => {
-    router.reload();
-  }, 2000);
-};
-
 const { openModal } = usePaymentModal();
-const editPayment = (payment) => {
+const editPayment = (payment: IPayment) => {
   openModal({
     data: {
       title: `Pagar ${invoice.concept}`,
@@ -157,7 +152,7 @@ const removePayment = async (payment: Record<string, string>) => {
   router.delete(`/payments/${payment.id}`, {
     onSuccess() {
       ElNotification({
-        message: `Pago ${unit.name} borrada con exito`,
+        message: `Pago ${payment.due_date} borrada con exito`,
         title: "Pago eliminada",
         type: "success",
       });
@@ -165,7 +160,7 @@ const removePayment = async (payment: Record<string, string>) => {
   });
 };
 
-const setRequestData = (data) => {
+const setRequestData = (data: Record<string, any>): Record<string, any> => {
   const requestData = {
     ...data,
     items: state.tableData
@@ -196,7 +191,12 @@ const setRequestData = (data) => {
   return requestData;
 };
 
-const sendRequest = (method, url, formData, message) => {
+const sendRequest = (
+  method: string,
+  url: string,
+  formData: Record<string, any>,
+  message: string
+) => {
   return router[method](url, formData, {
     onSuccess() {
       const section = formData.type == "EXPENSE" ? "bills" : "invoices";
@@ -205,7 +205,7 @@ const sendRequest = (method, url, formData, message) => {
   });
 };
 
-const saveForm = (status) => {
+const saveForm = (status: number) => {
   const formData = setRequestData({
     ...state.invoice,
     type: props.type,
@@ -226,18 +226,7 @@ const saveForm = (status) => {
   sendRequest(method, url, formData, message);
 };
 
-const markAsPaid = () => {
-  const formData = setRequestData(state.invoice);
-  formData.status = 1;
-  sendRequest(
-    "post",
-    `/invoices/${state.invoice.id}/mark-as-paid`,
-    formData,
-    "Invoice marked as paid"
-  );
-};
-
-const cloneInvoice = (status) => {
+const cloneInvoice = (status: number) => {
   const formData = setRequestData(state.invoice);
   if (status) {
     formData.status = 2;
@@ -256,30 +245,21 @@ const cloneInvoice = (status) => {
     });
 };
 
-const handleImageChange = (file) => {
+const handleImageChange = (file: File) => {
   state.imageUrl = URL.createObjectURL(file.raw);
   state.invoice.logo = file;
 };
 
-const onTaxesUpdated = ({ rowIndex, taxes }) => {
+const onTaxesUpdated = ({ rowIndex, taxes }: { rowIndex: number; taxes: any[] }) => {
   state.tableData[rowIndex].taxes = taxes;
 };
 
-const {
-  invoice,
-  totals,
-  tableData,
-  totalValues,
-  isPaymentDialogVisible,
-  isDraft,
-} = toRefs(state);
+const { invoice, totals, tableData, totalValues, isPaymentDialogVisible } = toRefs(state);
 
 defineExpose({
   saveForm,
   cloneInvoice,
 });
-
-const accountsOptions = inject("accountsOptions", []);
 </script>
 
 <template>
@@ -287,7 +267,11 @@ const accountsOptions = inject("accountsOptions", []);
     <div class="section-body">
       <div class="invoice-body">
         <ElCollapse v-model="activeSections" class="w-full">
-          <ElCollapseItem title="Logo, concept and description" name="header">
+          <ElCollapseItem
+            :title="$t('Logo, concept and description')"
+            name="header"
+            :expanded="true"
+          >
             <div class="invoice-header-details">
               <el-upload
                 class="avatar-uploader"
@@ -296,30 +280,50 @@ const accountsOptions = inject("accountsOptions", []);
                 :on-change="handleImageChange"
                 :auto-upload="false"
               >
-                <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                <img v-if="state.imageUrl" :src="state.imageUrl" class="avatar" />
+                <IMdiPlus v-else class="avatar-uploader-icon" />
               </el-upload>
 
               <div class="space-y-4 invoice-details">
-                <div class="invoice-form-row form-group">
-                  <label for="invoice-description">Description: </label>
-                  <at-input
+                <div class="form-group">
+                  <AtInput
                     type="text"
                     class="form-control"
                     name="invoice-description"
                     id="invoice-description"
                     v-model="invoice.description"
-                  />
+                    rounded
+                  >
+                    <template #prefix>
+                      <div
+                        class="h-full flex items-center capitalize text-normal font-bold text-primary"
+                      >
+                        <span>
+                          {{ $t("description") }}
+                        </span>
+                      </div>
+                    </template>
+                  </AtInput>
                 </div>
-                <div class="invoice-form-row form-group">
-                  <label for="invoice-description">Concept: </label>
-                  <at-input
+                <div class="form-group">
+                  <AtInput
                     type="text"
                     class="form-control"
                     name="invoice-description"
                     id="invoice-description"
                     v-model="invoice.concept"
-                  />
+                    rounded
+                  >
+                    <template #prefix>
+                      <div
+                        class="h-full flex items-center capitalize text-normal font-bold text-primary"
+                      >
+                        <span>
+                          {{ $t("concept") }}
+                        </span>
+                      </div>
+                    </template>
+                  </AtInput>
                 </div>
               </div>
             </div>
@@ -329,35 +333,33 @@ const accountsOptions = inject("accountsOptions", []);
         <div class="flex space-x-4">
           <div class="w-6/12 text-left">
             <AtField :label="getLabel('contact')">
-              <AtSelect
-                v-model="invoice.client_id"
-                v-model:selected="state.client"
-                :options="clients"
-                label="fullName"
-                key-track="id"
+              <BaseSelect
+                v-model="invoice.client"
+                @update:model-value="invoice.client_id = $event.id"
+                endpoint="/api/clients"
+                placeholder="Selecciona cliente"
+                label="display_name"
+                track-by="id"
               />
             </AtField>
-            <div v-if="state.client">
+            <div v-if="invoice.client">
               <p>
-                {{ state.client.fullName }}
+                {{ invoice.client.fullName }}
               </p>
-              <p v-if="state.client.country">{{ state.client.country }}</p>
-              <p v-if="state.client.tax_number">
-                <strong>CIF/NIF:</strong> <span>{{ state.client.tax_number }}</span>
+              <p v-if="invoice.client.country">{{ invoice.client.country }}</p>
+              <p v-if="invoice.client.tax_number">
+                <strong>CIF/NIF:</strong> <span>{{ invoice.client.tax_number }}</span>
               </p>
               <p>
-                {{ state.client.email }}
+                {{ invoice.client.email }}
               </p>
             </div>
-            <AtField label="Cuenta" class="w-4/12">
-              <AtSimpleSelect
-                v-model="invoice.account_id"
-                v-model:selected="invoice.account"
-                size="large"
-                :default-expand-all="true"
-                :options="accountsOptions"
-                label="name"
-                key-track="id"
+            <AtField label="Cuenta" class="w-full">
+              <AccountSelect
+                endpoint="/api/accounts"
+                v-model="invoice.account"
+                @update:model-value="invoice.account_id = $event.id"
+                class="md:w-full"
               />
             </AtField>
           </div>
@@ -376,7 +378,7 @@ const accountsOptions = inject("accountsOptions", []);
                 />
               </AtField>
 
-              <AtField label="Fecha Limite" class="mt-2">
+              <AtField label="Fecha Limite" class="mt-2 flex flex-col">
                 <ElDatePicker
                   v-if="invoice.due_date"
                   v-model="invoice.due_date"
@@ -396,6 +398,8 @@ const accountsOptions = inject("accountsOptions", []);
                   type="text"
                   name="invoice-number"
                   id="invoice-number"
+                  class="border-gray-100"
+                  rounded
                 />
               </AtField>
               <AtField :label="getLabel('orderNumber')" class="mt-2">
@@ -404,6 +408,8 @@ const accountsOptions = inject("accountsOptions", []);
                   type="text"
                   name="invoice-order-number"
                   id="invoice-order-number"
+                  class="border-gray-100"
+                  rounded
                 />
               </AtField>
             </div>

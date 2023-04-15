@@ -1,6 +1,8 @@
 <script lang="ts" setup>
+// @ts-ignore
 import { AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { computed, reactive, toRefs, onMounted } from "vue";
+// @ts-ignore
 import IconTrash from "@/Components/icons/IconTrash.vue";
 import AtTable from "@/Components/AtTable.vue";
 import cols from "./cols";
@@ -118,7 +120,7 @@ const { renderedCols, cleaveOptions } = toRefs(state);
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full text-sm">
     <slot name="prepend" />
     <AtTable
       :hidden-cols="hiddenCols"
@@ -131,11 +133,11 @@ const { renderedCols, cleaveOptions } = toRefs(state);
           <AtInput
             name=""
             v-model="row.concept"
-            class="form-control"
+            class="form-control border-none hover:border"
             rounded
             v-if="isEditing"
           />
-          <span v-if="col.render" v-html="col.render(row)" />
+          <span v-if="col.render && !isEditing" v-html="col.render(row)" />
           <span v-else> {{ row.concept }}</span>
         </div>
       </template>
@@ -146,7 +148,7 @@ const { renderedCols, cleaveOptions } = toRefs(state);
           min="1"
           type="number"
           v-model="scope.row.quantity"
-          class="text-right form-control"
+          class="text-right form-control border-none hover:border"
           rounded
         />
       </template>
@@ -167,10 +169,9 @@ const { renderedCols, cleaveOptions } = toRefs(state);
         <div class="space-y-2">
           <AtInput
             v-model="scope.row.price"
-            v-bind="cleaveOptions.money"
             number-format
             rounded
-            class="text-right"
+            class="text-right border-none hover:border"
           />
         </div>
       </template>

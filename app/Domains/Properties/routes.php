@@ -25,7 +25,7 @@ Route::middleware([
   'verified'
 ])->group(function () {
     // Properties
-    Route::get('properties/management-tools', [PropertyController::class, 'managementTools']);
+
     Route::resource('properties', PropertyController::class);
 
     // Units
@@ -48,6 +48,7 @@ Route::middleware([
 
     // reports
     Route::get('/rent-reports/monthly-summary', [RentReportController::class, 'monthlySummary']);
+    Route::get('/property-reports', [RentReportController::class, 'management']);
 
     // property transactions
     Route::controller(PropertyTransactionController::class)->group(function () {

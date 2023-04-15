@@ -2,6 +2,7 @@ import { IProperty } from '@/Modules/properties/propertyEntity';
 export interface IClient {
     id?: number;
     names: string;
+    display_name: string;
     lastnames: string;
     fullName?: string;
     dni: string;

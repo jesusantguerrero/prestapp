@@ -2,6 +2,7 @@
 import { Link } from "@inertiajs/vue3";
 
 defineProps<{
+  icon?: HTMLElement;
   imageUrl?: string;
   title: string;
   ownerName: string;
@@ -15,7 +16,10 @@ defineProps<{
 <template>
   <section class="flex text-secondary" @click="$emit('click')">
     <div class="flex items-center justify-center w-10 border rounded-md bg-base-lvl-2">
-      <IMdiHomeFloor1 class="text-2xl" />
+      <slot name="icon">
+        <component :is="icon" class="text-2xl" v-if="icon" />
+        <IBiHouses class="text-2xl" v-else />
+      </slot>
     </div>
     <article class="ml-2">
       <h4 class="text-sm font-bold">

@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\Gate;
 class AdminBackupController extends InertiaController
 {
 
-  public function __construct(protected BackupService $backupService)
-  {
-    $this->backupService = $backupService;
-  }
+    public function __construct(protected BackupService $backupService)
+    {
+      $this->backupService = $backupService;
+    }
 
     public function list() {
       if (! Gate::allows('superadmin')) {
@@ -28,6 +28,7 @@ class AdminBackupController extends InertiaController
         abort(403);
       }
       $this->backupService->generate();
+      return back();
     }
 
     public function removeFile() {

@@ -141,13 +141,13 @@ const { openTransactionModal } = useTransactionModal();
                 title="Balance pendiente"
                 :value="`${formatMoney(stats.outstanding)} (${formatMoney(stats.outstanding_in_month)})`"
                 class="md:pl-6"
-                value-link="/properties/management-tools?filters[owner]=&filters[property]=&filters[section]=invoices"
+                value-link="/property-reports?filters[owner]=&filters[property]=&filters[section]=invoices"
               >
                 <template #footer class="flex">
                   <Link
                     class="flex items-center px-2 -ml-6 text-xs md:text-sm text-error/70 hover:bg-error/10"
                     rounded
-                    href="/properties/management-tools?filters[owner]=&filters[property]=&filters[section]=invoices&filters[status]=overdue"
+                    href="/property-reports?filters[owner]=&filters[property]=&filters[section]=invoices&filters[status]=overdue"
                   >
                     <IMdiFileDocumentAlertOutline class="mr-2" />
                     <span class="font-bold">
@@ -166,7 +166,7 @@ const { openTransactionModal } = useTransactionModal();
           </template>
         </WelcomeWidget>
         <Link
-          href="/properties/management-tools"
+          href="/property-reports"
           class="flex items-center justify-center w-full h-10 mt-4 transition-all rounded-md shadow-sm hover:text-primary hover:font-bold bg-base-lvl-3 md:mt-4"
         >
           Distribución a propietarios pendientes
