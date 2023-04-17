@@ -89,5 +89,10 @@
     "Add loans, register installment payments, set up penalties within the Loan module":"Agrega prestamos, registra pago de cuotas en el modulo de prestamos",
     "If you are going to borrow money you first need to open your account for loans": "Si vas a usar el modulo de prestamo, primero se necesitaria aperturar la cuenta de prestamos",
     "Add business config": "Configura empresa",
-    "Before using the app you should setup your business configureation": "Antes de usar la aplicacion se debe configurar los datos de la empresa pulsando el boton de abajo"
+    "Before using the app you should setup your business configureation": "Antes de usar la aplicacion se debe configurar los datos de la empresa pulsando el boton de abajo",
+    "Create unit": "Crear unidad",
+    "Create contact": "Crear contacto",
+    "Go to contract": "Ver el contrato",
+    "Edit unit": "Editar unidad",
+    "Remove unit": "Eliminar unidad"
   }

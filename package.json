@@ -35,6 +35,7 @@
         "@formkit/auto-animate": "^1.0.0-beta.6",
         "@headlessui/vue": "^1.7.13",
         "@inertiajs/vue3": "^1.0.3",
+        "@supabase/supabase-js": "^2.20.0",
         "apexcharts": "^3.38.0",
         "atmosphere-ui": "^1.1.14",
         "date-fns": "^2.29.3",

@@ -61,9 +61,7 @@ Route::middleware([
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
     // settings
     Route::resource('/settings', SettingsController::class);
-    Route::get('/settings/{name}', function() {
-    return "Hello world";
-    });
+    Route::get('/settings/{name}', [SettingsController::class, 'index']);
     Route::get('/help', function() {
     return inertia('Help');
     });
