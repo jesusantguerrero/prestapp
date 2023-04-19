@@ -22,6 +22,7 @@ import { ElMessageBox, ElNotification, ElTag } from "element-plus";
 import { clientInteractions } from "@/Modules/clients/clientInteractions";
 import UnitTitle from "@/Components/realState/UnitTitle.vue";
 import UnitTag from "@/Components/realState/UnitTag.vue";
+import UnitCard from "./UnitCard.vue";
 
 export interface Props {
   properties: IProperty;
@@ -206,57 +207,15 @@ const handleContractClick = (unit: IUnit) => {
           </section>
 
           <section class="space-y-4 shadow-md bg-base-lvl-3">
-            <div
+            <UnitCard
               v-for="unit in properties.units"
-              class="flex w-full rounded-md px-4 py-2 justify-between"
-            >
-              <header>
-                <UnitTitle
-                  :title="unit.name"
-                  :owner-name="properties.owner.display_name"
-                  :tenant-name="unit.contract?.client.display_name"
-                  :price="formatMoney(unit.price)"
-                />
-                <section class="flex mt-2 space-x-2 text-gray-500">
-                  <span class="flex items-center space-x-1">
-                    <i-ic-sharp-photo-size-select-small />
-                    <span>
-                      {{ unit.area ?? 0 }}
-                    </span>
-                  </span>
-                  <span class="flex items-center space-x-1"
-                    ><IIcTwotoneBed />
-                    <span>
-                      {{ unit.bedrooms ?? 0 }}
-                    </span>
-                  </span>
-                  <span class="flex items-center space-x-1"
-                    ><IIcTwotoneBathtub />
-                    <span>
-                      {{ unit.bathrooms ?? 0 }}
-                    </span>
-                  </span>
-                </section>
-              </header>
-              <div class="flex items-center space-x-2">
-                <UnitTag :status="unit.status" />
-                <div class="flex">
-                  <AppButton variant="neutral" @click="handleContractClick(unit)">
-                    <IMdiFile />
-                  </AppButton>
-                  <AppButton variant="neutral" @click="addUnit(unit)">
-                    <IMdiEdit />
-                  </AppButton>
-                  <AppButton
-                    variant="neutral"
-                    class="hover:bg-error/80 hover:text-white transition"
-                    @click="removeUnit(unit)"
-                  >
-                    <IMdiTrash />
-                  </AppButton>
-                </div>
-              </div>
-            </div>
+              :unit="unit"
+              :property="properties"
+              :key="unit.id"
+              @edit="addUnit"
+              @contract-clicked="handleContractClick"
+              @delete="removeUnit"
+            />
             <AtButton class="text-primary hover:font-bold" @click="addUnit()">
               <i class="mr-2 fa fa-plus-circle"></i>
               Agregar unidad

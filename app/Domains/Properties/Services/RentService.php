@@ -67,7 +67,6 @@ class RentService {
           $property = $unit->property;
         } else {
           $property = $rent->unit->property;
-
         }
 
         if ($rentData['commission_type'] == Rent::COMMISSION_PERCENTAGE && $rentData['commission'] > 100) {
@@ -92,10 +91,12 @@ class RentService {
         $rent->client->update(['status' => ClientStatus::Active]);
         $rent->owner->checkStatus();
 
-        Invoice::destroy($rent->invoices()->pluck('id'));
-        PropertyTransactionService::createDepositTransaction($rent->fresh(), $rentData);
-        PropertyTransactionService::generateFirstInvoice($rent);
-        RentTransactionService::generateUpToDate($rent->fresh(), isset($rentData['paid_until']), $rentData['paid_until'] ?? null);
+        if (!$rent->payments()->count()) {
+          // Invoice::destroy($rent->invoices()->pluck('id'));
+          // PropertyTransactionService::createDepositTransaction($rent->fresh(), $rentData);
+          // PropertyTransactionService::generateFirstInvoice($rent);
+          // RentTransactionService::generateUpToDate($rent->fresh(), isset($rentData['paid_until']), $rentData['paid_until'] ?? null);
+        }
       });
     }
 
@@ -391,7 +392,17 @@ class RentService {
           $invoice->save();
           $rent->client->checkStatus();
         });
+    }
 
+    public static function updatePayment(Rent $rent, Invoice $invoice, Payment $payment, mixed $postData) {
+        if ($invoice->invoiceable_id != $rent->id || $invoice->invoiceable_type !== Rent::class) {
+          throw new Exception("This invoice doesn't belongs to this rent");
+        }
+
+        $payment->update($postData);
+        $payment->createTransaction();
+        $invoice->save();
+        $rent->client->checkStatus();
     }
 
     public static function deletePayment(Rent $rent, Invoice $invoice, Payment $payment) {
@@ -402,7 +413,6 @@ class RentService {
         $payment->delete();
         $invoice->save();
         $rent->client->checkStatus();
-
     }
 
     public static function deleteInvoicePayments(Rent $rent, Invoice $invoice) {

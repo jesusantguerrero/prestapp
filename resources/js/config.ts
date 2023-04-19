@@ -18,5 +18,7 @@ export const config = {
     error: "#F65D4E",
     "body": "#2E384D",
     "body-1": "#9298AD"
-  }
+  },
+  supabaseKey: import.meta.env.VITE_SUPABASE_APP_KEY,
+  supabaseAnonKey: import.meta.env.VITE_SUPABASE_ANON_KEY
 }

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref} from "vue";
+import { ref, provide } from "vue";
 import { router } from "@inertiajs/core";
 import { usePage } from "@inertiajs/vue3";
+// @ts-ignore
 import { AtDatePager } from "atmosphere-ui";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
@@ -9,21 +10,22 @@ import ButtonGroup from "@/Components/ButtonGroup.vue";
 import TeamApproval from "./TeamApproval.vue";
 import { toRefs } from "@vueuse/shared";
 import { useServerSearch } from "@/utils/useServerSearch";
+import { useLocalStorage } from "@vueuse/core";
+import AppButton from "@/Components/shared/AppButton.vue";
 
-defineProps({
-  user: {
-    type: Object,
-    required: true,
-  },
-  isTeamApproved: {
-    type: Object,
-    required: true,
-  },
-});
+defineProps<{
+  user: Record<string, any>;
+  isTeamApproved: boolean;
+}>();
 
 const pageProps = usePage().props;
-const section = ref(pageProps.section);
-const sections = {
+const section = ref<string>(pageProps.section ?? "general");
+interface IButtonSection {
+  label: string;
+  link: string;
+}
+
+const sections: Record<string, IButtonSection> = {
   general: {
     label: "General",
     link: "/dashboard",
@@ -37,12 +39,15 @@ const sections = {
     link: "/dashboard/property",
   },
 };
+
 const handleChange = (sectionName: string) => {
   router.get(sections[sectionName].link);
 };
 
 const { serverSearchOptions } = toRefs(pageProps);
+
 const { executeSearchWithDelay, updateSearch, state: pageState } = useServerSearch(
+  // @ts-expect-error: unknown is not assignable to ISearch
   serverSearchOptions,
   (finalUrl: string) => {
     console.log(finalUrl);
@@ -52,6 +57,9 @@ const { executeSearchWithDelay, updateSearch, state: pageState } = useServerSear
     manual: true,
   }
 );
+
+const isOnboardingOpen = useLocalStorage("icloan:isOnboardingOpen", true);
+provide("isOnboardingOpen", isOnboardingOpen);
 </script>
 
 <template>
@@ -75,6 +83,13 @@ const { executeSearchWithDelay, updateSearch, state: pageState } = useServerSear
             controlsClass="bg-transparent text-body hover:bg-base-lvl-1 hover:text-secondary"
             next-mode="month"
           />
+          <AppButton
+            @click="isOnboardingOpen = !isOnboardingOpen"
+            title="Open onboarding help"
+            v-if="!isOnboardingOpen"
+          >
+            <IIcOutlineMap />
+          </AppButton>
         </section>
       </div>
       <slot v-if="isTeamApproved" />

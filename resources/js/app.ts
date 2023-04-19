@@ -13,6 +13,7 @@ import VueMultiselect from 'vue-multiselect';
 import { vRipple } from './utils/vRipple';
 import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
 import i18n from './plugins/i18n.ts';
+import { supabase } from './plugins/supabase';
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
@@ -32,6 +33,7 @@ createInertiaApp({
             .use(autoAnimatePlugin)
             .component('multiselect', VueMultiselect)
             .directive('ripple', vRipple)
+            .provide('supabase', supabase)
             .mount(el);
     },
 });

@@ -288,7 +288,7 @@ const onDelete = async (invoice: IInvoice) => {
                     clientInteractions.generateOwnerDistribution(row.contact_id, row.id)
                   "
                 >
-                  Re-generar
+                  {{ $t("regenerate") }}
                 </AppButton>
               </div>
               <AppButton

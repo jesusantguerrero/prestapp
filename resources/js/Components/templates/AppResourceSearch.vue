@@ -14,16 +14,17 @@
     <section>
       <section class="flex w-full">
         <div
-          v-for="tab in state.tabsWithResults"
+          v-for="(tab, tabName) in state.tabsWithResults"
+          @click="state.selectedTab = tabName"
           class="px-5 cursor-pointer py-1 font-bold w-full capitalize text-center rounded-md bg-base-lvl-2"
-          :class="state.selectedTab == tab ? 'bg-primary text-white' : ''"
+          :class="state.selectedTab == tabName ? 'bg-primary text-white' : ''"
         >
-          {{ tab }}
+          {{ tabName }}
         </div>
       </section>
       <div class="w-full py-2 mt-4">
-        <div v-for="item in state.results[state.selectedTab]">
-          {{ item.fullName }}
+        <div v-for="item in state.tabsWithResults[state.selectedTab]">
+          {{ item.title }}
         </div>
       </div>
     </section>
@@ -38,13 +39,29 @@ import axios from "axios";
 
 const state = reactive({
   searchText: "",
-  results: {},
-  hasResults: computed(() => {
-    return !!Object.keys(state.tabsWithResults).length;
-  }),
+  results: [],
   selectedTab: null,
+  hasResults: computed(() => {
+    return state.results.length;
+  }),
+
   tabsWithResults: computed(() => {
-    return Object.keys(state.results).filter((name) => state.results[name]);
+    const tabs = state.results?.reduce(
+      (tabs: Record<string, any>, item: any) => {
+        if (!Object.keys(tabs).includes(item.type)) {
+          tabs[item.type] = [item];
+        } else {
+          tabs[item.type].push(item);
+        }
+        tabs.all.push(item);
+        return tabs;
+      },
+      {
+        all: [],
+      }
+    );
+
+    return tabs;
   }),
 });
 
@@ -53,11 +70,11 @@ watch(
   (search: string) => {
     axios.get(`/search?search=${search}`).then(({ data }) => {
       state.results = data;
-      state.selectedTab = state.tabsWithResults[0];
+      state.selectedTab = Object.keys(state.tabsWithResults)?.at?.(0);
     });
 
     if (!search) {
-      state.results = {};
+      state.results = [];
     }
   }
 );

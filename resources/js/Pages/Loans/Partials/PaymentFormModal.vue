@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { AtButton, AtInput, AtSimpleSelect } from "atmosphere-ui";
-import { format as formatDate } from "date-fns";
+import { format as formatDate, parseISO } from "date-fns";
 import { ElDatePicker, ElDialog, ElNotification } from "element-plus";
 import { ref, watch, computed, nextTick } from "vue";
 
@@ -11,6 +11,7 @@ import { MathHelper } from "@/Modules/loans/mathHelper";
 import { paymentMethods } from "@/Modules/loans/constants";
 import AccountSelect from "@/Components/shared/Selects/AccountSelect.vue";
 import AppFormField from "@/Components/shared/AppFormField.vue";
+import axios from "axios";
 
 const defaultPaymentForm = {
   amount: 0,
@@ -45,13 +46,13 @@ const setFormData = () => {
 function generatePaymentData() {
   return {
     ...defaultPaymentForm,
+    ...(props.payment?.id ? props.payment : {}),
     concept: props.defaultConcept,
     amount: props.due,
     payment_method_id: paymentMethods[0].id,
     paymentMethod: paymentMethods[0],
-    payment_date: new Date(),
+    payment_date: parseISO(props.payment?.payment_date) ?? new Date(),
     documents: props.payment?.documents ?? [],
-    ...(props.payment?.id ? props.payment : {}),
   };
 }
 
@@ -163,6 +164,7 @@ function createPayment() {
   }
 
   isLoading.value = true;
+
   const formData = {
     resource_id: props.resourceId,
     payment_date: formatDate(paymentForm.value.payment_date || new Date(), "yyyy-MM-dd"),
@@ -175,8 +177,11 @@ function createPayment() {
     documents: paymentForm.value.documents?.filter((doc: any) => doc.payment),
   };
 
-  axios
-    .post(props.endpoint, formData)
+  axios({
+    method: paymentForm.value?.id ? "put" : "post",
+    url: props.endpoint,
+    data: formData,
+  })
     .then(() => {
       resetForm(true);
       emit("saved");
@@ -195,7 +200,7 @@ function createPayment() {
 
 function deletePayment() {
   const endpoint = props.endpoint
-    ? `${props.endpoint}`
+    ? props.endpoint
     : `/invoice/${props.payment.resource_id}/payments/${props.payment?.id}`;
 
   axios
@@ -225,6 +230,10 @@ function resetForm(shouldClose) {
 function emitChange(value) {
   emit("update:modelValue", value);
 }
+
+const savePaymentText = computed(() => {
+  return paymentForm.value.id ? "Update payment" : "Save payment";
+});
 </script>
 
 <template>
@@ -280,7 +289,7 @@ function emitChange(value) {
         >
           <AccountSelect
             :endpoint="accountsEndpoint"
-            v-model="paymentForm.paymentAccount"
+            v-model="paymentForm.account"
             placeholder="Selecciona una cuenta"
             @update:modelValue="paymentForm.account_id = $event?.id"
           />
@@ -296,7 +305,7 @@ function emitChange(value) {
             key-track="id"
           />
         </AppFormField>
-        <AppFormField label="Fecha de pago" class="w-3/12">
+        <AppFormField :label="$t('Payment date')" class="w-3/12">
           <ElDatePicker
             v-model="paymentForm.payment_date"
             size="large"
@@ -331,23 +340,22 @@ function emitChange(value) {
         >
           Cancel
         </AtButton>
-        <AppButton
-          class="text-white bg-blue-500"
+        <!-- <AppButton
+          variant="error"
           v-if="paymentForm.id"
           @click="deletePayment()"
           :disabled="isLoading"
         >
           Delete
-        </AppButton>
+        </AppButton> -->
         <AppButton
-          v-else
           variant="secondary"
           @click="onSubmit()"
           :processing="isLoading"
           :disabled="isLoading"
           :loading="isLoading"
         >
-          Efectuar pago
+          {{ $t(savePaymentText) }}
         </AppButton>
       </div>
     </template>

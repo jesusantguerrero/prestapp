@@ -1,18 +1,13 @@
 <script lang="ts" setup>
 import { reactive, computed, watch, ref } from "vue";
-import { AtButton, AtTable } from "atmosphere-ui";
+import { AtButton } from "atmosphere-ui";
 import { router } from "@inertiajs/vue3";
 
-import AppSectionHeader from "@/Components/AppSectionHeader.vue";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import InvoiceTable from "@/Components/templates/InvoiceTable";
 import AppButton from "@/Components/shared/AppButton.vue";
 import AccountingSectionNav from "../Partials/AccountingSectionNav.vue";
-import InvoiceFormModal from "./Partials/InvoiceFormModal.vue";
-
-import { formatMoney, formatDate } from "@/utils";
-import { Link } from "@inertiajs/vue3";
 
 const props = defineProps({
   invoices: {

@@ -3,22 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Domains\CRM\Models\Client;
-use App\Domains\Loans\Models\Loan;
-use App\Domains\Properties\Models\Property;
-use App\Domains\Properties\Models\Rent;
+use App\Domains\Properties\Models\RentSearch;
 use Illuminate\Routing\Controller as BaseController;
+use Spatie\Searchable\Search;
 
 class SearchController extends BaseController {
 
     public function index() {
       $searchText = request()->query('search');
-      
-      return [
-        "clients" => Client::search($searchText)->get(),
-        "loans" => Loan::search($searchText)->get(),
-        "properties" => Property::search($searchText)->get(),
-        "rents" => Rent::search($searchText)->get(),
-      ];
+
+      return (new Search())
+      ->registerModel(Client::class, ['names', 'lastnames'])
+      ->registerModel(RentSearch::class, ['owner_name', 'client_name', 'address'])
+      ->search($searchText);
+
+
+
+      // return [
+      //   "clients" => Client::search($searchText)->get(),
+      //   "loans" => Loan::search($searchText)->get(),
+      //   "properties" => Property::search($searchText)->get(),
+      //   "rents" => Rent::search($searchText)->get(),
+      // ];
   }
 }
 

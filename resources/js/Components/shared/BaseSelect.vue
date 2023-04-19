@@ -84,7 +84,6 @@ const multiselectListeners = {
   },
   searchChange: (searchQuery: string) => {
     if (props.endpoint) {
-      console.log(searchQuery);
       handleSearch(searchQuery);
     } else {
       emit("searchChange", searchQuery);

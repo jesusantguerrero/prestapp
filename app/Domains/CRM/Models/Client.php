@@ -12,9 +12,10 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Laravel\Scout\Searchable;
+use Spatie\Searchable\Searchable;
+use Spatie\Searchable\SearchResult;
 
-class Client extends Model {
+class Client extends Model implements Searchable {
     use HasFactory;
     use OwnerTrait;
     use TenantTrait;
@@ -58,6 +59,14 @@ class Client extends Model {
             $client->display_name = $client->names . ' ' . $client->lastnames;
         });
     }
+
+     public function getSearchResult(): SearchResult
+     {
+         return new SearchResult(
+            $this,
+            $this->display_name,
+         );
+     }
 
     public function checkStatus() {
         if($this->hasLateLoans()) {

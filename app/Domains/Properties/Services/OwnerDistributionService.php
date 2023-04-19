@@ -52,6 +52,11 @@ class OwnerDistributionService {
       $this->storeOwnerDistribution($this->client, $invoices, $ownerDrawBill);
     }
 
+    public function regenerateFromRequest(int $drawBillId) {
+      $ownerDrawBill = $this->client->invoices()->where('id', $drawBillId)->with(['relatedChilds'])->first();
+      $this->storeOwnerDistribution($this->client, $ownerDrawBill->relatedChilds, $ownerDrawBill);
+    }
+
     public function storeOwnerDistribution(Client $client, $invoices, $ownerDrawBill = null, $formData = []) {
 
       [
@@ -59,6 +64,7 @@ class OwnerDistributionService {
         "total" => $total,
         "taxTotal" => $taxTotal
       ] = self::distributionItems($invoices, $this->property);
+
 
       if (count($items)) {
         $today = date('Y-m-d');
@@ -72,10 +78,10 @@ class OwnerDistributionService {
           'invoiceable_type' => Client::class,
           'invoice_account_id' => $this->property->owner_account_id, // fallback credit Account in case line items doesn't have one
           'account_id' => $this->property->owner_account_id, // Debit Account
-          'date' => $formData['date'] ?? date('Y-m-d'),
+          'date' => $formData['date'] ?? $ownerDrawBill?->date ?? date('Y-m-d'),
           'type' => Invoice::DOCUMENT_TYPE_BILL,
           'category_type' => PropertyInvoiceTypes::OwnerDistribution,
-          'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
+          'due_date' => $formData['due_date'] ?? $ownerDrawBill?->due_date ?? $formData['date'] ?? date('Y-m-d'),
           'subtotal' => $formData['subtotal'] ?? $total - $taxTotal,
           'total' =>  $formData['amount'] ?? $total,
           'items' => $formData['items'] ?? $items,
@@ -137,6 +143,7 @@ class OwnerDistributionService {
       $items = [];
       $total = 0;
       $taxTotal = 0;
+
       foreach ($invoices as $invoice) {
           $type = PropertyTransactionService::getInvoiceLineType($invoice->category_type);
 

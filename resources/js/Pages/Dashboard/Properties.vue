@@ -2,7 +2,6 @@
 import BudgetProgress from "@/Components/BudgetProgress.vue";
 import IncomeSummaryWidget from "@/Pages/Dashboard/Partials/IncomeSummaryWidget.vue";
 import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
-import DashboardTemplate from "./Partials/DashboardTemplate.vue";
 
 import { formatMoney } from "@/utils/formatMoney";
 import ChartBar from "./Partials/ChartBar.vue";
@@ -147,8 +146,16 @@ const interestPerformance = {
 };
 </script>
 
+<script lang="ts">
+import DashboardTemplate from "./Partials/DashboardTemplate.vue";
+
+export default {
+  layout: DashboardTemplate,
+};
+</script>
+
 <template>
-  <DashboardTemplate :user="user" class="pb-10" :is-team-approved="isTeamApproved">
+  <main>
     <header class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
       <WelcomeWidget
         message="Estadisticas de propiedades"
@@ -275,5 +282,5 @@ const interestPerformance = {
         </template>
       </WelcomeWidget>
     </section>
-  </DashboardTemplate>
+  </main>
 </template>

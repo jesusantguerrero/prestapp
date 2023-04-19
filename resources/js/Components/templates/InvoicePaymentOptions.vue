@@ -12,28 +12,42 @@ const { openModal } = usePaymentModal();
 interface Props {
   invoice: Object;
   accountsEndpoint: string;
+  allowEdit: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   accountsEndpoint: "/api/accounts",
 });
-const actions = {
-  payment: {
-    label: "Registrar Pago",
-  },
-  send: {
-    label: "Enviar Correo",
-  },
-  download: {
-    label: "Descargar PDF",
-  },
-  view: {
-    label: "Ver factura",
-  },
-  delete: {
-    label: "Eliminar Factura",
-  },
-};
+
+const emit = defineEmits(["edit"]);
+
+const actions = computed(() => {
+  return {
+    payment: {
+      label: "Record payment",
+    },
+    // send: {
+    //   label: "Send email",
+    // },
+    download: {
+      label: "Download PDF",
+    },
+    ...(props.allowEdit
+      ? {
+          edit: {
+            label: "Edit invoice",
+            condition: props.allowEdit,
+          },
+        }
+      : {}),
+    view: {
+      label: "View invoice",
+    },
+    delete: {
+      label: "Delete invoice",
+    },
+  };
+});
 
 const selectedPayment = ref<Object | null>(null);
 const paymentConcept = computed(() => {
@@ -93,13 +107,19 @@ const onDelete = async (invoice: IInvoice) => {
   }
 };
 
-const handleActions = (actionName, invoice) => {
+const handleActions = (actionName: string, invoice: IInvoice) => {
   switch (actionName) {
     case "payment":
       onPayment(invoice);
       break;
     case "download":
       onDownload(invoice);
+      break;
+    case "edit":
+      emit("edit");
+      break;
+    case "view":
+      router.visit(`/invoices/${invoice.id}`);
       break;
     case "delete":
       onDelete(invoice);
@@ -120,7 +140,7 @@ const refresh = () => {
     <template #dropdown>
       <ElDropdownMenu>
         <ElDropdownItem :command="actionName" v-for="(action, actionName) in actions">
-          {{ action.label }}
+          {{ $t(action.label) }}
         </ElDropdownItem>
       </ElDropdownMenu>
     </template>
