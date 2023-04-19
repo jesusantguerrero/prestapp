@@ -3,10 +3,13 @@ export interface IInvoice {
   client_id: number;
   invoiceable_id: number;
   concept: string;
+  description: string;
+  due_date: Date;
   debt: number;
   transaction: Record<string, string>;
   payments: Record<string, string>[]
   total: number;
+  status: string;
 }
 
 export interface IInvoiceWithRelations extends IInvoice {

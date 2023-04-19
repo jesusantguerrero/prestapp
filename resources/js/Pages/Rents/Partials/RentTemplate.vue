@@ -14,7 +14,7 @@ import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
 import { IRent } from "@/Modules/properties/propertyEntity";
 
-const { openModal: openInvoiceModal } = useToggleModal("invoice");
+const { openModal: openInvoiceModal } = useToggleModal("propertyCharge");
 
 interface Props {
   rents: IRent;

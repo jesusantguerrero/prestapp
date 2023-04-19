@@ -139,18 +139,18 @@ const menus = {
       }
     ],
     [MODULES.ACCOUNTING]: [
-      {
-        label: 'Banco',
-        to: '/properties/overview'
-      },
+      // {
+      //   label: 'Banco',
+      //   to: '/properties/overview'
+      // },
       {
           label: 'Transacciones',
           to: '/invoices?filter[type]=expense|invoice',
       },
-      {
-        label: 'Cuentas',
-        to: '/accounts'
-      }
+      // {
+      //   label: 'Cuentas',
+      //   to: '/accounts'
+      // }
     ],
     [MODULES.ADMIN]: [
       {

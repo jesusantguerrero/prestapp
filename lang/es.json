@@ -94,5 +94,16 @@
     "Create contact": "Crear contacto",
     "Go to contract": "Ver el contrato",
     "Edit unit": "Editar unidad",
-    "Remove unit": "Eliminar unidad"
+    "Remove unit": "Eliminar unidad",
+    "Edit invoice": "Editar factura",
+    "Record payment": "Registrar Pago",
+    "Download PDF": "Descargar PDF",
+    "View invoice": "Ver factura",
+    "Delete invoice": "Eliminar factura",
+    "should specify an amount": "Debe especificar el monto",
+    "Create invoice": "Crear factura",
+    "Payment date": "Fecha de pago",
+    "Save payment": "Efectuar pago",
+    "Delete": "Eliminar",
+    "Update payment": "Actualizar pago"
   }

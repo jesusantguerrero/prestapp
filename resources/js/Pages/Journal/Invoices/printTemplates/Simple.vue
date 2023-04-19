@@ -2,6 +2,7 @@
 import { toDate, differenceInDays } from "date-fns";
 import { reactive, computed, watch, toRefs } from "vue";
 import { parseISO } from "date-fns";
+import { router } from "@inertiajs/vue3";
 
 import InvoiceTotals from "../Partials/InvoiceTotals.vue";
 import InvoiceGrid from "../Partials/InvoiceGrid.vue";
@@ -11,6 +12,9 @@ import BusinessCard from "./BusinessCard.vue";
 import { IClient } from "@/Modules/clients/clientEntity";
 import { formatDate } from "@/utils";
 import { IInvoice } from "@/Modules/invoicing/entities";
+import { ElMessageBox, ElNotification } from "element-plus";
+import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
+import { IPayment } from "@/Modules/loans/loanEntity";
 
 const props = withDefaults(
   defineProps<{
@@ -89,6 +93,43 @@ watch(
 );
 
 const { tableData, client, invoice, totals, totalValues, dueDays } = toRefs(state);
+
+const { openModal } = usePaymentModal();
+const editPayment = (payment: IPayment) => {
+  const url =
+    props.invoiceData.invoiceable_type === "App\\Domains\\Properties\\Models\\Rent"
+      ? `/rents/${props.invoiceData.invoiceable_id}/invoices/${payment.payable_id}/payments/${payment.id}`
+      : `/invoices/${payment.payable_id}/payments/${payment.id}`;
+
+  openModal({
+    data: {
+      title: `Pagar ${props.invoiceData.concept}`,
+      payment: payment,
+      endpoint: url,
+      due: payment.amount,
+      account_id: payment.account_id,
+      defaultConcept: payment.concept,
+    },
+  });
+};
+
+const removePayment = async (payment: Record<string, string>) => {
+  const isConfirmed = await ElMessageBox.confirm(
+    `Estas seguro de eliminar el pago ${payment.concept}?`,
+    "Eliminar pago"
+  );
+
+  if (!isConfirmed) return;
+  router.delete(`/payments/${payment.id}`, {
+    onSuccess() {
+      ElNotification({
+        message: `Pago ${payment.due_date} borrada con exito`,
+        title: "Pago eliminada",
+        type: "success",
+      });
+    },
+  });
+};
 </script>
 
 <template>
@@ -156,6 +197,8 @@ const { tableData, client, invoice, totals, totalValues, dueDays } = toRefs(stat
           :subtotalFormula="totals.subtotalFormula"
           :discountFormula="totals.discountFormula"
           :totalFormula="totals.totalFormula"
+          @edit-payment="editPayment"
+          @delete-payment="removePayment"
         />
       </div>
 
