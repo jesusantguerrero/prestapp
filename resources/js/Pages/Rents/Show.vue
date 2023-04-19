@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { router } from "@inertiajs/vue3";
+import { AtInput } from "atmosphere-ui";
 
 import AppButton from "@/Components/shared/AppButton.vue";
 import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
@@ -37,9 +38,25 @@ const deleteRent = async (rent: IRent) => {
     <WelcomeWidget message="Detalles de contrato" class="w-full text-body-1">
       <template #content>
         <section class="py-4 space-y-2">
-          <p>
-            Mensualidad:
-            {{ formatMoney(rents.amount) }}
+          <p class="flex items-center space-x-2">
+            <span> Mensualidad: </span>
+            <div class=" w-48">
+              <AtInput
+                class="form-control"
+                number-format
+                @update:model-value="rents.amount = $event"
+                :model-value="rents.amount"
+                rounded
+                required
+                borderless
+              >
+              <template #prefix>
+                <div class="flex items-center">
+                  DOP
+                </div>
+              </template>
+            </AtInput>
+            </div>
           </p>
           <p>
             Fecha de Inicio:

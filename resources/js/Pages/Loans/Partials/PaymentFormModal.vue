@@ -165,7 +165,6 @@ function createPayment() {
 
   isLoading.value = true;
 
-  debugger;
   const formData = {
     resource_id: props.resourceId,
     payment_date: formatDate(paymentForm.value.payment_date || new Date(), "yyyy-MM-dd"),

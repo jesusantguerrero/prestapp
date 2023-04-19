@@ -67,7 +67,6 @@ class RentService {
           $property = $unit->property;
         } else {
           $property = $rent->unit->property;
-
         }
 
         if ($rentData['commission_type'] == Rent::COMMISSION_PERCENTAGE && $rentData['commission'] > 100) {
@@ -92,10 +91,12 @@ class RentService {
         $rent->client->update(['status' => ClientStatus::Active]);
         $rent->owner->checkStatus();
 
-        Invoice::destroy($rent->invoices()->pluck('id'));
-        PropertyTransactionService::createDepositTransaction($rent->fresh(), $rentData);
-        PropertyTransactionService::generateFirstInvoice($rent);
-        RentTransactionService::generateUpToDate($rent->fresh(), isset($rentData['paid_until']), $rentData['paid_until'] ?? null);
+        if (!$rent->payments()->count()) {
+          // Invoice::destroy($rent->invoices()->pluck('id'));
+          // PropertyTransactionService::createDepositTransaction($rent->fresh(), $rentData);
+          // PropertyTransactionService::generateFirstInvoice($rent);
+          // RentTransactionService::generateUpToDate($rent->fresh(), isset($rentData['paid_until']), $rentData['paid_until'] ?? null);
+        }
       });
     }
 

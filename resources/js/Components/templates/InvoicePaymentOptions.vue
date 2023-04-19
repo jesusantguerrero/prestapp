@@ -32,10 +32,14 @@ const actions = computed(() => {
     download: {
       label: "Download PDF",
     },
-    edit: {
-      label: "Edit invoice",
-      condition: props.allowEdit,
-    },
+    ...(props.allowEdit
+      ? {
+          edit: {
+            label: "Edit invoice",
+            condition: props.allowEdit,
+          },
+        }
+      : {}),
     view: {
       label: "View invoice",
     },

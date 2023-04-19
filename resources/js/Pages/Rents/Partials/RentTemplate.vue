@@ -13,6 +13,7 @@ import { formatMoney, formatDate } from "@/utils";
 import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
 import { IRent } from "@/Modules/properties/propertyEntity";
+import { IInvoice } from "@/Modules/invoicing/entities";
 
 const { openModal: openInvoiceModal } = useToggleModal("propertyCharge");
 
@@ -110,6 +111,16 @@ const generateNextInvoice = () => {
       },
     }
   );
+};
+
+const { openModal } = useToggleModal("invoice");
+const onEdit = (invoice: IInvoice) => {
+  openModal({
+    data: {
+      invoiceData: invoice,
+    },
+    isOpen: true,
+  });
 };
 </script>
 
@@ -235,6 +246,8 @@ const generateNextInvoice = () => {
             <InvoiceCard
               v-for="invoice in rents.invoices"
               :invoice="invoice"
+              :allow-edit="true"
+              @edit="onEdit(invoice)"
               :actions="{
                 payment: {
                   label: 'Registrar Pago',

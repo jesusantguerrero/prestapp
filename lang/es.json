@@ -2,6 +2,7 @@
     "commons": {
       "ACTIVE": "Activo",
       "INACTIVE": "Inactivo",
+      "LATE": "En mora",
       "new": "Nuevo"
     },
     "validation": {
@@ -38,6 +39,7 @@
     "PAID": "Pagado",
     "EXPIRED": "Vencido",
     "CANCELLED": "Cancelado",
+    "LATE": "En mora",
     "previous year": "Año anterior",
     "current year": "Este año",
     "Dashboard": "Inicio",
@@ -105,5 +107,6 @@
     "Payment date": "Fecha de pago",
     "Save payment": "Efectuar pago",
     "Delete": "Eliminar",
-    "Update payment": "Actualizar pago"
+    "Update payment": "Actualizar pago",
+    "regenerate": "Re-generar"
   }
