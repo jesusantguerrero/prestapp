@@ -90,9 +90,9 @@ const menus = {
     },
     {
         label: 'Inquilinos',
-        to: '/contacts/tenant?filter[status]=active&relationships=rent,rent.property',
+        to: '/contacts/tenant',
         isActiveFunction(currentPath: string) {
-          return /tenant/.test(currentPath)
+          return /contacts\/tenant/.test(currentPath)
         },
         as: Link,
         icon: FluentPeopleCommunity16Regular,
@@ -106,6 +106,12 @@ const menus = {
     [MODULES.REPORT]: [{
         label: 'Facturas propietarios',
         to: '/property-reports/',
+        as: Link,
+        icon: IcOutlineRealEstateAgent,
+      },
+      {
+        label: 'Renta mensual',
+        to: '/rent-reports/monthly-summary',
         as: Link,
         icon: IcOutlineRealEstateAgent,
       }
@@ -133,18 +139,18 @@ const menus = {
       }
     ],
     [MODULES.ACCOUNTING]: [
-      {
-        label: 'Banco',
-        to: '/properties/overview'
-      },
+      // {
+      //   label: 'Banco',
+      //   to: '/properties/overview'
+      // },
       {
           label: 'Transacciones',
           to: '/invoices?filter[type]=expense|invoice',
       },
-      {
-        label: 'Cuentas',
-        to: '/accounts'
-      }
+      // {
+      //   label: 'Cuentas',
+      //   to: '/accounts'
+      // }
     ],
     [MODULES.ADMIN]: [
       {

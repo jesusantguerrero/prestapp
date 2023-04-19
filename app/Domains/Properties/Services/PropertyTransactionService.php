@@ -285,6 +285,15 @@ class PropertyTransactionService {
       if (!$invoiceId) {
        $ownerService->fromAutomation();
       } else {
+        $ownerService->regenerateFromRequest($invoiceId);
+      }
+    }
+
+    public static function createOwnerDistributionAuto($client, $invoiceId = null) {
+      $ownerService = new OwnerDistributionService($client);
+      if (!$invoiceId) {
+       $ownerService->fromAutomation();
+      } else {
         $ownerService->updateFromAutomation($invoiceId);
       }
     }

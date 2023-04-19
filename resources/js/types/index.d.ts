@@ -5,3 +5,10 @@ declare global {
 }
 
 export {}
+
+export interface ICard {
+  label: string;
+  value: [string, number];
+  accent?: boolean;
+  icon?: string;
+}

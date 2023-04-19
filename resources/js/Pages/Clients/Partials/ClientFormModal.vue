@@ -49,7 +49,7 @@ const onError = (message: string) => {
     <header
       class="border-b bg-secondary/80 text-white py-4 px-4 flex items-center justify-between"
     >
-      <h4 class="font-bold text-xl">Crear Contacto</h4>
+      <h4 class="font-bold text-xl">{{ $t("Create contact") }}</h4>
       <button class="hover:text-danger" @click="close()">
         <IMdiClose />
       </button>

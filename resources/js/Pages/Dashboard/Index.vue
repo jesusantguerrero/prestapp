@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { router } from "@inertiajs/core";
 // @ts-ignore
-import { AtBackgroundIconCard, AtButton } from "atmosphere-ui";
+import { AtBackgroundIconCard } from "atmosphere-ui";
 import AppButton from "@/Components/shared/AppButton.vue";
 import IncomeSummaryWidget from "./Partials/IncomeSummaryWidget.vue";
 import WelcomeWidget from "./Partials/WelcomeWidget.vue";
-import SectionFooterCard from "./SectionFooterCard.vue";
+import SectionFooterCard from "./Partials/SectionFooterCard.vue";
 
 import { formatMoney } from "@/utils/formatMoney";
 import { useTransactionModal } from "@/Modules/transactions/useTransactionModal";
-import DashboardTemplate from "./Partials/DashboardTemplate.vue";
 import FastAccessOptions from "./Partials/FastAccessOptions.vue";
 import { Link } from "@inertiajs/vue3";
 import { useI18n } from "vue-i18n";
+import { useToggleModal } from "@/Modules/_app/useToggleModal";
 
 const { t } = useI18n();
 
@@ -105,10 +105,105 @@ const comparisonRevenue = {
 };
 
 const { openTransactionModal } = useTransactionModal();
+const { openModal } = useToggleModal("contact");
+
+const openLoanAccount = () => {
+  openTransactionModal({
+    mode: "TRANSFER",
+    hideTypeSelector: true,
+    transactionData: {
+      account_id: "opening_balance_capital",
+      counter_account_id: "loan_business",
+    },
+  });
+};
+
+const onBoardSteps = [
+  {
+    title: "Add business config",
+    description: "Before using the app you should setup your business configureation",
+    action: {
+      label: "Setup config",
+      variant: "primary",
+      event: () => {
+        router.visit("/settings/business");
+      },
+    },
+  },
+  {
+    title: "Create your contacts",
+    description:
+      "Your contacts: Borrowers, Tenants and Owners are an essential part of the system. you can create them from here",
+    action: {
+      label: "Create contact",
+      variant: "neutral",
+      event: () => {
+        openModal();
+      },
+    },
+  },
+  {
+    title: "Create your portfolio",
+    description:
+      "Properties and Units are the heart of the system, you can assign them to owners, create rents, invoices age generated against them",
+    action: {
+      label: "Add property",
+      variant: "neutral",
+      event: () => {
+        router.visit("/properties/create");
+      },
+    },
+  },
+  {
+    title: "Open your balances",
+    description:
+      "If you are going to borrow money you first need to open your account for loans",
+    action: {
+      label: "Set opening balance",
+      variant: "neutral",
+      event: () => {
+        openLoanAccount();
+      },
+    },
+  },
+  {
+    title: "Create a loan",
+    description:
+      "Add loans, register installment payments, set up penalties within the Loan module",
+    action: {
+      label: "Set opening balance",
+      variant: "neutral",
+      event: () => {
+        openLoanAccount();
+      },
+    },
+  },
+];
+
+const isOnboardingOpen = inject("isOnboardingOpen");
+</script>
+
+<script lang="ts">
+import DashboardTemplate from "./Partials/DashboardTemplate.vue";
+import OnboardingSection from "./Partials/OnboardingSection.vue";
+import { inject } from "vue";
+
+export default {
+  layout: DashboardTemplate,
+  components: { OnboardingSection },
+};
 </script>
 
 <template>
-  <DashboardTemplate :user="user" :is-team-approved="isTeamApproved">
+  <main>
+    <OnboardingSection
+      v-auto-animate
+      v-if="isOnboardingOpen"
+      :steps="onBoardSteps"
+      :title="$t('Explore ICLoan')"
+      :description="$t('Initial steps to setup your system')"
+      @close="isOnboardingOpen = !isOnboardingOpen"
+    />
     <section class="w-full md:flex md:space-x-4">
       <div class="flex flex-col justify-between w-full md:w-9/12">
         <WelcomeWidget message="Hola, " :username="user.name" class="shadow-sm">
@@ -139,7 +234,9 @@ const { openTransactionModal } = useTransactionModal();
               </SectionFooterCard>
               <SectionFooterCard
                 title="Balance pendiente"
-                :value="`${formatMoney(stats.outstanding)} (${formatMoney(stats.outstanding_in_month)})`"
+                :value="`${formatMoney(stats.outstanding)} (${formatMoney(
+                  stats.outstanding_in_month
+                )})`"
                 class="md:pl-6"
                 value-link="/property-reports?filters[owner]=&filters[property]=&filters[section]=invoices"
               >
@@ -195,6 +292,7 @@ const { openTransactionModal } = useTransactionModal();
           icon="fas fa-wallet"
           :value="formatMoney(props.dailyBox?.balance | 0)"
           title="Cuenta de Prestamos"
+          @click="openLoanAccount()"
         />
         <AtBackgroundIconCard
           class="h-32 border-2 cursor-pointer text-secondary bg-secondary/10 border-secondary/20"
@@ -202,23 +300,10 @@ const { openTransactionModal } = useTransactionModal();
           :value="formatMoney(props.realState.balance | 0)"
           title="Cuenta Inmobiliaria"
         />
-        <AppButton
-          variant="secondary"
-          class="w-full"
-          @click="
-            openTransactionModal({
-              mode: 'TRANSFER',
-              hideTypeSelector: true,
-              transactionData: {
-                account_id: 'opening_balance_capital',
-                counter_account_id: 'loan_business',
-              },
-            })
-          "
-        >
+        <AppButton variant="secondary" class="w-full" @click="openLoanAccount()">
           Agregar fondos
         </AppButton>
       </article>
     </section>
-  </DashboardTemplate>
+  </main>
 </template>

@@ -4,16 +4,13 @@ import { formatDate, formatMoney } from "@/utils";
 import InvoicePaymentOptions from "./InvoicePaymentOptions.vue";
 
 import { getStatus, getStatusIcon } from "@/Modules/invoicing/constants";
+import { IInvoice } from "@/Modules/invoicing/entities";
 
-defineProps({
-  invoice: {
-    type: Object,
-    required: true,
-  },
-  actions: {
-    type: Object,
-  },
-});
+defineProps<{
+  invoice: IInvoice;
+  actions?: Record<string, any>;
+  allowEdit: boolean;
+}>();
 </script>
 
 <template>
@@ -38,7 +35,11 @@ defineProps({
         <span class="w-32">
           <i :class="getStatusIcon(invoice.status)" /> {{ getStatus(invoice.status) }}
         </span>
-        <InvoicePaymentOptions :invoice="invoice" />
+        <InvoicePaymentOptions
+          :invoice="invoice"
+          :allow-edit="allowEdit"
+          @edit="$emit('edit')"
+        />
       </div>
     </section>
   </article>

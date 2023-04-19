@@ -132,7 +132,7 @@ function refresh() {
 
           <div class="flex justify-end h-16">
             <div class="flex items-center sm:ml-6">
-              <!-- <AppResourceSearch class="hidden mr-2 md:block" /> -->
+              <AppResourceSearch class="hidden mr-2 md:block" />
 
               <AddNewButton
                 class="hidden mr-2 md:inline-block"
@@ -255,7 +255,7 @@ function refresh() {
           :current-path="currentPath"
           brand-container-class="py-2"
           nav-container-class="px-2 pt-1 space-y-2 border-t border-base-lvl-3/20"
-          icon-class="text-gray-100 transition hover:text-primary hover:bg-base-lvl-3/10"
+          icon-class="text-gray-100 py-2.5 transition hover:text-primary hover:bg-base-lvl-3/10"
           item-class="px-5 rounded-md font-bold text-sm text-gray-200 w-54 hover:text-white hover:bg-base-lvl-3/20"
           item-active-class="text-white rounded-md text-sm bg-base-lvl-3/10"
           is-expandable

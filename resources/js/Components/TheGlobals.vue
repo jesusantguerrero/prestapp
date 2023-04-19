@@ -3,7 +3,8 @@ import { router } from "@inertiajs/vue3";
 
 import PaymentFormModal from "@/Pages/Loans/Partials/PaymentFormModal.vue";
 import TransactionModal from "@/Components/shared/TransactionModal.vue";
-import InvoiceFormModal from "@/Pages/Journal/Invoices/Partials/InvoiceFormModal.vue";
+import PropertyChargeModal from "@/Pages/Journal/Invoices/Partials/PropertyChargeModal.vue";
+import InvoiceModal from "@/Pages/Journal/Invoices/Partials/InvoiceModal.vue";
 
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
 import ClientFormModal from "@/Pages/Clients/Partials/ClientFormModal.vue";
@@ -43,6 +44,12 @@ const onContactSaved = () => {
 };
 
 const {
+  isOpen: isChargeModalOpen,
+  closeModal: closeChargeModal,
+  data: chargeData,
+} = useToggleModal("propertyCharge");
+
+const {
   isOpen: isInvoiceModalOpen,
   closeModal: closeInvoiceModal,
   data: invoiceData,
@@ -70,8 +77,16 @@ const {
     @saved="onContactSaved"
   />
 
-  <InvoiceFormModal
-    title="Registar gasto de propiedad"
+  <PropertyChargeModal
+    title="Registrar gasto de propiedad"
+    v-if="isChargeModalOpen"
+    v-model="isChargeModalOpen"
+    v-bind="chargeData"
+    @saved="router.reload()"
+  />
+
+  <InvoiceModal
+    :title="$t('Create invoice')"
     v-if="isInvoiceModalOpen"
     v-model="isInvoiceModalOpen"
     v-bind="invoiceData"

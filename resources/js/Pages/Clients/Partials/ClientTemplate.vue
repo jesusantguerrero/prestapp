@@ -43,7 +43,7 @@ const getTabUrl = (tab: string = "") => {
 };
 
 const { openModal } = useToggleModal("contact");
-const { openModal: openInvoiceModal } = useToggleModal("invoice");
+const { openModal: openChargeModal } = useToggleModal("propertyCharge");
 
 const sectionName = computed(() => {
   const clientTypes: Record<string, string> = {
@@ -75,10 +75,10 @@ const sectionName = computed(() => {
         <template #actions v-if="clients.is_tenant">
           <section class="flex space-x-2">
             <AppButton
-              v-if="!contract"
+              v-if="!contract && !clients.is_lender"
               @click="router.visit(`/rents/create?client=${clients.id}`)"
               variant="success"
-              title="Reembolsar deposito"
+              title="Registrar mudanza"
             >
               <IMdiHomePlusOutline class="mr-2" />
               Registrar mudanza
@@ -96,7 +96,7 @@ const sectionName = computed(() => {
             <AppButton
               v-if="contract"
               @click="
-                openInvoiceModal({
+                openChargeModal({
                   data: {
                     clientId: clients.id,
                     rentId: contract?.id,

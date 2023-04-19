@@ -179,12 +179,18 @@ const { totals, debt, hasTaxes, paymentTotal } = toRefs(state);
         <p class="label flex">Pagado en {{ formatDate(payment.payment_date) }}</p>
         <p class="value flex items-center justify-end text-right">
           - {{ formatMoney(payment.amount) }}
-          <AppButton
+          <button
+            class="text-gray hover:text-success group-hover:flex hidden"
+            @click.stop="$emit('edit-payment', payment)"
+          >
+            <IMdiEdit class="ml-2" />
+          </button>
+          <button
             class="text-gray hover:text-error group-hover:flex hidden"
             @click.stop="$emit('delete-payment', payment)"
           >
             <IMdiTrash class="ml-2" />
-          </AppButton>
+          </button>
         </p>
       </i>
     </div>

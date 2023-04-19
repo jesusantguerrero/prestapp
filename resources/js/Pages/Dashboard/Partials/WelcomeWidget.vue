@@ -1,15 +1,10 @@
 <script setup lang="ts">
+import { ICard } from "@/types";
 import { router } from "@inertiajs/vue3";
 // @ts-ignore: my lib
 import { AtBackgroundIconCard, AtButton } from "atmosphere-ui";
 import { computed } from "vue";
 
-interface ICard {
-  label: string;
-  value: [string, number];
-  accent?: boolean;
-  icon?: string;
-}
 interface Props {
   message: string;
   username?: string;

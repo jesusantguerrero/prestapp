@@ -10,7 +10,7 @@ const props = defineProps<{
 }>();
 
 const { openModal } = useToggleModal("contact");
-const { openModal: openInvoiceModal } = useToggleModal("invoice");
+const { openModal: openInvoiceModal } = useToggleModal("propertyCharge");
 
 const welcomeCards = computed(() => {
   const options = [

@@ -178,7 +178,7 @@ function createOwnerDistribution() {
   });
 }
 
-const { openModal: openInvoiceModal } = useToggleModal("invoice");
+const { openModal: openInvoiceModal } = useToggleModal("propertyCharge");
 
 const emptyLabel = computed(() => {
   return !filters.owner
