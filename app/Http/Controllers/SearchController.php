@@ -15,16 +15,8 @@ class SearchController extends BaseController {
       return (new Search())
       ->registerModel(Client::class, ['names', 'lastnames'])
       ->registerModel(RentSearch::class, ['owner_name', 'client_name', 'address'])
-      ->search($searchText);
-
-
-
-      // return [
-      //   "clients" => Client::search($searchText)->get(),
-      //   "loans" => Loan::search($searchText)->get(),
-      //   "properties" => Property::search($searchText)->get(),
-      //   "rents" => Rent::search($searchText)->get(),
-      // ];
+      ->search($searchText)
+      ->groupBy('type');
   }
 }
 

@@ -171,7 +171,7 @@ const onBoardSteps = [
     description:
       "Add loans, register installment payments, set up penalties within the Loan module",
     action: {
-      label: "Set opening balance",
+      label: "Add loan",
       variant: "neutral",
       event: () => {
         openLoanAccount();

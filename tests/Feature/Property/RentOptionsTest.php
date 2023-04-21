@@ -33,7 +33,7 @@ class RentOptionsTest extends PropertyBase
     ]);
     $newDate = InvoiceHelper::getNextScheduleDate($rent->end_date, 'MONTHLY');
 
-    $response = $this->put("/contacts/{$rent->client_id}/tenants/rents/{$rent->id}/end_rent", [
+    $response = $this->put("/clients/{$rent->client_id}/rents/{$rent->id}/end", [
       "end_date" => $newDate,
       'amount' => 10000
     ]);

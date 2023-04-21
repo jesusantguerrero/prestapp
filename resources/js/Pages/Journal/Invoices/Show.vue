@@ -100,7 +100,7 @@ const print = () => {
         <div class="flex justify-between px-5 py-1 border rounded-md space bg-base-lvl-3">
           <section>
             Detalles de creacion
-            <Link :href="`/transactions/${invoice.transaction.id}`" class="underline cursor-pointer text-primary underline-offset-1">Asiento Contable</Link>
+            <Link :href="`/transactions/${invoice.transaction?.id}`" class="underline cursor-pointer text-primary underline-offset-1">Asiento Contable</Link>
           </section>
           <section>
             Detalles de cobro

@@ -151,7 +151,7 @@ const visibleCols = computed(() => {
           :min-width="col.minWidth"
           :class="[col.headerClass]"
         >
-          <template v-slot="scope" v-if="$slots[col.name] || col.render">
+          <template v-slot="scope" v-if="$slots[col.name] || col?.render || col.formula">
             <slot :name="col.name" v-bind:scope="scope">
               <CustomCell
                 v-if="col.render"

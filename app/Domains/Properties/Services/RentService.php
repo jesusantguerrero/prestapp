@@ -54,7 +54,7 @@ class RentService {
 
     public static function updateRent(Rent $rent, mixed $rentData) {
       return DB::transaction(function() use ($rentData, $rent) {
-        $rentData['unit_id'] = $rentData['unit_id'] ?? $rentData['unit']['id'];
+        $rentData['unit_id'] = $rentData['unit_id'] ?? $rentData['unit']['id'] ?? $rent->unit_id;
 
         if ($rent->unit_id !== $rentData['unit_id']) {
           $unit = PropertyUnit::find($rentData['unit_id']);
@@ -69,7 +69,7 @@ class RentService {
           $property = $rent->unit->property;
         }
 
-        if ($rentData['commission_type'] == Rent::COMMISSION_PERCENTAGE && $rentData['commission'] > 100) {
+        if (isset($rentData['commission_type']) && $rentData['commission_type'] == Rent::COMMISSION_PERCENTAGE && $rentData['commission'] > 100) {
           throw new Exception(__("The percentage can't be greater than 100%"));
         }
 
@@ -79,14 +79,8 @@ class RentService {
           $property = $unit->property()->first();
         }
 
-        $rentData = array_merge($rentData, [
-          'account_id' => $property->account_id,
-          'owner_id' => $property->owner_id,
-          'commission_account_id' => $property->commission_account_id,
-          'late_fee_account_id' => $property->late_fee_account_id,
-        ]);
 
-        $rent->update($rentData);
+        $rent->update(collect($rentData)->only(['amount', 'notes'])->all());
         $rent->unit->update(['status' => PropertyUnit::STATUS_RENTED]);
         $rent->client->update(['status' => ClientStatus::Active]);
         $rent->owner->checkStatus();

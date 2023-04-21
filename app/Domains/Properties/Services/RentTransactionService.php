@@ -137,8 +137,6 @@ class RentTransactionService {
           'is_paid' => (boolean) $markAsPaid
         ];
 
-        echo "Date $nextDate $markAsPaid:  $paidUntil $nextDate" . PHP_EOL;
-
         PropertyTransactionService::createInvoice($invoiceData, $rent);
         $generatedInvoices[] = $nextDate;
         $nextDate = InvoiceHelper::getNextDate($nextDate)->format('Y-m-d');
