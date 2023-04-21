@@ -186,7 +186,7 @@ class RentTest extends PropertyBase
 
     $rent = Rent::first();
     RentTransactionService::generateUpToDate($rent);
-    $this->assertCount(12, $rent->invoices()->get());
+    $this->assertCount(13, $rent->invoices()->get());
   }
 
   public function testRentClientShouldHaveStatusActive() {

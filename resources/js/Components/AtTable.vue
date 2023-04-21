@@ -94,8 +94,11 @@ const visibleCols = computed(() => {
         <td
           v-for="col in visibleCols"
           :key="col.name"
-          class="h-full align-baseline"
-          :style="{ width: col.width, maxWidth: col.maxWidth }"
+          class="h-full align-baseline bg-red-400 border border-white"
+          :style="{
+            width: `${col.width}px`,
+            maxWidth: `${col.maxWidth}px`
+          }"
         >
           <div class="my-auto" :class="col.class">
             <slot

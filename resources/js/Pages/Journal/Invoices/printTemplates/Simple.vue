@@ -336,9 +336,6 @@ section {
 
 <style lang="scss">
 .main-grid {
-  thead th.el-table__cell {
-    @apply text-white;
-  }
   .el-table__body-wrapper td {
     font-size: 1.2em !important;
   }

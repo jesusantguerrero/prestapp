@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Listeners\ClearRentInvoiceData;
 use App\Listeners\RegisterLastLogin;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Registered;
@@ -28,8 +29,11 @@ class EventServiceProvider extends ServiceProvider
           RegisterLastLogin::class
         ],
         TeamCreated::class => [
-            CreateTeamAccounts::class,
+          CreateTeamAccounts::class,
         ],
+        InvoiceDeleted::class => [
+          ClearRentInvoiceData::class
+        ]
     ];
 
     /**

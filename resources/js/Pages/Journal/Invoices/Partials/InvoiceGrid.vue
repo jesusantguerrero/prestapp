@@ -4,7 +4,7 @@ import { AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { computed, reactive, toRefs, onMounted } from "vue";
 // @ts-ignore
 import IconTrash from "@/Components/icons/IconTrash.vue";
-import AtTable from "@/Components/AtTable.vue";
+import AtTable from "@/Components/Shared/BaseTable.vue";
 import cols from "./cols";
 
 const props = defineProps({
@@ -68,7 +68,10 @@ const state = reactive({
   rowToAdd: {},
   addMode: false,
   renderedCols: computed(() => {
-    return props.isEditing ? cols : cols.filter((col) => col.name != "actions");
+    console.log(cols);
+    return props.isEditing
+      ? cols
+      : cols.filter((col) => col.name !== "actions" && col.label);
   }),
 });
 
@@ -125,10 +128,10 @@ const { renderedCols, cleaveOptions } = toRefs(state);
     <AtTable
       :hidden-cols="hiddenCols"
       :cols="renderedCols"
-      :tableData="tableData"
+      :table-data="tableData"
       :hide-empty-text="true"
     >
-      <template v-slot:item="{ scope: { row, col } }">
+      <template v-slot:concept="{ scope: { row, col } }">
         <div class="d-flex">
           <AtInput
             name=""
@@ -137,7 +140,7 @@ const { renderedCols, cleaveOptions } = toRefs(state);
             rounded
             v-if="isEditing"
           />
-          <span v-if="col.render && !isEditing" v-html="col.render(row)" />
+          <span v-if="col?.render && !isEditing" v-html="col?.render(row)" />
           <span v-else> {{ row.concept }}</span>
         </div>
       </template>

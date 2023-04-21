@@ -132,7 +132,7 @@ function refresh() {
 
           <div class="flex justify-end h-16">
             <div class="flex items-center sm:ml-6">
-              <AppResourceSearch class="hidden mr-2 md:block" v-if="false" />
+              <AppResourceSearch class="hidden mr-2 md:block" />
 
               <AddNewButton
                 class="hidden mr-2 md:inline-block"

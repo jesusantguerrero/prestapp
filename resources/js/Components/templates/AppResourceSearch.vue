@@ -1,68 +1,27 @@
-<template>
-  <ElPopover
-    :visible="state.hasResults"
-    :show-arrow="false"
-    placement="bottom-end"
-    :width="500"
-  >
-    <template #reference>
-      <div v-bind="$attrs">
-        <AppSearch v-model="state.searchText" />
-      </div>
-    </template>
-
-    <section>
-      <section class="flex w-full">
-        <div
-          v-for="(tab, tabName) in state.tabsWithResults"
-          @click="state.selectedTab = tabName"
-          class="px-5 cursor-pointer py-1 font-bold w-full capitalize text-center rounded-md bg-base-lvl-2"
-          :class="state.selectedTab == tabName ? 'bg-primary text-white' : ''"
-        >
-          {{ tabName }}
-        </div>
-      </section>
-      <div class="w-full py-2 mt-4">
-        <div v-for="item in state.tabsWithResults[state.selectedTab]">
-          {{ item.title }}
-        </div>
-      </div>
-    </section>
-  </ElPopover>
-</template>
-
 <script setup lang="ts">
 // @ts-ignore
 import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
 import { reactive, computed, watch } from "vue";
 import axios from "axios";
+import SearchListItem from "../SearchListItem.vue";
+import { flatten } from "lodash";
 
 const state = reactive({
   searchText: "",
   results: [],
   selectedTab: null,
-  hasResults: computed(() => {
-    return state.results.length;
-  }),
+});
+const hasResults = computed(() => {
+  return !!(state.searchText.length >= 3 && Object.keys(state.results).length);
+});
 
-  tabsWithResults: computed(() => {
-    const tabs = state.results?.reduce(
-      (tabs: Record<string, any>, item: any) => {
-        if (!Object.keys(tabs).includes(item.type)) {
-          tabs[item.type] = [item];
-        } else {
-          tabs[item.type].push(item);
-        }
-        tabs.all.push(item);
-        return tabs;
-      },
-      {
-        all: [],
-      }
-    );
+const tabsWithResults = computed(() => {
+  const tabs = {
+    all: flatten(Object.values(state.results)),
+    ...state.results,
+  };
 
-    return tabs;
-  }),
+  return tabs;
 });
 
 watch(
@@ -70,7 +29,7 @@ watch(
   (search: string) => {
     axios.get(`/search?search=${search}`).then(({ data }) => {
       state.results = data;
-      state.selectedTab = Object.keys(state.tabsWithResults)?.at?.(0);
+      state.selectedTab = "all";
     });
 
     if (!search) {
@@ -79,6 +38,40 @@ watch(
   }
 );
 </script>
+
+<template>
+  <ElPopover
+    :visible="hasResults"
+    :show-arrow="false"
+    placement="bottom-end"
+    :width="500"
+    @close="state.searchText = ''"
+  >
+    <template #reference>
+      <div v-bind="$attrs" class="hover:w-96 transition" :class="{ 'w-96': hasResults }">
+        <AppSearch v-model="state.searchText" />
+      </div>
+    </template>
+
+    <section>
+      <section class="flex w-full">
+        <div
+          v-for="(tab, tabName) in tabsWithResults"
+          @click="state.selectedTab = tabName"
+          class="px-5 cursor-pointer py-1 font-bold w-full capitalize text-center rounded-md bg-base-lvl-2"
+          :class="state.selectedTab == tabName ? 'bg-primary text-white' : ''"
+        >
+          {{ tabName }}
+        </div>
+      </section>
+      <div class="w-full py-2 mt-4">
+        <div v-for="item in tabsWithResults[state.selectedTab]">
+          <SearchListItem :item="item" />
+        </div>
+      </div>
+    </section>
+  </ElPopover>
+</template>
 
 <style lang="scss" scoped>
 .input-group-prepend label {

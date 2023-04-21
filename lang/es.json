@@ -37,6 +37,7 @@
     "RENTED": "Rentada",
     "PENDING": "Pendiente",
     "PAID": "Pagado",
+    "ACTIVE": "Activo",
     "EXPIRED": "Vencido",
     "CANCELLED": "Cancelado",
     "LATE": "En mora",
