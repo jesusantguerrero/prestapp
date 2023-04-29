@@ -135,6 +135,7 @@ class RentService {
             ["status" => Rent::STATUS_CANCELLED
           ]));
           $rent->unit->update(['status' => Property::STATUS_AVAILABLE]);
+          Invoice::destroy($rent->invoices()->unpaid()->pluck('id'));
         });
         return $rent;
       }

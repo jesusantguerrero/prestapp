@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import SectionNav from "@/Components/SectionNav.vue";
 import ContractCardMini from "@/Components/templates/ContractCardMini.vue";
-import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 import NextPaymentsWidget from "@/Pages/Loans/NextPaymentsWidget.vue";
 import { formatDate } from "@/utils";
 import { addMonths, endOfMonth, startOfMonth } from "date-fns";
