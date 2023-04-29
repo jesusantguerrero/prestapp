@@ -79,8 +79,7 @@ class RentService {
           $property = $unit->property()->first();
         }
 
-
-        $rent->update(collect($rentData)->only(['amount', 'notes'])->all());
+        $rent->update(collect($rentData)->only(['amount', 'notes', 'next_invoice_date'])->all());
         $rent->unit->update(['status' => PropertyUnit::STATUS_RENTED]);
         $rent->client->update(['status' => ClientStatus::Active]);
         $rent->owner->checkStatus();
@@ -135,6 +134,7 @@ class RentService {
             ["status" => Rent::STATUS_CANCELLED
           ]));
           $rent->unit->update(['status' => Property::STATUS_AVAILABLE]);
+          Invoice::destroy($rent->invoices()->unpaid()->pluck('id'));
         });
         return $rent;
       }
@@ -295,16 +295,24 @@ class RentService {
         return $query;
     }
 
-    public static function invoiceByPaymentStatus($teamId) {
-      $startMonth = now()->startOfMonth()->format('Y-m-d');
-      $endMonth = now()->endOfMonth()->format('Y-m-d');
+    public static function invoiceByPaymentStatus($teamId, string $startDate = null, string $endDate = null) {
+      $startMonth = $startDate ?? now()->startOfMonth()->format('Y-m-d');
+      $endMonth = $endDate ??  now()->endOfMonth()->format('Y-m-d');
 
-      return  RentService::invoices($teamId)->select(DB::raw("sum(invoices.total) total, sum(invoices.total-debt) paid, sum(debt) outstanding, sum(
+      return  Invoice::query()
+      ->select(DB::raw("count(id) invoicesCount, sum(invoices.total) total, sum(invoices.total-debt) paid, sum(debt) outstanding, sum(
         CASE
         WHEN invoices.debt > 0 THEN 1
         ELSE 0
       END) outstandingInvoices"))
-      ->whereBetween('due_date', [$startMonth, $endMonth])->first();
+      ->where([
+        'invoices.team_id' => $teamId,
+        'invoices.type' => 'INVOICE',
+        'invoiceable_type' => Rent::class
+      ])
+      ->whereBetween('due_date', [$startMonth, $endMonth])
+      ->groupBy(DB::raw("DATE_FORMAT(due_date, '%Y-%m-01')"))
+      ->first();
     }
 
     public static function commissions($teamId, $statuses = []) {
@@ -354,7 +362,7 @@ class RentService {
         RentTransactionService::generateUpToDate($rent);
       } else {
         PropertyTransactionService::createInvoice([
-          'date' => $rent->next_invoice_date
+          'date' => $rent->next_invoice_date,
         ], $rent);
         $rent->update([
           'next_invoice_date' => InvoiceHelper::getNextDate($rent->next_invoice_date),

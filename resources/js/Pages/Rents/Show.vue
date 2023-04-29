@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { router } from "@inertiajs/vue3";
+import { router, useForm } from "@inertiajs/vue3";
 import { AtInput } from "atmosphere-ui";
 
 import AppButton from "@/Components/shared/AppButton.vue";
@@ -10,13 +10,32 @@ import UnitTitle from "@/Components/realState/UnitTitle.vue";
 import RentTemplate from "./Partials/RentTemplate.vue";
 import { IRent } from "@/Modules/properties/propertyEntity";
 import { ElMessageBox } from "element-plus";
+import { parseISO } from "date-fns";
+import { ref } from "vue";
 
 interface Props {
   rents: IRent;
   currentTab: string;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
+
+const updateRentForm = useForm({
+  next_invoice_date: parseISO(props.rents.next_invoice_date)
+})
+
+const isEditing = ref(false);
+
+const toggleQuickEdit = () => {
+  if (isEditing.value && props.rents.next_invoice_date !== updateRentForm.next_invoice_date) {
+      updateRentForm.put(route('rents.update', props.rents), {
+        onSuccess() {
+          router.reload();
+        }
+      })
+  }
+  isEditing.value= !isEditing.value
+}
 
 const deleteRent = async (rent: IRent) => {
   const isValid = await ElMessageBox.confirm(
@@ -66,9 +85,20 @@ const deleteRent = async (rent: IRent) => {
             Contrato hasta:
             {{ formatDate(rents.end_date) }}
           </p>
-          <p>
+          <p class="flex items-center">
             Proximo pago:
-            {{ formatDate(rents.next_invoice_date) }}
+            <span v-if="!isEditing">
+              {{ formatDate(rents.next_invoice_date) }}
+            </span>
+            <ElDatePicker v-else v-model="updateRentForm.next_invoice_date" size="large" class="ml-2" />
+            <button
+              @click="toggleQuickEdit"
+              :disabled="updateRentForm.processing"
+              class="mr-4  h-10 w-14 flex justify-center items-center"
+            :class="[isEditing && 'bg-success text-white border-l-0 border hover:bg-success/80 transition']">
+              <IMdiEdit class="ml-2" v-if="!isEditing" />
+              <IMdiContentSaveCheck v-else />
+            </button>
           </p>
           <p>
             Estatus:

@@ -1,3 +1,11 @@
+<script lang="ts">
+import DashboardTemplate from "./Partials/DashboardTemplate.vue";
+
+export default {
+  layout: DashboardTemplate,
+};
+</script>
+
 <script lang="ts" setup>
 import BudgetProgress from "@/Components/BudgetProgress.vue";
 import IncomeSummaryWidget from "@/Pages/Dashboard/Partials/IncomeSummaryWidget.vue";
@@ -10,6 +18,7 @@ import PropertyInvoiceWidget from "./Partials/PropertyInvoiceWidget.vue";
 import NextPaymentsWidget from "../Loans/NextPaymentsWidget.vue";
 import PaymentsCard from "@/Components/PaymentsCard.vue";
 import { Link } from "@inertiajs/vue3";
+import RentsWidget from "./Partials/RentsWidget.vue";
 
 const props = defineProps({
   user: {
@@ -146,14 +155,6 @@ const interestPerformance = {
 };
 </script>
 
-<script lang="ts">
-import DashboardTemplate from "./Partials/DashboardTemplate.vue";
-
-export default {
-  layout: DashboardTemplate,
-};
-</script>
-
 <template>
   <main>
     <header class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
@@ -281,6 +282,7 @@ export default {
           </div>
         </template>
       </WelcomeWidget>
+      <RentsWidget class="w-full mt-4" />
     </section>
   </main>
 </template>
