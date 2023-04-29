@@ -198,7 +198,7 @@ trait Querify
 
     private function getSorts($externalSorts)
     {
-        $sorts = implode(',', $this->sorts) . $externalSorts;
+        $sorts = $externalSorts ?? implode(',', $this->sorts);
         if ($sorts) {
             $sorts = $this->splitAndTrim($sorts);
             foreach ($sorts as $sort) {
