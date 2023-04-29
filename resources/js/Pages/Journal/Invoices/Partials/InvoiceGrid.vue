@@ -4,7 +4,7 @@ import { AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { computed, reactive, toRefs, onMounted } from "vue";
 // @ts-ignore
 import IconTrash from "@/Components/icons/IconTrash.vue";
-import AtTable from "@/Components/Shared/BaseTable.vue";
+import AtTable from "@/Components/shared/BaseTable.vue";
 import cols from "./cols";
 
 const props = defineProps({
