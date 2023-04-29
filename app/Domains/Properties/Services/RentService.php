@@ -79,8 +79,7 @@ class RentService {
           $property = $unit->property()->first();
         }
 
-
-        $rent->update(collect($rentData)->only(['amount', 'notes'])->all());
+        $rent->update(collect($rentData)->only(['amount', 'notes', 'next_invoice_date'])->all());
         $rent->unit->update(['status' => PropertyUnit::STATUS_RENTED]);
         $rent->client->update(['status' => ClientStatus::Active]);
         $rent->owner->checkStatus();
@@ -363,7 +362,7 @@ class RentService {
         RentTransactionService::generateUpToDate($rent);
       } else {
         PropertyTransactionService::createInvoice([
-          'date' => $rent->next_invoice_date
+          'date' => $rent->next_invoice_date,
         ], $rent);
         $rent->update([
           'next_invoice_date' => InvoiceHelper::getNextDate($rent->next_invoice_date),
