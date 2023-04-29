@@ -4,7 +4,7 @@ import ContractCardMini from "@/Components/templates/ContractCardMini.vue";
 import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 import NextPaymentsWidget from "@/Pages/Loans/NextPaymentsWidget.vue";
 import { formatDate } from "@/utils";
-import { endOfMonth, startOfMonth } from "date-fns";
+import { addMonths, endOfMonth, startOfMonth } from "date-fns";
 import { ref, computed } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -23,10 +23,10 @@ const tabs = {
 };
 
 const monthEndpoint = computed(() => {
-  return `/api/invoices?filter[due_date]=${formatDate(
+  return `/api/rents?filter[end_date]=${formatDate(
     startOfMonth(new Date()),
     "yyyy-MM-dd"
-  )}~${formatDate(endOfMonth(new Date()), "yyyy-MM-dd")}&sort=due_date`;
+  )}~${formatDate(endOfMonth(new Date()), "yyyy-MM-dd")}&sort=end_date`;
 });
 
 const expiredEndpoint = computed(() => {
@@ -34,6 +34,13 @@ const expiredEndpoint = computed(() => {
     startOfMonth(new Date()),
     "yyyy-MM-dd"
   )}&sort=end_date`;
+});
+
+const expiringEndpoint = computed(() => {
+  return `/api/rents?filter[end_date]=${formatDate(
+    startOfMonth(new Date()),
+    "yyyy-MM-dd"
+  )}~${formatDate(endOfMonth(addMonths(new Date(), 3)), "yyyy-MM-dd")}&sort=end_date`;
 });
 </script>
 
@@ -52,24 +59,25 @@ const expiredEndpoint = computed(() => {
           :sections="tabs"
         />
       </template>
-      <template v-slot:content="{ list: nextInvoices }">
+      <template v-slot:content="{ list: contracts }">
         <article class="py-4 space-y-4 my-2 h-[380px] overflow-auto ic-scroller">
-          <template v-if="nextInvoices.length">
-            <InvoiceCard v-for="invoice in nextInvoices" :invoice="invoice" />
+          <template v-if="contracts.length">
+            <ContractCardMini v-for="contract in contracts" :contract="contract" />
           </template>
           <section
             v-else
             class="flex text-body-1 flex-col justify-center items-center w-full"
           >
             <IMdiNoteOff class="text-8xl" />
-            <p class="mt-8">{{ $t("There's no invoices for this month") }}</p>
+            <p class="mt-8">{{ $t("There's no expiring rents for this month") }}</p>
           </section>
         </article>
       </template>
     </NextPaymentsWidget>
     <NextPaymentsWidget
       v-else-if="selectedTab == 'next'"
-      endpoint="/api/invoices?filter[status]=~paid&"
+      :endpoint="expiringEndpoint"
+      :ranges="[]"
     >
       <template #title>
         <SectionNav
@@ -79,17 +87,17 @@ const expiredEndpoint = computed(() => {
           :sections="tabs"
         />
       </template>
-      <template v-slot:content="{ list: nextInvoices }">
-        <article class="py-4 space-y-4 my-2 h-[380px] overflow-auto ic-scroller">
-          <template v-if="nextInvoices.length">
-            <InvoiceCard v-for="invoice in nextInvoices" :invoice="invoice" />
+      <template v-slot:content="{ list: contracts }">
+        <article class="py-4 space-y-4 my-2 h-[380px] overflow-auto ic-scroller pr-4">
+          <template v-if="contracts.length">
+            <ContractCardMini v-for="contract in contracts" :contract="contract" />
           </template>
           <section
             v-else
             class="flex text-body-1 flex-col justify-center items-center w-full"
           >
             <IMdiNoteOff class="text-8xl" />
-            <p class="mt-8">No hay pagos realizados en este rango de fechas</p>
+            <p class="mt-8">{{ $t("There's no expiring rents within 3 months") }}</p>
           </section>
         </article>
       </template>
