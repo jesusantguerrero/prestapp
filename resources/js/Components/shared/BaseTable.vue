@@ -3,104 +3,60 @@ import { computed } from "vue";
 import CustomCell from "../customCell";
 import AppSearch from "./AppSearch/AppSearch.vue";
 import { useResponsive } from "@/utils/useResponsive";
+import { ElTable, ElTableColumn } from "element-plus";
 
 const { isMobile } = useResponsive();
 
-const props = defineProps({
-  selectable: {
-    type: Boolean,
-    default: false,
-  },
-  defaultExpandAll: {
-    type: Boolean,
-  },
-  showSummary: {
-    type: Boolean,
-  },
-  summaryMethod: {
-    type: [null, Function],
-  },
-  cols: {
-    type: Array,
-    required: true,
-  },
-  hiddenCols: {
-    type: [Array, null],
-  },
-  isLoading: {
-    type: Boolean,
-    default: false,
-  },
-  tableData: {
-    type: Array,
-  },
-  config: {
-    type: Object,
-    default() {
-      return {};
-    },
-  },
-  pagination: {
-    type: Object,
-    default() {
-      return {};
-    },
-  },
-  total: {
-    type: Number,
-  },
-  showPrepend: {
-    type: Boolean,
-    default: false,
-  },
-  showAppend: {
-    type: Boolean,
-    default: false,
-  },
-  emptyText: {
-    type: String,
-    default: "No data found",
-  },
-  hideEmptyText: {
-    type: Boolean,
-    default: false,
-  },
-  hideHeaders: {
-    type: Boolean,
-    default: false,
-  },
-  responsive: {
-    type: Boolean,
-    default: false,
-  },
-  tableClass: {
-    default: "px-4",
-  },
-  layout: {
-    type: String,
-    default: "table",
-  },
-});
+const props = withDefaults(
+  defineProps<{
+    selectable: boolean;
+    defaultExpandAll: boolean;
+    showSummary: boolean;
+    summaryMethod: null | Function;
+    cols: any[];
+    hiddenCols?: string[];
+    isLoading: boolean;
+    tableData: any[];
+    config: Record<string, any>;
+    pagination: Record<string, any>;
+    total: number;
+    showPrepend?: boolean;
+    showAppend: boolean;
+    emptyText: string;
+    hideEmptyText: boolean;
+    hideHeaders: boolean;
+    responsive: boolean;
+    tableClass: string;
+    layout: string;
+  }>(),
+  {
+    tableClass: "px-4",
+    layout: "table",
+  }
+);
 
 const getHeaderClass = (row: Record<string, any>) => {
   return row.headerClass;
 };
 
 const visibleCols = computed(() => {
-  return !props.hiddenCols
-    ? props.cols
-    : props.cols.filter((col) => !props.hiddenCols.includes(col.name));
+  return props.hiddenCols
+    ? props.cols.filter((col) => !props.hiddenCols?.includes(col.name))
+    : props.cols;
 });
 </script>
 
 <template>
   <section>
-    <section class="flex justify-between items-center" :class="{ 'py-4': config.search }">
-      <div class="w-full px-4" v-if="config.search">
+    <section
+      class="flex justify-between items-center"
+      :class="{ 'py-4': config?.search }"
+    >
+      <div class="w-full px-4" v-if="config?.search">
         <AppSearch class="w-96" v-model="pagination.search" @search="$emit('search')" />
       </div>
       <ElPagination
-        v-if="config.pagination"
+        v-if="config?.pagination"
         class="w-full flex justify-end pr-4 py-4"
         background
         @current-change="$emit('paginate', $event)"
@@ -117,7 +73,9 @@ const visibleCols = computed(() => {
         class="space-y-2"
         v-if="layout == 'grid' || (responsive && $slots.card && isMobile)"
       >
-        <slot name="card" :row="row" v-for="row in tableData"></slot>
+        <slot name="card" :row="row" v-for="row in tableData">
+          <span>Hola</span>
+        </slot>
       </div>
       <ElTable
         v-else
@@ -164,7 +122,7 @@ const visibleCols = computed(() => {
         </ElTableColumn>
       </ElTable>
     </section>
-    <section class="flex justify-between items-center py-4" v-if="config.pagination">
+    <section class="flex justify-between items-center py-4" v-if="config?.pagination">
       <div class="w-full"></div>
       <div class="w-full flex justify-end">
         <ElPagination

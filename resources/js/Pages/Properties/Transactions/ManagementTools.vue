@@ -23,6 +23,7 @@ import {
 } from "@/Modules/clients/clientInteractions";
 import { ElMessageBox } from "element-plus";
 import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
+import axios from "axios";
 
 const props = defineProps({
   invoices: {
@@ -138,7 +139,7 @@ interface InvoiceResponse {
 const selectedInvoice = ref<InvoiceResponse | null>(null);
 
 const { customPrint } = usePrint();
-const isPrinting = ref(false);
+const isPrinting = ref<number | boolean>(false);
 function printExternal(invoice: IInvoice) {
   isPrinting.value = invoice.id;
   axios
