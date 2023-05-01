@@ -20,7 +20,7 @@ import {
   clientInteractions,
   InteractionsState,
 } from "@/Modules/clients/clientInteractions";
-import { ElCollapse, ElMessageBox } from "element-plus";
+import { ElMessageBox } from "element-plus";
 import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
 import { useServerSearch } from "@/utils/useServerSearch";
 import { toRefs } from "@vueuse/shared";
@@ -256,8 +256,8 @@ router.on("finish", () => {
       </PropertySectionNav>
     </template>
 
-    <div class="py-10 mx-auto sm:px-6 lg:px-8">
-      <section class="flex space-x-4">
+    <div class="pt-16 md:py-10 mx-auto sm:px-6 lg:px-8">
+      <section class="md:flex md:space-x-4">
         <AtBackgroundIconCard
           class="w-full bg-white border h-28 text-body-1"
           title="Pagado"

@@ -17,6 +17,8 @@ import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
 import { IServerSearchData, useServerSearch } from "@/utils/useServerSearch";
 import { ElMessageBox } from "element-plus";
 import { rentStatus } from "@/Modules/properties/constants";
+import ContractCardMini from "@/Components/templates/ContractCardMini.vue";
+import { useResponsive } from "@/utils/useResponsive";
 
 interface IPaginatedData {
   data: IRent[];
@@ -46,7 +48,8 @@ const {
 );
 
 const filters = ref({
-  status: rentStatus.find((status) => status.name === searchState.filters.status) ??
+  status:
+    rentStatus.find((status) => status.name === searchState.filters.status) ??
     rentStatus[0],
   endDate: null,
 });
@@ -107,6 +110,8 @@ const deleteRent = async (rent: IRent) => {
     });
   }
 };
+
+const { isMobile } = useResponsive();
 </script>
 
 <template>
@@ -115,7 +120,7 @@ const deleteRent = async (rent: IRent) => {
       <PropertySectionNav />
     </template>
 
-    <main class="py-16">
+    <main class="py-16 -mx-4">
       <section class="flex space-x-4">
         <AppSearch
           v-model.lazy="searchState.search"
@@ -143,9 +148,9 @@ const deleteRent = async (rent: IRent) => {
           track-by="text"
           @update:model-value="setRange('end_date', $event.range)"
         />
-        <AppButton @click="router.visit(route('rents.create'))"
-          >Agregar Contrato</AppButton
-        >
+        <AppButton @click="router.visit(route('rents.create'))" v-if="!isMobile">
+          Agregar Contrato
+        </AppButton>
       </section>
       <AtTable
         class="mt-4 bg-white rounded-md text-body-1"
@@ -153,11 +158,15 @@ const deleteRent = async (rent: IRent) => {
         :cols="cols"
         :pagination="searchState"
         :total="rents.total"
+        responsive
         @search="executeSearch"
         @paginate="paginate"
         @size-change="changeSize"
         :config="tableConfig"
       >
+        <template v-slot:card="{ row }">
+          <ContractCardMini :contract="row" class="mb-6 border-b py-6" />
+        </template>
         <template v-slot:actions="{ scope: { row } }" class="flex">
           <div class="flex items-center justify-end">
             <UnitTag :status="row.status" />
