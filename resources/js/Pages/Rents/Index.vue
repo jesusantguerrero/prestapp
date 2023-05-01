@@ -120,7 +120,7 @@ const { isMobile } = useResponsive();
       <PropertySectionNav />
     </template>
 
-    <main class="py-16 -mx-4">
+    <main class="py-16 -mx-4 md:mx-0">
       <section class="flex space-x-4">
         <AppSearch
           v-model.lazy="searchState.search"

@@ -56,13 +56,13 @@ const visibleCols = computed(() => {
         <AppSearch class="w-96" v-model="pagination.search" @search="$emit('search')" />
       </div>
       <ElPagination
-        v-if="config?.pagination"
+        v-if="config?.pagination && pagination"
         class="w-full flex justify-end pr-4 py-4"
         background
         @current-change="$emit('paginate', $event)"
         @size-change="$emit('size-change', $event)"
         layout="total,prev, pager, next,sizes"
-        :current-page="pagination.page"
+        :current-page="pagination?.page"
         :page-sizes="[10, 20, 50, 100, 200]"
         :page-size="pagination.limit"
         :total="total"
@@ -122,7 +122,10 @@ const visibleCols = computed(() => {
         </ElTableColumn>
       </ElTable>
     </section>
-    <section class="flex justify-between items-center py-4" v-if="config?.pagination">
+    <section
+      class="flex justify-between items-center py-4"
+      v-if="config?.pagination && pagination"
+    >
       <div class="w-full"></div>
       <div class="w-full flex justify-end">
         <ElPagination
@@ -130,7 +133,7 @@ const visibleCols = computed(() => {
           background
           @current-change="$emit('paginate', $event)"
           @size-change="$emit('size-change', $event)"
-          :current-page="pagination.page"
+          :current-page="pagination?.page"
           layout="total,prev, pager, next,sizes"
           :page-sizes="[10, 20, 50, 100, 200]"
           :page-size="pagination.limit"
