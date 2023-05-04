@@ -4,7 +4,7 @@ import { AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { computed, reactive, toRefs, onMounted } from "vue";
 // @ts-ignore
 import IconTrash from "@/Components/icons/IconTrash.vue";
-import AtTable from "@/Components/Shared/BaseTable.vue";
+import BaseTable from "@/Components/AtTable.vue";
 import cols from "./cols";
 
 const props = defineProps({
@@ -48,7 +48,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["taxes-updated"]);
+const emit = defineEmits(["taxes-updated", "deleted"]);
 
 const state = reactive({
   cleaveOptions: {
@@ -90,7 +90,7 @@ const addRow = () => {
     });
 };
 
-const removeRow = (index, row) => {
+const removeRow = (index: number, row: any) => {
   const isConfirmed = confirm("Do you want to delete this?");
   if (!isConfirmed) {
     return;
@@ -100,17 +100,19 @@ const removeRow = (index, row) => {
   emit("deleted", deleted);
 };
 
-const setTax = (rowIndex, taxIndex, taxName) => {
-  const itemRow = props.tableData[rowIndex];
-  const tax = props.availableTaxes.find((availableTax) => taxName == availableTax.name);
+const setTax = (rowIndex: number, taxIndex: number, taxName: string) => {
+  const itemRow: any = props.tableData[rowIndex];
+  const tax = props.availableTaxes.find(
+    (availableTax: any) => taxName == availableTax.name
+  );
   itemRow.taxes[taxIndex] = tax;
   emit("taxes-updated", { rowIndex, taxes: itemRow.taxes });
 };
 
-const removeTax = (rowIndex, taxIndex) => {
-  const itemRow = props.tableData[rowIndex];
+const removeTax = (rowIndex: number, taxIndex: number) => {
+  const itemRow: any = props.tableData[rowIndex];
   if (itemRow.taxes.length > 1) {
-    const taxes = itemRow.taxes.filter((_tax, index) => index !== taxIndex);
+    const taxes = itemRow.taxes.filter((_tax: any, index: number) => index !== taxIndex);
     emit("taxes-updated", { rowIndex, taxes });
   }
 };
@@ -125,14 +127,14 @@ const { renderedCols, cleaveOptions } = toRefs(state);
 <template>
   <div class="w-full text-sm">
     <slot name="prepend" />
-    <AtTable
+    <BaseTable
       :hidden-cols="hiddenCols"
       :cols="renderedCols"
       :table-data="tableData"
       :hide-empty-text="true"
     >
       <template v-slot:concept="{ scope: { row, col } }">
-        <div class="d-flex">
+        <div class="d-flex py-2">
           <AtInput
             name=""
             v-model="row.concept"
@@ -219,7 +221,7 @@ const { renderedCols, cleaveOptions } = toRefs(state);
       <template v-slot:append v-if="isEditing">
         <button @click="addRow()" class="invoice-grid__add-row">Add Row</button>
       </template>
-    </AtTable>
+    </BaseTable>
   </div>
 </template>
 >

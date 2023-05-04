@@ -72,7 +72,7 @@ const clientTypes = [
   },
   {
     value: "owner",
-    label: "Propierario",
+    label: "Propietario",
   },
   {
     value: "tenant",

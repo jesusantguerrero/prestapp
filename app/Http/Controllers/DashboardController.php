@@ -58,8 +58,12 @@ class DashboardController extends Controller
       $endDate = now()->endOfYear()->format('Y-m-d');
       $monthPassedInYear = now()->diffInMonths(now()->startOfYear());
 
+      $filters = $request->query('filter');
+      [$startRange, $endRange] = $this->getFilterDates($filters);
+
+
       $propertyTotals = PropertyService::totalByStatusFor($teamId);
-      $rentTotals = RentService::invoiceByPaymentStatus($teamId);
+      $rentTotals = RentService::invoiceByPaymentStatus($teamId, $startRange, $endRange);
 
       return inertia('Dashboard/Properties',
       [
@@ -73,6 +77,7 @@ class DashboardController extends Controller
             "total" => Client::where('team_id', $teamId)->owner()->active()->count(),
             "paid" => Invoice::where('team_id', $teamId)
               ->category(PropertyInvoiceTypes::OwnerDistribution->value)
+              ->whereBetween('due_date', [$startRange, $endRange])
               ->paid()
               ->sum('total')
           ],

@@ -50,17 +50,23 @@ const selectedRangeValue = computed(() => {
   return props.ranges.find((range) => range.label === selectedRange.value).value;
 });
 
-const payments = ref([]);
+const results = ref([]);
+const isLoading = ref(false);
 
 const fetchRepayments = () => {
-  const rangeParams = getRangeParams(
-    props.dateField,
-    selectedRangeValue.value,
-    props.method
-  );
-  axios.get(`${props.endpoint}${rangeParams}`).then(({ data }) => {
-    payments.value = data.data;
-  });
+  const rangeParams = props.ranges.length
+    ? getRangeParams(props.dateField, selectedRangeValue.value, props.method)
+    : "";
+
+  isLoading.value = true;
+  axios
+    .get(`${props.endpoint}${rangeParams}`)
+    .then(({ data }) => {
+      results.value = data.data;
+    })
+    .finally(() => {
+      isLoading.value = false;
+    });
 };
 
 const onRangeChanged = (rangeLabel: string) => {
@@ -94,9 +100,12 @@ onMounted(() => {
       </section>
     </template>
     <template #content>
-      <slot name="content" :list="payments">
-        <InstallmentTable :installments="payments" :hidden-cols="['balance']" />
+      <slot name="content" :list="results" v-if="!isLoading">
+        <InstallmentTable :installments="results" :hidden-cols="['balance']" />
       </slot>
+      <div v-if="isLoading">
+        <ElSkeleton :rows="4" class="py-4" />
+      </div>
     </template>
   </WelcomeWidget>
 </template>

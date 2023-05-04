@@ -1,3 +1,12 @@
+<script lang="ts">
+import DashboardTemplate from "./Partials/DashboardTemplate.vue";
+import { computed } from "vue";
+
+export default {
+  layout: DashboardTemplate,
+};
+</script>
+
 <script lang="ts" setup>
 import BudgetProgress from "@/Components/BudgetProgress.vue";
 import IncomeSummaryWidget from "@/Pages/Dashboard/Partials/IncomeSummaryWidget.vue";
@@ -10,6 +19,7 @@ import PropertyInvoiceWidget from "./Partials/PropertyInvoiceWidget.vue";
 import NextPaymentsWidget from "../Loans/NextPaymentsWidget.vue";
 import PaymentsCard from "@/Components/PaymentsCard.vue";
 import { Link } from "@inertiajs/vue3";
+import RentsWidget from "./Partials/RentsWidget.vue";
 
 const props = defineProps({
   user: {
@@ -63,7 +73,7 @@ const propertyStats = [
   },
 ];
 
-const ownerStats = [
+const ownerStats = computed(() => [
   {
     label: "Total de propietarios",
     value: props.ownerStats?.total || 0,
@@ -72,7 +82,7 @@ const ownerStats = [
     label: "Pagado mes",
     value: formatMoney(props.ownerStats?.paid || 0),
   },
-];
+]);
 
 const comparisonRevenue = {
   headers: {
@@ -146,14 +156,6 @@ const interestPerformance = {
 };
 </script>
 
-<script lang="ts">
-import DashboardTemplate from "./Partials/DashboardTemplate.vue";
-
-export default {
-  layout: DashboardTemplate,
-};
-</script>
-
 <template>
   <main>
     <header class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
@@ -187,7 +189,7 @@ export default {
 
       <div class="text-body-1 w-full md:w-5/12">
         <WelcomeWidget
-          message="Distribucion a propierarios"
+          message="Distribucion a propietarios"
           class="text-body-1 w-full shadow-md"
           size="small"
           :cards="ownerStats"
@@ -281,6 +283,7 @@ export default {
           </div>
         </template>
       </WelcomeWidget>
+      <RentsWidget class="w-full mt-4" />
     </section>
   </main>
 </template>

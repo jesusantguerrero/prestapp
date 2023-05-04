@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onUnmounted, nextTick, onMounted, toRefs, provide } from "vue";
+import { ref, computed, onUnmounted, nextTick, onMounted, provide } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
 import { Head, Link } from "@inertiajs/vue3";
 // @ts-ignore
@@ -285,9 +285,9 @@ function refresh() {
         <main class="px-4 pt-0 mx-auto md:pt-8">
           <slot />
         </main>
-        <MobileMenuBar :menu="mobileMenu" @action="handleActions" />
       </template>
     </AppShell>
+    <MobileMenuBar :menu="mobileMenu" @action="handleActions" />
     <TheGlobals @reload="refresh" />
   </div>
 </template>

@@ -133,60 +133,52 @@ const removePayment = async (payment: Record<string, string>) => {
 </script>
 
 <template>
-  <section class="w-full py-2 rounded-md section">
+  <section class="w-full py-2 rounded-md simple-template relative">
     <div class="section-body">
-      <div class="pt-8 invoice__header">
-        <div class="flex w-full invoice-header-details">
-          <div class="flex justify-between px-4 w-full space-y-4 invoice-details">
-            <section class="flex items-center">
-              <div v-if="imageUrl" class="rounded-md">
-                <img :src="imageUrl" class="w-96" />
-              </div>
-              <BusinessCard :business="businessData" class="w-full text-left" />
-            </section>
+      <header class="pt-4 print:pt-0 invoice__header text-sm">
+        <section class="flex justify-between px-4 w-full invoice-details">
+          <article class="flex w-full items-center">
+            <img :src="imageUrl" v-if="imageUrl" class="w-40 rounded-md" />
+            <BusinessCard :business="businessData" class="w-full text-left" />
+          </article>
 
-            <div class="w-full text-right">
-              <h4 class="px-5 text-primary text-2xl font-bold">
-                Factura {{ invoice.series }}-{{ invoice.number }}
-              </h4>
-              <h5 class="text-md">
-                <span class="font-bold">Concepto:</span> {{ invoice.concept }}
-              </h5>
-              <div>
-                <p>
-                  <span class="font-bold">Fecha</span>
-                  {{ formatDate(invoice.date) }}
-                </p>
-                <p>
-                  <span class="font-bold">Fecha Limite</span>
-                  {{ formatDate(invoice.due_date) }}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+          <article class="w-full text-right">
+            <h4 class="px-5 text-primary text-2xl font-bold">
+              Factura {{ invoice.series }}-{{ invoice.number }}
+            </h4>
+            <h5 class="text-md">
+              <span class="font-bold">Concepto:</span> {{ invoice.concept }}
+            </h5>
+            <p>
+              <span class="font-bold">Fecha</span>
+              {{ formatDate(invoice.date) }}
+            </p>
+            <p>
+              <span class="font-bold">Fecha Limite</span>
+              {{ formatDate(invoice.due_date) }}
+            </p>
+          </article>
+        </section>
 
-        <div class="flex px-4 mt-4 space-x-4">
-          <div class="w-8/12 text-left">
-            <ClientCard label="Cliente" :client="client" />
-          </div>
-        </div>
-      </div>
+        <section class="flex px-4 space-x-4">
+          <ClientCard class="w-8/12 text-left" label="Cliente" :client="client" />
+        </section>
+      </header>
 
       <InvoiceGrid
         :tableData="tableData"
         :is-editing="false"
         :hidden-cols="['quantity', 'discount']"
-        class="mt-10 main-grid w-full"
+        class="mt-5 main-grid w-full"
       >
         <template #prepend>
-          <div class="text-body-1 font-bold text-center text-lg py-1">
+          <div class="text-body-1 font-bold text-center text-base py-1">
             {{ invoice.concept }} {{ invoice.description }}
           </div>
         </template>
       </InvoiceGrid>
 
-      <div class="flex justify-end px-4 mt-10 text-gray-600">
+      <div class="flex justify-end px-4 mt-5 text-gray-600">
         <InvoiceTotals
           :tableData="tableData"
           :subtotal-field="totals.subtotalField"
@@ -202,7 +194,10 @@ const removePayment = async (payment: Record<string, string>) => {
         />
       </div>
 
-      <div class="flex text-center invoice-footer-details mt-14" v-if="invoice.id">
+      <div
+        class="flex text-center invoice-footer-details mt-14 text-sm"
+        v-if="invoice.id"
+      >
         <div class="w-full text-gray-600">
           <p class="font-bold text-gray-600">Gracias por su preferencia!</p>
           <div class="mt-5 font-bold text-gray-600" v-if="invoice.type == 'INVOICE'">
@@ -277,11 +272,13 @@ const removePayment = async (payment: Record<string, string>) => {
     @apply text-white;
   }
   .el-table__body-wrapper td {
-    font-size: 1.5em !important;
+    font-size: 0.8em !important;
   }
 }
 
 .invoice-totals {
+  font-size: 12px;
+
   &__add-payment {
     width: 100%;
     height: 34px;
@@ -328,7 +325,7 @@ const removePayment = async (payment: Record<string, string>) => {
   margin-bottom: 15px;
 }
 
-section {
+.simple-template {
   padding-bottom: 25px;
   background: white;
 }
@@ -337,14 +334,14 @@ section {
 <style lang="scss">
 .main-grid {
   .el-table__body-wrapper td {
-    font-size: 1.2em !important;
+    font-size: 1em !important;
   }
 }
 
 .stamp {
   transform: rotate(12deg);
   color: #555;
-  font-size: 3rem;
+  font-size: 2rem;
   font-weight: 700;
   border: 0.25rem solid #555;
   display: inline-block;
@@ -355,6 +352,9 @@ section {
   -webkit-mask-image: url("/grunge.png");
   -webkit-mask-size: 944px 604px;
   mix-blend-mode: multiply;
+  position: absolute;
+  top: 120px;
+  right: 25px;
 }
 
 .is-approved {
@@ -362,7 +362,7 @@ section {
   border: 0.5rem solid #0a9928;
   -webkit-mask-position: 13rem 6rem;
   transform: rotate(-14deg);
-  font-size: 2.5rem;
+  font-size: 2rem;
   border-radius: 0;
 }
 

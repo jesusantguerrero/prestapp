@@ -13,6 +13,7 @@ class GenerateInvoices {
 
     public static function scheduledRents() {
       $rentWithInvoicesToCreate = Rent::whereRaw('MONTHNAME(next_invoice_date) = MONTHNAME(curdate())')
+      ->orWhereRaw("DATE_ADD(curdate(), INTERVAL COALESCE(5, 0) DAY) < next_invoice_date")
       ->whereNotIn('status', [Rent::STATUS_CANCELLED, Rent::STATUS_PAID])
       ->get();
 
