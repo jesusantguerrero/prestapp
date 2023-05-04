@@ -227,7 +227,7 @@ const onDelete = async (invoice: IInvoice) => {
         />
         <BaseSelect
           class="min-w-max"
-          :size="large"
+          size="large"
           :options="owners"
           placeholder="Filtrar por dueño"
           v-model="filters.owner"

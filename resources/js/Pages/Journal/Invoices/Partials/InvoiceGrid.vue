@@ -4,7 +4,7 @@ import { AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { computed, reactive, toRefs, onMounted } from "vue";
 // @ts-ignore
 import IconTrash from "@/Components/icons/IconTrash.vue";
-import BaseTable from "@/Components/shared/BaseTable.vue";
+import BaseTable from "@/Components/AtTable.vue";
 import cols from "./cols";
 
 const props = defineProps({
@@ -134,7 +134,7 @@ const { renderedCols, cleaveOptions } = toRefs(state);
       :hide-empty-text="true"
     >
       <template v-slot:concept="{ scope: { row, col } }">
-        <div class="d-flex">
+        <div class="d-flex py-2">
           <AtInput
             name=""
             v-model="row.concept"

@@ -15,8 +15,9 @@ export default [
     headerClass: 'text-left',
     render(row: any) {
       const date = row.concept?.slice(-10);
-      const dateString = formatDate(date, 'MMMM') ?? ''
-      return `${row.concept} ${dateString}`
+      const dateString = formatDate(date, 'dd MMMM') ?? ''
+      const concept = dateString ? row.concept?.slice(0, -10) : row.concept
+      return `${concept} ${dateString}`
     }
   },
   {
