@@ -73,6 +73,10 @@ const visibleCols = computed(() => {
           :key="col.name"
           class="px-2 py-4"
           :class="[col.headerClass]"
+          :style="{
+            width: `${col.width}px`,
+            maxWidth: `${col.maxWidth}px`,
+          }"
         >
           {{ col.label }}
         </th>
@@ -94,11 +98,7 @@ const visibleCols = computed(() => {
         <td
           v-for="col in visibleCols"
           :key="col.name"
-          class="h-full align-baseline bg-red-400 border border-white"
-          :style="{
-            width: `${col.width}px`,
-            maxWidth: `${col.maxWidth}px`
-          }"
+          class="h-full align-baseline border border-white"
         >
           <div class="my-auto" :class="col.class">
             <slot
@@ -111,11 +111,7 @@ const visibleCols = computed(() => {
                 $index: index,
               }"
             >
-              <div v-if="col.type == 'calc'" :class="col.class">
-                {{ col.formula(data) }}
-              </div>
-
-              <div v-else-if="col.type == 'money'" :class="col.class">
+              <div v-if="col.type == 'money'" :class="col.class">
                 {{ formatMoney(data[col.name]) }}
               </div>
 

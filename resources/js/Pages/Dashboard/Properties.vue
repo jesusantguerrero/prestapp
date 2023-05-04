@@ -1,5 +1,6 @@
 <script lang="ts">
 import DashboardTemplate from "./Partials/DashboardTemplate.vue";
+import { computed } from "vue";
 
 export default {
   layout: DashboardTemplate,
@@ -72,7 +73,7 @@ const propertyStats = [
   },
 ];
 
-const ownerStats = [
+const ownerStats = computed(() => [
   {
     label: "Total de propietarios",
     value: props.ownerStats?.total || 0,
@@ -81,7 +82,7 @@ const ownerStats = [
     label: "Pagado mes",
     value: formatMoney(props.ownerStats?.paid || 0),
   },
-];
+]);
 
 const comparisonRevenue = {
   headers: {
@@ -188,7 +189,7 @@ const interestPerformance = {
 
       <div class="text-body-1 w-full md:w-5/12">
         <WelcomeWidget
-          message="Distribucion a propierarios"
+          message="Distribucion a propietarios"
           class="text-body-1 w-full shadow-md"
           size="small"
           :cards="ownerStats"

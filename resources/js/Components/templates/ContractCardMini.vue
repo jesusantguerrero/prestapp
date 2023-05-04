@@ -1,8 +1,6 @@
 <script lang="ts" setup>
 import { formatDate, formatMoney } from "@/utils";
 
-import InvoicePaymentOptions from "./InvoicePaymentOptions.vue";
-
 import { getStatus, getStatusIcon } from "@/Modules/invoicing/constants";
 import { IRent } from "@/Modules/properties/propertyEntity";
 import IconMarker from "../icons/IconMarker.vue";
@@ -16,7 +14,7 @@ defineProps<{
 </script>
 
 <template>
-  <article class="flex justify-between text-sm text-body-1">
+  <article class="md:flex justify-between text-sm text-body-1">
     <header>
       <h4 class="flex flex-col font-bold">
         <Link class="text-body-1/80 group" :href="`/rents/${contract.id}`">
@@ -29,8 +27,11 @@ defineProps<{
             </span>
           </article>
         </Link>
-        <article class="flex space-x-2">
-          <Link :href="`/properties/${contract.property_id}`" class="group">
+        <article class="md:flex md:space-x-2 mt-2 md:mt-0">
+          <Link
+            :href="`/properties/${contract.property_id}`"
+            class="group text-xs md:text-sm"
+          >
             <section class="flex">
               <IconMarker class="mr-2 group-hover:text-primary" />
               <span
@@ -40,8 +41,11 @@ defineProps<{
               </span>
             </section>
           </Link>
-          <IMdiChevronRight />
-          <Link :href="`/contacts/${contract.owner_id}/owner`" class="group">
+          <IMdiChevronRight class="hidden md:inline-block" />
+          <Link
+            :href="`/contacts/${contract.owner_id}/owner`"
+            class="group text-xs md:text-sm"
+          >
             <section class="flex">
               <IMdiUsers class="mr-2 group-hover:text-primary" />
               <span
@@ -51,7 +55,7 @@ defineProps<{
             </section>
           </Link>
         </article>
-        <div class="font-bold mt-1">
+        <div class="font-bold mt-4 md:mt-1 flex justify-between md:block">
           <span class="capitalize"> {{ $t("duration") }}: </span>
           <span class="text-primary">
             {{ formatDate(contract.date) }} -
@@ -60,7 +64,7 @@ defineProps<{
         </div>
       </h4>
     </header>
-    <section class="font-bold text-right">
+    <section class="flex justify-between md:block font-bold text-right">
       <p class="flex space-x-2 justify-end items-center">
         <slot name="header-actions" />
         <span class="text-success">
