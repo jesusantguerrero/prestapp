@@ -1,6 +1,8 @@
 <script lang="ts">
 import DashboardTemplate from "./Partials/DashboardTemplate.vue";
 import { computed } from "vue";
+import { addMonths, startOfYear, startOfMonth } from "date-fns";
+import { useI18n } from "vue-i18n";
 
 export default {
   layout: DashboardTemplate,
@@ -8,19 +10,30 @@ export default {
 </script>
 
 <script lang="ts" setup>
+import { Link } from "@inertiajs/vue3";
+
 import BudgetProgress from "@/Components/BudgetProgress.vue";
 import IncomeSummaryWidget from "@/Pages/Dashboard/Partials/IncomeSummaryWidget.vue";
 import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
-
-import { formatMoney } from "@/utils/formatMoney";
 import ChartBar from "./Partials/ChartBar.vue";
-import { config } from "@/config";
 import PropertyInvoiceWidget from "./Partials/PropertyInvoiceWidget.vue";
 import NextPaymentsWidget from "../Loans/NextPaymentsWidget.vue";
 import PaymentsCard from "@/Components/PaymentsCard.vue";
-import { Link } from "@inertiajs/vue3";
 import RentsWidget from "./Partials/RentsWidget.vue";
 
+import { formatMoney } from "@/utils/formatMoney";
+import { config } from "@/config";
+
+const getMonthsOfYear = (locale = "es-ES") => {
+  const startDate = startOfYear(new Date());
+  return [...Array(12).keys()].map((monthIndex) => {
+    return new Intl.DateTimeFormat(locale, {
+      month: "short",
+    }).format(startOfMonth(addMonths(startDate, monthIndex)));
+  });
+};
+
+const { t } = useI18n();
 const props = defineProps({
   user: {
     type: Object,
@@ -103,12 +116,16 @@ const comparisonRevenue = {
       blur: 1,
       opacity: 0.5,
     },
-    colors: ["#fa6b88", "#80CDFE"],
+    colors: ["#68B7F2", "#80CDFE"],
   },
   series: [
     {
-      name: "current year",
+      name: t("Income"),
       data: props.revenue.map((item: Record<string, any>) => item.income ?? 0),
+    },
+    {
+      name: t("Expense"),
+      data: props.revenue.map((item: Record<string, any>) => item.outcome ?? 0),
     },
   ],
 };
@@ -221,7 +238,9 @@ const interestPerformance = {
             title="Flujo de efectivo"
             description="Movimiento de efectivo del año por mes en cuenta de inmobiliaria"
             class="order-2 mt-4 lg:w-full lg:mt-0 lg:order-1 shadow-md"
+            type="bar"
             :style="{ height: '350px' }"
+            :labels="getMonthsOfYear()"
             :chart="comparisonRevenue"
             :headerInfo="comparisonRevenue.headers"
           />

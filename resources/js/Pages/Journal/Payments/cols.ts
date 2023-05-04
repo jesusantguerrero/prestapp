@@ -1,43 +1,33 @@
 export default [
     {
         label: "Date",
-        name: "date",
+        name: "payment_date",
         width: 200,
     },
     {
         label: "Concept",
         name: "concept",
-        width: 300,
-    },
-    {
-        label: "Order No.",
-        name: "order_number",
-        width: 300,
+        width: 360,
     },
     {
         label: "Client",
         name: "client_name",
+        align: 'center',
+        class: 'text-center',
         width: 300,
-    },
-    {
-        label: "Status",
-        name: "status",
-        width: 200,
+        render(row: Record<string, any>) {
+          return row.payable?.client?.display_name ?? "--"
+        }
     },
     {
         label: "Total",
         name: "total",
-        type: 'money'
-    },
-    {
-        label: "Balance Due",
-        name: "debt",
-        type: 'money'
+        type: 'money',
+        width: 130,
     },
     {
         label: "",
         name: "actions",
-        width: 300,
         type: "custom",
     },
 ];

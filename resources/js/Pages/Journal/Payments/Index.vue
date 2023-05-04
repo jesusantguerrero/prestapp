@@ -1,19 +1,83 @@
+<script setup lang="ts">
+import { AtButton, AtBackgroundIconCard, AtDatePager } from "atmosphere-ui";
+import AppButton from "@/Components/shared/AppButton.vue";
+import AppLayout from "@/Components/templates/AppLayout.vue";
+import { toRefs } from "vue";
+
+import cols from "./cols";
+import AtTable from "@/Components/shared/BaseTable.vue";
+import { formatMoney, formatDate } from "@/utils";
+import { useServerSearch } from "@/utils/useServerSearch";
+
+const props = defineProps({
+  payments: {
+    type: Array,
+  },
+  categories: {
+    type: Array,
+  },
+  income: Number,
+  outgoing: Number,
+  total: Number,
+  serverSearchOptions: Object,
+});
+
+const { serverSearchOptions } = toRefs(props);
+const { executeSearchWithDelay, updateSearch, state: pageState } = useServerSearch(
+  serverSearchOptions,
+  (urlParams: string) => {
+    updateSearch(`${location.pathname}?${urlParams}`);
+  },
+  {
+    manual: true,
+  }
+);
+</script>
+
 <template>
   <AppLayout title="Pagos">
     <template #header>
       <div class="flex justify-between items-center px-5 py-1">
         <div class="font-bold">Account Filter:</div>
-        <div class="text-right space-x-2">
-          <AppButton variant="secondary" @click="$inertia.visit('invoices/create')">
-            Crear Factura
-          </AppButton>
-        </div>
+        <section class="flex items-center space-x-2">
+          <div class="text-right space-x-2">
+            <AppButton variant="secondary" @click="$inertia.visit('invoices/create')">
+              Crear Factura
+            </AppButton>
+          </div>
+          <AtDatePager
+            class="w-full h-12 border-none bg-base-lvl-1 text-body"
+            v-model:startDate="pageState.dates.startDate"
+            v-model:endDate="pageState.dates.endDate"
+            @change="executeSearchWithDelay()"
+            controlsClass="bg-transparent text-body hover:bg-base-lvl-1"
+            next-mode="month"
+          />
+        </section>
       </div>
     </template>
     <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
+      <section class="flex space-x-4">
+        <AtBackgroundIconCard
+          class="w-full bg-white border h-28 text-body-1"
+          :title="$t('Incoming')"
+          :value="formatMoney(income ?? 0)"
+        />
+        <AtBackgroundIconCard
+          class="w-full bg-white border h-28 text-body-1"
+          :title="$t('Outgoing')"
+          :value="formatMoney(outgoing ?? 0)"
+        />
+        <AtBackgroundIconCard
+          class="w-full bg-white border h-28 text-body-1"
+          :title="$t('Month Balance')"
+          :value="formatMoney(total || 0)"
+        />
+      </section>
+
       <div class="mt-5 rounded-md bg-white">
         <div class="w-full">
-          <AtTable :cols="cols" :tableData="invoices.data" :show-prepend="true">
+          <AtTable :cols="cols" :tableData="payments.data" :show-prepend="true">
             <!-- Table Data -->
             <template v-slot:date="{ scope: { row } }">
               <div>
@@ -56,7 +120,7 @@
             <template v-slot:actions="{ scope: { row } }">
               <div class="space-x-2 flex">
                 <AtButton
-                  @click="$inertia.visit(`invoices/${row.id}/edit`)"
+                  @click="$inertia.visit(`payments/${row.id}/edit`)"
                   class="rounded-full text-gray-400 hover:text-green-400 w-8 h-8"
                 >
                   <i class="fa fa-edit"></i>
@@ -73,56 +137,6 @@
     </div>
   </AppLayout>
 </template>
-
-<script setup>
-import { ElNotification } from "element-plus";
-import { AtButton, AtTable } from "atmosphere-ui";
-import AppButton from "@/Components/shared/AppButton.vue";
-import AppLayout from "@/Components/templates/AppLayout.vue";
-
-import cols from "./cols";
-import { format } from "date-fns";
-import { formatMoney, formatDate } from "@/utils";
-
-const props = defineProps({
-  invoices: {
-    type: Array,
-  },
-  categories: {
-    type: Array,
-  },
-});
-
-const isAccountDialogVisible = false;
-const selectedAccount = null;
-const showAdd = false;
-const isIncome = false;
-const isLoading = false;
-const formData = {};
-const searchText = "";
-const activeName = [];
-const activeAccountSection = "";
-const accountsCategories = [];
-
-function rowClick(command, service) {
-  switch (command) {
-    case "edit":
-      this.editAccount(service);
-      break;
-    default:
-      break;
-  }
-}
-
-function setRequestData(data) {
-  const requestData = {
-    ...data,
-  };
-  requestData.direction = this.isIncome ? "DEPOSIT" : "WITHDRAW";
-  requestData.resource_type_id = "MANUAL";
-  return requestData;
-}
-</script>
 
 <style lang="scss" scoped>
 .body-section {

@@ -122,5 +122,8 @@
     "Save payment": "Efectuar pago",
     "Delete": "Eliminar",
     "Update payment": "Actualizar pago",
-    "regenerate": "Re-generar"
+    "regenerate": "Re-generar",
+    "Pending balance": "Balance pendiente",
+    "Paid": "Pagado",
+    "Total": "Total"
   }

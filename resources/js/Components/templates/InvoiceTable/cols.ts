@@ -4,6 +4,7 @@ export default [
     {
         label: "Concept",
         name: "concept",
+        width: 400,
     },
     {
       label: "Fecha",
