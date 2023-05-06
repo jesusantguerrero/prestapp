@@ -89,7 +89,7 @@ const { executeSearchWithDelay, updateSearch, state: pageState } = useServerSear
               <div
                 class="border-dashed border-b border-blue-400 text-blue-400 cursor-pointer capitalize text-md"
               >
-                {{ row.concept }}
+                {{ row.concept }} {{ row.id }}
                 <span class="font-bold text-gray-300">
                   {{ row.series }} #{{ row.number }}
                 </span>

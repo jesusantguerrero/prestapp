@@ -16,14 +16,18 @@ class PaymentController
       $filters = $request->query('filter');
 
       [$startDate, $endDate] = $this->getFilterDates($filters);
+      $direction = $filters["direction"] ?? null;
 
       $payments = Payment::where([
         'team_id' => $request->user()->currentTeam->id
       ])
       // ->byClient($clientId)
-      ->with(['payable', 'payable.client', 'transaction'])
+      ->with(['payable', 'payable.client', 'transaction', 'account'])
       ->orderByDesc('payment_date')
       ->whereBetween('payment_date', [$startDate, $endDate])
+      ->when($direction, fn ($q) => $q->whereHas('transaction', function ($query) use ($direction) {
+        $query->where('direction', $direction == 'credit' ? Transaction::DIRECTION_CREDIT : Transaction::DIRECTION_DEBIT);
+      }))
       ->paginate(200);
 
         return inertia(config('journal.payments_inertia_path') . '/Index', [

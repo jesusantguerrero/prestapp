@@ -64,7 +64,7 @@ watch(
           {{ tabName }}
         </div>
       </section>
-      <div class="w-full py-2 mt-4">
+      <div class="w-full py-2 mt-4 h-64 overflow-auto">
         <div v-for="item in tabsWithResults[state.selectedTab]">
           <SearchListItem :item="item" />
         </div>

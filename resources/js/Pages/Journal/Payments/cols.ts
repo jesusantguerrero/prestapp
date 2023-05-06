@@ -2,12 +2,22 @@ export default [
     {
         label: "Date",
         name: "payment_date",
-        width: 200,
+        width: 120,
     },
     {
         label: "Concept",
         name: "concept",
         width: 360,
+    },
+    {
+        label: "Cuenta",
+        name: "account",
+        align: 'center',
+        class: 'text-center',
+        width: 300,
+        render(row: Record<string, any>) {
+          return row.account?.alias ?? row.account?.name ?? "--"
+        }
     },
     {
         label: "Client",

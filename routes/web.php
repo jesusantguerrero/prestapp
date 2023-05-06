@@ -91,6 +91,7 @@ Route::middleware([
 
     // Reports
     Route::get('/statements/{category}', [ReportController::class, 'statements'])->name('statements.category');
+    Route::get('/reports/payments', [ReportController::class, 'payments'])->name('report.payments');
     Route::get('/reports/{category}', [ReportController::class, 'category'])->name('report.category');
     // invoicing
     Route::get('/payments', PaymentController::class);

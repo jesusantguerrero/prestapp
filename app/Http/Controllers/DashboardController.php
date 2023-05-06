@@ -16,6 +16,7 @@ use App\Http\Controllers\Traits\HasEnrichedRequest;
 use Illuminate\Http\Request;
 use Insane\Journal\Helpers\ReportHelper;
 use Insane\Journal\Models\Core\Account;
+use Insane\Journal\Models\Core\Payment;
 use Insane\Journal\Models\Invoice\Invoice;
 
 class DashboardController extends Controller
@@ -67,7 +68,14 @@ class DashboardController extends Controller
 
       return inertia('Dashboard/Properties',
       [
-          "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId, ['real_state'] ,$startDate, $endDate, null)->all(), now()->format('Y')),
+          "revenue" => $reportHelper->mapInMonths($reportHelper->getAccountTransactionsByMonths($teamId,
+            ["real_state"] ,
+            $startDate,
+            $endDate,
+            'months',
+            Payment::class)->all(),
+            now()->format('Y')
+          ),
           "stats" => [
             "total" => $propertyTotals->sum(),
             "available" => $propertyTotals->get(Property::STATUS_AVAILABLE),
