@@ -1,4 +1,13 @@
 {
+  "commons": {
+    "ACTIVE": "ACTIVE",
+    "INACTIVE": "INACTIVE",
+    "LATE": "LATE",
+    "new": "New"
+  },
+  "validation": {
+    "unique": ""
+  },
   "loans": {
       "errors": {
         "hasPayments": "This loan already has payments and can't be deleted"

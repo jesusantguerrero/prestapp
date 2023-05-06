@@ -8,6 +8,7 @@
     "validation": {
       "unique": ""
     },
+    "Welcome": "Hola",
     "Home": "Inicio",
     "Loans": "Prestamos",
     "Properties": "Propiedades",
