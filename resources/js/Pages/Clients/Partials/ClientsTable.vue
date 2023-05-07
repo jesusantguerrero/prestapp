@@ -13,10 +13,11 @@ import { getClientLink } from "@/Modules/clients/constants";
 
 const { t } = useI18n();
 
-defineProps<{
+const props = defineProps<{
   clients: IClient[] | IPaginatedData<IClient>;
   pagination: Object;
   total: number;
+  type: string;
 }>();
 
 const tableConfig = {
@@ -25,7 +26,7 @@ const tableConfig = {
   pagination: true,
 };
 
-const columns = cols(t);
+const columns = cols(t, props.type);
 
 getClientLink;
 </script>

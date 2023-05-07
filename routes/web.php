@@ -15,6 +15,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -90,8 +91,10 @@ Route::middleware([
 
     // Reports
     Route::get('/statements/{category}', [ReportController::class, 'statements'])->name('statements.category');
+    Route::get('/reports/payments', [ReportController::class, 'payments'])->name('report.payments');
     Route::get('/reports/{category}', [ReportController::class, 'category'])->name('report.category');
     // invoicing
+    Route::get('/payments', PaymentController::class);
     Route::resource('/invoices', InvoiceController::class);
     Route::post('/invoices/{id}/payment', [InvoiceController::class, 'addPayment']);
     Route::get('/invoices/{invoice}/print', [InvoiceController::class, 'print']);

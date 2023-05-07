@@ -10,6 +10,7 @@ const localesMessages = Object.fromEntries(
     }),
 )
 
+
 const i18n = createI18n({
   locale: 'es',
   fallbackLocale: 'en',
@@ -17,4 +18,34 @@ const i18n = createI18n({
   legacy: false,
 })
 
+export const getLocales = () => {
+  return Object.keys(import.meta.glob('../../../lang/*.json', { eager: true }))
+  .map((itemPath) => {
+    const yaml = itemPath.endsWith('.json')
+    const index = itemPath.lastIndexOf('/') + 1;
+    const name = itemPath.slice(index, yaml ? -5 : -4);
+
+    return {
+      id: name,
+      name
+    }
+  });
+}
+
+createI18n({
+  locale: 'es',
+  fallbackLocale: 'en',
+  messages: localesMessages,
+  legacy: false,
+})
+
 export default i18n;
+export const initWithLocale = (locale = 'es') => {
+  const i18n = createI18n({
+    locale,
+    fallbackLocale: 'en',
+    messages: localesMessages,
+    legacy: false,
+  })
+  return i18n;
+}

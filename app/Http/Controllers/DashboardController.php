@@ -16,6 +16,7 @@ use App\Http\Controllers\Traits\HasEnrichedRequest;
 use Illuminate\Http\Request;
 use Insane\Journal\Helpers\ReportHelper;
 use Insane\Journal\Models\Core\Account;
+use Insane\Journal\Models\Core\Payment;
 use Insane\Journal\Models\Invoice\Invoice;
 
 class DashboardController extends Controller
@@ -40,8 +41,8 @@ class DashboardController extends Controller
       [
           "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId, ['real_state', 'loans', 'real_state_operative'] ,$startYear, $endYear, null)->all(), now()->format('Y')),
           "stats" => AccountStatWidget::stats($teamId, $startDate, $endDate),
-          'accounts' => $reportHelper->getTransactionsByAccount($teamId, ['real_state', 'loan_business', 'loans'] ,null, null, 'display_id'),
-          'paidCommissions' => $reportHelper->smallBoxRevenue('real_state_operative', $teamId),
+          'accounts' => $reportHelper->getTransactionsByAccount($teamId, ['real_state', 'loan_business', 'loans'] ,$startDate, $endDate, 'display_id'),
+          'paidCommissions' => AccountStatWidget::balanceInPeriodFor('real_state_operative', $teamId, $startDate, $endDate),
           'dailyBox' => $reportHelper->smallBoxRevenue('loan_business', $teamId),
           'realState' => Account::where(['team_id' => $teamId, 'display_id' => 'real_state'])->first(),
           'section' => "general",
@@ -67,7 +68,14 @@ class DashboardController extends Controller
 
       return inertia('Dashboard/Properties',
       [
-          "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId, ['real_state'] ,$startDate, $endDate, null)->all(), now()->format('Y')),
+          "revenue" => $reportHelper->mapInMonths($reportHelper->getAccountTransactionsByMonths($teamId,
+            ["real_state"] ,
+            $startDate,
+            $endDate,
+            'months',
+            Payment::class)->all(),
+            now()->format('Y')
+          ),
           "stats" => [
             "total" => $propertyTotals->sum(),
             "available" => $propertyTotals->get(Property::STATUS_AVAILABLE),

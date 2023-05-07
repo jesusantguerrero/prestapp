@@ -206,14 +206,14 @@ export default {
     />
     <section class="w-full md:flex md:space-x-4">
       <div class="flex flex-col justify-between w-full md:w-9/12">
-        <WelcomeWidget message="Hola, " :username="user.name" class="shadow-sm">
+        <WelcomeWidget :message="$t('Performance of the month')" class="shadow-sm">
           <template #content>
             <section
               class="grid-rows-1 py-4 space-y-4 md:grid md:grid-cols-2 md:divide-x-2"
             >
               <SectionFooterCard
                 title="Ganancias netas"
-                :value="formatMoney(paidCommissions.balance)"
+                :value="formatMoney(paidCommissions.totalInPeriod)"
               >
                 <template #footer>
                   <p class="flex items-center text-xs text-success md:text-sm" rounded>

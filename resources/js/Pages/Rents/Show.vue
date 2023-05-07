@@ -115,7 +115,7 @@ const deleteRent = async (rent: IRent) => {
             variant="neutral"
             class="hover:bg-error hover:text-white"
             v-if="rents.status !== 'CANCELLED'"
-            @click="router.visit(`/clients/${rents.client_id}/rents/${rents.id}/end`)"
+            @click="router.visit(`/contacts/${rents.client_id}/tenants/rents/${rents.id}/end`)"
           >
             <IMdiFileDocumentRemove class="mr-2" />
             Terminar Contrato

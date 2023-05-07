@@ -12,7 +12,7 @@ import VueApexCharts from 'vue3-apexcharts';
 import VueMultiselect from 'vue-multiselect';
 import { vRipple } from './utils/vRipple';
 import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
-import i18n from './plugins/i18n.ts';
+import { initWithLocale} from './plugins/i18n.ts';
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
@@ -23,11 +23,14 @@ createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
     setup({ el, App, props, plugin }) {
+      // @ts-expect-error: will send this always
+        const locale = props.initialPage.props?.userSettings?.region_language ?? "en";
+
         return createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue, Ziggy)
             .use(ElementPlus)
-            .use(i18n)
+            .use(initWithLocale(locale))
             .use(VueApexCharts)
             .use(autoAnimatePlugin)
             .component('multiselect', VueMultiselect)

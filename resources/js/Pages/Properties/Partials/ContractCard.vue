@@ -22,7 +22,11 @@ defineProps<{
         <AppButton
           variant="inverse"
           v-if="contract.status !== 'CANCELLED'"
-          @click="router.visit(`/clients/${contract.client_id}/rents/${contract.id}/end`)"
+          @click="
+            router.visit(
+              `/contacts/${contract.client_id}/tenants/rents/${contract.id}/end`
+            )
+          "
         >
           Terminar Contrato
         </AppButton>

@@ -9,7 +9,7 @@ import { Link, router } from '@inertiajs/vue3';
 import UnitTitle from '@/Components/realState/UnitTitle.vue';
 import { formatMoney } from '@/utils';
 
-export default function (t: Function) {
+export default function (t: Function, defaultType = 'lender') {
   return [
     {
         name: 'client',
@@ -24,7 +24,7 @@ export default function (t: Function) {
             return h('div', { class: 'flex items-center space-x-2 px-4 text-sm' }, [
                 h(ElAvatar, { shape: 'circle', width: 20, height: 20, maxWidth: 20, maxHeight: 20 }, initials),
                 h('div', { class: 'ml-2 w-full text-left'},  [
-                  h(Link, {class: 'font-bold text-primary text-xs', href: getClientLink(row)}, clientName),
+                  h(Link, {class: 'font-bold text-primary text-xs', href: getClientLink(row, defaultType)}, clientName),
                   h('p', { class: 'text-body-1/80 text-sm'}, row.dni)
                 ]),
             ]);

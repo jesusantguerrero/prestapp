@@ -66,7 +66,7 @@ provide("isOnboardingOpen", isOnboardingOpen);
   <AppLayout :title="$t('Dashboard')">
     <main class="py-5 pt-0 mx-auto text-gray-500">
       <div class="flex justify-between mt-4 mb-4 md:mt-0">
-        <h4 class="hidden md:inline-block">Bienvenido, {{ user.name }}</h4>
+        <h4 class="hidden md:inline-block">{{ $t("Welcome") }}, {{ user.name }}</h4>
         <section class="flex space-x-4">
           <ButtonGroup
             v-if="isTeamApproved"

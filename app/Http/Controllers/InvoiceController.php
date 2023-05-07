@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Traits\HasEnrichedRequest;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -17,6 +18,8 @@ use Exception;
 
 class InvoiceController
 {
+    use HasEnrichedRequest;
+
     public function getRequestType() {
         return str_contains(request()->url(), 'bills') ? INVOICE::DOCUMENT_TYPE_BILL : INVOICE::DOCUMENT_TYPE_INVOICE;
     }
@@ -30,35 +33,44 @@ class InvoiceController
     public function index(Request $request)
     {
         $type = $this->getFilterType();
-        $filters = $request->query('filters');
-        $clientId = $filters ? $filters['client_id'] : null;
+        $filters = $request->query('filter');
+
+        [$startDate, $endDate] = $this->getFilterDates($filters);
+
+        $invoices = Invoice::where([
+          'team_id' => $request->user()->currentTeam->id
+      ])
+      // ->byClient($clientId)
+      ->whereIn('type', $type)
+      ->with(['invoiceAccount', 'invoiceAccount.category'])
+      ->orderByDesc('date')
+      ->orderByDesc('number')
+      ->whereBetween('due_date', [$startDate, $endDate])
+      ->paginate()
+      ->through(function ($invoice) {
+        return (object) [
+            "id" => $invoice->id,
+            "concept" => $invoice->concept,
+            "type" => $invoice->type,
+            "category" => $invoice->invoiceAccount->category->alias ?? $invoice->invoiceAccount->category->name,
+            "account_name" => $invoice->invoiceAccount->alias ?? $invoice->invoiceAccount->name,
+            "date" => $invoice->date,
+            "client_name" => $invoice->client?->display_name,
+            "number" => $invoice->number,
+            "series" => $invoice->series,
+            "status" => $invoice->status,
+            "total" => $invoice->total,
+            "debt" => $invoice->debt
+        ];
+      });
 
         return inertia(config('journal.invoices_inertia_path') . '/Index', [
-            "invoices" => Invoice::where([
-              'team_id' => $request->user()->currentTeam->id
-          ])
-          ->byClient($clientId)
-          ->whereIn('type', $type)
-          ->with(['invoiceAccount', 'invoiceAccount.category'])
-          ->orderByDesc('date')
-          ->orderByDesc('number')
-          ->paginate()
-          ->through(function ($invoice) {
-            return [
-                "id" => $invoice->id,
-                "concept" => $invoice->concept,
-                "type" => $invoice->type,
-                "category" => $invoice->invoiceAccount->category->alias ?? $invoice->invoiceAccount->category->name,
-                "account_name" => $invoice->invoiceAccount->alias ?? $invoice->invoiceAccount->name,
-                "date" => $invoice->date,
-                "client_name" => $invoice->client?->display_name,
-                "number" => $invoice->number,
-                "series" => $invoice->series,
-                "status" => $invoice->status,
-                "total" => $invoice->total,
-                "debt" => $invoice->debt
-            ];
-          }),
+            "invoices" => $invoices,
+            "total" => $invoices->sum('total'),
+            'outstanding' => $invoices->sum('debt'),
+            'paid' => $invoices->sum(function ($invoice) {
+              return $invoice->total - $invoice->debt;
+            }),
             "type" => $type
         ]);
     }

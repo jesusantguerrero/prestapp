@@ -12,6 +12,9 @@ import { paymentMethods } from "@/Modules/loans/constants";
 import AccountSelect from "@/Components/shared/Selects/AccountSelect.vue";
 import AppFormField from "@/Components/shared/AppFormField.vue";
 import axios from "axios";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const defaultPaymentForm = {
   amount: 0,
@@ -51,7 +54,9 @@ function generatePaymentData() {
     amount: props.due,
     payment_method_id: paymentMethods[0].id,
     paymentMethod: paymentMethods[0],
-    payment_date: parseISO(props.payment?.payment_date) ?? new Date(),
+    payment_date: props.payment?.payment_date
+      ? parseISO(props.payment?.payment_date)
+      : new Date(),
     documents: props.payment?.documents ?? [],
   };
 }
@@ -113,6 +118,7 @@ const isMultiple = computed(() => {
 });
 
 const isLoading = ref(false);
+
 function onSubmit() {
   if (isLoading.value) {
     return;
@@ -159,6 +165,23 @@ function createPayment() {
     ElNotification({
       type: "error",
       message: "should specify an amount",
+    });
+    return;
+  }
+
+  const requiredFields = ["payment_date", "paymentMethod", "amount", "account_id"];
+  const fieldsMapper = Object.entries(paymentForm.value).filter(([fieldName]) =>
+    requiredFields.includes(fieldName)
+  );
+
+  const hasErrors = fieldsMapper
+    .map(([fieldName, value]) => value)
+    .some((value) => !value);
+
+  if (hasErrors) {
+    ElNotification({
+      message: t("Check all required fields"),
+      type: "error",
     });
     return;
   }
@@ -256,6 +279,7 @@ const savePaymentText = computed(() => {
     <div class="">
       <section class="flex space-x-4">
         <AppFormField
+          required
           class="w-full text-left"
           label="Concepto"
           v-model="paymentForm.concept"
@@ -268,7 +292,7 @@ const savePaymentText = computed(() => {
           rounded
         />
 
-        <AppFormField class="w-full text-left" label="Monto Recibido">
+        <AppFormField class="w-full text-left" label="Monto Recibido" required>
           <AtInput
             class="form-control"
             number-format
@@ -286,6 +310,7 @@ const savePaymentText = computed(() => {
           v-if="!hideAccountSelector"
           class="w-5/12 mb-5 text-left"
           label="Cuenta de Pago"
+          required
         >
           <AccountSelect
             :endpoint="accountsEndpoint"
@@ -294,7 +319,7 @@ const savePaymentText = computed(() => {
             @update:modelValue="paymentForm.account_id = $event?.id"
           />
         </AppFormField>
-        <AppFormField class="w-3/12 mb-5 text-left" label="Metodo de Pago">
+        <AppFormField class="w-3/12 mb-5 text-left" label="Metodo de Pago" required>
           <AtSimpleSelect
             v-model="paymentForm.payment_method_id"
             v-model:selected="paymentForm.paymentMethod"
@@ -305,7 +330,7 @@ const savePaymentText = computed(() => {
             key-track="id"
           />
         </AppFormField>
-        <AppFormField :label="$t('Payment date')" class="w-3/12">
+        <AppFormField :label="$t('Payment date')" class="w-3/12" required>
           <ElDatePicker
             v-model="paymentForm.payment_date"
             size="large"
