@@ -88,12 +88,6 @@ class AdminController extends InertiaController
         ], [
           "label" => 'Generate Loan Fees',
           "command" => 'background:generate-loan-fees'
-        ],[
-          "label" => 'Backup Clean',
-          "command" => 'backup:clean'
-        ],[
-          "label" => 'Backup Run',
-          "command" => 'backup:run'
         ]
       ];
 
