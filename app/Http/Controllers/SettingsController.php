@@ -22,8 +22,7 @@ class SettingsController extends Controller
         return Inertia::render('Settings/Index', [
             "taxesDefinition" => Tax::where('team_id', $request->user()->current_team_id)->get(),
             "tabName" =>  $tabName,
-            "userSettings" => Setting::getSettingsByUser($request->user()->id,)
-            "teamSettings" => Setting::getSettingsByUser($request->user()->id,)
+            "settingData" => Setting::getBySection($request->user()->current_team_id, $tabName)
         ]);
     }
 
