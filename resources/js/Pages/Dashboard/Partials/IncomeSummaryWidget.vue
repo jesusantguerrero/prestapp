@@ -1,18 +1,69 @@
 <script lang="ts" setup>
 import { formatMoney } from "@/utils";
+import { computed } from "vue";
 
 interface Props {
   chart: {
     series: any[];
     options: Record<string, any>;
   };
+  labels?: string[];
+  type: string;
   title: string;
   description: string;
   sections?: any[];
   sectionTotalField: string;
 }
-withDefaults(defineProps<Props>(), {
+
+const props = withDefaults(defineProps<Props>(), {
   sectionTotalField: "total",
+  type: "line",
+});
+
+const options = computed(() => {
+  return {
+    ...props.chart.options,
+    ...(props.labels?.length
+      ? {
+          xaxis: {
+            categories: props.labels,
+            position: "bottom",
+            axisBorder: {
+              show: false,
+            },
+            axisTicks: {
+              show: false,
+            },
+          },
+          yaxis: {
+            labels: {
+              show: true,
+              formatter(val: number) {
+                return formatMoney(val);
+              },
+            },
+          },
+          plotOptions: {
+            bar: {
+              dataLabels: {
+                position: "top", // top, center, bottom
+              },
+            },
+          },
+          dataLabels: {
+            enabled: false,
+            formatter: function (val: number) {
+              return val ? formatMoney(val) : 0;
+            },
+            offsetY: -20,
+            style: {
+              fontSize: "12px",
+              colors: ["#304758"],
+            },
+          },
+        }
+      : {}),
+  };
 });
 </script>
 
@@ -30,9 +81,9 @@ withDefaults(defineProps<Props>(), {
           ref="apexchart"
           width="100%"
           height="100%"
-          type="line"
+          :type="type"
           class="mx-auto"
-          :options="chart.options"
+          :options="options"
           :series="chart.series"
         />
       </div>

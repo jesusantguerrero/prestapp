@@ -43,10 +43,12 @@ export default [
             headerClass: "text-center",
             align: 'left',
             minWidth: 200,
-            render(row) {
+            render(row: Record<any, any>) {
+
+              const lateFee = row.commission > 100 ? parseFloat(row.commission ?? 0).toFixed(2) : `${parseFloat(row.commission ?? 0)?.toFixed?.(2)}%`
               return h('div', [
                 h('p', {class: 'font-bold' }, formatMoney(row.amount)),
-                h('p', `Duración: ${formatDate(row.date)} - ${formatDate(row.end_date)} | Mora: ${row.commission}  %`),
+                h('p', `Duración: ${formatDate(row.date)} - ${formatDate(row.end_date)} | Mora: ${lateFee}`),
               ])
             }
     },{

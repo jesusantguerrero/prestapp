@@ -25,7 +25,7 @@ interface IDateSpan {
 }
 
 interface ISearchState {
-  filters: Record<string, string>,
+  filters: Record<string, string|null>,
   dates: IDateSpan,
   sorts: string,
   limit: number,
@@ -60,7 +60,7 @@ const DEFAULT_CONFIG = {
   },
 };
 
-export const filterParams = (mainDateField: string, externalFilters: Record<string, string>, dates: IDateSpan) => {
+export const filterParams = (mainDateField: string, externalFilters: Record<string, string|null>, dates: IDateSpan) => {
     let filters = [];
     if (externalFilters) {
         Object.entries(externalFilters).forEach(
@@ -110,7 +110,7 @@ export const parseParams = (state: ISearchState) => {
   }
 
 
-  return params.filter(value => value?.trim()).join("&");
+  return params.filter(value => typeof value == 'string' && value?.trim() || value).join("&");
 }
 
 export const updateSearch = (newUrl: string) => {
@@ -130,8 +130,8 @@ export const useServerSearch = (serverSearchData: Ref<IServerSearchData>, onUrlC
             startDate: dates.startDate,
             endDate: dates.endDate,
         },
-        sorts: serverSearchData.value?.sorts,
-        limit: serverSearchData.value?.limit,
+        sorts: serverSearchData.value?.sorts ?? "",
+        limit: serverSearchData.value?.limit ?? 0,
         relationships: serverSearchData.value?.relationships,
         search: serverSearchData.value?.search,
         page: serverSearchData.value?.page
@@ -168,8 +168,8 @@ export const useServerSearch = (serverSearchData: Ref<IServerSearchData>, onUrlC
         const dates = options?.value.filters?.date ? options.value.filters.date.split('~') : [null, null]
 
         return {
-            startDate: parseISO(dates[0]),
-            endDate: dates.length == 2 ? parseISO(dates[1]) : null
+            startDate: dates[0] && parseISO(dates[0]),
+            endDate: dates.length == 2 && dates[1] ? parseISO(dates[1]) : null
         }
     }
 

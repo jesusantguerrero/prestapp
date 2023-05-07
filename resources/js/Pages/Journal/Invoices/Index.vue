@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-import { reactive, computed, watch, ref } from "vue";
-import { AtButton } from "atmosphere-ui";
+import { reactive, computed, watch, toRefs } from "vue";
+import { AtButton, AtDatePager, AtBackgroundIconCard } from "atmosphere-ui";
 import { router } from "@inertiajs/vue3";
 
-import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import InvoiceTable from "@/Components/templates/InvoiceTable";
-import AppButton from "@/Components/shared/AppButton.vue";
 import AccountingSectionNav from "../Partials/AccountingSectionNav.vue";
+import { useServerSearch } from "@/utils/useServerSearch";
+import { formatMoney } from "@/utils";
 
 const props = defineProps({
   invoices: {
@@ -16,6 +16,10 @@ const props = defineProps({
   type: {
     type: String,
   },
+  paid: Number,
+  outstanding: Number,
+  total: Number,
+  serverSearchOptions: Object,
 });
 
 const state = reactive({
@@ -49,7 +53,16 @@ watch(
   { deep: true }
 );
 
-const isInvoiceModalOpen = ref(false);
+const { serverSearchOptions } = toRefs(props);
+const { executeSearchWithDelay, updateSearch, state: pageState } = useServerSearch(
+  serverSearchOptions,
+  (urlParams: string) => {
+    updateSearch(`${location.pathname}?${urlParams}`);
+  },
+  {
+    manual: true,
+  }
+);
 </script>
 
 <template>
@@ -68,26 +81,36 @@ const isInvoiceModalOpen = ref(false);
             variant="inverse"
             >Filtros</AtButton
           >
-          <BaseSelect
-            v-model="filters.client_id"
-            track-by="id"
-            endpoint="/api/clients"
-            placeholder="selecciona un cliente"
-            label="display_name"
+          <AtDatePager
+            class="w-full h-12 border-none bg-base-lvl-1 text-body"
+            v-model:startDate="pageState.dates.startDate"
+            v-model:endDate="pageState.dates.endDate"
+            @change="executeSearchWithDelay()"
+            controlsClass="bg-transparent text-body hover:bg-base-lvl-1"
+            next-mode="month"
           />
-          <AppButton
-            @click="router.visit(`/${state.sectionName}/create`)"
-            variant="inverse"
-            >Ingreso</AppButton
-          >
-          <AppButton @click="isInvoiceModalOpen = !isInvoiceModalOpen" variant="inverse">
-            Egreso
-          </AppButton>
         </template>
       </AccountingSectionNav>
     </template>
 
     <div class="py-10 mx-auto sm:px-6 lg:px-8">
+      <section class="flex space-x-4">
+        <AtBackgroundIconCard
+          class="w-full bg-white border h-28 text-body-1"
+          :title="$t('Paid')"
+          :value="formatMoney(paid ?? 0)"
+        />
+        <AtBackgroundIconCard
+          class="w-full bg-white border h-28 text-body-1"
+          :title="$t('Pending balance')"
+          :value="formatMoney(outstanding ?? 0)"
+        />
+        <AtBackgroundIconCard
+          class="w-full bg-white border h-28 text-body-1"
+          :title="$t('Total')"
+          :value="formatMoney(total || 0)"
+        />
+      </section>
       <InvoiceTable :invoice-data="invoices.data" class="mt-10 bg-base-lvl-3" />
     </div>
   </AppLayout>

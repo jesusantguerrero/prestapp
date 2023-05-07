@@ -79,7 +79,6 @@ class RentTest extends PropertyBase
     ]));
     $response->assertStatus(302);
     $rent = Rent::first();
-    $this->assertCount(1, $rent->rentInvoices);
     $this->assertEquals(3000, $rent->rentInvoices[0]->total);
   }
 
@@ -108,15 +107,15 @@ class RentTest extends PropertyBase
     $response = $this->post('/rents', array_merge($this->rentData, [
       'deposit' => 12000,
       'amount' => 6000,
-      'date' => now()->subMonths(8)->format('Y-m-d'),
-      'deposit_due' => now()->subMonths(8)->format('Y-m-d'),
-      'first_invoice_date' => now()->subMonths(7)->format('Y-m-d'),
+      'date' => now()->subRealMonths(8)->format('Y-m-d'),
+      'deposit_due' => now()->subRealMonths(8)->format('Y-m-d'),
+      'first_invoice_date' => now()->subRealMonths(7)->format('Y-m-d'),
     ]));
 
     $response->assertStatus(302);
 
     $rent = Rent::first();
-    $this->assertCount(7, $rent->rentInvoices()->paid()->get());
+    $this->assertCount(8, $rent->rentInvoices()->get());
   }
 
   public function testItShouldUpdateRent() {

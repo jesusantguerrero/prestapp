@@ -17,8 +17,7 @@ class ReportController extends Controller
     [$startDate, $endDate] = $this->getFilterDates($filters);
 
     [
-      "ledger" => $ledger,
-      "categoryAccounts" => $categoryAccounts
+      "ledger" => $categoryAccounts
     ] = ReportHelper::getGeneralLedger(request()->user()->current_team_id, $reportName, [
       "account_id" => $accountId,
       "dates" => [$startDate, $endDate]
@@ -26,12 +25,30 @@ class ReportController extends Controller
 
     return inertia(config('journal.statements_inertia_path') . '/Category', [
       "categories" => $categoryAccounts,
-      "ledger" => $ledger->groupBy('display_id'),
       'categoryType' => $reportName,
       'serverSearchOptions' => [
         'filters' => $filters,
         'search' => $search,
       ]
     ]);
-}
+  }
+
+  public function payments() {
+      $reportHelper = new ReportHelper();
+      $teamId = request()->user()->current_team_id;
+
+      $filters = request()->query('filter');
+      [$startRange, $endRange] = $this->getFilterDates($filters);
+
+
+      $categories = $reportHelper->getAccountTransactionsByMonths($teamId, ['real_state', 'expected_payments_owners'] ,$startRange, $endRange, 'display_id', Payment::class);
+      return inertia(config('journal.statements_inertia_path') . '/Category', [
+        "categories" => $categories,
+        'categoryType' => __("Payments in month"),
+        'serverSearchOptions' => [
+          'filters' => $filters,
+          'search' => "",
+        ]
+      ]);
+  }
 }

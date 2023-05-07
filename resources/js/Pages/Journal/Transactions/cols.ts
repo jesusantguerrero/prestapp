@@ -6,7 +6,7 @@ export default [
     },
     {
         label: "Account",
-        name: "account",
+        name: "account.name",
     },
     {
         label: "Category",

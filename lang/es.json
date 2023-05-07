@@ -8,6 +8,10 @@
     "validation": {
       "unique": ""
     },
+    "Performance of the month": "Estadisticas del mes",
+    "Payments": "Pagos",
+    "Welcome": "Hola",
+    "Mark as read": "Marcar como leido",
     "Home": "Inicio",
     "Loans": "Prestamos",
     "Properties": "Propiedades",
@@ -122,5 +126,8 @@
     "Save payment": "Efectuar pago",
     "Delete": "Eliminar",
     "Update payment": "Actualizar pago",
-    "regenerate": "Re-generar"
+    "regenerate": "Re-generar",
+    "Pending balance": "Balance pendiente",
+    "Paid": "Pagado",
+    "Total": "Total"
   }

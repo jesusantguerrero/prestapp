@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Insane\Journal\Models\Core\Account;
@@ -59,7 +60,9 @@ class HandleInertiaRequests extends Middleware
                 "data" => $user ? $user->unreadNotifications : []
               ];
             },
-            "isAdmin" => $isAdmin
+            "isAdmin" => $isAdmin,
+            "userSettings" => $team ? Setting::getSettingsByUser($team->id, $user->id) : [],
+            "teamSettings" => $team ? Setting::getSettingsByUser($team->id, $user->id) : []
         ]);
     }
 }

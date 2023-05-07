@@ -224,6 +224,7 @@ const onEdit = (invoice: IInvoice) => {
             <AppButton
               class="w-full"
               variant="secondary"
+              v-if="rents.status !== 'CANCELLED'"
               @click="generateNextInvoice"
               :disabled="isGeneratingInvoices"
               :processing="isGeneratingInvoices"

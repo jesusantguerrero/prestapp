@@ -21,9 +21,6 @@ const props = defineProps({
   accounts: {
     type: Array,
   },
-  ledger: {
-    type: Object,
-  },
   serverSearchOptions: {
     type: Object,
     default() {
@@ -39,11 +36,11 @@ const sectionTitle = computed(() => {
 const state = reactive({
   isSummary: true,
   isTransferModalOpen: false,
-  mainCategories: computed(() => {
-    return props.categories;
+  ledger: computed(() => {
+    return props.categories.ledgers;
   }),
   categoriesTotal: computed(() => {
-    return props.categories.reduce((total, category) => {
+    return Object.values(props.categories.ledgers).reduce((total, category) => {
       return total + parseFloat(category.total || 0);
     }, 0);
   }),
@@ -61,7 +58,7 @@ const hasHeader = (category: Record<string, any>) => {
   }
 };
 
-const { isSummary, mainCategories, categoriesTotal } = toRefs(state);
+const { isSummary, ledger, categoriesTotal } = toRefs(state);
 
 const { serverSearchOptions } = toRefs(props);
 const { executeSearch, state: searchState } = useServerSearch(
@@ -143,60 +140,78 @@ const { customPrint } = usePrint("report");
       </header>
 
       <div class="flex items-center justify-end space-x-2 print:hidden">
-        <section>{{ ledger.assets[0].total }} =</section>
         <section class="flex space-x-2">
           <AppButton variant="secondary" @click="isSummary = true"> Summary </AppButton>
           <AppButton variant="secondary" @click="isSummary = false"> Details </AppButton>
         </section>
       </div>
       <div class="mt-10 items" :class="{ 'divide-y': isSummary }">
-        <div v-for="category in mainCategories" :key="category.id" class="py-2">
+        <div v-for="group in ledger" :key="group.id" class="py-2">
           <div
-            v-if="hasHeader(category)"
+            v-if="hasHeader(group)"
             class="w-full px-5 py-2 mt-5 font-bold bg-gray-200"
           >
-            {{ category.category.alias ?? category.category.name }}
-            {{ category.category.total }}
+            {{ group.alias ?? group.name }}
+            {{ group.total }}
           </div>
           <div class="divide-y" v-if="!isSummary">
             <div class="px-5 py-2 font-semibold bg-gray-100">
-              {{ category.alias ?? category.name }}
+              {{ group.alias ?? group.name }}
             </div>
-            <div class="w-full px-5" v-for="account in category.accounts">
-              <div class="flex justify-between py-2">
+            <article class="w-full px-5" v-for="categories in group.categories">
+              <header class="flex justify-between py-2">
                 <span class="font-semibold text-blue-500">
-                  {{ account.alias ?? account.name }}
+                  {{ categories.alias ?? categories.name }}
                 </span>
                 <div class="space-x-4">
                   <span class="font-bold text-success">
-                    {{ formatMoney(account.income) }}</span
+                    {{ formatMoney(categories.income) }}</span
                   >
                   <span class="font-bold text-error">
-                    {{ formatMoney(account.outcome) }}</span
+                    {{ formatMoney(categories.outcome) }}</span
                   >
-                  <span> {{ formatMoney(account.balance) }}</span>
+                  <span> {{ formatMoney(categories.total) }}</span>
                   <!-- <AtButton @click="setPayment(account)"> Pay </AtButton> -->
                 </div>
-              </div>
-            </div>
+              </header>
+              <section>
+                <article class="w-full px-5" v-for="account in categories.accounts">
+                  <header class="flex justify-between py-2">
+                    <span class="font-semibold text-blue-500">
+                      {{ account.alias ?? account.name }}
+                    </span>
+                    <div class="space-x-4">
+                      <span class="font-bold text-success">
+                        {{ formatMoney(account.income) }}</span
+                      >
+                      <span class="font-bold text-error">
+                        {{ formatMoney(account.outcome) }}</span
+                      >
+                      <span> {{ formatMoney(account.total) }}</span>
+                      <!-- <AtButton @click="setPayment(account)"> Pay </AtButton> -->
+                    </div>
+                  </header>
+                </article>
+              </section>
+            </article>
           </div>
           <div class="flex justify-between px-5 py-2" :class="{ 'border-t': !isSummary }">
-            <span class="font-bold"> {{ category.alias ?? category.name }} </span>
+            <span class="font-bold"> {{ group.alias ?? group.name }} </span>
             <div class="flex space-x-4">
-              <span class="font-bold text-success">
-                {{ formatMoney(category.income) }}</span
-              >
-              <span class="font-bold text-error">
-                {{ formatMoney(category.outcome) }}</span
-              >
-              <span class="font-bold"> {{ formatMoney(category.total) }}</span>
+              <span class="font-bold text-success"> {{ formatMoney(group.income) }}</span>
+              <span class="font-bold text-error"> {{ formatMoney(group.outcome) }}</span>
+              <span class="font-bold"> {{ formatMoney(group.total) }}</span>
             </div>
           </div>
         </div>
 
         <div class="flex justify-between py-5 text-xl capitalize">
           <span class="font-bold"> Total {{ categoryType }}s </span>
-          <span class="font-bold"> {{ formatMoney(categoriesTotal) }}</span>
+          <section class="space-x-2">
+            <span class="font-bold text-success"> {{ formatMoney(ledger.income) }}</span>
+            <span class="font-bold text-error"> {{ formatMoney(ledger.outcome) }}</span>
+            <span class="font-bold"> {{ formatMoney(categoriesTotal) }}</span>
+          </section>
         </div>
       </div>
     </div>

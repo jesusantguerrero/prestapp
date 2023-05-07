@@ -41,7 +41,7 @@ Route::middleware([
     Route::resource('rents', RentController::class);
     Route::get('rents/advanced-filter/pending-generation', [RentController::class, 'withPendingGeneration']);
     Route::get('/rents/{rent}/{section}', [RentController::class, 'getSection']);
-    
+
     Route::put('/rents/{rent}/invoices/{invoice}/simple-update', [PropertyInvoiceController::class, 'simpleUpdate']);
     Route::post('/rents/{rent}/invoices/{invoice}/payments', [RentController::class, 'payInvoice']);
     Route::delete('/rents/{rent}/invoices/{invoice}/payments', [RentController::class, 'deleteInvoicePayments']);
@@ -77,8 +77,8 @@ Route::middleware([
 
     // Tenant
     Route::controller(TenantRentController::class)->group(function() {
-      Route::get('/clients/{client}/rents/{rent}/end', 'endRent')->name('tenant.end-rent');;
-      Route::put('/clients/{client}/rents/{rent}/end', 'endRentAction')->name('tenant.end-rent-action');
+      Route::get('/contacts/{client}/tenants/rents/{rent}/end', 'endRent')->name('tenant.end-rent');;
+      Route::put('/contacts/{client}/tenants/rents/{rent}/end', 'endRentAction')->name('tenant.end-rent-action');
       Route::get('/contacts/{client}/tenants/rents/{rent}/renew', 'renewRent')->name('tenant.renew-rent');;
       Route::put('/contacts/{client}/tenants/rents/{rent}/renew', 'renewRentAction')->name('tenant.renew-rent-action');
     });

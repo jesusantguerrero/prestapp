@@ -92,7 +92,7 @@ const menus = {
         label: 'Inquilinos',
         to: '/contacts/tenant',
         isActiveFunction(currentPath: string) {
-          return /contacts\/tenant/.test(currentPath)
+          return /contacts\/\d+\/tenant/.test(currentPath)
         },
         as: Link,
         icon: FluentPeopleCommunity16Regular,
@@ -101,6 +101,9 @@ const menus = {
       label: 'Propietarios',
       to: '/contacts/owner',
       as: Link,
+      isActiveFunction(currentPath: string) {
+        return /contacts\/\d+\/owner/.test(currentPath)
+      },
       icon: StreamlineInterfaceSecurityShieldPerson
     }],
     [MODULES.REPORT]: [{
