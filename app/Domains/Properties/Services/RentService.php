@@ -131,8 +131,10 @@ class RentService {
         DB::transaction(function () use ($rent, $formData) {
           $rent->update(array_merge(
             $formData,
-            ["status" => Rent::STATUS_CANCELLED
-          ]));
+            [
+              "status" => Rent::STATUS_CANCELLED,
+              "end_date" => $formData['move_out_at']
+            ]));
           $rent->unit->update(['status' => Property::STATUS_AVAILABLE]);
           Invoice::destroy($rent->invoices()->unpaid()->pluck('id'));
         });
