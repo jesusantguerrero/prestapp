@@ -217,7 +217,7 @@ export default {
             >
               <SectionFooterCard
                 title="Ganancias netas"
-                :value="formatMoney(paidCommissions.balance)"
+                :value="formatMoney(paidCommissions.totalInPeriod)"
               >
                 <template #footer>
                   <p class="flex items-center text-xs text-success md:text-sm" rounded>

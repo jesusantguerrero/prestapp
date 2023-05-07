@@ -4,6 +4,7 @@ namespace App\Domains\Accounting\Widget;
 
 use App\Domains\Loans\Models\LoanInstallment;
 use App\Domains\Properties\Models\Rent;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Insane\Journal\Helpers\ReportHelper;
@@ -97,5 +98,28 @@ class AccountStatWidget {
       "months" => (new ReportHelper())->mapInMonths($results->all(), now()->format('Y')),
       "avg" => $results->avg('income')
     ];
+  }
+
+  public static function balanceInPeriodFor($accountUniqueId, $teamId, $startDate, $endDate) {
+    return DB::table('transaction_lines')
+    ->where([
+        'transaction_lines.team_id' => $teamId
+    ])
+    ->selectRaw("sum(amount * transaction_lines.type)  as total,
+    sum(COALESCE(
+      CASE
+      WHEN date >= ? && date <= ? THEN amount * transaction_lines.type
+      ELSE 0
+    END, 0)) totalInPeriod
+    ", [
+      $startDate,
+      $endDate
+    ])
+    ->join('accounts', function (JoinClause $join) use ($accountUniqueId) {
+      $join->on('accounts.id', '=', 'account_id')
+          ->where('accounts.display_id', $accountUniqueId)
+          ->orWhere('accounts.id', $accountUniqueId);
+    })
+    ->first();
   }
 }

@@ -41,8 +41,8 @@ class DashboardController extends Controller
       [
           "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId, ['real_state', 'loans', 'real_state_operative'] ,$startYear, $endYear, null)->all(), now()->format('Y')),
           "stats" => AccountStatWidget::stats($teamId, $startDate, $endDate),
-          'accounts' => $reportHelper->getTransactionsByAccount($teamId, ['real_state', 'loan_business', 'loans'] ,null, null, 'display_id'),
-          'paidCommissions' => $reportHelper->smallBoxRevenue('real_state_operative', $teamId),
+          'accounts' => $reportHelper->getTransactionsByAccount($teamId, ['real_state', 'loan_business', 'loans'] ,$startDate, $endDate, 'display_id'),
+          'paidCommissions' => AccountStatWidget::balanceInPeriodFor('real_state_operative', $teamId, $startDate, $endDate),
           'dailyBox' => $reportHelper->smallBoxRevenue('loan_business', $teamId),
           'realState' => Account::where(['team_id' => $teamId, 'display_id' => 'real_state'])->first(),
           'section' => "general",
