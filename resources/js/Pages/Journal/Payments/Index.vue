@@ -1,26 +1,25 @@
 <script setup lang="ts">
+// @ts-ignore
 import { AtButton, AtBackgroundIconCard, AtDatePager } from "atmosphere-ui";
-import AppButton from "@/Components/shared/AppButton.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
-import { toRefs } from "vue";
+import { toRefs, ref } from "vue";
 
 import cols from "./cols";
 import AtTable from "@/Components/shared/BaseTable.vue";
 import { formatMoney, formatDate } from "@/utils";
 import { useServerSearch } from "@/utils/useServerSearch";
+import AccountSelect from "@/Components/shared/Selects/AccountSelect.vue";
+import { IPayment } from "@/Modules/loans/loanEntity";
+import { IServerSearchData } from "@/utils/useServerSearch";
+import { IPaginatedData } from "@/utils/constants";
 
-const props = defineProps({
-  payments: {
-    type: Array,
-  },
-  categories: {
-    type: Array,
-  },
-  income: Number,
-  outgoing: Number,
-  total: Number,
-  serverSearchOptions: Object,
-});
+const props = defineProps<{
+  payments: IPaginatedData<IPayment>;
+  income: number;
+  outgoing: number;
+  total: number;
+  serverSearchOptions: IServerSearchData;
+}>();
 
 const { serverSearchOptions } = toRefs(props);
 const { executeSearchWithDelay, updateSearch, state: pageState } = useServerSearch(
@@ -32,18 +31,33 @@ const { executeSearchWithDelay, updateSearch, state: pageState } = useServerSear
     manual: true,
   }
 );
+
+const filters = ref({
+  account: "",
+});
+
+const onAccountChange = (account: Record<string, any>) => {
+  pageState.filters.account = account.id;
+  executeSearchWithDelay();
+};
+
+const setDirection = (direction: string | null) => {
+  pageState.filters.direction = direction;
+  executeSearchWithDelay();
+};
 </script>
 
 <template>
-  <AppLayout title="Pagos">
+  <AppLayout :title="$t('Payments')">
     <template #header>
-      <div class="flex justify-between items-center px-5 py-1">
-        <div class="font-bold">Account Filter:</div>
+      <div class="flex justify-end items-center px-5 py-1">
         <section class="flex items-center space-x-2">
           <div class="text-right space-x-2">
-            <AppButton variant="secondary" @click="$inertia.visit('invoices/create')">
-              Crear Factura
-            </AppButton>
+            <AccountSelect
+              endpoint="/api/accounts"
+              v-model="filters.account"
+              @update:model-value="onAccountChange"
+            />
           </div>
           <AtDatePager
             class="w-full h-12 border-none bg-base-lvl-1 text-body"
@@ -56,22 +70,25 @@ const { executeSearchWithDelay, updateSearch, state: pageState } = useServerSear
         </section>
       </div>
     </template>
-    <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
+    <div class="mx-auto py-10 sm:px-6 lg:px-8">
       <section class="flex space-x-4">
         <AtBackgroundIconCard
           class="w-full bg-white border h-28 text-body-1"
           :title="$t('Incoming')"
           :value="formatMoney(income ?? 0)"
+          @click="setDirection('debit')"
         />
         <AtBackgroundIconCard
-          class="w-full bg-white border h-28 text-body-1"
+          class="w-full bg-white border h-28 text-body-1 cursor-pointer"
           :title="$t('Outgoing')"
           :value="formatMoney(outgoing ?? 0)"
+          @click="setDirection('credit')"
         />
         <AtBackgroundIconCard
           class="w-full bg-white border h-28 text-body-1"
           :title="$t('Month Balance')"
           :value="formatMoney(total || 0)"
+          @click="setDirection(null)"
         />
       </section>
 

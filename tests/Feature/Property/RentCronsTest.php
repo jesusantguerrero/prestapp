@@ -51,7 +51,7 @@ class RentCronsTest extends PropertyBase
     $this->seed();
     $this->actingAs($this->user);
 
-    $createdDate = now()->subMonths(2)->format('Y-m-d');
+    $createdDate = now()->subRealMonths(2)->format('Y-m-d');
     $firstInvoiceDate = InvoiceHelper::getNextDate($createdDate);
     $rent = $this->createRent([
       "date" => $createdDate,

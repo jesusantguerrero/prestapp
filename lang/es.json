@@ -8,6 +8,7 @@
     "validation": {
       "unique": ""
     },
+    "Payments": "Pagos",
     "Welcome": "Hola",
     "Home": "Inicio",
     "Loans": "Prestamos",

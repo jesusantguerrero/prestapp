@@ -7,7 +7,7 @@ export default [
     {
         label: "Concept",
         name: "concept",
-        width: 360,
+        minWidth: 380,
     },
     {
         label: "Cuenta",

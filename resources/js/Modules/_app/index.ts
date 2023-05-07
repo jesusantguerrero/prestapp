@@ -64,7 +64,7 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
           label:t('Invoice'),
           to: '/statements',
           as: Link,
-          // hidden: true,
+          hidden: true,
           isActiveFunction(url: string, currentPath: string) {
             return /invoice/.test(currentPath)
           },

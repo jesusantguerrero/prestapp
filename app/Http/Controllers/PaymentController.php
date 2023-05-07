@@ -17,6 +17,7 @@ class PaymentController
 
       [$startDate, $endDate] = $this->getFilterDates($filters);
       $direction = $filters["direction"] ?? null;
+      $account = $filters["account"] ?? null;
 
       $payments = Payment::where([
         'team_id' => $request->user()->currentTeam->id
@@ -27,6 +28,10 @@ class PaymentController
       ->whereBetween('payment_date', [$startDate, $endDate])
       ->when($direction, fn ($q) => $q->whereHas('transaction', function ($query) use ($direction) {
         $query->where('direction', $direction == 'credit' ? Transaction::DIRECTION_CREDIT : Transaction::DIRECTION_DEBIT);
+      }))
+      ->when($account, fn ($q) => $q->whereHas('account', function ($query) use ($account) {
+        $query->where('display_id', $account)
+        ->orWhere('id', $account);
       }))
       ->paginate(200);
 
