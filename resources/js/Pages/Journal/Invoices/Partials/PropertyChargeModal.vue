@@ -10,6 +10,7 @@ import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import { MathHelper } from "@/Modules/loans/mathHelper";
 import { paymentMethods } from "@/Modules/loans/constants";
 import AppFormField from "@/Components/shared/AppFormField.vue";
+import { IClient, IClientSaved } from "@/Modules/clients/clientEntity";
 
 const defaultFormData = {
   amount: 0,
@@ -101,6 +102,17 @@ const documentTotal = computed(() => {
 const rentsUrl = computed(() => {
   return `/api/rents?filter[client_id]=${formData.value.client?.id}`;
 });
+
+const setClient = (client: IClientSaved) => {
+  axios.get(rentsUrl).then(({ data }) => {
+    debugger;
+    if (data.length) {
+      formData.value.rent = data.at(-1);
+    } else {
+      formData.value.rent = null;
+    }
+  });
+};
 
 const isLoading = ref(false);
 const endpoints: Record<string, string> = {
@@ -243,13 +255,14 @@ function emitChange(value) {
       </section>
 
       <section class="mt-4 flex space-x-4" v-if="!hideClientOptions">
-        <AppFormField label="Cliente">
+        <AppFormField label="Inquilino">
           <BaseSelect
             v-model="formData.client"
-            endpoint="/api/clients"
+            endpoint="/api/clients?filter[is_tenant]=1"
             placeholder="Selecciona cliente"
             label="display_name"
             track-by="id"
+            @update:model-value="setClient"
           />
         </AppFormField>
         <AppFormField label="Propiedad">

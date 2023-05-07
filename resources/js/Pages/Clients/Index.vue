@@ -29,7 +29,7 @@ const props = withDefaults(
   }>(),
   {
     serverSearchOptions: {
-      filters: "",
+      filters: {},
       dates: {},
       sorts: "",
       limit: 10,
@@ -207,6 +207,7 @@ const { openModal } = useToggleModal("contact");
         :clients="listData"
         :pagination="searchState"
         :total="paginationTotal"
+        :type="type"
         @edit="
           openModal({
             data: {

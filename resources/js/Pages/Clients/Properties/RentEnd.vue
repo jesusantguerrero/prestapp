@@ -45,7 +45,7 @@ const onSubmit = () => {
 </script>
 
 <template>
-  <ClientTemplate :clients="clients" :contract="contract" hide-statistics>
+  <ClientTemplate :clients="clients" :contract="contract" hide-statistics type="tenant">
     <main class="w-full px-4 py-2 space-y-4 rounded-md shadow-md bg-base-lvl-3">
       <header>
         <h4>Terminar Contrato</h4>

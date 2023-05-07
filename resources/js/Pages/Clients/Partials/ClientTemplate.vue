@@ -60,7 +60,7 @@ const sectionName = computed(() => {
 <template>
   <AppLayout :title="`${sectionName} / ${clients.fullName}`">
     <template #header>
-      <PropertySectionNav v-if="type == 'owner'" />
+      <PropertySectionNav v-if="['owner', 'tenant'].includes(type)" />
       <LoanSectionNav v-else />
     </template>
 
@@ -72,7 +72,7 @@ const sectionName = computed(() => {
         :title="clients?.fullName"
         hide-action
       >
-        <template #actions v-if="clients.is_tenant">
+        <template #actions v-if="type == 'tenant'">
           <section class="flex space-x-2">
             <AppButton
               v-if="!contract && !clients.is_lender"
@@ -134,9 +134,7 @@ const sectionName = computed(() => {
           <article>
             <p class="flex items-center space-x-2">
               <IconMarker />
-              <span>
-                {{ clients.dni }}
-              </span>
+              <span> {{ clients.dni }} {{ type }} </span>
             </p>
             <p class="flex items-center space-x-2 cursor-pointer text-primary group">
               <IconPersonSafe />
