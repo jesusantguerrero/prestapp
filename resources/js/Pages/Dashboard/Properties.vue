@@ -1,8 +1,10 @@
 <script lang="ts">
-import DashboardTemplate from "./Partials/DashboardTemplate.vue";
 import { computed } from "vue";
 import { addMonths, startOfYear, startOfMonth } from "date-fns";
 import { useI18n } from "vue-i18n";
+import { ref } from "vue";
+
+import DashboardTemplate from "./Partials/DashboardTemplate.vue";
 
 export default {
   layout: DashboardTemplate,
@@ -20,6 +22,7 @@ import PropertyInvoiceWidget from "./Partials/PropertyInvoiceWidget.vue";
 import NextPaymentsWidget from "../Loans/NextPaymentsWidget.vue";
 import PaymentsCard from "@/Components/PaymentsCard.vue";
 import RentsWidget from "./Partials/RentsWidget.vue";
+import ExpiringRentsChart from "./Partials/ExpiringRentsChart.vue";
 
 import { formatMoney } from "@/utils/formatMoney";
 import { config } from "@/config";
@@ -171,6 +174,8 @@ const interestPerformance = {
     },
   ],
 };
+
+const summaryType = ref("cash-flow");
 </script>
 
 <template>
@@ -225,25 +230,70 @@ const interestPerformance = {
     <section class="mt-8 mb-24">
       <section class="flex lg:space-x-4 flex-col w-full lg:flex-row">
         <article class="space-y-5 lg:w-7/12">
-          <ChartBar
-            class="bg-white shadow-md rounded-lg overflow-hidden"
-            title="Ganancias"
-            description="Ganancias por comisiones en el año"
-            :chart="interestPerformance"
-            :headerInfo="interestPerformance.headers"
-          />
+          <WelcomeWidget
+            message="Rendimiento del mes"
+            class="order-2 mt-4 lg:mt-0 lg:order-1"
+          >
+            <template #actions>
+              <section class="flex space-x-2">
+                <button
+                  @click="summaryType = 'gains'"
+                  class="bg-base-lvl-2 py-1 rounded-3xl text-body-1 px-4 border border-transparent"
+                  :class="{
+                    'bg-primary/10 border-primary  text-primary': summaryType == 'gains',
+                  }"
+                >
+                  Ganancias
+                </button>
+                <button
+                  @click="summaryType = 'cash-flow'"
+                  class="bg-base-lvl-2 py-1 rounded-3xl text-body-1 px-4 border border-transparent"
+                  :class="{
+                    'bg-primary/10 border-primary  text-primary':
+                      summaryType == 'cash-flow',
+                  }"
+                >
+                  {{ $t("Cashflow") }}
+                </button>
+              </section>
+            </template>
+            <template #content>
+              <IncomeSummaryWidget
+                v-if="summaryType == 'cash-flow'"
+                title="Flujo de efectivo"
+                description="Movimiento de efectivo del año por mes en cuenta de inmobiliaria"
+                class="order-2 mt-4 lg:w-full lg:mt-0 lg:order-1"
+                type="bar"
+                :style="{ height: '350px' }"
+                :labels="getMonthsOfYear()"
+                :chart="comparisonRevenue"
+                :headerInfo="comparisonRevenue.headers"
+              />
+              <ChartBar
+                v-else
+                class="bg-white rounded-lg overflow-hidden"
+                title="Ganancias"
+                description="Ganancias por comisiones en el año"
+                :chart="interestPerformance"
+                :headerInfo="interestPerformance.headers"
+              />
+            </template>
+          </WelcomeWidget>
         </article>
         <section class="lg:w-5/12 space-y-4">
-          <IncomeSummaryWidget
-            title="Flujo de efectivo"
-            description="Movimiento de efectivo del año por mes en cuenta de inmobiliaria"
-            class="order-2 mt-4 lg:w-full lg:mt-0 lg:order-1 shadow-md"
-            type="bar"
-            :style="{ height: '350px' }"
-            :labels="getMonthsOfYear()"
-            :chart="comparisonRevenue"
-            :headerInfo="comparisonRevenue.headers"
-          />
+          <WelcomeWidget
+            :message="$t('Expiring rents')"
+            class="text-body-1 w-full shadow-md"
+            :action-label="$t('See details')"
+            action-link="/reports/expiring-rents"
+          >
+            <template #content>
+              <ExpiringRentsChart
+                :chart="interestPerformance"
+                :style="{ height: '350px' }"
+              />
+            </template>
+          </WelcomeWidget>
         </section>
       </section>
       <section class="flex mt-4 space-x-4">
