@@ -169,7 +169,12 @@ function createPayment() {
     return;
   }
 
-  const requiredFields = ["payment_date", "paymentMethod", "amount", "account_id"];
+  const requiredFields = [
+    "payment_date",
+    "paymentMethod",
+    "amount",
+    ...(props.hideAccountSelector ? [] : ["account_id"]),
+  ];
   const fieldsMapper = Object.entries(paymentForm.value).filter(([fieldName]) =>
     requiredFields.includes(fieldName)
   );
