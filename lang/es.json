@@ -12,6 +12,7 @@
     "Payments": "Pagos",
     "Welcome": "Hola",
     "Mark as read": "Marcar como leido",
+    "Expiring rents": "Contratos proximos a expirar",
     "Home": "Inicio",
     "Loans": "Prestamos",
     "Properties": "Propiedades",
@@ -129,5 +130,12 @@
     "regenerate": "Re-generar",
     "Pending balance": "Balance pendiente",
     "Paid": "Pagado",
-    "Total": "Total"
+    "Total": "Total",
+    "Configuration / Region": "Configuración / Región",
+    "Currency": "Moneda",
+    "Date Format": "Formato de fecha",
+    "Number Format": "Formato de cantidades",
+    "Language": "Idioma",
+    "Timezone": "Zona Horaria",
+    "Save": "Guardar"
   }

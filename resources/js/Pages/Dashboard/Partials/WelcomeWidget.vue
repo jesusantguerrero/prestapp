@@ -50,12 +50,12 @@ const cardSize = computed(() => {
         <slot name="actions">
           <div class="space-x-2" v-if="actionLabel && actionLink">
             <AtButton
-              class="text-sm text-primary px-0"
+              class="flex text-sm text-primary px-0 items-center"
               rounded
               @click="actionLink && router.visit(actionLink)"
             >
-              <i class="fa fa-home" />
               {{ actionLabel }}
+              <IMdiChevronRight />
             </AtButton>
           </div>
         </slot>

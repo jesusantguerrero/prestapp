@@ -24,7 +24,7 @@ createInertiaApp({
     resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
     setup({ el, App, props, plugin }) {
       // @ts-expect-error: will send this always
-        const locale = props.initialPage.props?.userSettings?.region_language ?? "en";
+        const locale = props.initialPage.props?.userSettings?.region_language ?? "es";
 
         return createApp({ render: () => h(App, props) })
             .use(plugin)
