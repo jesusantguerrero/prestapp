@@ -105,15 +105,14 @@ const isProcessing = (fileName: string, endpoint?: string) => {
       >
         <template v-slot:actions="{ scope: { row } }" class="flex">
           <div class="flex justify-end items-center">
-            <AppButton
+            <a
               class="hover:text-primary transition items-center flex justify-center hover:border-primary-400"
               variant="neutral"
-              @click="sendBackupFile(row, 'download')"
-              :disabled="isProcessing(row, '/backups/download')"
-              :processing="isProcessing(row, '/backups/download')"
+              :href="`/admin/backups/download?fileName=${row}`"
+              :download="row"
             >
               <IMdiDownload class="mr-2" /> Download
-            </AppButton>
+            </a>
             <AppButton
               class="hover:text-primary transition items-center flex justify-center hover:border-primary-400"
               variant="neutral"

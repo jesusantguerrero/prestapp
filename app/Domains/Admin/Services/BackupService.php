@@ -67,6 +67,10 @@ class BackupService {
 
   public function getBackupFile($fileName) {
     $backupDir = config('app.name');
-    return File::get(storage_path("app/$backupDir/$fileName"));
+    $pathName = storage_path('app') . "/$backupDir/$fileName";
+    if (!file_exists($pathName)) {
+      throw new Exception(__("this file doen't exists"));
+    }
+    return $pathName;
   }
 }

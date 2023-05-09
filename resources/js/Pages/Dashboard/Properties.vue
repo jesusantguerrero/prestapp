@@ -5,9 +5,11 @@ import { useI18n } from "vue-i18n";
 import { ref } from "vue";
 
 import DashboardTemplate from "./Partials/DashboardTemplate.vue";
+import WidgetPropertiesStats from "./Partials/WidgetPropertiesStats.vue";
 
 export default {
   layout: DashboardTemplate,
+  components: { WidgetPropertiesStats },
 };
 </script>
 
@@ -77,15 +79,20 @@ const props = defineProps({
   },
 });
 
-const propertyStats = [
+const unitStats = [
   {
     label: "Total propiedades",
     value: props.stats?.total || 0,
   },
   {
-    label: "Alquiladas/Libres",
+    label: "Alquiladas",
     icon: "fa-money",
-    value: `${props.stats?.rented || 0} / ${props.stats?.available || 0}`,
+    value: `${props.stats?.rented || 0}`,
+  },
+  {
+    label: "Libres",
+    icon: "fa-money",
+    value: `${props.stats?.available || 0}`,
   },
 ];
 
@@ -170,7 +177,9 @@ const interestPerformance = {
   series: [
     {
       name: "Ganancias intereses",
-      data: props.paidCommissions?.months.map((item) => item.income ?? 0),
+      data: props.paidCommissions?.months.map(
+        (item: Record<string, any>) => item.income ?? 0
+      ),
     },
   ],
 };
@@ -185,7 +194,7 @@ const summaryType = ref("cash-flow");
         message="Estadisticas de propiedades"
         class="text-body-1 w-full md:w-7/12 shadow-md"
         size="small"
-        :cards="propertyStats"
+        :cards="unitStats"
       >
         <template #append>
           <section class="py-4">
@@ -294,6 +303,11 @@ const summaryType = ref("cash-flow");
               />
             </template>
           </WelcomeWidget>
+          <WidgetPropertiesStats
+            :total="50"
+            :description="$t('Properties')"
+            :unit-stats="unitStats"
+          />
         </section>
       </section>
       <section class="flex mt-4 space-x-4">
@@ -339,7 +353,7 @@ const summaryType = ref("cash-flow");
       <WelcomeWidget
         message="Unidades recientes"
         class="text-body-1 w-full shadow-md"
-        :cards="propertyStats"
+        :cards="unitStats"
         v-if="false"
       >
         <template #content>

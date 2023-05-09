@@ -53,11 +53,11 @@ const getTimezones = () => {
 </script>
 
 <template>
-  <AppLayout title="Configuracion / Region">
+  <AppLayout :title="$t('Configuration / Region')">
     <template #header>
       <div class="flex items-center justify-end py-1 px-5">
         <div class="flex overflow-hidden font-bold text-gray-500 rounded-t-lg max-w-min">
-          <AppButton variant="secondary" @click="save()"> Save </AppButton>
+          <AppButton variant="secondary" @click="save()"> {{ $t("Save") }} </AppButton>
         </div>
       </div>
     </template>
@@ -68,24 +68,24 @@ const getTimezones = () => {
           class="bg-white w-full divide-y divide-gray-200 space-y-5 px-5 py-10 rounded-md"
         >
           <div class="md:flex md:space-x-4 pb-2">
-            <AppFormField class="md:max-w-sm" label="Currency">
+            <AppFormField class="md:max-w-sm" :label="$t('Currency')">
               <AtInput placeholder="Currency name" v-model="formData.region_currency" />
             </AppFormField>
-            <AppFormField class="md:max-w-sm" label="Date Format">
+            <AppFormField class="md:max-w-sm" :label="$t('Date Format')">
               <AtInput placeholder="Date format" v-model="formData.region_date_format" />
             </AppFormField>
-            <AppFormField class="md:max-w-sm" label="Number Format">
+            <AppFormField class="md:max-w-sm" :label="$t('Number Format')">
               <AtInput
-                placeholder="Number format"
+                :placeholder="$t('Number format')"
                 v-model="formData.region_number_format"
               />
             </AppFormField>
           </div>
 
           <div class="md:flex space-x-4">
-            <AppFormField label="Language">
+            <AppFormField :label="$t('Language')">
               <BaseSelect
-                placeholder="Select a language"
+                :placeholder="$t('Select a language')"
                 track-by="id"
                 label="name"
                 :options="getLocales()"
@@ -94,9 +94,9 @@ const getTimezones = () => {
               />
             </AppFormField>
 
-            <AppFormField label="Timezone">
+            <AppFormField :label="$t('Timezone')">
               <BaseSelect
-                placeholder="Select a timezone"
+                :placeholder="$t('Select a timezone')"
                 track-by="id"
                 label="name"
                 :options="getTimezones()"
