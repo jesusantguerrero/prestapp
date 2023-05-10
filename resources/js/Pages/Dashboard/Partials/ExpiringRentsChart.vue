@@ -29,32 +29,19 @@ import { computed, ref } from "vue";
 
 import formatMoney from "@/utils/formatMoney";
 
-defineProps({
-  title: {
-    type: String,
-    default: "bar",
-  },
-  description: {
-    type: String,
-    default: "bar",
-  },
-  type: {
-    type: String,
-    default: "bar",
-  },
-  headerInfo: {
-    type: Object,
-    required: true,
-  },
-  chart: {
-    type: Object,
-    required: true,
-  },
-  icon: {
-    type: String,
-    default: "home",
-  },
-});
+const props = defineProps<{
+  stats: {
+    expired: number;
+    in_month: number;
+    within_three_months: number;
+  };
+}>();
+
+const labels: Record<string, string> = {
+  expired: "Expired",
+  in_month: "Expiring this month",
+  within_three_months: "Expire within 3 months",
+};
 
 const { t } = useI18n();
 const chartRef = ref();
@@ -90,9 +77,9 @@ const chartConfig = {
         bottom: -80,
       },
     },
-    labels: ["Expire this month", "Next month", "Withing 3 months"],
+    labels: Object.keys(props.stats).map((item) => t(labels[item])),
   },
-  series: [7, 4, 5],
+  series: Object.values(props.stats),
 };
 
 const legend = computed(() => {

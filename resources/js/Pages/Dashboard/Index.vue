@@ -212,7 +212,7 @@ export default {
               class="grid-rows-1 py-4 space-y-4 md:grid md:grid-cols-2 md:divide-x-2"
             >
               <SectionFooterCard
-                title="Ganancias netas"
+                :title="$t('Gross earnings')"
                 :value="formatMoney(paidCommissions.totalInPeriod)"
               >
                 <template #footer>
@@ -233,7 +233,7 @@ export default {
                 </template>
               </SectionFooterCard>
               <SectionFooterCard
-                title="Balance pendiente"
+                :title="$t('Pending balance')"
                 :value="`${formatMoney(stats.outstanding)} (${formatMoney(
                   stats.outstanding_in_month
                 )})`"

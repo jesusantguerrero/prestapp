@@ -77,11 +77,21 @@ const props = defineProps({
   isTeamApproved: {
     type: Boolean,
   },
+  expiringRents: {
+    type: Object,
+    default() {
+      return {
+        expired: 0,
+        in_month: 0,
+        within_three_months: 0,
+      };
+    },
+  },
 });
 
 const unitStats = [
   {
-    label: "Total propiedades",
+    label: "Total unidades",
     value: props.stats?.total || 0,
   },
   {
@@ -98,7 +108,7 @@ const unitStats = [
 
 const ownerStats = computed(() => [
   {
-    label: "Total de propietarios",
+    label: "Propietarios",
     value: props.ownerStats?.total || 0,
   },
   {
@@ -247,22 +257,22 @@ const summaryType = ref("cash-flow");
               <section class="flex space-x-2">
                 <button
                   @click="summaryType = 'gains'"
-                  class="bg-base-lvl-2 py-1 rounded-3xl text-body-1 px-4 border border-transparent"
+                  class="bg-base-lvl-2 capitalize py-1 rounded-3xl text-body-1 px-4 border border-transparent"
                   :class="{
                     'bg-primary/10 border-primary  text-primary': summaryType == 'gains',
                   }"
                 >
-                  Ganancias
+                  {{ $t("earnings") }}
                 </button>
                 <button
                   @click="summaryType = 'cash-flow'"
-                  class="bg-base-lvl-2 py-1 rounded-3xl text-body-1 px-4 border border-transparent"
+                  class="bg-base-lvl-2 capitalize py-1 rounded-3xl text-body-1 px-4 border border-transparent"
                   :class="{
                     'bg-primary/10 border-primary  text-primary':
                       summaryType == 'cash-flow',
                   }"
                 >
-                  {{ $t("Cashflow") }}
+                  {{ $t("cashflow") }}
                 </button>
               </section>
             </template>
@@ -297,14 +307,11 @@ const summaryType = ref("cash-flow");
             action-link="/reports/expiring-rents"
           >
             <template #content>
-              <ExpiringRentsChart
-                :chart="interestPerformance"
-                :style="{ height: '350px' }"
-              />
+              <ExpiringRentsChart :stats="expiringRents" :style="{ height: '350px' }" />
             </template>
           </WelcomeWidget>
           <WidgetPropertiesStats
-            :total="50"
+            :total="stats?.total"
             :description="$t('Properties')"
             :unit-stats="unitStats"
           />
