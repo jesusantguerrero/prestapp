@@ -28,10 +28,9 @@ class RentCronsTest extends PropertyBase
   }
 
   public function testItGenerateLateFees() {
-    $this->seed();
     $this->actingAs($this->user);
 
-    $createdDate = now()->subMonths(2)->format('Y-m-d');
+    $createdDate = now()->subRealMonths(2)->format('Y-m-d');
     $firstInvoiceDate = InvoiceHelper::getNextDate($createdDate);
     $rent = $this->createRent([
       "date" => $createdDate,
@@ -41,14 +40,13 @@ class RentCronsTest extends PropertyBase
     ]);
 
     GenerateInvoices::chargeLateFees(true);
-    $this->assertCount(1, $rent->rentInvoices);
+    $this->assertCount(2, $rent->rentInvoices);
     $this->assertEquals($rent->rentInvoices->first()->status, Invoice::STATUS_OVERDUE);
     $this->assertCount(1, $rent->lateFeeInvoices);
     $this->assertEquals($rent->fresh()->status, Rent::STATUS_LATE);
   }
 
   public function testItShouldGenerateScheduledInvoices() {
-    $this->seed();
     $this->actingAs($this->user);
 
     $createdDate = now()->subRealMonths(2)->format('Y-m-d');
@@ -61,7 +59,7 @@ class RentCronsTest extends PropertyBase
     ]);
 
     GenerateInvoices::scheduledRents();
-    $this->assertCount(2, $rent->rentInvoices);
+    $this->assertCount(3, $rent->rentInvoices);
   }
 
 }
