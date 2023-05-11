@@ -1,5 +1,5 @@
 <template>
-  <AppLayout title="Notifications">
+  <AppLayout :title="$t('Notifications')">
     <div class="px-2 py-10 mx-auto sm:px-6 lg:px-8">
       <div class="w-full rounded-md bg-base-lvl-3">
         <BaseTable

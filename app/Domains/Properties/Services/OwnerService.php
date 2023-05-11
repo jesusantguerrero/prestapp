@@ -170,7 +170,6 @@ class OwnerService {
           (new OwnerDistributionService($owner))->fromService($ownerInvoices);
 
           $invoiceCount = count($ownerInvoices);
-          dd($month);
 
           activity()
           ->performedOn($owner)

@@ -6,9 +6,12 @@ use App\Domains\Accounting\Helpers\InvoiceHelper;
 use App\Domains\Properties\Actions\PropertyTransactionsValidator;
 use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Rent;
+use Exception;
 use Illuminate\Support\Carbon;
+use Insane\Journal\Helpers\ReportHelper;
 use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Invoice\Invoice;
+use Insane\Journal\Models\Invoice\InvoiceNote;
 
 class PropertyTransactionService {
     public static function getProRatedAmount(Rent $rent) {
@@ -170,10 +173,48 @@ class PropertyTransactionService {
         $invoice = self::createInvoice($invoiceData, $rent, false);
       } else {
         $invoice = $storedInvoice->updateDocument($invoiceData);
-
       }
 
       return $invoice;
+    }
+
+    public static function applyDepositTo($rent, $parentInvoice, $formData) {
+      (new PropertyTransactionsValidator())->canRefund($rent->client, $formData['total']);
+        $refundAccountId = Account::guessAccount($rent, ['real_state', 'cash_and_bank']);
+
+        $concept = "Aplicacion de deposito $rent->client_name";
+        $invoiceData = [
+          "date" => $formData['date'] ?? date('Y-m-d'),
+          "due_date" => $formData['date'] ?? date('Y-m-d'),
+          "concept" => "Factura aplicacion de deposito",
+          'category_type' => PropertyInvoiceTypes::DepositApply,
+          "type" => Invoice::DOCUMENT_TYPE_CREDIT_NOTE,
+          "description" => $concept,
+          "amount" => $formData['total'],
+          "total" => $formData['total'],
+          "account_id" => $rent->property->deposit_account_id,
+          "invoice_account_id" => $rent->client_account_id,
+          "items" => [],
+          'payment_details' => [
+            'account_id' => $refundAccountId,
+            'concept' => "Pago $concept",
+            'payment_method' => $formData['payment_method'] ?? 'cash'
+          ]
+        ];
+
+        if (isset($formData['payment_details'])) {
+          $invoiceData['payment_details'] = array_merge(
+            $formData['payment_details'],
+          [
+            "concept" => "Pago {$invoiceData['concept']}"
+          ]);
+        }
+
+        $invoice = self::createInvoice($invoiceData, $rent, false);
+
+        $parentInvoice->applyNote($invoice->id, InvoiceNote::TYPE_CREDIT, $invoice->total, $invoice->date);
+        return $invoice;
+
     }
 
     public static function createOrUpdateExpense(Rent $rent, $formData, $invoiceId = null) {
@@ -205,7 +246,7 @@ class PropertyTransactionService {
         "items" => $items,
       ];
 
-      if (isset($formData['is_paid_expense'])) {
+      if (isset($formData['is_paid_expense']) && $formData['is_paid_expense']) {
         $invoiceData['payment_details'] = [
           'account_id' => $formData['payment_account_id'] ?? $rent->property->account_id,
           'concept' => "Pago {$formData['concept']}",

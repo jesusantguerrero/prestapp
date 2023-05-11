@@ -5,6 +5,7 @@ namespace App\Domains\CRM\Models\Traits;
 use App\Domains\Properties\Models\Rent;
 use Insane\Journal\Models\Core\Category;
 use Insane\Journal\Models\Invoice\Invoice;
+use PhpParser\Node\Expr\Cast\Double;
 
 trait TenantTrait {
     // As tenant
@@ -20,8 +21,8 @@ trait TenantTrait {
       return $this->hasMany(Invoice::class)->latest('date');
     }
 
-    public function depositBalance() {
-      $category = Category::byUniqueField('security_deposits', $this->team_id);
+    public function depositBalance(string $uniqueField = "security_deposits") {
+      $category = Category::byUniqueField($uniqueField, $this->team_id);
       return abs($category->transactionBalance($this->id)->sum('balance'));
     }
 }
