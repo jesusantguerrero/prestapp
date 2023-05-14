@@ -202,6 +202,16 @@ class PropertyTransactionService {
           ]
         ];
 
+        $invoiceData['items'][] = [
+          "name" => $parentInvoice->concept,
+          "concept" => $invoiceData['concept'],
+          "quantity" => 1,
+          "account_id" => $rent->property->deposit_account_id,
+          "category_id" => $rent->client_account_id ,
+          "price" =>   $formData['total'],
+          "amount" =>  $formData['total'],
+        ];
+
         if (isset($formData['payment_details'])) {
           $invoiceData['payment_details'] = array_merge(
             $formData['payment_details'],
@@ -212,7 +222,12 @@ class PropertyTransactionService {
 
         $invoice = self::createInvoice($invoiceData, $rent, false);
 
-        $parentInvoice->applyNote($invoice->id, InvoiceNote::TYPE_CREDIT, $invoice->total, $invoice->date);
+        $parentInvoice->applyNote(
+          $invoice->id,
+          InvoiceNote::TYPE_CREDIT,
+          $formData['total'],
+          $invoice->date
+        );
         return $invoice;
 
     }

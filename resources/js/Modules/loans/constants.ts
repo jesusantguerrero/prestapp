@@ -11,6 +11,10 @@ export const paymentMethods = [
     id: "bank",
     name: "Banco",
   },
+  {
+    id: "deposit",
+    name: "Aplicar deposito",
+  },
 ];
 
 export const LOAN_FREQUENCY = {

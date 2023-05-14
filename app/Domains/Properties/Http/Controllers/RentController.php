@@ -159,6 +159,12 @@ class RentController extends InertiaController
       ];
     }
 
+    public function notes(Rent $rent) {
+      return [
+        "invoiceNotes" => $rent->invoiceNotes,
+      ];
+    }
+
     public function expenses(Rent $rent) {
       return [
         "expenses" => $rent->rentExpenses,
