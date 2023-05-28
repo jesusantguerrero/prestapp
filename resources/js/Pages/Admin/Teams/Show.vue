@@ -2,11 +2,15 @@
 import AppButton from "@/Components/shared/AppButton.vue";
 import TeamMemberCard from "@/Pages/Teams/Partials/TeamMemberCard.vue";
 import AdminTemplate from "../Partials/AdminTemplate.vue";
+import TeamBillingSection from "./TeamBillingSection.vue";
 import { router } from "@inertiajs/core";
 
 defineProps<{
   teams: Record<string, string | Object>;
   user: Record<string, string>;
+  sessions: any;
+  plans: any;
+  subscriptions: any;
 }>();
 
 const impersonateUser = (user: Record<string, string>) => {
@@ -23,6 +27,12 @@ const impersonateUser = (user: Record<string, string>) => {
           <AppButton @click="impersonateUser(teams.owner)"> Impersonate </AppButton>
         </template>
       </TeamMemberCard>
+
+      <TeamBillingSection
+        :sessions="sessions"
+        :plans="plans"
+        :subscriptions="subscriptions"
+      />
     </main>
   </AdminTemplate>
 </template>

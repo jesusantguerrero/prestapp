@@ -5,6 +5,11 @@ namespace App\Domains\Admin\Http\Controllers;
 use App\Domains\Admin\Services\AdminTeamService;
 use App\Http\Controllers\InertiaController;
 use App\Models\Team;
+use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Resources\Json\ResourceCollection;
+use Insane\Treasurer\Contracts\BillableEntity;
+use Insane\Treasurer\Models\Plan;
 
 class AdminTeamController extends InertiaController
 {
@@ -28,10 +33,20 @@ class AdminTeamController extends InertiaController
 
       // $this->authorizeResource(Team::class, 'index');
       // $this->authorizeResource(Team::class, 'show');
-
     }
 
     public function approve(Team $team, AdminTeamService $teamService) {
       $teamService->approve($team);
+    }
+
+
+    protected function getEditProps(Request $request, $id)
+    {
+      $biller = auth()->user()->currentTeam->resolve($request);
+      return [
+        "plans" => Plan::orderBy('quantity')->get(),
+        "subscriptions" => $biller ? $biller->subscriptions : [],
+        "transactions" => []
+      ];
     }
 }
