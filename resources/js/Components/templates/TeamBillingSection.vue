@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import DataCard from "@/Components/DataCard.vue";
-import DataPlanCard from "@/Components/DataPlanCard.vue";
-import DataBillingCard from "@/Components/DataBillingCard.vue";
 import { format } from "date-fns";
 import { computed } from "vue";
 import { router } from "@inertiajs/vue3";
+
+import DataCard from "@/Components/DataCard.vue";
+import DataPlanCard from "@/Components/DataPlanCard.vue";
+import DataBillingCard from "@/Components/DataBillingCard.vue";
 
 const props = defineProps<{
   sessions?: [];

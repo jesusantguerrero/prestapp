@@ -1,3 +1,15 @@
+<script lang="ts" setup>
+import AppLayout from "@/Components/templates/AppLayout.vue";
+import TeamBillingSection from "@/Components/templates/TeamBillingSection.vue";
+
+const props = defineProps<{
+  sessions?: [];
+  user: Record<string, any>;
+  plans: any[];
+  subscriptions: any;
+}>();
+</script>
+
 <template>
   <AppLayout>
     <template #header>
@@ -13,15 +25,3 @@
     />
   </AppLayout>
 </template>
-
-<script lang="ts" setup>
-import AppLayout from "@/Components/templates/AppLayout.vue";
-import TeamBillingSection from "../Admin/Teams/TeamBillingSection.vue";
-
-const props = defineProps<{
-  sessions?: [];
-  user: Record<string, any>;
-  plans: any[];
-  subscriptions: any;
-}>();
-</script>
