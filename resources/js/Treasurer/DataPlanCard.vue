@@ -5,7 +5,7 @@
         <div class="prose prose-xl">
           <h5 class="mb-2">Plan Details</h5>
           <div class="text-3xl">
-            <span class="text-purple-600 font-bold">
+            <span class="text-primary font-bold">
               {{ plan.display_name ?? plan.name }}
             </span>
 
