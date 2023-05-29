@@ -1,12 +1,12 @@
 <template>
   <div
     class="bg-white w-4/12 px-5 py-10 mb-5 mx-6 shadow-md rounded-md"
-    :class="{ 'border-purple-400 border-2': isCurrent }"
+    :class="{ 'border-primary border-2': isCurrent }"
   >
     <div class="prose prose-xl">
       <h3 class="text-center">
         {{ plan.display_name ?? plan.name }}
-        <div v-if="isCurrent" class="rounded-md text-purple-600 px-1 py-1 text-xs">
+        <div v-if="isCurrent" class="rounded-md text-primary px-1 py-1 text-xs">
           Current Plan
         </div>
       </h3>
@@ -32,7 +32,7 @@
     <div class="text-center" v-if="!isCurrent">
       <a
         v-if="contactLink"
-        class="border-2 border-purple-500 bg-white text-blue-500 px-5 py-2 inline-block rounded-md"
+        class="border-2 border-primary bg-white text-blue-500 px-5 py-2 inline-block rounded-md"
         :href="contactLink"
       >
         Contact Sales

@@ -5,14 +5,14 @@
         <div class="prose prose-xl">
           <h5 class="mb-2">Plan Details</h5>
           <div class="text-3xl">
-            <span class="text-purple-600 font-bold">
-              {{ plan.display_name ?? plan.name }}
+            <span class="text-primary font-bold">
+              {{ plan.plan.display_name ?? plan.name }}
             </span>
 
             <div class="text-2xl text-gray-400">Your plan information</div>
-            <div class="prose prose-md flex flex-col">
+            <div class="text-sm mt-10 grid grid-cols-2 gap-2 w-full">
               <span
-                v-for="feature in plan.features"
+                v-for="feature in plan.plan.features"
                 class="capitalize text-secondary font-bold"
               >
                 {{ feature }}
