@@ -168,6 +168,10 @@ const menus = {
         to: '/admin/teams',
       },
       {
+        label: 'Subscriptions',
+        to: '/admin/subscriptions',
+      },
+      {
         label: 'Users',
         to: '/admin/users',
       },

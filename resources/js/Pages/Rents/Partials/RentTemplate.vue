@@ -32,6 +32,7 @@ const tabs = {
   payments: "Pagos",
   invoices: "Facturas De Renta",
   deposits: "Depositos",
+  notes: "Notas de credito",
   expenses: "Gastos",
 };
 

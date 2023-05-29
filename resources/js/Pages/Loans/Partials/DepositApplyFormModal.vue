@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AtButton, AtInput } from "atmosphere-ui";
+import { AtButton, AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { format as formatDate, parseISO } from "date-fns";
 import { ElDatePicker, ElDialog, ElNotification } from "element-plus";
 import { ref, watch, computed, nextTick } from "vue";
@@ -13,17 +13,12 @@ import AccountSelect from "@/Components/shared/Selects/AccountSelect.vue";
 import AppFormField from "@/Components/shared/AppFormField.vue";
 import axios from "axios";
 import { useI18n } from "vue-i18n";
-import BaseSelect from "@/Components/shared/BaseSelect.vue";
-import DepositSelect from "@/Components/shared/Selects/DepositSelect.vue";
 
 const { t } = useI18n();
 
 const defaultPaymentForm = {
   amount: 0,
   account_id: "",
-  payment_method_id: {
-    id: "cash",
-  },
 };
 
 const props = withDefaults(
@@ -129,11 +124,6 @@ function onSubmit() {
     return;
   }
 
-  if (paymentForm.value.payment_method_id.id == "deposit") {
-    applyDeposit();
-    return;
-  }
-
   if (!paymentForm.id) {
     createPayment();
     return;
@@ -235,69 +225,23 @@ function createPayment() {
       isLoading.value = false;
     });
 }
-function applyDeposit() {
-  if (!paymentForm.value.amount) {
-    ElNotification({
-      type: "error",
-      message: "should specify an amount",
-    });
-    return;
-  }
 
-  const requiredFields = ["payment_date", "paymentMethod", "amount"];
-  const fieldsMapper = Object.entries(paymentForm.value).filter(([fieldName]) =>
-    requiredFields.includes(fieldName)
-  );
+function deletePayment() {
+  const endpoint = props.endpoint
+    ? props.endpoint
+    : `/invoice/${props.payment.resource_id}/payments/${props.payment?.id}`;
 
-  const hasErrors = fieldsMapper
-    .map(([fieldName, value]) => value)
-    .some((value) => !value);
-
-  if (hasErrors) {
-    ElNotification({
-      message: t("Check all required fields"),
-      type: "error",
-    });
-    return;
-  }
-
-  isLoading.value = true;
-
-  const { client_id, invoiceable_id } = props.payment;
-
-  const formData = {
-    client_id,
-    total: paymentForm.value.amount,
-    rent_id: invoiceable_id,
-    payment_date: formatDate(paymentForm.value.payment_date || new Date(), "yyyy-MM-dd"),
-    concept: paymentForm.value.concept,
-    payment_method_id: paymentForm.value.payment_method,
-    account_id: paymentForm.value.depositSource,
-    reference: paymentForm.value.reference,
-    notes: paymentForm.value.notes,
-  };
-
-  const { invoiceable_id: rentId, invoice_id: invoiceId } = props.payment;
-
-  const endpoint = `/rents/${rentId}/invoices/${invoiceId}/apply-deposit`;
-  axios({
-    method: paymentForm.value?.id ? "put" : "post",
-    url: endpoint,
-    data: formData,
-  })
+  axios
+    .delete(endpoint)
     .then(() => {
-      resetForm(true);
       emit("saved");
+      resetForm(true);
     })
     .catch((err) => {
-      console.log(err);
-      ElNotification({
+      notify({
         type: "error",
         message: err.response ? err.response.data.status.message : "Ha ocurrido un error",
       });
-    })
-    .finally(() => {
-      isLoading.value = false;
     });
 }
 
@@ -368,7 +312,7 @@ const savePaymentText = computed(() => {
 
       <section class="flex space-x-4">
         <AppFormField
-          v-if="!hideAccountSelector && paymentForm.payment_method_id?.id != 'deposit'"
+          v-if="!hideAccountSelector"
           class="w-5/12 mb-5 text-left"
           label="Cuenta de Pago"
           required
@@ -379,30 +323,16 @@ const savePaymentText = computed(() => {
             placeholder="Selecciona una cuenta"
             @update:modelValue="paymentForm.account_id = $event?.id"
           />
-          {{ paymentForm.payment_method_id }}
-        </AppFormField>
-        <AppFormField
-          v-else-if="paymentForm.payment_method_id?.id == 'deposit'"
-          class="w-5/12 mb-5 text-left"
-          label="Deposit"
-          required
-        >
-          <DepositSelect
-            :client-id="payment.client_id"
-            category-name="security_deposits"
-            v-model="paymentForm.depositSource"
-            placeholder="Selecciona una cuenta"
-          />
         </AppFormField>
         <AppFormField class="w-3/12 mb-5 text-left" label="Metodo de Pago" required>
-          <BaseSelect
+          <AtSimpleSelect
             v-model="paymentForm.payment_method_id"
-            :client-id="payment?.client_id"
+            v-model:selected="paymentForm.paymentMethod"
             :options="paymentMethods"
             placeholder="Forma pago"
             class="w-full"
             label="name"
-            track-by="id"
+            key-track="id"
           />
         </AppFormField>
         <AppFormField :label="$t('Payment date')" class="w-3/12" required>

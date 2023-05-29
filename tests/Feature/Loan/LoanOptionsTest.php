@@ -65,7 +65,7 @@ class LoanOptionsTest extends LoanBase
     $loanData['installments'] = array_map(function($repayment) {
       return (array) $repayment;
     }, $schedule->payments);
-    
+
     $response = $this->post("/loans/$loan->id/refinance", $loanData);
 
     $agreement = Loan::refinance()->first();
