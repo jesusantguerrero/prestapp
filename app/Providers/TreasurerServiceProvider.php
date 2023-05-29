@@ -9,7 +9,18 @@ use Insane\Treasurer\Treasurer;
 
 class TreasurerServiceProvider extends ServiceProvider
 {
-    public function boot()
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        //
+    }
+
+
+    public function boot(): void
     {
         Treasurer::useCustomerModel(Team::class);
         Treasurer::useBiller(ResolveBillable::class);

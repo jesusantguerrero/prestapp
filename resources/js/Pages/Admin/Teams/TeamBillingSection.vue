@@ -11,6 +11,7 @@ const props = defineProps<{
   teamId: number;
   plans: any[];
   subscriptions: any;
+  disableActions: boolean;
 }>();
 
 const visibleSubscriptions = computed(() => {
@@ -119,48 +120,44 @@ const subscribe = (url: string) => {
 </script>
 
 <template>
-  <section>
-    <header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">Billing</h2>
-    </header>
+  <main>
+    <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
+      <!-- Plan Statistics -->
+      <div class="plans__info flex mb-10">
+        <DataCard v-for="info in cards" :key="info.title" :info="info" />
+      </div>
+      <!-- /plan Statistics -->
 
-    <main>
-      <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
-        <!-- Plan Statistics -->
-        <div class="plans__info flex mb-10">
-          <DataCard v-for="info in cards" :key="info.title" :info="info" />
-        </div>
-        <!-- /plan Statistics -->
+      <!-- Current Plan -->
+      <div class="subscriptions__container mb-10">
+        <h4 class="font-bold mx-2 text-lg mb-2 text-gray-400">Current Plan</h4>
+        <DataPlanCard
+          v-for="plan in visibleSubscriptions"
+          :key="plan.id"
+          :plan="plan"
+          @suspend="sendSubscriptionAction(plan, 'suspend')"
+          @reactivate="sendSubscriptionAction(plan, 'reactivate')"
+          @cancel="sendSubscriptionAction(plan, 'cancel')"
+          :disabled="disableActions"
+        />
+      </div>
+      <!-- /Current Plan -->
 
-        <!-- Current Plan -->
-        <div class="subscriptions__container mb-10">
-          <h4 class="font-bold mx-2 text-lg mb-2 text-gray-400">Current Plan</h4>
-          <DataPlanCard
-            v-for="plan in visibleSubscriptions"
+      <!-- Plans -->
+      <div class="plans__container mt-5">
+        <h4 class="font-bold mx-2 text-lg b-2 text-gray-400">Plans</h4>
+        <div class="flex space-x-5 mt-5">
+          <DataBillingCard
+            v-for="plan in plans"
             :key="plan.id"
             :plan="plan"
-            @suspend="sendSubscriptionAction(plan, 'suspend')"
-            @reactivate="sendSubscriptionAction(plan, 'reactivate')"
-            @cancel="sendSubscriptionAction(plan, 'cancel')"
+            :is-current="isCurrentPlan(plan)"
+            :subscribe-label="getLabelSubscribe(plan)"
+            @selected="subscribe(`/admin/teams/${teamId}/subscribe/${plan.id}`)"
+            :disabled="disableActions"
           />
         </div>
-        <!-- /Current Plan -->
-
-        <!-- Plans -->
-        <div class="plans__container mt-5">
-          <h4 class="font-bold mx-2 text-lg b-2 text-gray-400">Plans</h4>
-          <div class="flex space-x-5 mt-5">
-            <DataBillingCard
-              v-for="plan in plans"
-              :key="plan.id"
-              :plan="plan"
-              :is-current="isCurrentPlan(plan)"
-              :subscribe-label="getLabelSubscribe(plan)"
-              @selected="subscribe(`/admin/teams/${teamId}/subscribe/${plan.id}`)"
-            />
-          </div>
-        </div>
       </div>
-    </main>
-  </section>
+    </div>
+  </main>
 </template>

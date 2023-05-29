@@ -54,6 +54,7 @@
         class="bg-green-500 text-white px-5 py-2 inline-block rounded-md mr-2"
         v-if="status == 'suspended'"
         @click="$emit('reactivate')"
+        :disabled="disabled"
       >
         Reactivate
       </button>
@@ -61,6 +62,7 @@
         class="bg-red-500 text-white px-5 py-2 inline-block rounded-md"
         v-if="['active', 'suspended'].includes(status)"
         @click="$emit('cancel')"
+        :disabled="disabled"
       >
         cancel
       </button>
@@ -68,20 +70,15 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    plan: {
-      type: Object,
-      required: true,
-    },
-  },
-  computed: {
-    status() {
-      return this.plan.status && this.plan.status.toLowerCase();
-    },
-  },
-};
-</script>
+<script setup lang="ts">
+import { computed } from "vue";
 
-<style></style>
+const props = defineProps<{
+  plan: Record<string, any>;
+  disabled?: boolean;
+}>();
+
+const status = computed(() => {
+  return props.plan.status && props.plan.status.toLowerCase();
+});
+</script>

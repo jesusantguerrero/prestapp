@@ -24,6 +24,9 @@ const props = defineProps({
     type: String,
     default: "subscribe",
   },
+  disabled: {
+    type: Boolean,
+  },
 });
 const emit = defineEmits(["selected"]);
 
@@ -108,6 +111,7 @@ function createSubscription(data: any) {
       <AppButton
         class="bg-primary justify-center text-white w-full"
         @click="$emit('selected', plan)"
+        :disabled="disabled"
       >
         {{ subscribeLabel }}
       </AppButton>
