@@ -1,3 +1,12 @@
+<script lang="ts" setup>
+defineProps({
+  info: {
+    type: Object,
+    required: true,
+  },
+});
+</script>
+
 <template>
   <div class="w-4/12 mx-2 p-5 bg-white border-gray-300 border-1 shadow-md rounded-md">
     <h5 class="mb-2">
@@ -19,16 +28,3 @@
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  props: {
-    info: {
-      type: Object,
-      required: true,
-    },
-  },
-};
-</script>
-
-<style></style>
