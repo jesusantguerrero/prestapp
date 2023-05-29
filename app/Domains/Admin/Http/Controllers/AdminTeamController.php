@@ -40,9 +40,8 @@ class AdminTeamController extends InertiaController
     }
 
 
-    protected function getEditProps(Request $request, $id)
+    protected function getEditProps(Request $request, $biller)
     {
-      $biller = auth()->user()->currentTeam->resolve($request);
       return [
         "plans" => Plan::orderBy('quantity')->get(),
         "subscriptions" => $biller ? $biller->subscriptions : [],

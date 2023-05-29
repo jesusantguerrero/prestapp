@@ -32,6 +32,7 @@ const impersonateUser = (user: Record<string, string>) => {
         :sessions="sessions"
         :plans="plans"
         :subscriptions="subscriptions"
+        :team-id="teams.id"
       />
     </main>
   </AdminTemplate>

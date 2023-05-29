@@ -4,9 +4,11 @@ import DataPlanCard from "@/Components/DataPlanCard.vue";
 import DataBillingCard from "@/Components/DataBillingCard.vue";
 import { format } from "date-fns";
 import { computed } from "vue";
+import { router } from "@inertiajs/vue3";
 
 const props = defineProps<{
   sessions?: [];
+  teamId: number;
   plans: any[];
   subscriptions: any;
 }>();
@@ -23,16 +25,15 @@ const details = computed(() => {
 
 const pendingBalance = computed(() => {
   if (details.value) {
-    const nextPayment = JSON.parse(details.value.next_payment);
-    return nextPayment.currency_code + " " + nextPayment.value;
+    const nextPayment = details.value.next_payment;
+    return nextPayment;
   }
   return 0;
 });
 
 const lastPayment = computed(() => {
   if (details.value) {
-    const lastPayment = JSON.parse(details.value.last_payment);
-    return lastPayment.amount.currency_code + " " + lastPayment.amount.value;
+    return details.value.last_payment;
   }
   return "-";
 });
@@ -102,15 +103,19 @@ function sendSubscriptionAction(subscription: any, actionName: string) {
 }
 
 function isCurrentPlan(plan: any) {
-  return visibleSubscriptions.value?.at?.(0)?.paypal_plan_id == plan.paypal_plan_id;
+  return visibleSubscriptions.value?.at?.(0)?.id == plan.id;
 }
 
 const isBigger = (plan: any) => {
-  return visibleSubscriptions.value?.at?.(0)?.quantity < plan.quantity;
+  return (visibleSubscriptions.value?.at?.(0)?.quantity ?? 0) < plan.quantity;
 };
 function getLabelSubscribe(plan: any) {
   return isBigger(plan) ? "Upgrade" : "Downgrade";
 }
+
+const subscribe = (url: string) => {
+  router.post(url);
+};
 </script>
 
 <template>
@@ -123,36 +128,35 @@ function getLabelSubscribe(plan: any) {
       <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
         <!-- Plan Statistics -->
         <div class="plans__info flex mb-10">
-          <data-card v-for="info in cards" :key="info.title" :info="info"> </data-card>
+          <DataCard v-for="info in cards" :key="info.title" :info="info" />
         </div>
         <!-- /plan Statistics -->
 
         <!-- Current Plan -->
         <div class="subscriptions__container mb-10">
           <h4 class="font-bold mx-2 text-lg mb-2 text-gray-400">Current Plan</h4>
-          <data-plan-card
+          <DataPlanCard
             v-for="plan in visibleSubscriptions"
             :key="plan.id"
             :plan="plan"
             @suspend="sendSubscriptionAction(plan, 'suspend')"
             @reactivate="sendSubscriptionAction(plan, 'reactivate')"
             @cancel="sendSubscriptionAction(plan, 'cancel')"
-          >
-          </data-plan-card>
+          />
         </div>
         <!-- /Current Plan -->
 
         <!-- Plans -->
         <div class="plans__container mt-5">
           <h4 class="font-bold mx-2 text-lg b-2 text-gray-400">Plans</h4>
-          <div class="flex space-x-5">
+          <div class="flex space-x-5 mt-5">
             <DataBillingCard
               v-for="plan in plans"
               :key="plan.id"
               :plan="plan"
               :is-current="isCurrentPlan(plan)"
-              :subscribe-link="`/subscriptions/${plan.id}/subscribe`"
               :subscribe-label="getLabelSubscribe(plan)"
+              @selected="subscribe(`/admin/teams/${teamId}/subscribe/${plan.id}`)"
             />
           </div>
         </div>
