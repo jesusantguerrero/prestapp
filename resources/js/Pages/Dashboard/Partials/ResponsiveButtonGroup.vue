@@ -31,15 +31,16 @@ const { isMobile } = useResponsive();
 </script>
 
 <template>
-  <div>
+  <div class="h-full">
     <ButtonGroup
       v-if="!isMobile"
-      class="w-full md:w-fit"
-      @update:modelValue="$emit('update:model-value')"
+      class="w-full md:w-fit h-full"
       :values="sections"
       :model-value="modelValue"
+      @update:modelValue="$emit('update:model-value', $event)"
     />
     <BaseSelect
+      v-else
       :model-value="selected"
       :options="options"
       :placeholder="placeholder"

@@ -72,7 +72,7 @@ const { isMobile } = useResponsive();
     <main class="py-5 pt-0 mx-auto text-gray-500">
       <div class="flex justify-between mt-4 mb-4 md:mt-0">
         <h4 class="hidden md:inline-block">{{ $t("Welcome") }}, {{ user.name }}</h4>
-        <section class="flex space-x-4 w-full">
+        <section class="flex space-x-4 w-full md:w-fit">
           <ResponsiveButtonGroup
             v-if="isTeamApproved"
             @update:modelValue="handleChange"
