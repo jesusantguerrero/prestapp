@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Domains\Properties\Services\RentTransactionService;
 use Illuminate\Console\Command;
 
-class RemovePostExpirationInvoices extends Command
+class RemovePostCancellationInvoices extends Command
 {
     /**
      * The name and signature of the console command.
