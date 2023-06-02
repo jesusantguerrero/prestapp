@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 class RentReportController extends Controller
 {
     use HasEnrichedRequest;
-    // Tools
     public function monthlySummary(Request $request) {
       $teamId = $request->user()->current_team_id;
       $filters = $request->query('filter');
@@ -65,8 +64,7 @@ class RentReportController extends Controller
       ]);
     }
 
-     // Tools
-     public function management(Request $request) {
+    public function management(Request $request) {
       $teamId = $request->user()->current_team_id;
       $filters = $request->query('filters');
       $ownerId = $filters['owner'] ?? null;

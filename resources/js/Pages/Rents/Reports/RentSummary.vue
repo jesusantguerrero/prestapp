@@ -2,10 +2,10 @@
 import { reactive, watch, nextTick, ref, computed } from "vue";
 // @ts-ignore
 import { AtBackgroundIconCard, AtDatePager } from "atmosphere-ui";
-import { router, useForm } from "@inertiajs/vue3";
+import { Link, router, useForm } from "@inertiajs/vue3";
 import { toRefs } from "@vueuse/shared";
 import { useI18n } from "vue-i18n";
-import { ElMessageBox } from "element-plus";
+import { ElMessageBox, ElTag } from "element-plus";
 
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
@@ -26,6 +26,8 @@ import {
 } from "@/Modules/clients/clientInteractions";
 import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
 import { useServerSearch } from "@/utils/useServerSearch";
+import { getRentStatusColor } from "@/Modules/properties/constants";
+import { useResponsive } from "@/utils/useResponsive";
 
 const props = defineProps({
   invoices: {
@@ -236,13 +238,25 @@ router.on("start", (event) => {
 router.on("finish", () => {
   isLoading.value = false;
 });
+
+const { isMobile } = useResponsive();
 </script>
 
 <template>
   <AppLayout :title="sectionLabel">
+    <template #title v-if="isMobile">
+      <AtDatePager
+        class="w-full h-12 border-none bg-base-lvl-1 text-body"
+        v-model:startDate="pageState.dates.startDate"
+        v-model:endDate="pageState.dates.endDate"
+        @change="executeSearchWithDelay()"
+        controlsClass="bg-transparent text-body hover:bg-base-lvl-1"
+        next-mode="month"
+      />
+    </template>
     <template #header>
       <PropertySectionNav>
-        <template #actions>
+        <template #actions v-if="!isMobile">
           <AtDatePager
             class="w-full h-12 border-none bg-base-lvl-1 text-body"
             v-model:startDate="pageState.dates.startDate"
@@ -256,24 +270,24 @@ router.on("finish", () => {
     </template>
 
     <div class="pt-16 md:py-10 mx-auto sm:px-6 lg:px-8">
-      <section class="md:flex md:space-x-4">
+      <section class="grid grid-cols-2 gap-2 md:flex md:space-x-4 general-stats">
         <AtBackgroundIconCard
-          class="w-full bg-white border h-28 text-body-1"
+          class="w-full bg-white border md:h-28 text-body-1"
           title="Pagado"
           :value="formatMoney(paid ?? 0)"
         />
         <AtBackgroundIconCard
-          class="w-full bg-white border h-28 text-body-1"
-          title="Balance de Pendiente"
+          class="w-full bg-white border md:h-28 text-body-1"
+          title="Pendiente"
           :value="formatMoney(outstanding ?? 0)"
         />
         <AtBackgroundIconCard
-          class="w-full bg-white border h-28 text-body-1"
+          class="w-full bg-white border md:h-28 text-body-1"
           title="Total del mes"
           :value="formatMoney((outstanding ?? 0) + (paid ?? 0))"
         />
         <AtBackgroundIconCard
-          class="w-full bg-white border h-28 text-body-1"
+          class="w-full bg-white border md:h-28 text-body-1"
           title="Facturas"
           :value="total || 0"
         />
@@ -333,6 +347,36 @@ router.on("finish", () => {
             :is-loading="isLoading"
             class="rounded-md bg-base-lvl-3 mt-0"
           >
+            <template v-slot:concept="{ row }">
+              <section v-if="!isLoading">
+                <p>
+                  <Link
+                    :href="`/${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}`"
+                    class="text-blue-400 inline-flex capitalize border-b justify-between border-blue-400 border-dashed cursor-pointer text-sm"
+                    :title="row.description"
+                  >
+                    <section>
+                      {{ row.concept }}
+                      <span class="font-bold text-gray-300">
+                        {{ row.series }} #{{ row.number }}
+                      </span>
+                    </section>
+                  </Link>
+                </p>
+                <p class="flex items-center mt-2">
+                  <IClarityContractLine class="mr-2" />
+                  {{ row.client_name }}
+                  <ElTag
+                    :type="getRentStatusColor(row.rent_status)"
+                    class="ml-2"
+                    v-if="row.rent_status"
+                  >
+                    {{ $t(row.rent_status ?? "") }} {{ row.move_out_at }}
+                  </ElTag>
+                </p>
+              </section>
+              <ElSkeleton :rows="1" animated v-else />
+            </template>
             <template v-slot:actions="{ row }">
               <div class="flex justify-end items-center space-x-2s group">
                 <div
@@ -448,6 +492,14 @@ router.on("finish", () => {
     button {
       margin-left: auto;
     }
+  }
+}
+</style>
+
+<style lang="scss">
+@media (max-width: 1024px) {
+  .general-stats .text-3xl {
+    font-size: 1em;
   }
 }
 </style>

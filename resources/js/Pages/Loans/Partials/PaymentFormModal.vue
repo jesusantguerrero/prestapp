@@ -13,6 +13,8 @@ import AccountSelect from "@/Components/shared/Selects/AccountSelect.vue";
 import AppFormField from "@/Components/shared/AppFormField.vue";
 import axios from "axios";
 import { useI18n } from "vue-i18n";
+import { useResponsive } from "@/utils/useResponsive";
+import BaseDatePicker from "@/Components/shared/BaseDatePicker.vue";
 
 const { t } = useI18n();
 
@@ -262,12 +264,20 @@ function emitChange(value) {
 const savePaymentText = computed(() => {
   return paymentForm.value.id ? "Update payment" : "Save payment";
 });
+
+const { isMobile } = useResponsive();
+
+const dialogWidth = computed(() => {
+  return isMobile ? "100%" : "50%";
+});
 </script>
 
 <template>
   <ElDialog
     class="rounded-lg overflow-hidden"
     @open="setFormData()"
+    :width="dialogWidth"
+    :fullscreen="isMobile"
     :model-value="modelValue"
     @update:model-value="$emit('update:modelValue', $event)"
   >
@@ -282,7 +292,7 @@ const savePaymentText = computed(() => {
       </header>
     </template>
     <div class="">
-      <section class="flex space-x-4">
+      <section class="md:flex md:space-x-4">
         <AppFormField
           required
           class="w-full text-left"
@@ -310,7 +320,7 @@ const savePaymentText = computed(() => {
         </AppFormField>
       </section>
 
-      <section class="flex space-x-4">
+      <section class="md:flex md:space-x-4">
         <AppFormField
           v-if="!hideAccountSelector"
           class="w-5/12 mb-5 text-left"
@@ -324,7 +334,7 @@ const savePaymentText = computed(() => {
             @update:modelValue="paymentForm.account_id = $event?.id"
           />
         </AppFormField>
-        <AppFormField class="w-3/12 mb-5 text-left" label="Metodo de Pago" required>
+        <AppFormField class="md:w-3/12 mb-5 text-left" label="Metodo de Pago" required>
           <AtSimpleSelect
             v-model="paymentForm.payment_method_id"
             v-model:selected="paymentForm.paymentMethod"
@@ -335,13 +345,8 @@ const savePaymentText = computed(() => {
             key-track="id"
           />
         </AppFormField>
-        <AppFormField :label="$t('Payment date')" class="w-3/12" required>
-          <ElDatePicker
-            v-model="paymentForm.payment_date"
-            size="large"
-            class="w-full"
-            rounded
-          />
+        <AppFormField :label="$t('Payment date')" class="md:w-3/12 w-full" required>
+          <BaseDatePicker v-model="paymentForm.payment_date" />
         </AppFormField>
       </section>
 
@@ -391,3 +396,11 @@ const savePaymentText = computed(() => {
     </template>
   </ElDialog>
 </template>
+
+<style lang="scss">
+.el-dialog.is-dialog footer.el-dialog__footer {
+  position: fixed !important;
+  width: 100%;
+  bottom: 0;
+}
+</style>

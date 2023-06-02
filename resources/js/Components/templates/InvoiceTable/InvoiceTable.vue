@@ -43,48 +43,40 @@ const visibleData = computed(() => {
     </template>
 
     <template v-slot:concept="{ scope: { row } }">
-      <section v-if="!isLoading">
-        <p>
-          <Link
-            :href="`/${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}`"
-            class="text-blue-400 inline-flex capitalize border-b justify-between border-blue-400 border-dashed cursor-pointer text-sm"
-          >
-            <section>
-              {{ row.concept }}
-              <span class="font-bold text-gray-300">
-                {{ row.series }} #{{ row.number }}
-              </span>
-            </section>
-            <!-- <span class="ml-2">
-              <IMdiEdit />
-            </span> -->
-          </Link>
-        </p>
-        <p>
-          <Link
-            class="text-sm text-body-1 mt-2"
-            :href="`/clients/${row.client_id || row.contact_id}`"
-          >
-            <i class="fa fa-user text-xs" />
-            {{ row.client_name }}
-          </Link>
-        </p>
-        <p class="flex items-center">
-          <span v-if="!row.isEditing">
-            {{ row.description }}
-          </span>
-          <AtInput v-model="row.description" v-else />
-          <span class="ml-2">
-            <!-- <button
-              class="cursor-pointer hover:text-primary"
-              @click="row.isEditing = !row.isEditing"
+      <slot name="concept" :row="row">
+        <section v-if="!isLoading">
+          <p>
+            <Link
+              :href="`/${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}`"
+              class="text-blue-400 inline-flex capitalize border-b justify-between border-blue-400 border-dashed cursor-pointer text-sm"
             >
-              <IMdiEdit />
-            </button> -->
-          </span>
-        </p>
-      </section>
-      <ElSkeleton :rows="1" animated v-else />
+              <section>
+                {{ row.concept }}
+                <span class="font-bold text-gray-300">
+                  {{ row.series }} #{{ row.number }}
+                </span>
+              </section>
+            </Link>
+          </p>
+          <p>
+            <Link
+              class="text-sm text-body-1 mt-2"
+              :href="`/clients/${row.client_id || row.contact_id}`"
+            >
+              <i class="fa fa-user text-xs" />
+              {{ row.client_name }}
+            </Link>
+          </p>
+          <p class="flex items-center">
+            <span v-if="!row.isEditing">
+              {{ row.description }}
+            </span>
+            <AtInput v-model="row.description" v-else />
+            <span class="ml-2"> </span>
+          </p>
+        </section>
+        <ElSkeleton :rows="1" animated v-else />
+      </slot>
     </template>
 
     <template v-slot:status="{ scope: { row } }">
