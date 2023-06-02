@@ -23,7 +23,7 @@ const ValueComponent = computed(() => {
         {{ value }}
       </ValueComponent>
     </section>
-    <footer class="flex space-x-4 mt-auto">
+    <footer class="md:flex md:space-x-4 mt-auto">
       <slot name="footer" />
     </footer>
   </article>

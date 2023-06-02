@@ -27,6 +27,7 @@ import {
 import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
 import { useServerSearch } from "@/utils/useServerSearch";
 import { getRentStatusColor } from "@/Modules/properties/constants";
+import { useResponsive } from "@/utils/useResponsive";
 
 const props = defineProps({
   invoices: {
@@ -237,13 +238,25 @@ router.on("start", (event) => {
 router.on("finish", () => {
   isLoading.value = false;
 });
+
+const { isMobile } = useResponsive();
 </script>
 
 <template>
   <AppLayout :title="sectionLabel">
+    <template #title v-if="isMobile">
+      <AtDatePager
+        class="w-full h-12 border-none bg-base-lvl-1 text-body"
+        v-model:startDate="pageState.dates.startDate"
+        v-model:endDate="pageState.dates.endDate"
+        @change="executeSearchWithDelay()"
+        controlsClass="bg-transparent text-body hover:bg-base-lvl-1"
+        next-mode="month"
+      />
+    </template>
     <template #header>
       <PropertySectionNav>
-        <template #actions>
+        <template #actions v-if="!isMobile">
           <AtDatePager
             class="w-full h-12 border-none bg-base-lvl-1 text-body"
             v-model:startDate="pageState.dates.startDate"
@@ -257,24 +270,24 @@ router.on("finish", () => {
     </template>
 
     <div class="pt-16 md:py-10 mx-auto sm:px-6 lg:px-8">
-      <section class="md:flex md:space-x-4">
+      <section class="grid grid-cols-2 gap-2 md:flex md:space-x-4 general-stats">
         <AtBackgroundIconCard
-          class="w-full bg-white border h-28 text-body-1"
+          class="w-full bg-white border md:h-28 text-body-1"
           title="Pagado"
           :value="formatMoney(paid ?? 0)"
         />
         <AtBackgroundIconCard
-          class="w-full bg-white border h-28 text-body-1"
-          title="Balance de Pendiente"
+          class="w-full bg-white border md:h-28 text-body-1"
+          title="Pendiente"
           :value="formatMoney(outstanding ?? 0)"
         />
         <AtBackgroundIconCard
-          class="w-full bg-white border h-28 text-body-1"
+          class="w-full bg-white border md:h-28 text-body-1"
           title="Total del mes"
           :value="formatMoney((outstanding ?? 0) + (paid ?? 0))"
         />
         <AtBackgroundIconCard
-          class="w-full bg-white border h-28 text-body-1"
+          class="w-full bg-white border md:h-28 text-body-1"
           title="Facturas"
           :value="total || 0"
         />
@@ -479,6 +492,14 @@ router.on("finish", () => {
     button {
       margin-left: auto;
     }
+  }
+}
+</style>
+
+<style lang="scss">
+@media (max-width: 1024px) {
+  .general-stats .text-3xl {
+    font-size: 1em;
   }
 }
 </style>

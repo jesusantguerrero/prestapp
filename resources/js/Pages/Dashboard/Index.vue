@@ -215,20 +215,21 @@ export default {
               <SectionFooterCard
                 title="Ganancias netas"
                 :value="formatMoney(paidCommissions.totalInPeriod)"
+                class="w-full"
               >
                 <template #footer>
                   <p class="flex items-center text-xs text-success md:text-sm" rounded>
                     <IMdiArrowUpThick />
                     <span class="font-bold">
                       {{ formatMoney(accounts.cash_and_bank?.at(0)?.income ?? 0) }}
-                      {{ !isMobile && "Recibido" }}
+                      {{ !isMobile ? "Recibido" : "" }}
                     </span>
                   </p>
                   <p class="flex items-center text-xs text-error/70 md:text-sm" rounded>
                     <IMdiArrowDownThick />
                     <span class="font-bold">
                       {{ formatMoney(accounts.cash_and_bank?.at(0)?.outcome ?? 0) }}
-                      {{ !isMobile && "Gastado" }}
+                      {{ !isMobile ? "Gastado" : "" }}
                     </span>
                   </p>
                 </template>
@@ -238,7 +239,7 @@ export default {
                 :value="`${formatMoney(stats.outstanding)} (${formatMoney(
                   stats.outstanding_in_month
                 )})`"
-                class="md:pl-6"
+                class="md:pl-6 w-full"
                 value-link="/property-reports?filters[owner]=&filters[property]=&filters[section]=invoices"
               >
                 <template #footer class="flex">
@@ -274,7 +275,7 @@ export default {
       </div>
       <WelcomeWidget
         message="Accesos Rapidos"
-        class="hidden w-full mt-4 md:block md:mt-0 md:w-3/12"
+        class="w-full mt-4 md:block md:mt-0 md:w-3/12"
       >
         <template #content>
           <FastAccessOptions />
