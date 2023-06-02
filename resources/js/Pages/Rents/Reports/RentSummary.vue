@@ -2,10 +2,10 @@
 import { reactive, watch, nextTick, ref, computed } from "vue";
 // @ts-ignore
 import { AtBackgroundIconCard, AtDatePager } from "atmosphere-ui";
-import { router, useForm } from "@inertiajs/vue3";
+import { Link, router, useForm } from "@inertiajs/vue3";
 import { toRefs } from "@vueuse/shared";
 import { useI18n } from "vue-i18n";
-import { ElMessageBox } from "element-plus";
+import { ElMessageBox, ElTag } from "element-plus";
 
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
@@ -26,6 +26,7 @@ import {
 } from "@/Modules/clients/clientInteractions";
 import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
 import { useServerSearch } from "@/utils/useServerSearch";
+import { getRentStatusColor } from "@/Modules/properties/constants";
 
 const props = defineProps({
   invoices: {
@@ -333,6 +334,36 @@ router.on("finish", () => {
             :is-loading="isLoading"
             class="rounded-md bg-base-lvl-3 mt-0"
           >
+            <template v-slot:concept="{ row }">
+              <section v-if="!isLoading">
+                <p>
+                  <Link
+                    :href="`/${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}`"
+                    class="text-blue-400 inline-flex capitalize border-b justify-between border-blue-400 border-dashed cursor-pointer text-sm"
+                    :title="row.description"
+                  >
+                    <section>
+                      {{ row.concept }}
+                      <span class="font-bold text-gray-300">
+                        {{ row.series }} #{{ row.number }}
+                      </span>
+                    </section>
+                  </Link>
+                </p>
+                <p class="flex items-center mt-2">
+                  <IClarityContractLine class="mr-2" />
+                  {{ row.client_name }}
+                  <ElTag
+                    :type="getRentStatusColor(row.rent_status)"
+                    class="ml-2"
+                    v-if="row.rent_status"
+                  >
+                    {{ $t(row.rent_status ?? "") }} {{ row.move_out_at }}
+                  </ElTag>
+                </p>
+              </section>
+              <ElSkeleton :rows="1" animated v-else />
+            </template>
             <template v-slot:actions="{ row }">
               <div class="flex justify-end items-center space-x-2s group">
                 <div
