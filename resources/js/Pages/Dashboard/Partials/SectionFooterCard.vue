@@ -19,11 +19,12 @@ const ValueComponent = computed(() => {
   <article class="grid grid-rows-section-footer-card">
     <section class="my-auto">
       <h4 class="font-bold text-lg">{{ title }}</h4>
-      <ValueComponent class="text-xl lg:text-3xl font-bold" :href="valueLink">
+      <ValueComponent class="md:text-xl lg:text-3xl font-bold" :href="valueLink">
+
         {{ value }}
       </ValueComponent>
     </section>
-    <footer class="flex space-x-4 mt-auto">
+    <footer class="md:flex md:space-x-4 mt-auto">
       <slot name="footer" />
     </footer>
   </article>

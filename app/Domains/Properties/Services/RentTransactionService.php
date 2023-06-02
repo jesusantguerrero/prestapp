@@ -172,4 +172,34 @@ class RentTransactionService {
         }
       }
     }
+
+    public static function removeInvoicesOfCancelled($teamId) {
+      $invoices = Invoice::where([
+        'invoices.team_id' => $teamId,
+        'invoices.type' => 'INVOICE',
+        'invoiceable_type' => Rent::class
+      ])
+      ->select("invoices.*")
+      ->whereRaw('DATE_FORMAT(invoices.due_date,  "%Y-%m") >= DATE_FORMAT(rents.move_out_at, "%Y-%m")')
+      ->join('rents', 'rents.id', '=', 'invoices.invoiceable_id')
+      ->get();
+
+      foreach ($invoices as $invoice) {
+
+          $description = "removing invoice {$invoice->description} post expiration from {$invoice?->due_date} because is after move out {$invoice->rent_move_out_at}";
+          echo $description . PHP_EOL;
+          Invoice::destroy($invoice->id);
+          $rent = Rent::find($invoice->invoiceable_id);
+          $generatedInvoiceDates = $rent->rentInvoices()->select(['id', 'due_date'])->pluck('due_date')->all();
+
+          $rent->update([
+            'next_invoice_date' => null,
+            'generated_invoice_dates' => $generatedInvoiceDates
+          ]);
+
+          activity()
+          ->causedBy($rent)
+          ->log("System {$description}");
+      }
+    }
 }

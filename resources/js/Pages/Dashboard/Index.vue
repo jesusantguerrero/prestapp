@@ -13,6 +13,7 @@ import FastAccessOptions from "./Partials/FastAccessOptions.vue";
 import { Link } from "@inertiajs/vue3";
 import { useI18n } from "vue-i18n";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
+import { useResponsive } from "@/utils/useResponsive";
 
 const { t } = useI18n();
 
@@ -181,6 +182,8 @@ const onBoardSteps = [
 ];
 
 const isOnboardingOpen = inject("isOnboardingOpen");
+
+const { isMobile } = useResponsive();
 </script>
 
 <script lang="ts">
@@ -208,26 +211,25 @@ export default {
       <div class="flex flex-col justify-between w-full md:w-9/12">
         <WelcomeWidget :message="$t('Performance of the month')" class="shadow-sm">
           <template #content>
-            <section
-              class="grid-rows-1 py-4 space-y-4 md:grid md:grid-cols-2 md:divide-x-2"
-            >
+            <section class="flex py-4 space-y-4 md:grid md:grid-cols-2 md:divide-x-2">
               <SectionFooterCard
                 :title="$t('Gross earnings')"
                 :value="formatMoney(paidCommissions.totalInPeriod)"
+                class="w-full"
               >
                 <template #footer>
                   <p class="flex items-center text-xs text-success md:text-sm" rounded>
                     <IMdiArrowUpThick />
                     <span class="font-bold">
                       {{ formatMoney(accounts.cash_and_bank?.at(0)?.income ?? 0) }}
-                      Recibido
+                      {{ !isMobile ? "Recibido" : "" }}
                     </span>
                   </p>
                   <p class="flex items-center text-xs text-error/70 md:text-sm" rounded>
                     <IMdiArrowDownThick />
                     <span class="font-bold">
                       {{ formatMoney(accounts.cash_and_bank?.at(0)?.outcome ?? 0) }}
-                      Gastado
+                      {{ !isMobile ? "Gastado" : "" }}
                     </span>
                   </p>
                 </template>
@@ -237,7 +239,7 @@ export default {
                 :value="`${formatMoney(stats.outstanding)} (${formatMoney(
                   stats.outstanding_in_month
                 )})`"
-                class="md:pl-6"
+                class="md:pl-6 w-full"
                 value-link="/property-reports?filters[owner]=&filters[property]=&filters[section]=invoices"
               >
                 <template #footer class="flex">
@@ -273,7 +275,7 @@ export default {
       </div>
       <WelcomeWidget
         message="Accesos Rapidos"
-        class="hidden w-full mt-4 md:block md:mt-0 md:w-3/12"
+        class="w-full mt-4 md:block md:mt-0 md:w-3/12"
       >
         <template #content>
           <FastAccessOptions />
@@ -286,20 +288,26 @@ export default {
         :chart="comparisonRevenue"
         :style="{ height: '310px' }"
       />
-      <article class="order-1 space-y-2 lg:w-3/12 lg:order-2">
-        <AtBackgroundIconCard
-          class="h-32 border-2 cursor-pointer text-primary bg-primary/10 border-primary/20"
-          icon="fas fa-wallet"
-          :value="formatMoney(props.dailyBox?.balance | 0)"
-          title="Cuenta de Prestamos"
-          @click="openLoanAccount()"
-        />
-        <AtBackgroundIconCard
-          class="h-32 border-2 cursor-pointer text-secondary bg-secondary/10 border-secondary/20"
-          icon="fas fa-wallet"
-          :value="formatMoney(props.realState.balance | 0)"
-          title="Cuenta Inmobiliaria"
-        />
+      <article class="order-1 md:space-y-2 lg:w-3/12 lg:order-2">
+        <div
+          class="flex justify-between md:block mb-2 md:space-y-2 dashboard-bank-accounts"
+        >
+          <AtBackgroundIconCard
+            class="md:h-32 border-2 cursor-pointer text-primary bg-primary/10 border-primary/20"
+            icon="fas fa-wallet"
+            :value="formatMoney(props.dailyBox?.balance | 0)"
+            title="Cuenta de Prestamos"
+            icon-class="text-primary opacity-40"
+            @click="openLoanAccount()"
+          />
+          <AtBackgroundIconCard
+            class="md:h-32 border-2 cursor-pointer text-secondary bg-secondary/10 border-secondary/20"
+            icon="fas fa-wallet"
+            :value="formatMoney(props.realState.balance | 0)"
+            title="Cuenta Inmobiliaria"
+            icon-class="text-secondary opacity-40"
+          />
+        </div>
         <AppButton variant="secondary" class="w-full" @click="openLoanAccount()">
           Agregar fondos
         </AppButton>
@@ -307,3 +315,11 @@ export default {
     </section>
   </main>
 </template>
+
+<style lang="scss">
+@media (max-width: 1024px) {
+  .dashboard-bank-accounts .text-3xl {
+    font-size: 1em;
+  }
+}
+</style>
