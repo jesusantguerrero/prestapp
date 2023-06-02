@@ -1,7 +1,9 @@
 <?php
 
 use App\Domains\Admin\Http\Controllers\AdminBackupController;
+use App\Domains\Admin\Http\Controllers\AdminBillingController;
 use App\Domains\Admin\Http\Controllers\AdminController;
+use App\Domains\Admin\Http\Controllers\AdminSubscriptionController;
 use App\Domains\Admin\Http\Controllers\AdminTeamController;
 use App\Domains\Admin\Http\Controllers\AdminUserController;
 use Illuminate\Support\Facades\Route;
@@ -17,7 +19,10 @@ Route::middleware([
     Route::post('/teams/{team}/approve', [AdminTeamController::class, 'approve'])->name('teams.approve');
     Route::post('/impersonate-user/{userId}', [AdminController::class, 'impersonateUser']);
 
+    Route::post('/teams/{team}/subscribe/{planId}', [AdminBillingController::class, 'subscribe'])->name('billing.subscribe');
+
     Route::resource('/users', AdminUserController::class);
+    Route::resource('/subscriptions', AdminSubscriptionController::class);
 
     Route::get('/commands', [AdminController::class, 'commandList']);
     Route::post('/commands', [AdminController::class, 'runCommand']);

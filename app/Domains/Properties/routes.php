@@ -61,6 +61,7 @@ Route::middleware([
       Route::get('/rents/{rent}/transactions/deposit-refund/create',  'createDepositRefund')->name('property.transactions.create-refund');
       Route::post('/properties/{rent}/transactions/{type}',  'store');
       Route::post('/properties/{rent}/transactions/{type}/{invoiceId}', 'store');
+      Route::post('/rents/{rent}/invoices/{invoice}/apply-deposit', 'applyDeposit');
     });
 
    ;

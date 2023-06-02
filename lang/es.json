@@ -8,6 +8,7 @@
     "validation": {
       "unique": ""
     },
+    "notifications": "notificaciones",
     "Performance of the month": "Estadisticas del mes",
     "Payments": "Pagos",
     "Welcome": "Hola",
@@ -15,11 +16,14 @@
     "Expiring rents": "Contratos proximos a expirar",
     "Home": "Inicio",
     "Loans": "Prestamos",
+    "Gross earnings": "Ganancias netas",
     "Properties": "Propiedades",
     "Accounting": "Contabilidad",
     "Reports": "Reportes",
     "Help & support": "Ayuda y Soporte",
     "Configuration": "Configuración",
+    "earnings": "ganancias",
+    "cashflow": "Flujo de efectivo",
     "approval": {
       "consultantPending": {
           "content": "Your account is currently unverified and your application is pending approval. Please check back again within 24 hours."
@@ -137,5 +141,6 @@
     "Number Format": "Formato de cantidades",
     "Language": "Idioma",
     "Timezone": "Zona Horaria",
-    "Save": "Guardar"
+    "Save": "Guardar",
+    "An invoice for :name was generated": "Una factura para :name fue generada"
   }

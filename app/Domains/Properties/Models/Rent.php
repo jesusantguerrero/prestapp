@@ -98,6 +98,10 @@ class Rent extends Transactionable implements IPayableDocument {
       return $this->morphMany(Invoice::class, 'invoiceable')->orderBy('due_date', 'desc');
     }
 
+    public function invoiceNotes() {
+      return $this->morphMany(Invoice::class, 'invoiceable')->where('type', Invoice::DOCUMENT_TYPE_CREDIT_NOTE);
+    }
+
     public function postExpirationInvoices() {
       return $this->invoices()
       ->where('due_date', '>', $this->end_date)

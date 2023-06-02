@@ -6,6 +6,7 @@ use App\Domains\Properties\Models\Rent;
 use App\Domains\Properties\Services\PropertyTransactionService;
 use App\Http\Controllers\Controller;
 use Exception;
+use Insane\Journal\Models\Invoice\Invoice;
 
 class PropertyTransactionController extends Controller
 {
@@ -53,6 +54,16 @@ class PropertyTransactionController extends Controller
     public function refund($rent, $postData) {
       try {
         PropertyTransactionService::createDepositRefund($rent, $postData);
+        return back();
+      } catch (Exception $e) {
+        back()->withErrors(["error" => $e->getMessage()]);
+      }
+    }
+
+    public function applyDeposit(Rent $rent, Invoice $invoice) {
+      $postData = request()->post();
+      try {
+        PropertyTransactionService::applyDepositTo($rent, $invoice, $postData);
         return back();
       } catch (Exception $e) {
         back()->withErrors(["error" => $e->getMessage()]);

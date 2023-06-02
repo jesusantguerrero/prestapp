@@ -199,6 +199,22 @@ class RentService {
       ->get();
     }
 
+    public static function expiredRentStats($teamId = null) {
+      $endOfThisMonth = now()->endOfMonth()->format('Y-m-d');
+      $lastMonth = now()->addRealMonths(3)->endOfMonth()->format('Y-m-d');
+
+      return Rent::selectRaw("
+        sum(CASE WHEN DATEDIFF(end_date, now()) < 0 THEN 1 ELSE 0 END) as expired,
+        sum(CASE WHEN DATEDIFF(end_date, now()) >= 0 AND end_date <= ? THEN 1 ELSE 0 END) as in_month,
+        SUM(CASE WHEN end_date > ? AND end_date <= ? THEN 1 ELSE 0 END) as within_three_months
+      ", [$endOfThisMonth, $endOfThisMonth, $lastMonth])
+      ->whereNotNull('end_date')
+      ->whereRaw('end_date <= ?', [$lastMonth])
+      ->whereNotIn('status', [Rent::STATUS_CANCELLED])
+      ->when($teamId, fn ($q) => $q->where('team_id', $teamId))
+      ->first();
+    }
+
     public static function checkExpiringRents($teamId = null) {
       $expiringRents = Rent::expiredRents($teamId)->get();
 

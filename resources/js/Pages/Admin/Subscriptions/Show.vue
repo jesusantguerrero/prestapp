@@ -22,13 +22,6 @@ const impersonateUser = (user: Record<string, string>) => {
 <template>
   <AdminTemplate title="Teams">
     <main class="pb-16">
-      {{ teams.name }}
-      <TeamMemberCard :user="teams.owner">
-        <template #actions>
-          <AppButton @click="impersonateUser(teams.owner)"> Impersonate </AppButton>
-        </template>
-      </TeamMemberCard>
-
       <TeamBillingSection
         :sessions="sessions"
         :plans="plans"

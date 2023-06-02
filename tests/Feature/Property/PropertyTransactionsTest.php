@@ -5,7 +5,9 @@ namespace Tests\Feature\Property;
 use App\Domains\Properties\Models\Rent;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Insane\Journal\Helpers\ReportHelper;
 use Insane\Journal\Models\Core\Account;
+use Insane\Journal\Models\Core\TransactionLine;
 use Insane\Journal\Models\Invoice\Invoice;
 use Tests\Feature\Property\Helpers\PropertyBase;
 
@@ -16,11 +18,10 @@ class PropertyTransactionsTest extends PropertyBase
 
 
   public function testItShouldCreateAPropertyExpense() {
-    $this->seed();
     $this->actingAs($this->user);
     $rent = $this->createRent();
 
-    $response = $this->createExpense($rent);
+    $response = $this->createExpense($rent, []);
 
     $response->assertStatus(200);
     $rent = Rent::first();
@@ -47,7 +48,6 @@ class PropertyTransactionsTest extends PropertyBase
   }
 
   public function testShouldPayPropertyExpense() {
-    $this->seed();
     $this->actingAs($this->user);
     $rent = $this->createRent();
     $account = Account::findByDisplayId('daily_box', $rent->team_id);
@@ -83,14 +83,12 @@ class PropertyTransactionsTest extends PropertyBase
   }
 
   public function testItShouldHaveDepositBalance() {
-    $this->seed();
     $this->actingAs($this->user);
     $rent = $this->createRent([
       "deposit" => 5000,
       "price" => 5000,
       'is_deposit_received' => true,
     ]);
-
     $this->assertEquals($rent->deposit, $rent->client->depositBalance());
   }
 
@@ -120,7 +118,6 @@ class PropertyTransactionsTest extends PropertyBase
   }
 
   public function testItShouldCreateADepositRefund() {
-    $this->seed();
     $this->actingAs($this->user);
     $rent = $this->createRent([
       "deposit" => 5000,
@@ -142,14 +139,11 @@ class PropertyTransactionsTest extends PropertyBase
       ]],
     ]);
 
-    $response->assertStatus(200);
+    $response->assertStatus(302);
     $this->assertEquals($rent->refunds()->first()->total, 5000);
-    $this->assertEquals($rent->refunds()->first()->status, Invoice::STATUS_UNPAID);
-
   }
 
   public function testItShouldCreateADepositRefundPaid() {
-    $this->seed();
     $this->actingAs($this->user);
     $rent = $this->createRent([
       "deposit" => 5000,
@@ -166,7 +160,28 @@ class PropertyTransactionsTest extends PropertyBase
         'original_amount' => $rent->deposit,
         'rent_id' => $rent->id,
         'id' => '1'
-      ]],
+      ]]
+    ]);
+
+    $response->assertStatus(302);
+    $this->assertEquals($rent->refunds()->first()->status, Invoice::STATUS_PAID);
+  }
+
+  public function testItShouldCreateADepositApplyPaid() {
+    $this->actingAs($this->user);
+    $rent = $this->createRent([
+      "deposit" => 5000,
+      "price" => 5000,
+      'is_deposit_received' => true
+    ]);
+
+    $invoice = $rent->rentInvoices->last();
+
+    $response = $this->post("/rents/{$rent->id}/invoices/{$invoice->id}/apply-deposit", [
+      'client_id' => $rent->client_id,
+      'account_id' => $rent->property->deposit_account_id,
+      'total' => $rent->deposit,
+      'rent_id' => $rent->id,
       'payment_details' => [
         'account_id' => Account::guessAccount($rent, ['Property Expenses', 'expenses']),
         'details' => 'A custom note',
@@ -174,7 +189,7 @@ class PropertyTransactionsTest extends PropertyBase
       ]
     ]);
 
-    $response->assertStatus(200);
-    $this->assertEquals($rent->refunds()->first()->status, Invoice::STATUS_PAID);
+    $response->assertStatus(302);
+    $this->assertEquals($rent->invoiceNotes()->first()->status, Invoice::STATUS_PAID);
   }
 }

@@ -76,6 +76,7 @@ class DashboardController extends Controller
             Payment::class)->all(),
             now()->format('Y')
           ),
+          "expiringRents" => RentService::expiredRentStats($teamId),
           "stats" => [
             "total" => $propertyTotals->sum(),
             "available" => $propertyTotals->get(Property::STATUS_AVAILABLE),

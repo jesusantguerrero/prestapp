@@ -65,6 +65,8 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'atmosphere.teams-approved' => \App\Http\Middleware\TeamIsApproved::class
+        'atmosphere.teams-approved' => \App\Http\Middleware\TeamIsApproved::class,
+        'treasurer.biller' => \Insane\Treasurer\Http\Middleware\EnsureIsBiller::class,
+        'treasurer.subscribed' => \Insane\Treasurer\Http\Middleware\Subscribed::class
     ];
 }

@@ -11,6 +11,7 @@
         "http-interop/http-factory-guzzle": "^1.2",
         "inertiajs/inertia-laravel": "^0.6.3",
         "insane/journal": "dev-master",
+        "insane/treasurer": "1.x-dev",
         "lab404/laravel-impersonate": "^1.7",
         "laravel/framework": "^9.19",
         "laravel/jetstream": "^2.12",
