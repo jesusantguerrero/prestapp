@@ -12,6 +12,9 @@ import { toRefs } from "@vueuse/shared";
 import { useServerSearch } from "@/utils/useServerSearch";
 import { useLocalStorage } from "@vueuse/core";
 import AppButton from "@/Components/shared/AppButton.vue";
+import { useResponsive } from "@/utils/useResponsive";
+import BaseSelect from "@/Components/shared/BaseSelect.vue";
+import ResponsiveButtonGroup from "./ResponsiveButtonGroup.vue";
 
 defineProps<{
   user: Record<string, any>;
@@ -60,6 +63,8 @@ const { executeSearchWithDelay, updateSearch, state: pageState } = useServerSear
 
 const isOnboardingOpen = useLocalStorage("icloan:isOnboardingOpen", true);
 provide("isOnboardingOpen", isOnboardingOpen);
+
+const { isMobile } = useResponsive();
 </script>
 
 <template>
@@ -67,15 +72,17 @@ provide("isOnboardingOpen", isOnboardingOpen);
     <main class="py-5 pt-0 mx-auto text-gray-500">
       <div class="flex justify-between mt-4 mb-4 md:mt-0">
         <h4 class="hidden md:inline-block">{{ $t("Welcome") }}, {{ user.name }}</h4>
-        <section class="flex space-x-4">
-          <ButtonGroup
+        <section class="flex space-x-4 w-full">
+          <ResponsiveButtonGroup
             v-if="isTeamApproved"
-            class="w-full md:w-fit"
             @update:modelValue="handleChange"
-            :values="sections"
+            :sections="sections"
             v-model="section"
+            :placeholder="$t('Select view')"
+            class="w-full"
           />
           <AtDatePager
+            v-if="!isMobile"
             class="w-full h-12 border bg-base-lvl-1 text-body border-secondary"
             v-model:startDate="pageState.dates.startDate"
             v-model:endDate="pageState.dates.endDate"
