@@ -9,13 +9,13 @@ defineProps<{
     :model-value="modelValue"
     @update:model-value="$emit('update:model-value', $event)"
     size="large"
-    class="w-full"
+    class="w-full base-editor"
     rounded
   />
 </template>
 
 <style lang="scss">
-.el-date-editor.el-input {
+.base-editor .el-date-editor.el-input {
   width: auto !important;
   min-width: 100%;
 }
