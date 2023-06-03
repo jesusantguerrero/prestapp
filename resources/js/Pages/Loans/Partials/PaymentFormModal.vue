@@ -268,7 +268,7 @@ const savePaymentText = computed(() => {
 const { isMobile } = useResponsive();
 
 const dialogWidth = computed(() => {
-  return isMobile ? "100%" : "50%";
+  return isMobile.value ? "100%" : "50%";
 });
 </script>
 
