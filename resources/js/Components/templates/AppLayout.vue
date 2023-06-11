@@ -23,6 +23,7 @@ import { useSelect } from "@/Modules/shared/useSelects";
 import { useLocalStorage } from "@vueuse/core";
 import MobileMenuBar from "../mobile/MobileMenuBar.vue";
 import { useI18n } from "vue-i18n";
+import AppButtonCircle from "../shared/AppButtonCircle.vue";
 
 defineProps({
   title: String,
@@ -123,7 +124,7 @@ function refresh() {
               </AppButton>
               <h4
                 :class="[showBackButton ? 'lg:ml-2' : 'lg:ml-6']"
-                class="pl-4 text-lg font-bold md:pl-0 text-secondary"
+                class="pl-4 text-lg font-bold md:pl-0 md:text-secondary text-white"
               >
                 {{ title }}
               </h4>
@@ -153,11 +154,11 @@ function refresh() {
               <div class="relative ml-3">
                 <Dropdown align="right" width="48">
                   <template #trigger>
-                    <button
-                      class="flex items-center justify-center w-8 h-8 text-sm transition border-2 border-transparent rounded-full bg-base-lvl-3 focus:outline-none focus:border-gray-300"
-                    >
-                      <IMdiQuestionMark />
-                    </button>
+                    <AppButtonCircle type="button">
+                      <span class="text-white md:text-body-1">
+                        <IMdiQuestionMark />
+                      </span>
+                    </AppButtonCircle>
                   </template>
 
                   <template #content>
