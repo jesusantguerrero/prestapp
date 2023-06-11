@@ -15,13 +15,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-      $schedule->command('background:generate-invoices')->daily()->at('01:00');
-      $schedule->command('background:generate-invoices --late-fees')->daily()->at('01:00');
-      $schedule->command('background:generate-owner-distributions')->daily()->at('01:00');
-      $schedule->command('background:generate-loan-fees')->daily()->at('01:00');
-      $schedule->command('background:check-expired-rents')->daily()->at('01:00');
-      $schedule->command('background:check-expiring-rents')->monthlyOn(1, '01:00');
-      $schedule->command('backup:clean')->daily()->at('01:00');
+      $schedule->command('background:generate-invoices')->daily()->at('01:00')->runInBackground();
+      $schedule->command('background:generate-invoices --late-fees')->daily()->at('01:00')->runInBackground();
+      $schedule->command('background:generate-owner-distributions')->daily()->at('01:00')->runInBackground();
+      $schedule->command('background:generate-loan-fees')->daily()->at('01:00')->runInBackground();
+      $schedule->command('background:check-expired-rents')->daily()->at('01:00')->runInBackground();
+      $schedule->command('background:check-expiring-rents')->monthlyOn(1, '01:00')->runInBackground();
+      $schedule->command('backup:clean')->daily()->at('01:00')->runInBackground();
       $schedule->command('backup:run --only-db')->daily()->at('01:30')->onFailure(function () {
         activity()
         ->log("Backup generation failed");
@@ -29,8 +29,8 @@ class Kernel extends ConsoleKernel
       ->onSuccess(function () {
         activity()
         ->log("Backup generation was complete complete");
-      });
-      $schedule->command('background:health-check')->everyMinute();
+      })->runInBackground();
+      $schedule->command('background:health-check')->everyMinute()->runInBackground();
     }
 
     /**
