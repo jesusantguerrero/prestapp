@@ -30,6 +30,7 @@ class Kernel extends ConsoleKernel
         activity()
         ->log("Backup generation was complete complete");
       });
+      $schedule->command('background:health-check')->everyMinute();
     }
 
     /**
