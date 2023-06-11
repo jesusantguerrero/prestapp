@@ -153,7 +153,7 @@ const { isMobile } = useResponsive();
         </AppButton>
       </section>
       <AtTable
-        class="mt-4 bg-white rounded-md text-body-1"
+        class="mt-4 md:bg-white rounded-md text-body-1"
         :table-data="listData"
         :cols="cols"
         :pagination="searchState"
@@ -165,7 +165,10 @@ const { isMobile } = useResponsive();
         :config="tableConfig"
       >
         <template v-slot:card="{ row }">
-          <ContractCardMini :contract="row" class="mb-6 border-b py-6" />
+          <ContractCardMini
+            :contract="row"
+            class="mb-6 shadow-md w-full py-6 px-4 border bg-base-lvl-3"
+          />
         </template>
         <template v-slot:actions="{ scope: { row } }" class="flex">
           <div class="flex items-center justify-end">
