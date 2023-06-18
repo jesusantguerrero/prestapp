@@ -201,7 +201,7 @@ const onDelete = async (invoice: IInvoice) => {
       <PropertySectionNav />
     </template>
 
-    <div class="py-10 mx-auto sm:px-6 lg:px-8">
+    <div class="py-10 mx-auto sm:px-6 lg:px-8 print:hidden">
       <section class="flex space-x-4">
         <AtBackgroundIconCard
           class="w-full bg-white border h-28 text-body-1"
