@@ -283,7 +283,7 @@ const selectedMonthName = computed(() => {
       </PropertySectionNav>
     </template>
 
-    <div class="pt-16 md:py-10 mx-auto sm:px-6 lg:px-8">
+    <div class="pt-16 md:py-10 mx-auto sm:px-6 lg:px-8 print:hidden">
       <section class="grid grid-cols-2 gap-2 md:flex md:space-x-4 general-stats">
         <AtBackgroundIconCard
           class="w-full bg-white border md:h-28 text-body-1"
