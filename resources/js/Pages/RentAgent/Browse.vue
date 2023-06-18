@@ -7,7 +7,7 @@ import { router } from "@inertiajs/vue3";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import InvoiceTable from "@/Components/templates/InvoiceTable";
-import AgentSectionNav from "./AgentSectionNav.vue";
+import AgentSectionNav from "./Partials/AgentSectionNav.vue";
 
 import { formatMoney } from "@/utils";
 import AppButton from "@/Components/shared/AppButton.vue";
@@ -15,7 +15,6 @@ import { IInvoice } from "@/Modules/invoicing/entities";
 import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
 import { usePrint } from "@/utils/usePrint";
 import Simple from "@/Pages/Journal/Invoices/printTemplates/Simple.vue";
-import ButtonGroup from "@/Components/ButtonGroup.vue";
 import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
 import {
   clientInteractions,
@@ -160,20 +159,6 @@ function printExternal(invoice: IInvoice) {
     });
 }
 
-const handleChange = () => {};
-
-const sections: Record<string, any> = {
-  commissions: {
-    label: "Comisiones",
-  },
-  invoices: {
-    label: "Facturas",
-  },
-  bills: {
-    label: "Propietarios",
-  },
-};
-
 const onDelete = async (invoice: IInvoice) => {
   const isValid = await ElMessageBox.confirm(
     `Estas seguro de eliminar la factura ${invoice.concept} por ${formatMoney(
@@ -201,7 +186,7 @@ const onDelete = async (invoice: IInvoice) => {
       <AgentSectionNav />
     </template>
 
-    <div class="py-10 mx-auto sm:px-6 lg:px-8">
+    <div class="py-10 mx-auto sm:px-6 lg:px-8 print:hidden">
       <section class="flex space-x-4">
         <AtBackgroundIconCard
           class="w-full bg-white border h-28 text-body-1"
@@ -339,6 +324,25 @@ const onDelete = async (invoice: IInvoice) => {
     button {
       margin-left: auto;
     }
+  }
+}
+</style>
+
+<style lang="scss">
+@media print {
+  .invoice-content,
+  body {
+    width: unset;
+    display: block;
+  }
+  .invoice-content {
+    padding: 2mm;
+    margin: 0 auto;
+    width: 79mm;
+    border: none;
+    overflow: hidden;
+    -webkit-print-color-adjust: exact;
+    height: max-content;
   }
 }
 </style>

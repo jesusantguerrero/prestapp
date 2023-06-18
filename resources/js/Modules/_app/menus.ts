@@ -110,17 +110,17 @@ const menus = {
     [MODULES.AGENT]: [
     {
         label: 'Distribuciones',
-        to: '/agents/owner-draws/',
+        to: '/agents/owner-draws',
         isActiveFunction(currentPath: string) {
-          return /owners\/draws/.test(currentPath)
+          return /owner-draws/.test(currentPath)
         },
         icon: MaterialSymbolsHomeWorkOutline,
         as: Link,
     }, {
         label: 'Comisiones',
-        to: '/agents/commissions/',
+        to: '/agents/commissions',
         isActiveFunction(currentPath: string) {
-          return /owners\/commissions/.test(currentPath)
+          return /agents\/commissions/.test(currentPath)
         },
         icon: MaterialSymbolsHomeWorkOutline,
         as: Link,

@@ -11,8 +11,7 @@ class RentAgentController extends Controller
 {
     use HasEnrichedRequest;
 
-    public function ___invoke(string $viewName) {
-      dd($viewName);
+    public function list(string $viewName) {
       $teamId = request()->user()->current_team_id;
       $filters = request()->query('filters');
       $ownerId = $filters['owner'] ?? null;

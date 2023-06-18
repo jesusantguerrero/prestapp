@@ -18,7 +18,8 @@ withDefaults(
 );
 
 onMounted(() => {
-  // print();
+  print();
+  // close();
 });
 </script>
 

@@ -77,7 +77,7 @@ Route::middleware([
     });
 
     // Agent
-    Route::get('/agents/{viewName}', RentAgentController::class);
+    Route::get('/agents/{viewName}', [RentAgentController::class, 'list']);
 
     // Tenant
     Route::controller(TenantRentController::class)->group(function() {
