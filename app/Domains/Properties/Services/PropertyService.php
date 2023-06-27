@@ -83,4 +83,26 @@ class PropertyService {
     public static function hintClient($clientId) {
       return Client::find($clientId);
     }
+
+    public function getListKpi($teamId) {
+      $statuses = [
+        PropertyUnit::STATUS_AVAILABLE,
+        PropertyUnit::STATUS_RENTED,
+      ];
+
+
+      $stateRaw = [];
+      foreach ($statuses as $status) {
+        $stateRaw[] = "SUM(CASE WHEN status = '$status' THEN 1 ELSE 0 END) as $status";
+      }
+
+      $stateRaw = implode(",", $stateRaw);
+
+      return PropertyUnit::where('team_id', $teamId)
+      ->selectRaw("
+        count(id) as TOTAL,
+        $stateRaw
+      ")
+      ->first();
+    }
 }

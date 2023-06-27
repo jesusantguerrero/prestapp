@@ -89,6 +89,12 @@ const menus = {
         icon:  ClarityContractLine
     },
     {
+        label: 'Renovaciones',
+        to: '/rent-renewals/',
+        as: Link,
+        icon:  ClarityContractLine
+    },
+    {
         label: 'Inquilinos',
         to: '/contacts/tenant',
         isActiveFunction(currentPath: string) {
