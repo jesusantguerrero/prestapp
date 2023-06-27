@@ -26,6 +26,7 @@ class InertiaController extends Controller {
     protected $filters = [];
     protected $page;
     protected $limit;
+    protected $service;
     protected $responseType = "inertia";
     protected $resourceName;
 
@@ -36,7 +37,8 @@ class InertiaController extends Controller {
         return Inertia::render($this->templates['index'],
         array_merge([
             $resourceName => $resources,
-            "serverSearchOptions" => $this->getServerParams()
+            "serverSearchOptions" => $this->getServerParams(),
+            "kpis" => $this->service?->getListKpi($request->user()->current_team_id)
         ], $this->getIndexProps($request, $resources)));
     }
 

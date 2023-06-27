@@ -57,20 +57,27 @@ export const dateToIso = (date: Date | null) => {
 };
 
 
-export const getRangeParams = (field: string, range: number[]|null, direction = 'back') => {
-    const date = new Date();
-    const method = direction == 'back' ? subDays : addDays;
+
+const setRange = (dateCount: number|Date, direction: string): Date => {
+  const date = new Date();
+  const method = direction == 'back' ? subDays : addDays;
+
+  return typeof dateCount == 'number' ? dateToIso(method(date, dateCount)) : dateToIso(dateCount)
+
+}
+
+type RangeValue = number|Date;
+export const getRangeParams = (field: string, range: RangeValue[]|null, direction = 'back') => {
+    let rangeString: string = '';
 
     if (!range) return '';
 
-    let rangeString = range
-      .map((dateCount) => dateToIso(method(date, dateCount)))
-      .join("~");
-
-    if (range.at(0) == null && range[1] !== null) {
-      rangeString = '<' + dateToIso(method(date, range[1]))
-    } else if (!range.at(1) !== null) {
-      rangeString = '>' + dateToIso(method(date, range[0]))
+    if (range.every(value => value !== null)) {
+      rangeString = range.map((dateCount) => setRange(dateCount, direction)).join("~");
+    } else if (range.at(0) == null && range.at(1) !== null) {
+      rangeString = '<' + setRange(range?.at?.(1) ?? 0, direction)
+    } else if (range.at(1) !== null) {
+      rangeString = '>' + setRange(range.at(0) ?? 0, direction)
     }
     return `filter[${field}]=${rangeString}`;
 }

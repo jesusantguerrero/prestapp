@@ -20,6 +20,7 @@ import { rentStatus } from "@/Modules/properties/constants";
 import ContractCardMini from "@/Components/templates/ContractCardMini.vue";
 import { useResponsive } from "@/utils/useResponsive";
 import AppButtonTab from "@/Components/shared/AppButtonTab.vue";
+import { addDays, addMonths, endOfMonth, startOfMonth } from "date-fns";
 
 interface IPaginatedData {
   data: IRent[];
@@ -49,46 +50,43 @@ const {
   }
 );
 
-const filters = ref({
-  status:
-    rentStatus.find((status) => status.name === searchState.filters.status) ??
-    rentStatus[0],
-  endDate: null,
-});
+const expiringRanges: Record<string, any> = {
+  in_month: {
+    range() {
+      const today = new Date();
+      return [startOfMonth(today), endOfMonth(today)];
+    },
+  },
+  within_three_months: {
+    range() {
+      const today = new Date();
+      const nextMonth = addDays(endOfMonth(today), 1);
 
-const expiringRanges = [
-  {
-    text: "Este mes",
-    range: [30, 0],
+      return [nextMonth, endOfMonth(addMonths(nextMonth, 2))];
+    },
   },
-  {
-    text: "3 Meses",
-    range: [90, 0],
+  expired: {
+    range: () => [null, 0],
   },
-  {
-    text: "Last 6 months",
-    range: [180, 0],
-  },
-  {
-    text: "Expired",
-    range: [null, 0],
-  },
-];
-
-const onStateSelected = (statusName: string) => {
-  searchState.filters.status = statusName !== "TOTAL" ? statusName : "";
-  executeSearch();
 };
 
 const setRange = (field: string, range: number[]) => {
   const params = getRangeParams(field, range);
   router.get(
-    `/rents?${params}`,
+    `/rent-renewals?${params}`,
     {},
     {
       preserveState: true,
     }
   );
+};
+
+const onStateSelected = (rangeName: string) => {
+  if (rangeName == "TOTAL") {
+    router.get("/rent-renewals");
+  } else {
+    setRange("end_date", expiringRanges[rangeName].range());
+  }
 };
 const listData = computed(() => {
   return Array.isArray(props.rents) ? props.rents : props.rents.data;
@@ -146,7 +144,13 @@ const statusTabs = computed(() => {
         </AppButton>
       </section>
 
-      <section class="grid grid-cols-3 gap-2 mt-2 md:flex md:space-x-2">
+      <section class="grid grid-cols-3 gap-2 mt-2 md:flex md:space-x-1">
+        <AppButtonTab
+          class="capitalize text-xs bg-primary/20 rounded-md"
+          @click="onStateSelected('TOTAL')"
+        >
+          {{ $t("TOTAL") }}
+        </AppButtonTab>
         <AppButtonTab
           v-for="(status, stateName) in kpis"
           class="capitalize text-xs bg-primary/20 rounded-md"
@@ -174,7 +178,7 @@ const statusTabs = computed(() => {
           />
         </template>
         <template v-slot:actions="{ scope: { row } }" class="flex">
-          <div class="flex items-center justify-end">
+          <div class="flex items-center justify-center">
             <UnitTag :status="row.status" />
 
             <Link
@@ -183,22 +187,30 @@ const statusTabs = computed(() => {
             >
               <IMdiChevronRight />
             </Link>
-            <div class="flex">
+            <div class="flex space-x-2">
               <AppButton
-                class="flex flex-col items-center justify-center transition hover:text-primary hover:border-primary-400"
                 variant="neutral"
-                @click="router.visit(`/property/${row.property_id}`)"
+                class="hover:bg-success hover:text-white"
+                v-if="row.status !== 'CANCELLED'"
+                @click="
+                  router.visit(`/contacts/${row.client_id}/tenants/rents/${row.id}/renew`)
+                "
+                :title="$t('extend rent')"
               >
-                <IMdiFile />
+                <IClarityContractLine class="mr-2" />
+              </AppButton>
+              <AppButton
+                variant="neutral"
+                class="hover:bg-error hover:text-white"
+                v-if="row.status !== 'CANCELLED'"
+                @click="
+                  router.visit(`/contacts/${row.client_id}/tenants/rents/${row.id}/end`)
+                "
+                title="Terminar contrato"
+              >
+                <IMdiFileDocumentRemove class="mr-2" />
               </AppButton>
             </div>
-            <AppButton
-              variant="neutral"
-              class="flex flex-col items-center justify-center transition hover:text-error hover:border-red-400"
-              @click="deleteRent(row)"
-            >
-              <IMdiTrash />
-            </AppButton>
           </div>
         </template>
       </AtTable>
