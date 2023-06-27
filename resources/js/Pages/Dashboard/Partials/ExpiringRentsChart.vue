@@ -7,7 +7,7 @@
         height="100%"
         type="donut"
         :options="chartConfig.options"
-        :series="chartConfig.series"
+        :series="chartConfig.series.map((value) => Number(value))"
       />
       <IClarityContractLine class="absolute text-4xl report-icon-center" />
       <section class="flex absolute w-full bottom-28">
