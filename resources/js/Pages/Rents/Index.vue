@@ -141,15 +141,6 @@ const statusTabs = computed(() => {
           @search="executeSearch"
           @blur="executeSearch"
         />
-        <BaseSelect
-          placeholder="Expira en"
-          class="min-w-max"
-          :options="expiringRanges"
-          v-model="filters.end_date"
-          label="text"
-          track-by="text"
-          @update:model-value="setRange('end_date', $event.range)"
-        />
         <AppButton @click="router.visit(route('rents.create'))" v-if="!isMobile">
           Agregar Contrato
         </AppButton>
