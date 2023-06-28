@@ -8,6 +8,7 @@ use App\Domains\Properties\Http\Controllers\PropertyOwnerController;
 use App\Domains\Properties\Http\Controllers\PropertyTransactionController;
 use App\Domains\Properties\Http\Controllers\PropertyUnitController;
 use App\Domains\Properties\Http\Controllers\RentController;
+use App\Domains\Properties\Http\Controllers\RentRenewalController;
 use App\Domains\Properties\Http\Controllers\RentReportController;
 use App\Domains\Properties\Http\Controllers\TenantRentController;
 use Illuminate\Support\Facades\Route;
@@ -39,6 +40,7 @@ Route::middleware([
 
     // rents
     Route::resource('rents', RentController::class);
+    Route::get('/rent-renewals', [RentRenewalController::class, 'index']);
     Route::get('rents/advanced-filter/pending-generation', [RentController::class, 'withPendingGeneration']);
     Route::get('/rents/{rent}/{section}', [RentController::class, 'getSection']);
 

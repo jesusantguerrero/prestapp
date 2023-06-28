@@ -4,6 +4,9 @@ import { computed } from "vue";
 
 import AppButtonCircle from "@/Components/shared/AppButtonCircle.vue";
 import NotificationItem from "@/Components/NotificationItem.vue";
+import { useResponsive } from "@/utils/useResponsive";
+
+const { isMobile } = useResponsive();
 
 interface INotification {
   id: number;
@@ -49,10 +52,13 @@ const handleRead = (notification: INotification) => {
   <ElPopover placement="bottom-end" :width="300" trigger="click">
     <template #reference>
       <AppButtonCircle type="button">
-        <IMdiBell class="text-md" />
+        <span class="text-xl md:text-md">
+          <IMdiBell class="text-white md:text-body-1" v-if="!isMobile" />
+          <IMdiBellOutline class="text-white" v-else />
+        </span>
         <div
           v-if="notifications.length > 0"
-          class="absolute bottom-0 right-0 w-4 h-4 text-xs text-white rounded-full shadow-md bg-error"
+          class="absolute bottom-5 -right-2 md:bottom-0 md:right-0 w-5 h-5 text-xs text-white flex justify-center items-center rounded-full shadow-md bg-error"
         >
           {{ count }}
         </div>

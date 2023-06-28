@@ -175,6 +175,7 @@ class RentService {
       WHEN DATEDIFF(end_date, now()) > 0 AND DATEDIFF( end_date, now()) <= 31 THEN "within_month"
       WHEN DATEDIFF(end_date, now()) > 31 AND DATEDIFF( end_date, now()) <= 60 THEN "next_month"
       END';
+
       return Rent::selectRaw("DATEDIFF(end_date, now()) AS diff_days,
         $stateRaw
          as expire_in,
@@ -200,14 +201,15 @@ class RentService {
     }
 
     public static function expiredRentStats($teamId = null) {
+      $startOfMonth = now()->startOfMonth()->format('Y-m-d');
       $endOfThisMonth = now()->endOfMonth()->format('Y-m-d');
       $lastMonth = now()->addRealMonths(3)->endOfMonth()->format('Y-m-d');
 
       return Rent::selectRaw("
         sum(CASE WHEN DATEDIFF(end_date, now()) < 0 THEN 1 ELSE 0 END) as expired,
-        sum(CASE WHEN DATEDIFF(end_date, now()) >= 0 AND end_date <= ? THEN 1 ELSE 0 END) as in_month,
+        sum(CASE WHEN end_date >= ? AND end_date <= ? THEN 1 ELSE 0 END) as in_month,
         SUM(CASE WHEN end_date > ? AND end_date <= ? THEN 1 ELSE 0 END) as within_three_months
-      ", [$endOfThisMonth, $endOfThisMonth, $lastMonth])
+      ", [$startOfMonth, $endOfThisMonth, $endOfThisMonth, $lastMonth])
       ->whereNotNull('end_date')
       ->whereRaw('end_date <= ?', [$lastMonth])
       ->whereNotIn('status', [Rent::STATUS_CANCELLED])
@@ -216,7 +218,7 @@ class RentService {
     }
 
     public static function checkExpiringRents($teamId = null) {
-      $expiringRents = Rent::expiredRents($teamId)->get();
+      $expiringRents = RentService::expiredRents($teamId)->get();
 
       $expiringRents = $expiringRents->groupBy('expire_in');
 
@@ -274,6 +276,31 @@ class RentService {
         ->with(['client', 'property', 'unit']);
     }
 
+    public function getListKpi($teamId) {
+      $statuses = [
+        Rent::STATUS_ACTIVE,
+        Rent::STATUS_CANCELLED,
+        Rent::STATUS_EXPIRED,
+        Rent::STATUS_GRACE,
+        Rent::STATUS_LATE,
+      ];
+
+
+      $stateRaw = [];
+      foreach ($statuses as $status) {
+        $stateRaw[] = "SUM(CASE WHEN status = '$status' THEN 1 ELSE 0 END) as $status";
+      }
+
+      $stateRaw = implode(",", $stateRaw);
+
+      return Rent::where('team_id', $teamId)
+      ->selectRaw("
+        count(id) as TOTAL,
+        $stateRaw
+      ")
+      ->first();
+    }
+
     //  payments / invoices
     public static function invoices($teamId, $statuses = []) {
       $query = Invoice::selectRaw('
@@ -294,7 +321,9 @@ class RentService {
           rents.address category,
           rents.owner_name owner_name,
           invoices.description description,
-          invoices.concept concept'
+          invoices.concept concept,
+          rents.status rent_status,
+          rents.move_out_at'
         )->where([
           'invoices.team_id' => $teamId,
           'invoices.type' => 'INVOICE',

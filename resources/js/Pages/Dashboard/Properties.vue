@@ -304,7 +304,7 @@ const summaryType = ref("cash-flow");
             :message="$t('Expiring rents')"
             class="text-body-1 w-full shadow-md"
             :action-label="$t('See details')"
-            action-link="/reports/expiring-rents"
+            action-link="/rent-renewals/"
           >
             <template #content>
               <ExpiringRentsChart :stats="expiringRents" :style="{ height: '350px' }" />

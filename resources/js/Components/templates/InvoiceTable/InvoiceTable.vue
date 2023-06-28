@@ -10,6 +10,7 @@ import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/co
 import InvoicePaymentOptions from "@/Components/templates/InvoicePaymentOptions.vue";
 import cols from "./cols";
 import { formatDate, formatMoney } from "@/utils";
+import InvoiceCard from "../InvoiceCard.vue";
 
 const props = defineProps({
   invoiceData: {
@@ -20,6 +21,9 @@ const props = defineProps({
   },
   isLoading: {
     type: Boolean,
+  },
+  responsiveActions: {
+    type: Object,
   },
 });
 
@@ -33,8 +37,19 @@ const visibleData = computed(() => {
     :cols="cols"
     :tableData="visibleData"
     :show-prepend="true"
+    responsive
     class="bg-base-lvl-3"
   >
+    <template v-slot:card="{ row: invoice }">
+      <slot name="card" row="row">
+        <InvoiceCard
+          :invoice="invoice"
+          class="mb-6 border-b py-6"
+          :external-actions="responsiveActions"
+        />
+      </slot>
+    </template>
+
     <template v-slot:date="{ scope: { row } }">
       <div v-if="!isLoading">
         <div class="font-bold text-blue-400">{{ formatDate(row.date) }}</div>
@@ -43,48 +58,40 @@ const visibleData = computed(() => {
     </template>
 
     <template v-slot:concept="{ scope: { row } }">
-      <section v-if="!isLoading">
-        <p>
-          <Link
-            :href="`/${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}`"
-            class="text-blue-400 inline-flex capitalize border-b justify-between border-blue-400 border-dashed cursor-pointer text-sm"
-          >
-            <section>
-              {{ row.concept }}
-              <span class="font-bold text-gray-300">
-                {{ row.series }} #{{ row.number }}
-              </span>
-            </section>
-            <!-- <span class="ml-2">
-              <IMdiEdit />
-            </span> -->
-          </Link>
-        </p>
-        <p>
-          <Link
-            class="text-sm text-body-1 mt-2"
-            :href="`/clients/${row.client_id || row.contact_id}`"
-          >
-            <i class="fa fa-user text-xs" />
-            {{ row.client_name }}
-          </Link>
-        </p>
-        <p class="flex items-center">
-          <span v-if="!row.isEditing">
-            {{ row.description }}
-          </span>
-          <AtInput v-model="row.description" v-else />
-          <span class="ml-2">
-            <!-- <button
-              class="cursor-pointer hover:text-primary"
-              @click="row.isEditing = !row.isEditing"
+      <slot name="concept" :row="row">
+        <section v-if="!isLoading">
+          <p>
+            <Link
+              :href="`/${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}`"
+              class="text-blue-400 inline-flex capitalize border-b justify-between border-blue-400 border-dashed cursor-pointer text-sm"
             >
-              <IMdiEdit />
-            </button> -->
-          </span>
-        </p>
-      </section>
-      <ElSkeleton :rows="1" animated v-else />
+              <section>
+                {{ row.concept }}
+                <span class="font-bold text-gray-300">
+                  {{ row.series }} #{{ row.number }}
+                </span>
+              </section>
+            </Link>
+          </p>
+          <p>
+            <Link
+              class="text-sm text-body-1 mt-2"
+              :href="`/clients/${row.client_id || row.contact_id}`"
+            >
+              <i class="fa fa-user text-xs" />
+              {{ row.client_name }}
+            </Link>
+          </p>
+          <p class="flex items-center">
+            <span v-if="!row.isEditing">
+              {{ row.description }}
+            </span>
+            <AtInput v-model="row.description" v-else />
+            <span class="ml-2"> </span>
+          </p>
+        </section>
+        <ElSkeleton :rows="1" animated v-else />
+      </slot>
     </template>
 
     <template v-slot:status="{ scope: { row } }">

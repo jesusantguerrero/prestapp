@@ -13,9 +13,11 @@ use Insane\Journal\Models\Invoice\Invoice;
 class GenerateInvoices {
 
     public static function scheduledRents() {
-      $rentWithInvoicesToCreate = Rent::whereRaw('MONTHNAME(next_invoice_date) = MONTHNAME(curdate())')
-      ->orWhereRaw("DATE_ADD(curdate(), INTERVAL COALESCE(5, 0) DAY) < next_invoice_date")
-      ->whereNotIn('status', [Rent::STATUS_CANCELLED, Rent::STATUS_PAID])
+      $rentWithInvoicesToCreate = Rent::where(function ($q) {
+        $q->whereRaw('DATE_FORMAT(next_invoice_date, "%Y-%m") = DATE_FORMAT(curdate(),  "%Y-%m")')
+        ->orWhereRaw("DATE_ADD(curdate(), INTERVAL COALESCE(5, 0) DAY) < next_invoice_date");
+      })
+      ->whereNotIn('status', [Rent::STATUS_CANCELLED, Rent::STATUS_PAID, Rent::STATUS_EXPIRED])
       ->get();
 
       foreach ($rentWithInvoicesToCreate as $rent) {

@@ -30,7 +30,7 @@ const props = withDefaults(
     layout: string;
   }>(),
   {
-    tableClass: "px-4",
+    tableClass: "md:px-4",
     layout: "table",
   }
 );
@@ -47,18 +47,19 @@ const visibleCols = computed(() => {
 </script>
 
 <template>
-  <section>
+  <section class="ic-base-table">
+    <!-- Header and top pagination -->
     <section
-      class="flex justify-between items-center"
+      class="flex justify-between items-center px-4 md:px-0 bg-base-lvl-3"
       :class="{ 'py-4': config?.search }"
     >
-      <div class="w-full px-4" v-if="config?.search">
+      <div class="w-full md:px-4" v-if="config?.search">
         <AppSearch class="w-96" v-model="pagination.search" @search="$emit('search')" />
       </div>
       <ElPagination
         v-if="config?.pagination && pagination"
         class="w-full flex justify-end pr-4 py-4"
-        background
+        :background="!isMobile"
         @current-change="$emit('paginate', $event)"
         @size-change="$emit('size-change', $event)"
         layout="total,prev, pager, next,sizes"
@@ -68,14 +69,14 @@ const visibleCols = computed(() => {
         :total="total"
       />
     </section>
+
+    <!-- Table Body -->
     <section :class="tableClass">
       <div
         class="space-y-2"
         v-if="layout == 'grid' || (responsive && $slots.card && isMobile)"
       >
-        <slot name="card" :row="row" v-for="row in tableData">
-          <span>Hola</span>
-        </slot>
+        <slot name="card" :row="row" v-for="row in tableData" />
       </div>
       <ElTable
         v-else
@@ -122,15 +123,16 @@ const visibleCols = computed(() => {
         </ElTableColumn>
       </ElTable>
     </section>
+    <!-- Footer and pagination -->
     <section
-      class="flex justify-between items-center py-4"
+      class="flex justify-between items-center py-4 bg-base-lvl-3"
       v-if="config?.pagination && pagination"
     >
       <div class="w-full"></div>
       <div class="w-full flex justify-end">
         <ElPagination
           class="w-full flex justify-end pr-4"
-          background
+          :background="!isMobile"
           @current-change="$emit('paginate', $event)"
           @size-change="$emit('size-change', $event)"
           :current-page="pagination?.page"

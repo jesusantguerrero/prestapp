@@ -43,6 +43,10 @@
       }
     },
     "AVAILABLE": "Disponible",
+    "TOTAL": "total",
+    "in_month": "Este mes",
+    "within_three_months": "En 3 meses",
+    "GRACE": "En gracia",
     "RENTED": "Rentada",
     "PENDING": "Pendiente",
     "PAID": "Pagado",
@@ -121,6 +125,7 @@
     "Edit unit": "Editar unidad",
     "Remove unit": "Eliminar unidad",
     "Edit invoice": "Editar factura",
+    "Description": "Descripción",
     "Record payment": "Registrar Pago",
     "Download PDF": "Descargar PDF",
     "View invoice": "Ver factura",

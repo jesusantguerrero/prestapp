@@ -10,8 +10,8 @@ defineProps<Props>();
 <template>
   <article class="grid grid-rows-section-footer-card">
     <section class="my-auto">
-      <h4 class="font-bold text-lg">{{ title }}</h4>
-      <h3 class="text-4xl font-bold">
+      <h4 class="font-bold text-xs md:text-lg">{{ title }}</h4>
+      <h3 class="text-xs md:text-4xl font-bold">
         {{ value }}
       </h3>
     </section>

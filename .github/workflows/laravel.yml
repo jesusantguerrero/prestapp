@@ -106,4 +106,4 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd ${{ secrets.DO_APP_ROOT }}
-            composer update --ignore-platform-reqs
+            ./composer.phar update --ignore-platform-reqs

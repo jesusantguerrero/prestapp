@@ -188,7 +188,7 @@ const modalTitle = computed(() => {
         </section>
       </section>
 
-      <AppFormField class="w-full text-left" label="Notes">
+      <AppFormField class="w-full text-left" :label="$t('Description')">
         <textarea
           class="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:border-gray-400"
           v-model="formData.description"
