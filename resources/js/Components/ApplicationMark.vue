@@ -6,5 +6,6 @@
 .app-logo {
   background-image: url("/logo-custom.svg");
   background-size: cover;
+  background-position-x: -5px;
 }
 </style>

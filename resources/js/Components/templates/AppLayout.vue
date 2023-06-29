@@ -263,10 +263,14 @@ function refresh() {
         >
           <template #brand>
             <!-- Logo -->
-            <h1 class="flex items-center w-full text-gray-100 shrink-0 px-7">
-              <Link :href="route('dashboard')" class="flex items-center space-x-2">
-                <ApplicationMark class="block w-104 h-14" />
-                <span class="text-xl font-bold text-white"> ICLoan </span>
+            <h1 class="flex items-center w-full text-gray-100"
+            :class="{' md:shrink-0 md:px-7': isExpanded }"
+            >
+              <Link :href="route('dashboard')" class="flex items-center justify-center space-x-2" :class="{'mx-auto': !isExpanded}">
+                <ApplicationMark class="flex justify-center w-10 h-14" />
+                <span class="text-xl font-bold text-white" v-if="isExpanded">
+                   ICLoan
+                </span>
               </Link>
             </h1>
           </template>
