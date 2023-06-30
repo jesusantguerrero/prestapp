@@ -58,6 +58,11 @@
           "hasPayments": "Este prestamo ya tiene pagos y no puede borrarse"
         }
     },
+    "Property invoice": "Factura de propiedades",
+    "Monthly rent": "Mensualidad",
+    "Agent discount": "Descuento de abogado",
+    "Agent payment": "Cobro de abogado",
+    "Rent commissions": "Comisiones por renta",
     "rent": "Renta",
     "deposit": "Deposito",
     "rent_late_fee": "Mora",
@@ -121,6 +126,7 @@
     "Edit unit": "Editar unidad",
     "Remove unit": "Eliminar unidad",
     "Edit invoice": "Editar factura",
+    "Description": "Descripción",
     "Record payment": "Registrar Pago",
     "Download PDF": "Descargar PDF",
     "View invoice": "Ver factura",

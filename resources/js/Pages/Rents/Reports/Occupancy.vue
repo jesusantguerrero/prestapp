@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { reactive, watch, nextTick, ref, computed } from "vue";
 // @ts-ignore
-import { AtBackgroundIconCard, AtDatePager } from "atmosphere-ui";
+import { AtDatePager } from "atmosphere-ui";
 import { Link, router, useForm } from "@inertiajs/vue3";
 import { toRefs } from "@vueuse/shared";
 import { useI18n } from "vue-i18n";
@@ -258,7 +258,7 @@ const selectedMonthName = computed(() => {
   <AppLayout :title="sectionLabel">
     <template #title v-if="isMobile">
       <AtDatePager
-        class="h-12 border-none bg-base-lvl-1 text-body ml-4 w-44"
+        class="h-12 ml-4 border-none bg-base-lvl-1 text-body w-44"
         v-model:startDate="pageState.dates.startDate"
         v-model:endDate="pageState.dates.endDate"
         @change="executeSearchWithDelay()"
@@ -283,37 +283,15 @@ const selectedMonthName = computed(() => {
       </PropertySectionNav>
     </template>
 
-    <div class="pt-16 md:py-10 mx-auto sm:px-6 lg:px-8">
-      <section class="grid grid-cols-2 gap-2 md:flex md:space-x-4 general-stats">
-        <AtBackgroundIconCard
-          class="w-full bg-white border md:h-28 text-body-1"
-          title="Pagado"
-          :value="formatMoney(paid ?? 0)"
-        />
-        <AtBackgroundIconCard
-          class="w-full bg-white border md:h-28 text-body-1"
-          title="Pendiente"
-          :value="formatMoney(outstanding ?? 0)"
-        />
-        <AtBackgroundIconCard
-          class="w-full bg-white border md:h-28 text-body-1"
-          title="Total del mes"
-          :value="formatMoney((outstanding ?? 0) + (paid ?? 0))"
-        />
-        <AtBackgroundIconCard
-          class="w-full bg-white border md:h-28 text-body-1"
-          title="Facturas"
-          :value="total || 0"
-        />
-      </section>
+    <div class="pt-16 mx-auto md:py-10 sm:px-6 lg:px-8">
       <SectionNav
-        class="bg-base-lvl-3 w-full mt-4"
-        selected-class="border-primary font-bold text-primary"
+        class="w-full mt-4 bg-base-lvl-3"
+        selected-class="font-bold border-primary text-primary"
         v-model="selectedTab"
         :sections="tabs"
       >
         <template v-slot:title="{ tab, tabName }">
-          <h4 class="capitalize text-primary font-bold">
+          <h4 class="font-bold capitalize text-primary">
             {{ tab.label }} ({{ invoices[tabName].total }})
           </h4>
         </template>
@@ -359,7 +337,7 @@ const selectedMonthName = computed(() => {
             v-if="groupName == selectedTab"
             :invoice-data="ownerInvoices"
             :is-loading="isLoading"
-            class="rounded-md bg-base-lvl-3 mt-0"
+            class="mt-0 rounded-md bg-base-lvl-3"
             :responsive-actions="{
               payment: handlePayment,
               download: printExternal,
@@ -371,7 +349,7 @@ const selectedMonthName = computed(() => {
                 <p>
                   <Link
                     :href="`/${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}`"
-                    class="text-blue-400 inline-flex capitalize border-b justify-between border-blue-400 border-dashed cursor-pointer text-sm"
+                    class="inline-flex justify-between text-sm text-blue-400 capitalize border-b border-blue-400 border-dashed cursor-pointer"
                     :title="row.description"
                   >
                     <section>
@@ -397,9 +375,9 @@ const selectedMonthName = computed(() => {
               <ElSkeleton :rows="1" animated v-else />
             </template>
             <template v-slot:actions="{ row }">
-              <div class="flex justify-end items-center space-x-2s group">
+              <div class="flex items-center justify-end space-x-2s group">
                 <div
-                  class="font-bold capitalize text-sm"
+                  class="text-sm font-bold capitalize"
                   :class="getStatusColor(row.status)"
                 >
                   <i :class="getStatusIcon(row.status)" />
@@ -407,7 +385,7 @@ const selectedMonthName = computed(() => {
                 </div>
                 <div class="flex">
                   <Link
-                    class="relative inline-block cursor-pointer ml-4 hover:bg-primary hover:text-white px-5 py-2 overflow-hidden font-bold text-body transition rounded-md focus:outline-none hover:bg-opacity-80 min-w-max"
+                    class="relative inline-block px-5 py-2 ml-4 overflow-hidden font-bold transition rounded-md cursor-pointer hover:bg-primary hover:text-white text-body focus:outline-none hover:bg-opacity-80 min-w-max"
                     :href="`/properties/${row.property_id}?unit=${row.id}`"
                   >
                     <IMdiChevronRight />
@@ -433,7 +411,7 @@ const selectedMonthName = computed(() => {
                   </AppButton>
                   <div class="flex space-x-2">
                     <AppButton
-                      class="hover:text-primary transition items-center flex flex-col justify-center hover:border-primary-400"
+                      class="flex flex-col items-center justify-center transition hover:text-primary hover:border-primary-400"
                       variant="neutral"
                       title="Imprimir"
                       :processing="isPrinting == row.id"
@@ -459,7 +437,7 @@ const selectedMonthName = computed(() => {
                   </div>
                   <AppButton
                     variant="neutral"
-                    class="hover:text-error transition items-center flex flex-col justify-center hover:border-red-400"
+                    class="flex flex-col items-center justify-center transition hover:text-error hover:border-red-400"
                     @click="onDelete(row)"
                     title="Eliminar"
                   >

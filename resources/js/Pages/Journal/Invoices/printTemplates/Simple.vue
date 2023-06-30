@@ -133,17 +133,17 @@ const removePayment = async (payment: Record<string, string>) => {
 </script>
 
 <template>
-  <section class="w-full py-2 rounded-md simple-template relative">
+  <section class="relative w-full rounded-md simple-template">
     <div class="section-body">
-      <header class="pt-4 print:pt-0 invoice__header text-sm">
-        <section class="flex justify-between px-4 w-full invoice-details">
-          <article class="flex w-full items-center">
+      <header class="pt-4 text-sm print:pt-0 invoice__header">
+        <section class="flex justify-between w-full px-4 invoice-details">
+          <article class="flex items-center w-full">
             <img :src="imageUrl" v-if="imageUrl" class="w-40 rounded-md" />
             <BusinessCard :business="businessData" class="w-full text-left" />
           </article>
 
           <article class="w-full text-right">
-            <h4 class="px-5 text-primary text-2xl font-bold">
+            <h4 class="px-5 text-2xl font-bold text-primary">
               Factura {{ invoice.series }}-{{ invoice.number }}
             </h4>
             <h5 class="text-md">
@@ -169,10 +169,10 @@ const removePayment = async (payment: Record<string, string>) => {
         :tableData="tableData"
         :is-editing="false"
         :hidden-cols="['quantity', 'discount']"
-        class="mt-5 main-grid w-full"
+        class="w-full mt-5 main-grid"
       >
         <template #prepend>
-          <div class="text-body-1 font-bold text-center text-base py-1">
+          <div class="py-1 text-base font-bold text-center text-body-1">
             {{ invoice.concept }} {{ invoice.description }}
           </div>
         </template>
@@ -195,7 +195,7 @@ const removePayment = async (payment: Record<string, string>) => {
       </div>
 
       <div
-        class="flex text-center invoice-footer-details mt-14 text-sm"
+        class="flex text-sm text-center invoice-footer-details mt-14"
         v-if="invoice.id"
       >
         <div class="w-full text-gray-600">
@@ -208,16 +208,16 @@ const removePayment = async (payment: Record<string, string>) => {
           </div>
         </div>
 
-        <section class="w-full text-right justify-center flex flex-col items-end">
-          <div class="font-serif invoice__signature w-96 border-b-2 mb-2 mx-auto" />
-          <article class="text-center w-full justify-center">
+        <section class="flex flex-col items-end justify-center w-full text-right">
+          <div class="mx-auto mb-2 font-serif border-b-2 invoice__signature w-96" />
+          <article class="justify-center w-full text-center">
             <div class="font-bold">{{ user?.name }}</div>
             <div>Firma</div>
           </article>
         </section>
       </div>
 
-      <span class="stamp is-approved mt-8" v-if="invoice.debt == 0">Pagado</span>
+      <span class="mt-8 stamp is-approved" v-if="invoice.debt == 0">Pagado</span>
     </div>
   </section>
 </template>

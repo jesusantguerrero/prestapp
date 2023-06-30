@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { reactive, watch, computed, ref, h } from "vue";
+// @ts-expect-error:  no types definitions
 import { AtBackgroundIconCard } from "atmosphere-ui";
 import { Link, router, useForm } from "@inertiajs/vue3";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
-import PropertySectionNav from "../Partials/PropertySectionNav.vue";
+import DrawSectionNav from "./Partials/DrawSectionNav.vue";
 
 import { formatMoney, formatDate } from "@/utils";
 import BaseTable from "@/Components/shared/BaseTable.vue";
@@ -47,6 +48,7 @@ watch(
   () => {
     const selectedFilters = Object.entries(filters).reduce(
       (acc: Record<string, string | undefined>, [filterName, filter]) => {
+        // @ts-ignore
         acc[filterName] = filter;
         return acc;
       },
@@ -219,7 +221,7 @@ router.on("finish", () => {
       </header>
     </template>
     <template #header>
-      <PropertySectionNav>
+      <DrawSectionNav>
         <template #actions>
           <section class="flex justify-end px-4 py-2 space-x-2">
             <AppButton
@@ -249,7 +251,7 @@ router.on("finish", () => {
             </AppButton>
           </section>
         </template>
-      </PropertySectionNav>
+      </DrawSectionNav>
     </template>
 
     <div class="mx-auto mt-16 sm:px-6 lg:px-8">

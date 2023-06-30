@@ -13,6 +13,7 @@ interface Props {
   invoice: Object;
   accountsEndpoint: string;
   allowEdit: boolean;
+  externalActions?: Record<string, any>;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -108,21 +109,38 @@ const onDelete = async (invoice: IInvoice) => {
 };
 
 const handleActions = (actionName: string, invoice: IInvoice) => {
+  const externalActions = props.externalActions;
   switch (actionName) {
     case "payment":
-      onPayment(invoice);
+      if (externalActions?.payment) {
+        externalActions?.payment?.(invoice)
+      } else {
+        onPayment(invoice);
+      }
       break;
     case "download":
-      onDownload(invoice);
+      if (externalActions?.download) {
+        externalActions?.download?.(invoice)
+      } else {
+        onDownload(invoice);
+      }
       break;
     case "edit":
-      emit("edit");
+      if (externalActions?.edit) {
+        externalActions?.edit?.(invoice)
+      } else {
+        emit("edit");
+      }
       break;
     case "view":
-      router.visit(`/invoices/${invoice.id}`);
+      externalActions?.view?.(invoice) ?? router.visit(`/invoices/${invoice.id}`);
       break;
     case "delete":
-      onDelete(invoice);
+      if (externalActions?.delete) {
+        externalActions?.delete?.(invoice)
+      } else {
+        onDelete(invoice);
+      }
       break;
   }
 };
