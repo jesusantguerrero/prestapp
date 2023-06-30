@@ -9,16 +9,18 @@ import { formatMoney } from "@/utils";
 
 const { openModal } = usePaymentModal();
 
-interface Props {
-  invoice: Object;
-  accountsEndpoint: string;
-  allowEdit: boolean;
-  externalActions?: Record<string, any>;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  accountsEndpoint: "/api/accounts",
-});
+const props = withDefaults(
+  defineProps<{
+    invoice: IInvoice;
+    accountsEndpoint?: string;
+    allowEdit: boolean;
+    externalActions?: Record<string, any>;
+  }>(),
+  {
+    accountsEndpoint: "/api/accounts",
+    allowEdit: false,
+  }
+);
 
 const emit = defineEmits(["edit"]);
 
@@ -113,21 +115,21 @@ const handleActions = (actionName: string, invoice: IInvoice) => {
   switch (actionName) {
     case "payment":
       if (externalActions?.payment) {
-        externalActions?.payment?.(invoice)
+        externalActions?.payment?.(invoice);
       } else {
         onPayment(invoice);
       }
       break;
     case "download":
       if (externalActions?.download) {
-        externalActions?.download?.(invoice)
+        externalActions?.download?.(invoice);
       } else {
         onDownload(invoice);
       }
       break;
     case "edit":
       if (externalActions?.edit) {
-        externalActions?.edit?.(invoice)
+        externalActions?.edit?.(invoice);
       } else {
         emit("edit");
       }
@@ -137,16 +139,12 @@ const handleActions = (actionName: string, invoice: IInvoice) => {
       break;
     case "delete":
       if (externalActions?.delete) {
-        externalActions?.delete?.(invoice)
+        externalActions?.delete?.(invoice);
       } else {
         onDelete(invoice);
       }
       break;
   }
-};
-
-const refresh = () => {
-  router.reload();
 };
 </script>
 
@@ -158,7 +156,7 @@ const refresh = () => {
     <template #dropdown>
       <ElDropdownMenu>
         <ElDropdownItem :command="actionName" v-for="(action, actionName) in actions">
-          {{ $t(action.label) }}
+          {{ $t(action?.label) }}
         </ElDropdownItem>
       </ElDropdownMenu>
     </template>
