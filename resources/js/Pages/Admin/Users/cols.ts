@@ -20,7 +20,7 @@ export default [
         align: 'left',
         minWidth: 150,
         render(row: Record<string, any>) {
-            return h(Link, { href: `/admin/teams/${row.id}` }, row.name )
+            return h(Link, { href: `/admin/teams/${row.id}` }, `${row.name}<${row.email}>` )
         }
       },
       {
