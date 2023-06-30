@@ -475,4 +475,23 @@ class RentService {
         $rent->client->checkStatus();
 
     }
+
+    public static function occupancy($teamId, string $startDate, string $endDate, $property = null, $owner = null) {
+      return  PropertyUnit::query()
+      ->select(DB::raw("
+        count(id) total
+      "))
+      ->with(['rents'])
+      // ->joinLeft('rents', 'rents.id', '=', 'property_units.unit_id')
+      // ->where([
+      //   'property_units.team_id' => $teamId,
+      //   // 'invoices.type' => 'INVOICE',
+      //   // 'invoiceable_type' => Rent::class
+      // ])
+      // // ->join('invoices', 'clients.id', '=', 'invoices.client_id')
+
+      // // ->whereBetween('invoices.due_date', [$startMonth, $endMonth])
+      // // ->groupBy(DB::raw("DATE_FORMAT(invoices.due_date, '%Y-%m-01')"))
+      ->first();
+    }
 }

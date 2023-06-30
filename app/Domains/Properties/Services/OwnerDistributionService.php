@@ -69,8 +69,8 @@ class OwnerDistributionService {
       if (count($items)) {
         $today = date('Y-m-d');
         $documentData = [
-          'concept' =>  $formData['concept'] ?? 'Factura de Propiedades',
-          'description' => $formData['description'] ?? "Mensualidad {$client->fullName}",
+          'concept' =>  $formData['concept'] ?? __('Property invoice'),
+          'description' => $formData['description'] ?? __("Monthly rent {$client->fullName}"),
           'user_id' => $client->user_id,
           'team_id' => $client->team_id,
           'client_id' => $client->id,
@@ -148,8 +148,8 @@ class OwnerDistributionService {
           $type = PropertyTransactionService::getInvoiceLineType($invoice->category_type);
 
           $item = [
-            "name" => "$invoice->description $invoice->date",
-            "concept" => "$invoice->description $invoice->date",
+            "name" => "$invoice->description $invoice->due_date",
+            "concept" => "$invoice->description $invoice->due_date",
             "quantity" => $type * 1,
             "category_id" => $property->owner_account_id, // payment account
             "account_id" => $invoice->type == Invoice::DOCUMENT_TYPE_BILL || $invoice->category_type == PropertyInvoiceTypes::Deposit->value
@@ -161,10 +161,10 @@ class OwnerDistributionService {
 
           if ($invoice->category_type == PropertyInvoiceTypes::Rent->value) {
             $rent = $invoice->invoiceable;
-            $retention = Tax::guessRetention("Cobro de abogado", $rent->commission, $invoice->toArray(), [
-              "description" => 'Descuento de abogado',
+            $retention = Tax::guessRetention(__("Agent payment"), $rent->commission, $invoice->toArray(), [
+              "description" => __("Agent discount"),
               "account_id" => Account::guessAccount($rent, ['real_state_operative', 'cash_and_bank']),
-              "translate_account_id" => Account::guessAccount($rent, ['Comisiones por renta','expected_commissions_owners']),
+              "translate_account_id" => Account::guessAccount($rent, [__('Rent commissions'),'expected_commissions_owners']),
             ]);
 
             $retentionTotal = $rent->commission_type === Rent::COMMISSION_PERCENTAGE ? (double) $retention->rate * $invoice->total / 100 : $retention->rate;

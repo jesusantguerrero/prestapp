@@ -44,7 +44,7 @@ class PropertyOwnerController extends InertiaController
       ? OwnerService::pendingDrawsInvoices($teamId, $ownerId)
       : OwnerService::withPendingDraws($teamId, $ownerId);
 
-      return inertia('Properties/Transactions/OwnerDraws', [
+      return inertia('RentAgent/DrawForm', [
         "invoices" => $invoicesByClient,
         'outstanding' => $invoicesByClient->sum('total'),
         "owner" => $ownerId

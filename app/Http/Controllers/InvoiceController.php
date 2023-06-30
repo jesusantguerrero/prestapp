@@ -204,15 +204,18 @@ class InvoiceController
       try {
         $invoice = $this->getInvoiceSecured($invoiceId, false);
         $isJson = request()->query('json');
+        $withReport = request()->query('report');
+
         $response = [
           'invoice' => $invoice->getInvoiceData(),
           'businessData' => Setting::getByTeam($invoice->team_id),
           'type' => $invoice->type
         ];
+
         if ($isJson) {
           return response($response, 200);
         } else {
-          return inertia(config('journal.invoices_inertia_path') . '/Show', $response);
+          return inertia(config('journal.invoices_inertia_path') . '/Preview', $response);
         }
       } catch (Exception $e) {
         redirect('/invoices');

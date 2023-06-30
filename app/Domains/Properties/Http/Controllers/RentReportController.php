@@ -6,6 +6,8 @@ use App\Domains\CRM\Services\ClientService;
 use App\Domains\Properties\Services\RentService;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\HasEnrichedRequest;
+use App\Models\Setting;
+use Exception;
 use Illuminate\Http\Request;
 
 class RentReportController extends Controller
@@ -64,6 +66,24 @@ class RentReportController extends Controller
       ]);
     }
 
+    public function occupancy(Request $request) {
+      $teamId = $request->user()->current_team_id;
+      $filters = $request->query('filter');
+      $ownerId = $filters['owner'] ?? null;
+      $status = $filters['status'] ?? null;
+      [$startDate, $endDate] = $this->getFilterDates($filters);
+      $report = RentService::occupancy($teamId, $startDate, $endDate);
+
+      dd($report);
+
+      return inertia('Rents/Reports/Occupancy',
+      [
+          'data' => $report,
+          "serverSearchOptions" => $this->getServerParams(),
+          "section" => 'invoices'
+      ]);
+    }
+
     public function management(Request $request) {
       $teamId = $request->user()->current_team_id;
       $filters = $request->query('filters');
@@ -106,4 +126,28 @@ class RentReportController extends Controller
           "section" => $section
       ]);
     }
-}
+
+    public function ownerStatement(int $invoiceId)
+    {
+      try {
+        $invoice = $this->getInvoiceSecured($invoiceId, false);
+        $isJson = request()->query('json');
+        $withReport = request()->query('report');
+
+        $response = [
+          'invoice' => $invoice->getInvoiceData(),
+          'businessData' => Setting::getByTeam($invoice->team_id),
+          'type' => $invoice->type,
+          'occupancy' => RentService::occupancy($invoice->team_id)
+        ];
+
+        if ($isJson) {
+          return response($response, 200);
+        } else {
+          return inertia(config('journal.invoices_inertia_path') . '/Preview', $response);
+        }
+      } catch (Exception $e) {
+        redirect('/invoices');
+      }
+    }
+  }
