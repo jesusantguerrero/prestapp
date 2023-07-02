@@ -4,7 +4,7 @@
     :class="{ expanded: isExpanded }"
   >
     <nav
-      class="app-header md:pl-{var(--app)} bg-neutral imary border-b"
+      class="app-header md:pl-{var(--app)} bg-primary md:bg-neutral imary border-b"
       :class="navClass"
     >
       <slot name="navigation" />

@@ -10,6 +10,7 @@ defineProps<{
   invoice: IInvoice;
   actions?: Record<string, any>;
   allowEdit: boolean;
+  externalActions?: Record<string, any>;
 }>();
 </script>
 
@@ -39,6 +40,7 @@ defineProps<{
           :invoice="invoice"
           :allow-edit="allowEdit"
           @edit="$emit('edit')"
+          :external-actions="externalActions"
         />
       </div>
     </section>

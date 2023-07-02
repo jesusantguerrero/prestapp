@@ -10,6 +10,7 @@ import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/co
 import InvoicePaymentOptions from "@/Components/templates/InvoicePaymentOptions.vue";
 import cols from "./cols";
 import { formatDate, formatMoney } from "@/utils";
+import InvoiceCard from "../InvoiceCard.vue";
 
 const props = defineProps({
   invoiceData: {
@@ -20,6 +21,9 @@ const props = defineProps({
   },
   isLoading: {
     type: Boolean,
+  },
+  responsiveActions: {
+    type: Object,
   },
 });
 
@@ -33,8 +37,19 @@ const visibleData = computed(() => {
     :cols="cols"
     :tableData="visibleData"
     :show-prepend="true"
+    responsive
     class="bg-base-lvl-3"
   >
+    <template v-slot:card="{ row: invoice }">
+      <slot name="card" row="row">
+        <InvoiceCard
+          :invoice="invoice"
+          class="mb-6 border-b py-6"
+          :external-actions="responsiveActions"
+        />
+      </slot>
+    </template>
+
     <template v-slot:date="{ scope: { row } }">
       <div v-if="!isLoading">
         <div class="font-bold text-blue-400">{{ formatDate(row.date) }}</div>

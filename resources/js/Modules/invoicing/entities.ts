@@ -1,3 +1,5 @@
+import { IClient } from "../clients/clientEntity";
+
 export interface IInvoice {
   id: number;
   client_id: number;
@@ -13,5 +15,5 @@ export interface IInvoice {
 }
 
 export interface IInvoiceWithRelations extends IInvoice {
-
+  client: IClient
 }

@@ -43,6 +43,10 @@
       }
     },
     "AVAILABLE": "Disponible",
+    "TOTAL": "total",
+    "in_month": "Este mes",
+    "within_three_months": "En 3 meses",
+    "GRACE": "En gracia",
     "RENTED": "Rentada",
     "PENDING": "Pendiente",
     "PAID": "Pagado",
@@ -58,6 +62,11 @@
           "hasPayments": "Este prestamo ya tiene pagos y no puede borrarse"
         }
     },
+    "Property invoice": "Factura de propiedades",
+    "Monthly rent": "Mensualidad",
+    "Agent discount": "Descuento de abogado",
+    "Agent payment": "Cobro de abogado",
+    "Rent commissions": "Comisiones por renta",
     "rent": "Renta",
     "deposit": "Deposito",
     "rent_late_fee": "Mora",
@@ -121,6 +130,7 @@
     "Edit unit": "Editar unidad",
     "Remove unit": "Eliminar unidad",
     "Edit invoice": "Editar factura",
+    "Description": "Descripción",
     "Record payment": "Registrar Pago",
     "Download PDF": "Descargar PDF",
     "View invoice": "Ver factura",
@@ -142,5 +152,12 @@
     "Language": "Idioma",
     "Timezone": "Zona Horaria",
     "Save": "Guardar",
-    "An invoice for :name was generated": "Una factura para :name fue generada"
+    "An invoice for :name was generated": "Una factura para :name fue generada",
+    "Company settings": "Empresa",
+    "Invoicing": "Facturas",
+    "Theme": "Tema de la aplicacion",
+    "Agent Tools": "Agente Inmobiliario",
+    "Region": "Region",
+    "Occupancy report": "Reporte de ocupación",
+    "Rent status of the units of the owner in period": "Estado de las rentas en el periodo"
   }

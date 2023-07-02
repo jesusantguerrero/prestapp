@@ -28,6 +28,8 @@ import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/co
 import { useServerSearch } from "@/utils/useServerSearch";
 import { getRentStatusColor } from "@/Modules/properties/constants";
 import { useResponsive } from "@/utils/useResponsive";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 const props = defineProps({
   invoices: {
@@ -240,19 +242,31 @@ router.on("finish", () => {
 });
 
 const { isMobile } = useResponsive();
+
+const selectedMonthName = computed(() => {
+  try {
+    return format(pageState.dates.startDate, "MMMM, yyyy", {
+      locale: es,
+    });
+  } catch (err) {
+    return pageState.dates.startDate;
+  }
+});
 </script>
 
 <template>
   <AppLayout :title="sectionLabel">
     <template #title v-if="isMobile">
       <AtDatePager
-        class="w-full h-12 border-none bg-base-lvl-1 text-body"
+        class="h-12 border-none bg-base-lvl-1 text-body ml-4 w-44"
         v-model:startDate="pageState.dates.startDate"
         v-model:endDate="pageState.dates.endDate"
         @change="executeSearchWithDelay()"
         controlsClass="bg-transparent text-body hover:bg-base-lvl-1"
         next-mode="month"
-      />
+      >
+        <span class="capitalize"> {{ selectedMonthName }} </span>
+      </AtDatePager>
     </template>
     <template #header>
       <PropertySectionNav>
@@ -269,7 +283,7 @@ const { isMobile } = useResponsive();
       </PropertySectionNav>
     </template>
 
-    <div class="pt-16 md:py-10 mx-auto sm:px-6 lg:px-8">
+    <div class="pt-16 md:py-10 mx-auto sm:px-6 lg:px-8 print:hidden">
       <section class="grid grid-cols-2 gap-2 md:flex md:space-x-4 general-stats">
         <AtBackgroundIconCard
           class="w-full bg-white border md:h-28 text-body-1"
@@ -346,6 +360,11 @@ const { isMobile } = useResponsive();
             :invoice-data="ownerInvoices"
             :is-loading="isLoading"
             class="rounded-md bg-base-lvl-3 mt-0"
+            :responsive-actions="{
+              payment: handlePayment,
+              download: printExternal,
+              delete: onDelete,
+            }"
           >
             <template v-slot:concept="{ row }">
               <section v-if="!isLoading">

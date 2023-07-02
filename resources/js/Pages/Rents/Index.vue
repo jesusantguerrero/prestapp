@@ -19,6 +19,7 @@ import { ElMessageBox } from "element-plus";
 import { rentStatus } from "@/Modules/properties/constants";
 import ContractCardMini from "@/Components/templates/ContractCardMini.vue";
 import { useResponsive } from "@/utils/useResponsive";
+import AppButtonTab from "@/Components/shared/AppButtonTab.vue";
 
 interface IPaginatedData {
   data: IRent[];
@@ -26,6 +27,7 @@ interface IPaginatedData {
 
 const props = defineProps<{
   rents: IRent[] | IPaginatedData;
+  kpis: Record<string, number>;
   serverSearchOptions: IServerSearchData;
 }>();
 
@@ -53,6 +55,7 @@ const filters = ref({
     rentStatus[0],
   endDate: null,
 });
+
 const expiringRanges = [
   {
     text: "Este mes",
@@ -72,8 +75,8 @@ const expiringRanges = [
   },
 ];
 
-const onStateSelected = (status: Record<string, string>) => {
-  searchState.filters.status = status.name;
+const onStateSelected = (statusName: string) => {
+  searchState.filters.status = statusName !== "TOTAL" ? statusName : "";
   executeSearch();
 };
 
@@ -112,6 +115,14 @@ const deleteRent = async (rent: IRent) => {
 };
 
 const { isMobile } = useResponsive();
+
+const statusTabs = computed(() => {
+  return Object.entries(rentStatus).map(([name, value]) => ({
+    ...value,
+    name,
+    count: props?.kpis[name?.toUpperCase?.()] ?? 0,
+  }));
+});
 </script>
 
 <template>
@@ -130,30 +141,22 @@ const { isMobile } = useResponsive();
           @search="executeSearch"
           @blur="executeSearch"
         />
-        <BaseSelect
-          placeholder="Filtrar"
-          :options="rentStatus"
-          v-model="filters.status"
-          label="label"
-          track-by="name"
-          size="large"
-          @update:model-value="onStateSelected"
-        />
-        <BaseSelect
-          placeholder="Expira en"
-          class="min-w-max"
-          :options="expiringRanges"
-          v-model="filters.end_date"
-          label="text"
-          track-by="text"
-          @update:model-value="setRange('end_date', $event.range)"
-        />
         <AppButton @click="router.visit(route('rents.create'))" v-if="!isMobile">
           Agregar Contrato
         </AppButton>
       </section>
+
+      <section class="grid grid-cols-3 gap-2 mt-2 md:flex md:space-x-2">
+        <AppButtonTab
+          v-for="(status, stateName) in kpis"
+          class="capitalize text-xs bg-primary/20 rounded-md"
+          @click="onStateSelected(stateName)"
+        >
+          {{ $t(stateName) }} ({{ status }})
+        </AppButtonTab>
+      </section>
       <AtTable
-        class="mt-4 bg-white rounded-md text-body-1"
+        class="mt-4 md:bg-white rounded-md text-body-1"
         :table-data="listData"
         :cols="cols"
         :pagination="searchState"
@@ -165,7 +168,10 @@ const { isMobile } = useResponsive();
         :config="tableConfig"
       >
         <template v-slot:card="{ row }">
-          <ContractCardMini :contract="row" class="mb-6 border-b py-6" />
+          <ContractCardMini
+            :contract="row"
+            class="mb-6 shadow-md w-full py-6 px-4 border bg-base-lvl-3"
+          />
         </template>
         <template v-slot:actions="{ scope: { row } }" class="flex">
           <div class="flex items-center justify-end">
@@ -185,8 +191,6 @@ const { isMobile } = useResponsive();
               >
                 <IMdiFile />
               </AppButton>
-              <!-- <AppButton variant="neutral"><IMdiFile /></AppButton>
-              <AppButton variant="neutral"><IMdiFile /></AppButton> -->
             </div>
             <AppButton
               variant="neutral"

@@ -3,34 +3,37 @@ import { computed } from "vue";
 import CustomCell from "../customCell";
 import AppSearch from "./AppSearch/AppSearch.vue";
 import { useResponsive } from "@/utils/useResponsive";
-import { ElTable, ElTableColumn } from "element-plus";
+import { ElTable, ElTableColumn, TableColumnCtx } from "element-plus";
 
 const { isMobile } = useResponsive();
 
 const props = withDefaults(
   defineProps<{
-    selectable: boolean;
-    defaultExpandAll: boolean;
-    showSummary: boolean;
-    summaryMethod: null | Function;
+    selectable?: boolean;
+    defaultExpandAll?: boolean;
+    showSummary?: boolean;
+    summaryMethod: Function;
     cols: any[];
     hiddenCols?: string[];
-    isLoading: boolean;
+    isLoading?: boolean;
     tableData: any[];
-    config: Record<string, any>;
-    pagination: Record<string, any>;
-    total: number;
+    config?: Record<string, any>;
+    pagination?: Record<string, any>;
+    total?: number;
     showPrepend?: boolean;
-    showAppend: boolean;
-    emptyText: string;
-    hideEmptyText: boolean;
-    hideHeaders: boolean;
-    responsive: boolean;
-    tableClass: string;
-    layout: string;
+    showAppend?: boolean;
+    emptyText?: string;
+    hideEmptyText?: boolean;
+    hideHeaders?: boolean;
+    responsive?: boolean;
+    tableClass?: string;
+    layout?: string;
   }>(),
   {
-    tableClass: "px-4",
+    summaryMethod: (data: { columns: TableColumnCtx<any>[]; data: any[] }) => {
+      return () => {};
+    },
+    tableClass: "md:px-4",
     layout: "table",
   }
 );
@@ -39,26 +42,38 @@ const getHeaderClass = (row: Record<string, any>) => {
   return row.headerClass;
 };
 
+const parseColumn = (column: Record<string, any> | string) => {
+  if (typeof column == "string") {
+    return {
+      name: column,
+      label: column,
+    };
+  }
+  return column;
+};
+
 const visibleCols = computed(() => {
+  const parsedCols = props.cols.map(parseColumn);
   return props.hiddenCols
-    ? props.cols.filter((col) => !props.hiddenCols?.includes(col.name))
-    : props.cols;
+    ? parsedCols.filter((col) => !props.hiddenCols?.includes(col.name))
+    : parsedCols;
 });
 </script>
 
 <template>
-  <section>
+  <section class="ic-base-table">
+    <!-- Header and top pagination -->
     <section
-      class="flex justify-between items-center"
+      class="flex justify-between items-center px-4 md:px-0 bg-base-lvl-3"
       :class="{ 'py-4': config?.search }"
     >
-      <div class="w-full px-4" v-if="config?.search">
+      <div class="w-full md:px-4" v-if="config?.search">
         <AppSearch class="w-96" v-model="pagination.search" @search="$emit('search')" />
       </div>
       <ElPagination
         v-if="config?.pagination && pagination"
         class="w-full flex justify-end pr-4 py-4"
-        background
+        :background="!isMobile"
         @current-change="$emit('paginate', $event)"
         @size-change="$emit('size-change', $event)"
         layout="total,prev, pager, next,sizes"
@@ -68,14 +83,14 @@ const visibleCols = computed(() => {
         :total="total"
       />
     </section>
+
+    <!-- Table Body -->
     <section :class="tableClass">
       <div
         class="space-y-2"
         v-if="layout == 'grid' || (responsive && $slots.card && isMobile)"
       >
-        <slot name="card" :row="row" v-for="row in tableData">
-          <span>Hola</span>
-        </slot>
+        <slot name="card" :row="row" v-for="row in tableData" />
       </div>
       <ElTable
         v-else
@@ -122,15 +137,16 @@ const visibleCols = computed(() => {
         </ElTableColumn>
       </ElTable>
     </section>
+    <!-- Footer and pagination -->
     <section
-      class="flex justify-between items-center py-4"
+      class="flex justify-between items-center py-4 bg-base-lvl-3"
       v-if="config?.pagination && pagination"
     >
       <div class="w-full"></div>
       <div class="w-full flex justify-end">
         <ElPagination
           class="w-full flex justify-end pr-4"
-          background
+          :background="!isMobile"
           @current-change="$emit('paginate', $event)"
           @size-change="$emit('size-change', $event)"
           :current-page="pagination?.page"

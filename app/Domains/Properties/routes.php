@@ -7,7 +7,9 @@ use App\Domains\Properties\Http\Controllers\PropertyInvoiceController;
 use App\Domains\Properties\Http\Controllers\PropertyOwnerController;
 use App\Domains\Properties\Http\Controllers\PropertyTransactionController;
 use App\Domains\Properties\Http\Controllers\PropertyUnitController;
+use App\Domains\Properties\Http\Controllers\RentAgentController;
 use App\Domains\Properties\Http\Controllers\RentController;
+use App\Domains\Properties\Http\Controllers\RentRenewalController;
 use App\Domains\Properties\Http\Controllers\RentReportController;
 use App\Domains\Properties\Http\Controllers\TenantRentController;
 use Illuminate\Support\Facades\Route;
@@ -39,6 +41,7 @@ Route::middleware([
 
     // rents
     Route::resource('rents', RentController::class);
+    Route::get('/rent-renewals', [RentRenewalController::class, 'index']);
     Route::get('rents/advanced-filter/pending-generation', [RentController::class, 'withPendingGeneration']);
     Route::get('/rents/{rent}/{section}', [RentController::class, 'getSection']);
 
@@ -53,6 +56,7 @@ Route::middleware([
 
     // reports
     Route::get('/rent-reports/monthly-summary', [RentReportController::class, 'monthlySummary']);
+    Route::get('/rent-reports/occupancy', [RentReportController::class, 'occupancy']);
     Route::get('/property-reports', [RentReportController::class, 'management']);
 
     // property transactions
@@ -64,8 +68,6 @@ Route::middleware([
       Route::post('/rents/{rent}/invoices/{invoice}/apply-deposit', 'applyDeposit');
     });
 
-   ;
-
     // Owner
     Route::controller(PropertyOwnerController::class)->group(function() {
       Route::post('/clients/{client}/owner-distributions', 'generateDraw')->name('owners.draw.generate');
@@ -75,6 +77,9 @@ Route::middleware([
       Route::post('/owners/{client}/draws/{drawId}', 'updateDraws')->name('owners.draw.update');
       Route::post('/owners/{client}/draws/{drawId}/payments', 'payDraw')->name('owners.draw.pay');
     });
+
+    // Agent
+    Route::get('/agents/{viewName}', [RentAgentController::class, 'list']);
 
     // Tenant
     Route::controller(TenantRentController::class)->group(function() {

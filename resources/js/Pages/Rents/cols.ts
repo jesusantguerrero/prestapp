@@ -77,6 +77,7 @@ export default [
     {
         name: 'actions',
         label: 'Acciones',
+        align: 'center',
         minWidth: 150,
     }
 ]

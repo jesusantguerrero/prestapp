@@ -14,7 +14,7 @@ use Insane\Journal\Models\Invoice\Invoice;
 
 class RentController extends InertiaController
 {
-    public function __construct(Rent $rent)
+    public function __construct(Rent $rent, RentService $rentService)
     {
         $this->model = $rent;
         $this->searchable = ['client_name', 'owner_name', 'address'];
@@ -38,6 +38,19 @@ class RentController extends InertiaController
         $this->filters = [];
         $this->page = 1;
         $this->limit = 10;
+        $this->service = $rentService;
+    }
+
+    protected function index(Request $request) {
+      $resourceName = $this->resourceName ?? $this->model->getTable();
+      $resources = $this->parser($this->getModelQuery($request));
+
+      return inertia($this->templates['index'],
+      array_merge([
+          $resourceName => $resources,
+          "serverSearchOptions" => $this->getServerParams(),
+          "kpis" => $this->service->getListKpi($request->user()->current_team_id)
+      ], $this->getIndexProps($request, $resources)));
     }
 
     public function create(Request $request) {
@@ -60,8 +73,6 @@ class RentController extends InertiaController
     {
         return RentService::createRent($postData);
     }
-
-
 
     protected function updateResource($resource, $postData)
     {

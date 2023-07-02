@@ -7,11 +7,7 @@ import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/co
 import AccountingSectionNav from "@/Pages/Journal/Partials/AccountingSectionNav.vue";
 import InvoiceSimple from "./printTemplates/Simple.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
-import InvoicePaymentOptions from "@/Components/templates/InvoicePaymentOptions.vue";
-import AppButton from "@/Components/shared/AppButton.vue";
 
-import { formatDate, formatMoney } from "@/utils";
-import { getInvoiceTypeUrl } from "./utils";
 import { ref } from "vue";
 
 defineProps({
