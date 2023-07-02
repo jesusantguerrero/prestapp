@@ -120,7 +120,7 @@ const menus = {
         isActiveFunction(currentPath: string) {
           return /owner-draws/.test(currentPath)
         },
-        icon: MaterialSymbolsHomeWorkOutline,
+        icon: IcOutlineRealEstateAgent,
         as: Link,
     }, {
         label: 'Comisiones',
@@ -131,12 +131,7 @@ const menus = {
         icon: MaterialSymbolsHomeWorkOutline,
         as: Link,
     }],
-    [MODULES.REPORT]: [{
-        label: 'Facturas propietarios',
-        to: '/property-reports/',
-        as: Link,
-        icon: IcOutlineRealEstateAgent,
-      },
+    [MODULES.REPORT]: [
       {
         label: 'Ocupación',
         to: '/rent-reports/occupancy',
