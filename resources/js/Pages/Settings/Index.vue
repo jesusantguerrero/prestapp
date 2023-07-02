@@ -22,11 +22,11 @@ const tabs = ref({
   business: {
     label: "Organización",
     sections: [
-      ["Datos de Compañia", "/settings/business"],
+      ["Company Settings", "/settings/business"],
       // ["Marca",  '/settings/branding'],
-      ["Facturas", "/settings/invoice"],
-      ["Prestamos", "/settings/loan"],
-      ["Propiedades", "/settings/invoice"],
+      ["Invoicing", "/settings/invoice"],
+      ["Loans", "/settings/loan"],
+      ["Properties", "/settings/invoice"],
       "",
       ["Theme", "/settings/theme"],
       ["Region", "/settings/region"],
@@ -90,7 +90,7 @@ currentTab.value = props.tabName;
               class="flex justify-between w-full px-2 py-2 font-bold text-gray-400 transition transform bg-white border hover:text-blue-400 hover:shadow-md hover:border-blue-400"
             >
               <div>
-                {{ section[0] }}
+                {{ $t(section[0]) }}
               </div>
 
               <div :href="section[1]" v-if="section[1]">
@@ -104,5 +104,3 @@ currentTab.value = props.tabName;
     </div>
   </AppLayout>
 </template>
-
-

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Domains\Properties\Services\OwnerService;
 use App\Http\Controllers\Traits\HasEnrichedRequest;
 use App\Models\Setting;
 use Illuminate\Http\Request;
@@ -206,10 +207,14 @@ class InvoiceController
         $isJson = request()->query('json');
         $withReport = request()->query('report');
 
+        $report = OwnerService::occupancyReportByMonth($invoice->team_id, $invoice->client_id, $invoice->due_date);
+        dd($report, "Hello world");
+
         $response = [
           'invoice' => $invoice->getInvoiceData(),
           'businessData' => Setting::getByTeam($invoice->team_id),
-          'type' => $invoice->type
+          'type' => $invoice->type,
+          "occupancyReport" => $report
         ];
 
         if ($isJson) {

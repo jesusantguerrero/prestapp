@@ -152,5 +152,10 @@
     "Language": "Idioma",
     "Timezone": "Zona Horaria",
     "Save": "Guardar",
-    "An invoice for :name was generated": "Una factura para :name fue generada"
+    "An invoice for :name was generated": "Una factura para :name fue generada",
+    "Company settings": "Empresa",
+    "Invoicing": "Facturas",
+    "Theme": "Tema de la aplicacion",
+    "Agent Tools": "Agente Inmobiliario",
+    "Region": "Region"
   }

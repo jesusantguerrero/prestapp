@@ -134,7 +134,7 @@ const removePayment = async (payment: Record<string, string>) => {
 
 <template>
   <section class="relative w-full rounded-md simple-template">
-    <div class="section-body">
+    <div class="section-body relative">
       <header class="pt-4 text-sm print:pt-0 invoice__header">
         <section class="flex justify-between w-full px-4 invoice-details">
           <article class="flex items-center w-full">

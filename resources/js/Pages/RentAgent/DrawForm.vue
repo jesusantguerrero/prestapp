@@ -5,7 +5,7 @@ import { AtBackgroundIconCard } from "atmosphere-ui";
 import { Link, router, useForm } from "@inertiajs/vue3";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
-import DrawSectionNav from "./Partials/DrawSectionNav.vue";
+import DrawSectionNav from "./Partials/AgentSectionNav.vue";
 
 import { formatMoney, formatDate } from "@/utils";
 import BaseTable from "@/Components/shared/BaseTable.vue";
