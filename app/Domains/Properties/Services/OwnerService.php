@@ -2,9 +2,10 @@
 
 namespace App\Domains\Properties\Services;
 
+use App\Domains\Atmosphere\DTO\ReportData;
+use App\Domains\Atmosphere\DTO\ReportVisualData;
 use App\Domains\CRM\Models\Client;
 use App\Domains\Properties\Enums\PropertyInvoiceTypes;
-use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Properties\Models\Rent;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -157,34 +158,52 @@ class OwnerService {
     public static function occupancyReportByMonth($teamId, $ownerId, $date) {
       $referenceDate = Carbon::createFromFormat('Y-m-d', $date);
       try {
-        // return DB::query()->from("property_units")
-        return PropertyUnit::selectRaw("
-        CONCAT(property_units.property_name,'-',property_units.name) unit_name,
-        property_units.id,
-        property_units.owner_id,
-        ")
-        // -- rents.id rent_id, rents.date, rents.end_date, rents.move_out_at, rents.client_name, rents.`status` rent_status,SUM(COALESCE(invoices.total, 0.00)) total_in_month,invoices.due_date invoice_month, property_units.status current_status")
-        ->where([
+        $data = DB::query()->from("property_units")->selectRaw("
+          CONCAT(property_units.property_name,'-',property_units.name) unit_name,
+          property_units.id,
+          property_units.owner_id,
+          rents.id rent_id,
+          rents.date,
+          rents.end_date,
+          rents.move_out_at,
+          rents.client_name,
+          rents.status rent_status,
+          SUM(COALESCE(invoices.total, 0.00)) total_in_month,
+          invoices.due_date invoice_month,
+          property_units.status current_status"
+        )->where([
           "property_units.team_id" => $teamId,
           "property_units.owner_id" => $ownerId
         ])
-        // ->leftJoin('rents', fn ($join) =>
-        //   $join->on('rents.unit_id', 'property_units.id')
-        //   ->where('date', '<=', $referenceDate->endOfMonth()->format('Y-m-d'))
-        //   ->where(fn ($q) => $q->whereNull("move_out_at")->orWhere("move_out_at", ">=",  $referenceDate->startOfMonth()->format('Y-m-d'))
-        // ))
-        // ->leftJoin('invoices', fn ($join)=>
-        //   $join->on('invoiceable_id', 'rents.id')
-        //   ->where('invoiceable_type', Rent::class)
-        //   ->whereIn('category_type', [
-        //     PropertyInvoiceTypes::Rent,
-        //     PropertyInvoiceTypes::Deposit->value
-        //   ])
-        //   ->whereRaw('DATE_FORMAT(due_date, "%Y-%m-01") =', [ $referenceDate->format('Y-m-01') ])
-        // )
-        // ->orderByRaw("property_units.id, property_units.property_id, rents.id, CONCAT(property_units.property_name,'-',property_units.name)")
-        // ->groupByRaw("property_units.id, property_units.property_id, rents.id, CONCAT(property_units.property_name,'-',property_units.name)")
+        ->leftJoin('rents', fn ($join) =>
+          $join->on('rents.unit_id', '=', 'property_units.id')
+          ->where('date', '<=', $referenceDate->endOfMonth()->format('Y-m-d'))
+          ->where(fn ($q) => $q->whereNull("move_out_at")->orWhere("move_out_at", ">=",  $referenceDate->startOfMonth()->format('Y-m-d')))
+        )
+        ->leftJoin('invoices', fn ($join)=>
+          $join->on('invoiceable_id', '=', 'rents.id')
+          ->where('invoiceable_type', Rent::class)
+          ->whereIn('category_type', [
+            PropertyInvoiceTypes::Rent,
+            PropertyInvoiceTypes::Deposit->value
+          ])
+          ->whereRaw('DATE_FORMAT(due_date, "%Y-%m-01") = ?', [ $referenceDate->format('Y-m-01') ])
+        )
+        ->orderByRaw("property_units.id, property_units.property_id, rents.id, CONCAT(property_units.property_name,'-',property_units.name)")
+        ->groupByRaw("property_units.id, property_units.property_id, rents.id, CONCAT(property_units.property_name,'-',property_units.name)")
         ->get();
+
+
+        return new ReportData(
+          __("Occupancy report"),
+          __("Rent status of the units of the owner in period"),
+          $referenceDate->startOfMonth()->format('Y-m-d'),
+          $referenceDate->endOfMonth()->format('Y-m-d'),
+          "table",
+          new ReportVisualData("table", $data),
+          "",
+          ""
+        );
       } catch (\Exception $e) {
         dd($e->getMessage());
       }

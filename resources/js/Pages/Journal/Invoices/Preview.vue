@@ -3,6 +3,16 @@ import InvoiceSimple from "./printTemplates/Simple.vue";
 
 import { onMounted } from "vue";
 import { IInvoiceWithRelations } from "@/Modules/invoicing/entities";
+import ReportSimple from "./printTemplates/ReportSimple.vue";
+
+interface IReport {
+  title: string;
+  description: string;
+  startDate: Date;
+  endDate: Date;
+  type: string;
+  content: Record<string, any>[];
+}
 
 withDefaults(
   defineProps<{
@@ -11,6 +21,7 @@ withDefaults(
     businessData: Record<string, string>;
     type: string;
     invoiceTemplate: string;
+    report?: IReport;
   }>(),
   {
     invoiceTemplate: "invoice-simple",
@@ -31,6 +42,16 @@ onMounted(() => {
       :business-data="businessData"
       :invoice-data="invoice"
       id="invoice-content"
+    />
+  </div>
+  <div class="preview-container" v-if="report">
+    <ReportSimple
+      :report-name="report.title"
+      :description="report.description"
+      :start-date="report.startDate"
+      :end-date="report.endDate"
+      :content="report.content"
+      :business-data="businessData"
     />
   </div>
 </template>

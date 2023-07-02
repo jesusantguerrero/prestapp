@@ -208,13 +208,12 @@ class InvoiceController
         $withReport = request()->query('report');
 
         $report = OwnerService::occupancyReportByMonth($invoice->team_id, $invoice->client_id, $invoice->due_date);
-        dd($report, "Hello world");
 
         $response = [
           'invoice' => $invoice->getInvoiceData(),
           'businessData' => Setting::getByTeam($invoice->team_id),
           'type' => $invoice->type,
-          "occupancyReport" => $report
+          "report" => $report
         ];
 
         if ($isJson) {
