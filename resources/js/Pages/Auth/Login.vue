@@ -1,6 +1,10 @@
-<script setup>
+<script setup lang="ts">
 import { AtAuthBox, AtAuthForm } from "atmosphere-ui";
 import { router, useForm, Link, Head } from "@inertiajs/vue3";
+
+import DemoInstructions from "./Partials/DemoInstructions.vue";
+
+import { isDemo } from "@/utils/constants";
 
 defineProps({
   canResetPassword: Boolean,
@@ -48,9 +52,14 @@ const submit = (formData) => {
       @link-pressed="onLinkPressed"
     >
       <template #brand>
-        <Link :to="{ name: 'landing' }" class="w-full font-light font-brand">
+        <Link :href="{ name: 'landing' }" class="w-full font-light font-brand">
           <img src="/logo.svg" class="w-96" />
         </Link>
+      </template>
+      <template #prependInput v-if="isDemo">
+        <DemoInstructions
+          class="rounded-md mt-6 text-center py-2 px-5 bg-primary bg-opacity-25 text-sm font-sans"
+        />
       </template>
     </AtAuthForm>
   </AtAuthBox>
