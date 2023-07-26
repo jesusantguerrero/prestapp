@@ -3,6 +3,9 @@
 namespace App\Domains\Properties\Http\Controllers;
 
 use App\Domains\CRM\Services\ClientService;
+use App\Domains\Properties\Models\PropertyUnit;
+use App\Domains\Properties\Models\Rent;
+use App\Domains\Properties\Services\OwnerService;
 use App\Domains\Properties\Services\RentService;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\HasEnrichedRequest;
@@ -71,14 +74,28 @@ class RentReportController extends Controller
       $filters = $request->query('filter');
       $ownerId = $filters['owner'] ?? null;
       $status = $filters['status'] ?? null;
-      [$startDate, $endDate] = $this->getFilterDates($filters);
-      $report = RentService::occupancy($teamId, $startDate, $endDate);
+      [$startDate] = $this->getFilterDates($filters);
+      $units = OwnerService::occupancyByMonth($teamId, $startDate);
 
-      dd($report);
+      $unitsByOwners = $units->groupBy(['owner_name', 'property_id'])
+      ->map(function ($properties) {
+        $units = $properties->flatten();
+        $rented = $units
+        ->filter(fn ($value) => $value->rent_id)->count();
+
+        return [
+          "total" => $units->count(),
+          "propertyCount" => $properties->count(),
+          "properties" => $properties->all(),
+          "occupancyRate" => ($rented / $units->count()) * 100,
+          "rented" => $rented,
+          "vacant" => $units->count() - $rented
+        ];
+      });
 
       return inertia('Rents/Reports/Occupancy',
       [
-          'data' => $report,
+        'invoices' => $unitsByOwners,
           "serverSearchOptions" => $this->getServerParams(),
           "section" => 'invoices'
       ]);

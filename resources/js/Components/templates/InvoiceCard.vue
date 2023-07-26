@@ -6,12 +6,18 @@ import InvoicePaymentOptions from "./InvoicePaymentOptions.vue";
 import { getStatus, getStatusIcon } from "@/Modules/invoicing/constants";
 import { IInvoice } from "@/Modules/invoicing/entities";
 
-defineProps<{
-  invoice: IInvoice;
-  actions?: Record<string, any>;
-  allowEdit: boolean;
-  externalActions?: Record<string, any>;
-}>();
+withDefaults(
+  defineProps<{
+    invoice: IInvoice;
+    actions?: Record<string, any>;
+    allowEdit: boolean;
+    hideActions: boolean;
+    externalActions?: Record<string, any>;
+  }>(),
+  {
+    allowEdit: false,
+  }
+);
 </script>
 
 <template>
@@ -37,6 +43,7 @@ defineProps<{
           <i :class="getStatusIcon(invoice.status)" /> {{ getStatus(invoice.status) }}
         </span>
         <InvoicePaymentOptions
+          v-if="!hideActions"
           :invoice="invoice"
           :allow-edit="allowEdit"
           @edit="$emit('edit')"

@@ -16,6 +16,9 @@ import {
   useTransactionModal,
   transactionModalState,
 } from "@/Modules/transactions/useTransactionModal";
+import { useResponsive } from "@/utils/useResponsive";
+import { useActionSheet } from "@/Modules/_app/useActionSheet";
+import { computed } from "vue";
 
 const emit = defineEmits(["reload"]);
 
@@ -54,6 +57,15 @@ const {
   closeModal: closeInvoiceModal,
   data: invoiceData,
 } = useToggleModal("invoice");
+
+const { isMobile } = useResponsive();
+const { isOpen: isActionSheetOpen, closeAction, data: actionData } = useActionSheet(
+  "global"
+);
+
+const modalMaxWidth = computed(() => {
+  return isMobile.value ? "mobile" : null;
+});
 </script>
 
 <template>
@@ -69,6 +81,13 @@ const {
     v-bind="transactionModalState"
     @saved="onTransactionSaved"
     @close="onTransactionSaved"
+  />
+
+  <MoreOptionsModal
+    v-model:show="isActionSheetOpen"
+    :max-width="modalMaxWidth"
+    v-bind="actionData"
+    v-if="isMobile"
   />
 
   <ClientFormModal

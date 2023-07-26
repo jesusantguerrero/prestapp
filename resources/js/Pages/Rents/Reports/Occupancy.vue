@@ -284,169 +284,131 @@ const selectedMonthName = computed(() => {
     </template>
 
     <div class="pt-16 mx-auto md:py-10 sm:px-6 lg:px-8">
-      <SectionNav
-        class="w-full mt-4 bg-base-lvl-3"
-        selected-class="font-bold border-primary text-primary"
-        v-model="selectedTab"
-        :sections="tabs"
-      >
-        <template v-slot:title="{ tab, tabName }">
-          <h4 class="font-bold capitalize text-primary">
-            {{ tab.label }} ({{ invoices[tabName].total }})
-          </h4>
-        </template>
-        <template #actions>
-          <section class="flex space-x-4" v-if="false">
-            <AppSearch
-              v-model.lazy="filters.search"
-              class="w-full md:flex"
-              :has-filters="true"
-            />
-            <BaseSelect
-              class="min-w-max"
-              :size="large"
-              :options="owners"
-              placeholder="Filtrar por dueño"
-              v-model="filters.owner"
-            />
-            <BaseSelect
-              placeholder="Filtrar"
-              :options="[]"
-              v-model="filters.status"
-              label="label"
-              track-by="name"
-            />
-          </section>
-        </template>
-      </SectionNav>
-      <section v-for="(invoiceGroup, groupName) in invoices" class="px-4 bg-base-lvl-3">
-        <article
-          v-for="(ownerInvoices, ownerName) in invoiceGroup.owners"
-          :key="ownerName"
-          class="mb-5"
-        >
+      <section class="px-4 bg-base-lvl-3">
+        <article v-for="(details, ownerName) in invoices" :key="ownerName" class="mb-5">
           <header class="py-2 font-bold">
             {{
-              $t(":owner, (:invoiceCount) invoices", {
+              $t(":owner, (:count) units", {
                 owner: ownerName,
-                invoiceCount: ownerInvoices.length,
+                count: details.total,
               })
             }}
           </header>
-          <InvoiceTable
-            v-if="groupName == selectedTab"
-            :invoice-data="ownerInvoices"
-            :is-loading="isLoading"
-            class="mt-0 rounded-md bg-base-lvl-3"
-            :responsive-actions="{
-              payment: handlePayment,
-              download: printExternal,
-              delete: onDelete,
-            }"
-          >
-            <template v-slot:concept="{ row }">
-              <section v-if="!isLoading">
-                <p>
-                  <Link
-                    :href="`/${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}`"
-                    class="inline-flex justify-between text-sm text-blue-400 capitalize border-b border-blue-400 border-dashed cursor-pointer"
-                    :title="row.description"
-                  >
-                    <section>
-                      {{ row.concept }}
-                      <span class="font-bold text-gray-300">
-                        {{ row.series }} #{{ row.number }}
-                      </span>
-                    </section>
-                  </Link>
-                </p>
-                <p class="flex items-center mt-2">
-                  <IClarityContractLine class="mr-2" />
-                  {{ row.client_name }}
-                  <ElTag
-                    :type="getRentStatusColor(row.rent_status)"
-                    class="ml-2"
-                    v-if="row.rent_status"
-                  >
-                    {{ $t(row.rent_status ?? "") }} {{ row.move_out_at }}
-                  </ElTag>
-                </p>
-              </section>
-              <ElSkeleton :rows="1" animated v-else />
-            </template>
-            <template v-slot:actions="{ row }">
-              <div class="flex items-center justify-end space-x-2s group">
-                <div
-                  class="text-sm font-bold capitalize"
-                  :class="getStatusColor(row.status)"
-                >
-                  <i :class="getStatusIcon(row.status)" />
-                  {{ getStatus(row.status) }}
-                </div>
-                <div class="flex">
-                  <Link
-                    class="relative inline-block px-5 py-2 ml-4 overflow-hidden font-bold transition rounded-md cursor-pointer hover:bg-primary hover:text-white text-body focus:outline-none hover:bg-opacity-80 min-w-max"
-                    :href="`/properties/${row.property_id}?unit=${row.id}`"
-                  >
-                    <IMdiChevronRight />
-                  </Link>
-                  <AppButton
-                    @click="handlePayment(row)"
-                    variant="inverse-secondary"
-                    class="flex items-center justify-center"
-                    v-if="row?.status !== 'paid' && filters.section !== 'commissions'"
-                    title="Pagar"
-                  >
-                    <IIcSharpPayment />
-                  </AppButton>
-                  <AppButton
-                    @click="deleteRentPayments(row)"
-                    :disabled="deletePaymentForm.processing"
-                    variant="error"
-                    class="flex items-center justify-center"
-                    v-else
-                    title="Eliminar pago"
-                  >
-                    <IMdiReceiptTextRemove />
-                  </AppButton>
-                  <div class="flex space-x-2">
-                    <AppButton
-                      class="flex flex-col items-center justify-center transition hover:text-primary hover:border-primary-400"
-                      variant="neutral"
-                      title="Imprimir"
-                      :processing="isPrinting == row.id"
-                      :disabled="isPrinting == row.id"
-                      @click="printExternal(row)"
+          <section v-for="propertyUnits in details.properties">
+            <InvoiceTable
+              :invoice-data="propertyUnits"
+              :is-loading="isLoading"
+              class="mt-0 rounded-md bg-base-lvl-3"
+              :responsive-actions="{
+                payment: handlePayment,
+                download: printExternal,
+                delete: onDelete,
+              }"
+            >
+              <template v-slot:concept="{ row }">
+                <section v-if="!isLoading">
+                  <p>
+                    <Link
+                      :href="`/${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}`"
+                      class="inline-flex justify-between text-sm text-blue-400 capitalize border-b border-blue-400 border-dashed cursor-pointer"
+                      :title="row.description"
                     >
-                      <IMdiFile />
+                      <section>
+                        {{ row.concept }}
+                        <span class="font-bold text-gray-300">
+                          {{ row.series }} #{{ row.number }}
+                        </span>
+                      </section>
+                    </Link>
+                  </p>
+                  <p class="flex items-center mt-2">
+                    <IClarityContractLine class="mr-2" />
+                    {{ row.client_name }}
+                    <ElTag
+                      :type="getRentStatusColor(row.rent_status)"
+                      class="ml-2"
+                      v-if="row.rent_status"
+                    >
+                      {{ $t(row.rent_status ?? "") }} {{ row.move_out_at }}
+                    </ElTag>
+                  </p>
+                </section>
+                <ElSkeleton :rows="1" animated v-else />
+              </template>
+              <template v-slot:actions="{ row }">
+                <div class="flex items-center justify-end space-x-2s group">
+                  <div
+                    class="text-sm font-bold capitalize"
+                    :class="getStatusColor(row.status)"
+                  >
+                    <i :class="getStatusIcon(row.status)" />
+                    {{ getStatus(row.status) }}
+                  </div>
+                  <div class="flex">
+                    <Link
+                      class="relative inline-block px-5 py-2 ml-4 overflow-hidden font-bold transition rounded-md cursor-pointer hover:bg-primary hover:text-white text-body focus:outline-none hover:bg-opacity-80 min-w-max"
+                      :href="`/properties/${row.property_id}?unit=${row.id}`"
+                    >
+                      <IMdiChevronRight />
+                    </Link>
+                    <AppButton
+                      @click="handlePayment(row)"
+                      variant="inverse-secondary"
+                      class="flex items-center justify-center"
+                      v-if="row?.status !== 'paid' && filters.section !== 'commissions'"
+                      title="Pagar"
+                    >
+                      <IIcSharpPayment />
                     </AppButton>
                     <AppButton
-                      v-if="filters.section == 'bills' && row.status != 'paid'"
-                      class="mr-2"
-                      variant="neutral"
-                      :process="InteractionsState.isGeneratingDistribution"
-                      @click="
-                        clientInteractions.generateOwnerDistribution(
-                          row.contact_id,
-                          row.id
-                        )
-                      "
+                      @click="deleteRentPayments(row)"
+                      :disabled="deletePaymentForm.processing"
+                      variant="error"
+                      class="flex items-center justify-center"
+                      v-else
+                      title="Eliminar pago"
                     >
-                      Re-generar
+                      <IMdiReceiptTextRemove />
+                    </AppButton>
+                    <div class="flex space-x-2">
+                      <AppButton
+                        class="flex flex-col items-center justify-center transition hover:text-primary hover:border-primary-400"
+                        variant="neutral"
+                        title="Imprimir"
+                        :processing="isPrinting == row.id"
+                        :disabled="isPrinting == row.id"
+                        @click="printExternal(row)"
+                      >
+                        <IMdiFile />
+                      </AppButton>
+                      <AppButton
+                        v-if="filters.section == 'bills' && row.status != 'paid'"
+                        class="mr-2"
+                        variant="neutral"
+                        :process="InteractionsState.isGeneratingDistribution"
+                        @click="
+                          clientInteractions.generateOwnerDistribution(
+                            row.contact_id,
+                            row.id
+                          )
+                        "
+                      >
+                        Re-generar
+                      </AppButton>
+                    </div>
+                    <AppButton
+                      variant="neutral"
+                      class="flex flex-col items-center justify-center transition hover:text-error hover:border-red-400"
+                      @click="onDelete(row)"
+                      title="Eliminar"
+                    >
+                      <IMdiTrash />
                     </AppButton>
                   </div>
-                  <AppButton
-                    variant="neutral"
-                    class="flex flex-col items-center justify-center transition hover:text-error hover:border-red-400"
-                    @click="onDelete(row)"
-                    title="Eliminar"
-                  >
-                    <IMdiTrash />
-                  </AppButton>
                 </div>
-              </div>
-            </template>
-          </InvoiceTable>
+              </template>
+            </InvoiceTable>
+          </section>
         </article>
       </section>
     </div>

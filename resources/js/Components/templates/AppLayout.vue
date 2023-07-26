@@ -184,7 +184,7 @@ function refresh() {
                       class="flex text-sm transition border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300"
                     >
                       <img
-                        class="object-cover w-8 h-8 rounded-full"
+                        class="object-cover w-8 h-8 min-w-min rounded-full"
                         :src="$page.props.user.profile_photo_url"
                         :alt="$page.props.user.name"
                       />
@@ -263,13 +263,18 @@ function refresh() {
         >
           <template #brand>
             <!-- Logo -->
-            <h1 class="flex items-center w-full text-gray-100"
-            :class="{' md:shrink-0 md:px-7': isExpanded }"
+            <h1
+              class="flex items-center w-full text-gray-100"
+              :class="{ ' md:shrink-0 md:px-7': isExpanded }"
             >
-              <Link :href="route('dashboard')" class="flex items-center justify-center space-x-2" :class="{'mx-auto': !isExpanded}">
+              <Link
+                :href="route('dashboard')"
+                class="flex items-center justify-center space-x-2"
+                :class="{ 'mx-auto': !isExpanded }"
+              >
                 <ApplicationMark class="flex justify-center w-10 h-14" />
                 <span class="text-xl font-bold text-white" v-if="isExpanded">
-                   ICLoan
+                  ICLoan
                 </span>
               </Link>
             </h1>

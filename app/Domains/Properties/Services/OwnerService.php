@@ -57,8 +57,11 @@ class OwnerService {
       $invoices = Invoice::selectRaw("
         count(invoices.id) month_count,
         sum(invoices.total) as total,
+        max(due_date) last_invoice_date,
         monthname(due_date) invoice_month,
         clients.display_name owner_name,
+        clients.names owner_first_name,
+        clients.lastnames owner_lastnames,
         clients.id owner_id,
         properties.name property_name
       ")
@@ -89,6 +92,9 @@ class OwnerService {
 
         return [
           "owner_name" => $ownerName,
+          "owner_first_name" => $byClient->first()->owner_first_name,
+          "owner_lastnames" => $byClient->first()->owner_lastnames,
+          "last_invoice_date" => $byClient->max('last_invoice_date'),
           "owner_id" => $byClient->first()->owner_id,
           "total" => $byClient->sum('month_count'),
           "invoices" => $byClient,
@@ -98,7 +104,7 @@ class OwnerService {
     }
 
     public static function pendingDrawsInvoices($teamId, $ownerId = null, $invoiceId = null) {
-      $invoices = Invoice::selectRaw('invoices.*, DATE_FORMAT(due_date, "%Y-%m-01") invoice_month, clients.display_name owner_name, clients.id owner_id, properties.name property_name')
+      $invoices = Invoice::selectRaw('invoices.*, DATE_FORMAT(due_date, "%Y-%m-01") invoice_month, clients.display_name owner_name, clients.names owner_first_name, clients.lastnames owner_lastname, clients.id owner_id, properties.name property_name')
       ->paid()
       ->byTeam($teamId)
       ->where('invoiceable_type', Rent::class)
@@ -129,6 +135,7 @@ class OwnerService {
             "monthName" => $monthName,
             "date" => $months->first()->due_date,
             "owner_name" => $months->first()->owner_name,
+            "owner_first_name" => $months->first()->owner_first_name,
             "total" => $months->sum('total'),
             "invoices" => $months,
             "totalMonths" => $months->count()
@@ -147,6 +154,7 @@ class OwnerService {
 
         return [
           "owner_name" => $byClient->first()->invoice_month,
+          "owner_first_name" => $byClient->first()->owner_first_name,
           "year_month" => $byClient->first()->due_date,
           "total" => $byClient->count(),
           "owners" => $owners,
@@ -155,17 +163,21 @@ class OwnerService {
       })->values();
     }
 
-    public static function occupancyReportByMonth($teamId, $ownerId, $date) {
+    public static function occupancyByMonth($teamId, $date, $ownerId = null) {
       $referenceDate = Carbon::createFromFormat('Y-m-d', $date);
       try {
-        $data = DB::query()->from("property_units")->selectRaw("
+        return DB::query()->from("property_units")->selectRaw("
           CONCAT(property_units.property_name,'-',property_units.name) unit_name,
           property_units.id,
           property_units.owner_id,
+          property_units.property_id,
+          property_units.property_name,
+          properties.address,
           rents.id rent_id,
           rents.date,
           rents.end_date,
           rents.move_out_at,
+          clients.display_name owner_name,
           rents.client_name,
           rents.status rent_status,
           SUM(COALESCE(invoices.total, 0.00)) total_in_month,
@@ -173,8 +185,8 @@ class OwnerService {
           property_units.status current_status"
         )->where([
           "property_units.team_id" => $teamId,
-          "property_units.owner_id" => $ownerId
         ])
+        ->when($ownerId, fn($q) => $q->where("property_units.owner_id",$ownerId ))
         ->leftJoin('rents', fn ($join) =>
           $join->on('rents.unit_id', '=', 'property_units.id')
           ->where('date', '<=', $referenceDate->endOfMonth()->format('Y-m-d'))
@@ -189,21 +201,11 @@ class OwnerService {
           ])
           ->whereRaw('DATE_FORMAT(due_date, "%Y-%m-01") = ?', [ $referenceDate->format('Y-m-01') ])
         )
+        ->join('clients', 'clients.id', '=', 'property_units.owner_id')
+        ->join('properties', 'properties.id', '=', 'property_units.property_id')
         ->orderByRaw("property_units.id, property_units.property_id, rents.id, CONCAT(property_units.property_name,'-',property_units.name)")
         ->groupByRaw("property_units.id, property_units.property_id, rents.id, CONCAT(property_units.property_name,'-',property_units.name)")
         ->get();
-
-
-        return new ReportData(
-          __("Occupancy report"),
-          __("Rent status of the units of the owner in period"),
-          $referenceDate->startOfMonth()->format('Y-m-d'),
-          $referenceDate->endOfMonth()->format('Y-m-d'),
-          "table",
-          new ReportVisualData("table", $data),
-          "",
-          ""
-        );
       } catch (\Exception $e) {
         dd($e->getMessage());
       }

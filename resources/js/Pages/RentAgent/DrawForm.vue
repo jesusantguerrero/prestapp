@@ -14,6 +14,7 @@ import AppButton from "@/Components/shared/AppButton.vue";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
 import AppFormField from "@/Components/shared/AppFormField.vue";
 import { IInvoice } from "@/Modules/invoicing/entities";
+import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 
 const props = defineProps({
   invoices: {
@@ -143,6 +144,25 @@ function handleSelection(selectedInvoices: IInvoice[]) {
   }));
 }
 
+const isSelected = (invoiceId: number) => {
+  return formData.invoices.map((invoice) => invoice.id == invoiceId);
+};
+
+const selectedItems = ref<Record<number, boolean | IInvoice>>({});
+const toggleSelection = (rows: IInvoice[]) => {
+  rows.map((invoice) => {
+    if (!selectedItems.value[invoice.id]) {
+      selectedItems.value[invoice.id] = invoice;
+    } else {
+      selectedItems.value[invoice.id] = false;
+    }
+  });
+
+  handleSelection(
+    Object.values(selectedItems.value).filter((value) => value) as IInvoice[]
+  );
+};
+
 function createOwnerDistribution() {
   if (!filters.owner) {
     ElNotification({
@@ -215,7 +235,7 @@ router.on("finish", () => {
         >
           <IMdiChevronLeft />
         </AppButton>
-        <h4 class="text-xl font-bold text-body-1">
+        <h4 class="text-xl font-bold md:text-body-1 text-white">
           {{ sectionLabel }}
         </h4>
       </header>
@@ -236,7 +256,7 @@ router.on("finish", () => {
               :disabled="formData.processing"
             >
               <IMdiBankMinus class="mr-2" />
-              Crear Gasto
+              <span class="hidden md:inline-block"> Crear Gasto </span>
             </AppButton>
             <AppButton
               variant="secondary"
@@ -247,15 +267,17 @@ router.on("finish", () => {
                 !canSubmitForm && 'Debe seleccionar facturas para aplicar la distribucion'
               "
             >
-              Crear Factura de distribucion ({{ formData.invoices.length }})
+              <span class="hidden md:inline-block">
+                Crear Factura de distribucion ({{ formData.invoices.length }})
+              </span>
             </AppButton>
           </section>
         </template>
       </DrawSectionNav>
     </template>
 
-    <div class="mx-auto mt-16 sm:px-6 lg:px-8">
-      <section class="flex space-x-4">
+    <div class="mx-auto mb-32 mt-16 sm:px-6 lg:px-8">
+      <section class="md:flex md:space-x-4" v-if="!owner">
         <AtBackgroundIconCard
           class="w-full bg-white border h-28 text-body-1"
           title="Pagado"
@@ -275,16 +297,35 @@ router.on("finish", () => {
 
       <div class="mt-4 overflow-hidden rounded-md bg-base-lvl-3">
         <AppFormField label="Propietario" v-if="!owner && !isLoading">
-          <section
+          <article
             v-for="owner in invoices"
             @click="filters.owner = owner.owner_id"
-            class="flex items-center justify-between px-2 mb-2 transition-colors cursor-pointer group hover:bg-primary/20"
+            class="flex items-center border shadow-md rounded-md py-2 justify-between px-2 mb-2 transition-colors cursor-pointer group hover:bg-primary/20"
           >
-            <h4>{{ owner.owner_name }} ({{ owner.totalMonths }}/ {{ owner.total }})</h4>
-            <button class="h-10 group-hover:text-primary">
-              <IMdiChevronRight />
-            </button>
-          </section>
+            <section>
+              <h4>
+                {{ owner.owner_first_name }}
+                <br />
+                <small class="text-body-1">
+                  {{ owner.owner_lastnames }}
+                </small>
+                ({{ owner.totalMonths }}/ {{ owner.total }})
+              </h4>
+              <span
+                class="capitalize mt-2 inline-block bg-primary text-xs text-white px-2 py-1 rounded-2xl"
+              >
+                {{ $t("owner") }}
+              </span>
+            </section>
+            <section class="flex items-center">
+              <span class="capitalize">
+                {{ formatDate(owner.last_invoice_date, "MMMM yyyy") }}</span
+              >
+              <button class="h-10 group-hover:text-primary">
+                <IMdiChevronRight />
+              </button>
+            </section>
+          </article>
         </AppFormField>
 
         <template v-if="invoices?.length && owner && !isLoading">
@@ -300,6 +341,7 @@ router.on("finish", () => {
               table-class="px-0"
               show-summary
               selectable
+              responsive
               @selection-change="handleSelection"
               :summary-method="getSummaries"
               :cols="drawCols"
@@ -329,9 +371,20 @@ router.on("finish", () => {
                   </p>
                 </section>
               </template>
+              <template v-slot:card="{ row: invoice }">
+                <InvoiceCard
+                  :invoice="invoice"
+                  @click="toggleSelection([invoice.id])"
+                  class="mb-6 border-b py-6 px-2 cursor-pointer"
+                  :classs="{
+                    'bg-primary/20': isSelected(invoices.id),
+                  }"
+                  hide-actions
+                />
+              </template>
             </BaseTable>
           </section>
-          <footer class="flex justify-end px-4 py-2 space-x-2">
+          <footer class="md:flex justify-end px-4 py-2 space-x-2 hidden">
             <AppButton
               variant="error"
               @click="
@@ -344,6 +397,7 @@ router.on("finish", () => {
               :disabled="formData.processing"
             >
               <IMdiBankMinus class="mr-2" />
+
               Crear Gasto
             </AppButton>
             <AppButton

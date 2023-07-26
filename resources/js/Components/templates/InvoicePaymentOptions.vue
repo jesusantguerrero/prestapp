@@ -6,6 +6,8 @@ import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
 import { IInvoice } from "@/Modules/invoicing/entities";
 import { ElMessageBox } from "element-plus";
 import { formatMoney } from "@/utils";
+import { useResponsive } from "@/utils/useResponsive";
+import { useActionSheet } from "@/Modules/_app/useActionSheet";
 
 const { openModal } = usePaymentModal();
 
@@ -110,6 +112,8 @@ const onDelete = async (invoice: IInvoice) => {
   }
 };
 
+const { isMobile } = useResponsive();
+const { openAction } = useActionSheet();
 const handleActions = (actionName: string, invoice: IInvoice) => {
   const externalActions = props.externalActions;
   switch (actionName) {
@@ -146,10 +150,23 @@ const handleActions = (actionName: string, invoice: IInvoice) => {
       break;
   }
 };
+
+const createBasic = () => {
+  openAction({
+    data: {
+      actions: actions,
+      title: "Payment options",
+      onAction: (actionName: string) => {
+        handleActions(actionName, props.invoice);
+      },
+    },
+    isOpen: true,
+  });
+};
 </script>
 
 <template>
-  <ElDropdown v-if="actions" @command="handleActions($event, invoice)">
+  <ElDropdown v-if="actions && !isMobile" @command="handleActions($event, invoice)">
     <button class="px-5 py-2 rounded-md hover:bg-base-lvl-2">
       <i class="fa fa-ellipsis-h" />
     </button>
@@ -161,6 +178,13 @@ const handleActions = (actionName: string, invoice: IInvoice) => {
       </ElDropdownMenu>
     </template>
   </ElDropdown>
+  <button
+    class="px-5 py-2 rounded-md hover:bg-base-lvl-2"
+    v-else-if="actions"
+    @click="createBasic"
+  >
+    <i class="fa fa-ellipsis-h" />
+  </button>
 
   <a :href="linkToPrint" target="_blank" ref="invoiceLink" type="hidden"></a>
 </template>
