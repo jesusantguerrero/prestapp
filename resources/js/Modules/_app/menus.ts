@@ -19,26 +19,15 @@ export const MODULES = {
 
 
 const menus = {
-    [MODULES.CRM]: [{
-        label: 'Overview',
-        to: '/housing'
-    },
-    {
-        label: 'Chores',
-        to: '/housing/chores'
-    },
-    {
-        label: 'Occurrence Checks',
-        to: '/housing/occurrence'
-    },
-    {
-        label: 'Plans',
-        to: '/housing/plans'
-    },
-    {
-        label: 'Equipment',
-        to: '/housing/equipments'
-    }],
+    [MODULES.CRM]: [
+      {
+        label: 'Clientes',
+        to: '/clients',
+        as: Link,
+        icon: FluentPeopleCommunity16Regular,
+
+      },
+    ],
     [MODULES.LOAN]: [
       {
         label: 'Prestamos',
@@ -213,6 +202,10 @@ const menus = {
 }
 
 
-export const getSectionMenu = (sectionName: string) => {
+export const getSectionMenu = (sectionName: string, t: Function|null = null) => {
     return menus[sectionName].filter(item => !item.hidden)
+    .map(item => ({
+      ...item,
+      label: t ? t(item.label) : item.label,
+    }))
 }

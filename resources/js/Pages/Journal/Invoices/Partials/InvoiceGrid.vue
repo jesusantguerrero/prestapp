@@ -6,6 +6,7 @@ import { computed, reactive, toRefs, onMounted } from "vue";
 import IconTrash from "@/Components/icons/IconTrash.vue";
 import BaseTable from "@/Components/AtTable.vue";
 import cols from "./cols";
+import ConceptLine from "./ConceptLine.vue";
 
 const props = defineProps({
   tableData: {
@@ -135,14 +136,8 @@ const { renderedCols, cleaveOptions } = toRefs(state);
     >
       <template v-slot:concept="{ scope: { row, col } }">
         <div class="d-flex py-2">
-          <AtInput
-            name=""
-            v-model="row.concept"
-            class="form-control border-none hover:border"
-            rounded
-            v-if="isEditing"
-          />
-          <span v-if="col?.render && !isEditing" v-html="col?.render(row)" />
+          <ConceptLine v-model="row.concept" v-if="isEditing" />
+          <span v-else-if="col?.render && !isEditing" v-html="col?.render(row)" />
           <span v-else> {{ row.concept }}</span>
         </div>
       </template>

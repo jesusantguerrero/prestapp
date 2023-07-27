@@ -19,6 +19,7 @@ import AddNewButton from "./AddNewButton.vue";
 import AppResourceSearch from "./AppResourceSearch.vue";
 
 import { useAppMenu } from "@/Modules/_app";
+import { useApplicationStore } from "@/store/application";
 import { useSelect } from "@/Modules/shared/useSelects";
 import { useLocalStorage } from "@vueuse/core";
 import MobileMenuBar from "../mobile/MobileMenuBar.vue";
@@ -29,7 +30,15 @@ defineProps({
   title: String,
   showBackButton: Boolean,
   isOnboarding: Boolean,
-  isTeamApproved: Boolean,
+});
+
+const applicationStore = useApplicationStore();
+onMounted(() => {
+  routerEvent.value = router.on("error", (event) => {
+    if (event.detail.errors) catchErrors(event.detail.errors);
+  });
+
+  applicationStore.setApplicationData(pageProps);
 });
 
 const currentPath = computed(() => {
@@ -45,7 +54,7 @@ const logout = () => {
 //  categories
 const pageProps = usePage().props;
 const isTeamApproved = computed(() => {
-  return pageProps?.isTeamApproved;
+  return applicationStore.isTeamApproved.value;
 });
 
 provide("isTeamApproved", isTeamApproved);
@@ -78,17 +87,12 @@ const catchErrors = (errors: Record<string, string>) => {
 };
 
 const routerEvent = ref<null | Function>(null);
-onMounted(() => {
-  routerEvent.value = router.on("error", (event) => {
-    if (event.detail.errors) catchErrors(event.detail.errors);
-  });
-});
 
 onUnmounted(() => {
   routerEvent.value && routerEvent.value();
 });
 
-const handleActions = (action) => {
+const handleActions = (action: string) => {
   // const actions = {
   //   openAddModal: {
   //     handler: openTransactionModal,

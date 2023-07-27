@@ -5,6 +5,7 @@ import "atmosphere-ui/style.css"
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+// @ts-ignore: only provide js
 import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
@@ -12,9 +13,11 @@ import VueApexCharts from 'vue3-apexcharts';
 import VueMultiselect from 'vue-multiselect';
 import { vRipple } from './utils/vRipple';
 import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
-import { initWithLocale} from './plugins/i18n.ts';
+import { initWithLocale} from './plugins/i18n';
+import { createPinia } from 'pinia'
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
+const pinia = createPinia()
 
 createInertiaApp({
     progress: {
@@ -33,6 +36,7 @@ createInertiaApp({
             .use(initWithLocale(locale))
             .use(VueApexCharts)
             .use(autoAnimatePlugin)
+            .use(pinia)
             .component('multiselect', VueMultiselect)
             .directive('ripple', vRipple)
             .mount(el);

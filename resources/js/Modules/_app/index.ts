@@ -34,7 +34,7 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
                return /loans|lender/.test(currentPath)
             },
             items: getSectionMenu(MODULES.LOAN),
-            hidden: !isTeamApproved.value,
+            hidden: true,
         },
         {
             icon: 'fas fa-building',
@@ -42,11 +42,11 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
             label:t('Properties'),
             to: '/units?filter[status]=RENTED',
             as: Link,
+            hidden: true,
             isActiveFunction(url: string, currentPath: string) {
               return /properties|units|tenant|owner/.test(currentPath)
             },
             items: getSectionMenu(MODULES.PROPERTY),
-            hidden: !isTeamApproved.value,
 
         },
         {
@@ -59,16 +59,16 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
             },
             hidden: true,
         },
+          ...getSectionMenu(MODULES.CRM, t),
         {
           icon: 'fas fa-chart-bar',
-          label:t('Invoice'),
+          label:t('Invoices'),
           to: '/statements',
           as: Link,
-          hidden: true,
           isActiveFunction(url: string, currentPath: string) {
             return /invoice/.test(currentPath)
           },
-          items: getSectionMenu(MODULES.INVOICING),
+          items: getSectionMenu(MODULES.INVOICING, t),
         },
         {
           icon: 'fas fa-chart-bar',
@@ -79,6 +79,7 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
             return /agents/.test(currentPath)
           },
           items: getSectionMenu(MODULES.AGENT),
+          hidden: true,
         },
         {
           icon: 'fas fa-chart-bar',
@@ -89,6 +90,7 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
             return /statements/.test(currentPath)
           },
           items: getSectionMenu(MODULES.REPORT),
+          hidden: true,
         },
     ].filter(item => !item?.hidden);
 

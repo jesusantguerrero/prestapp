@@ -425,6 +425,7 @@ defineExpose({
         :available-taxes="availableTaxes"
         @taxes-updated="onTaxesUpdated"
         class="mt-10"
+        :hidden-cols="['discount', 'taxes']"
       />
       <div class="totals-container">
         <div>

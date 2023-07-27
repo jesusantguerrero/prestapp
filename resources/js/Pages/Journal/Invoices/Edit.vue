@@ -46,9 +46,5 @@ const saveForm = (isApplied) => {
   InvoiceTemplateForm.value.saveForm(isApplied);
 };
 
-onMounted(() => {
-  console.log(props.type, props.invoice.type);
-});
-
 provide("categories", props.categories);
 </script>

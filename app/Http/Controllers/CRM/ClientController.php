@@ -28,7 +28,7 @@ class ClientController extends InertiaController
       $this->validationRules = [
         'names' => 'required',
         'lastnames' => 'required',
-        'dni' => 'required|unique:clients',
+        'dni' => 'required',
       ];
   }
 

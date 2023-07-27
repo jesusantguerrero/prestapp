@@ -68,6 +68,7 @@ export default [
       return formatMoney(amount, "DOP", { hideSymbol: true });
     }
   }, {
-    name: 'actions'
+    name: 'actions',
+    width: 100,
   }
 ];

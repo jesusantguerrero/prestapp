@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Setting;
+use App\Services\ApplicationConfigService;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Insane\Journal\Models\Core\Account;
@@ -41,7 +42,7 @@ class HandleInertiaRequests extends Middleware
     {
         $user = $request->user();
         $team = $user ? $user->currentTeam : null;
-        $isAdmin = config('atmosphere.superadmin.email') === $user?->email;
+        $applicationConfigService = new  ApplicationConfigService();
 
         return array_merge(parent::share($request), [
             "accounts" => $team ? Account::getByDetailTypes($team->id) : [],
@@ -53,16 +54,13 @@ class HandleInertiaRequests extends Middleware
                 ->orderBy('index')
                 ->with('subCategories')
                 ->get() : [''],
-            "isTeamApproved" => $isAdmin || $team?->approved_at,
             'unreadNotifications' => function() use ($user) {
               return [
                 "count" => $user ? $user->unreadNotifications->count() : 0,
                 "data" => $user ? $user->unreadNotifications : []
               ];
             },
-            "isAdmin" => $isAdmin,
-            "userSettings" => $team ? Setting::getSettingsByUser($team->id, $user->id) : [],
-            "teamSettings" => $team ? Setting::getSettingsByUser($team->id, $user->id) : []
+            "application" => $applicationConfigService->once($team, $user)
         ]);
     }
 }

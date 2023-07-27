@@ -13,12 +13,10 @@ import { useServerSearch } from "@/utils/useServerSearch";
 import { useLocalStorage } from "@vueuse/core";
 import AppButton from "@/Components/shared/AppButton.vue";
 import { useResponsive } from "@/utils/useResponsive";
-import BaseSelect from "@/Components/shared/BaseSelect.vue";
-import ResponsiveButtonGroup from "./ResponsiveButtonGroup.vue";
+import { useApplicationStore } from "@/store/application";
 
 defineProps<{
   user: Record<string, any>;
-  isTeamApproved: boolean;
 }>();
 
 const pageProps = usePage().props;
@@ -28,19 +26,21 @@ interface IButtonSection {
   link: string;
 }
 
+const applicationStore = useApplicationStore();
+
 const sections: Record<string, IButtonSection> = {
   general: {
     label: "General",
     link: "/dashboard",
   },
-  loans: {
-    label: "Prestamos",
-    link: "/dashboard/loan",
-  },
-  realState: {
-    label: "Inmobiliaria",
-    link: "/dashboard/property",
-  },
+  // loans: {
+  //   label: "Prestamos",
+  //   link: "/dashboard/loan",
+  // },
+  // realState: {
+  //   label: "Inmobiliaria",
+  //   link: "/dashboard/property",
+  // },
 };
 
 const handleChange = (sectionName: string) => {
@@ -73,14 +73,14 @@ const { isMobile } = useResponsive();
       <div class="flex justify-between mt-4 mb-4 md:mt-0">
         <h4 class="hidden md:inline-block">{{ $t("Welcome") }}, {{ user.name }}</h4>
         <section class="flex space-x-4 w-full md:w-fit">
-          <ResponsiveButtonGroup
+          <!-- <ResponsiveButtonGroup
             v-if="isTeamApproved"
             @update:modelValue="handleChange"
             :sections="sections"
             v-model="section"
             :placeholder="$t('Select view')"
             class="w-full"
-          />
+          /> -->
           <AtDatePager
             v-if="!isMobile"
             class="w-full h-12 border bg-base-lvl-1 text-body border-secondary"
@@ -99,7 +99,7 @@ const { isMobile } = useResponsive();
           </AppButton>
         </section>
       </div>
-      <slot v-if="isTeamApproved" />
+      <slot v-if="applicationStore.isTeamApproved" />
       <TeamApproval v-else />
     </main>
   </AppLayout>

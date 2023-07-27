@@ -12,7 +12,7 @@
       <div class="w-full px-5 py-4 space-y-5 bg-white divide-y divide-gray-200">
         <section class="pb-2 w-full">
           <article class="md:w-full">
-            <h2 class="my-4 font-bold text-primary">{{ $t('Theme') }}</h2>
+            <h2 class="my-4 font-bold text-primary">{{ $t("Theme") }}</h2>
             <AppFormField
               class="w-4/12"
               :label="$t('Theme name')"
@@ -27,14 +27,14 @@
         </section>
         <section class="pb-2 w-full">
           <article class="md:w-full">
-            <h2 class="my-4 font-bold text-primary">{{ $t('Colors') }}</h2>
+            <h2 class="my-4 font-bold text-primary">{{ $t("Colors") }}</h2>
             <section class="gap-1 grid grid-cols-3">
               <AppFormField
                 class="w-4/12"
                 :label="colorName"
                 v-for="(_token, colorName) in themeColors"
               >
-                <ColorPicker  v-model="themeColors[colorName]" class="w-44"/>
+                <ColorPicker v-model="themeColors[colorName]" class="w-44" />
               </AppFormField>
             </section>
           </article>
@@ -47,7 +47,7 @@
 <script lang="ts" setup>
 import { ref } from "@vue/reactivity";
 import axios from "axios";
-import {  ElNotification } from "element-plus";
+import { ElNotification } from "element-plus";
 
 import AppLayout from "../../Components/templates/AppLayout.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
@@ -63,34 +63,41 @@ const props = defineProps({
   },
 });
 const formData = ref({
-  themeName: ""
+  name: "",
+  description: "",
 });
 
-formData.value = { ...formData.value, ...props.settingData };
+formData.value = {
+  ...formData.value,
+  ...props.settingData,
+};
 
 const themeColors = ref({
-  primary: '',
-  "secondary": "#95b3f9",
-  "accent": "#7c5bbf",
-  "neutral": "#232130",
-  "base-deep-1": '',
-  "base-100": '',
-  "base-lvl-1": '',
-  "base-lvl-2": '',
-  "base-lvl-3": '',
+  primary: "",
+  secondary: "#95b3f9",
+  accent: "#7c5bbf",
+  neutral: "#232130",
+  "base-deep-1": "",
+  "base-100": "",
+  "base-lvl-1": "",
+  "base-lvl-2": "",
+  "base-lvl-3": "",
   info: "#3D68F5",
   success: "#79E7AE",
   warning: "#D39E17",
   error: "#F61909",
-  "body": "white",
-  "body-1": ''
-})
+  body: "white",
+  "body-1": "",
+});
 
 const save = () => {
   axios({
     url: "/api/settings",
     method: "POST",
-    data: formData.value,
+    data: {
+      ...formData.value,
+      values: themeColors.value,
+    },
   }).then(() => {
     ElNotification({
       title: "Business Data Updated",
