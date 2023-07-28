@@ -9,10 +9,12 @@ use App\Models\User;
 class ThemeService {
 
     public function store(User $user, mixed $data) {
-      $theme = Theme::create(array_merge([
+      $theme = Theme::upsert([array_merge([
         "user_id" => $user->id,
         "team_id" => $user->current_team_id,
-      ], $data));
+      ], $data, [
+        "values" => json_encode($data["values"])
+      ])], ["team_id"]);
 
       return $theme;
     }

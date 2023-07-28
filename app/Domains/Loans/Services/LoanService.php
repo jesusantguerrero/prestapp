@@ -9,7 +9,7 @@ use App\Domains\Loans\Helpers\LoanValidator;
 use App\Domains\Loans\Jobs\CreateLoanTransaction;
 use App\Domains\Loans\Models\Loan;
 use App\Domains\Loans\Models\LoanInstallment;
-use App\Models\Setting;
+use App\Domains\Atmosphere\Models\Setting;
 use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;

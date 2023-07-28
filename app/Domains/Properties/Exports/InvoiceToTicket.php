@@ -2,7 +2,7 @@
 
 namespace App\Domains\Properties\Exports;
 
-use App\Models\Setting;
+use App\Domains\Atmosphere\Models\Setting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Insane\Journal\Models\Invoice\Invoice;

@@ -4,7 +4,7 @@ namespace App\Domains\Properties\Exports;
 
 use App\Domains\Accounting\DTO\ReceiptData;
 use App\Domains\Accounting\Helpers\InvoiceHelper;
-use App\Models\Setting;
+use App\Domains\Atmosphere\Models\Setting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Insane\Journal\Models\Core\Payment;

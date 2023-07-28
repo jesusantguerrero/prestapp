@@ -3,7 +3,7 @@
 namespace App\Domains\Loans\Jobs;
 
 use App\Domains\Loans\Models\Loan;
-use App\Models\Setting;
+use App\Domains\Atmosphere\Models\Setting;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;

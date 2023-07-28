@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Services\ApplicationConfigService;
+use App\Domains\Atmosphere\Services\ApplicationConfigService;
 use Illuminate\Auth\Events\Logout;
 
 class RemoveApplicationConfigCache

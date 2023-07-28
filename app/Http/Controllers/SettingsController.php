@@ -4,13 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Actions\Journal\CreateTeamSettings;
 use Illuminate\Http\Request;
-use App\Models\Setting;
+use App\Domains\Atmosphere\Models\Setting;
+use App\Domains\Atmosphere\Services\ThemeService;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
 use Insane\Journal\Models\Core\Tax;
 
 class SettingsController extends Controller
 {
+
+  public function __construct(private ThemeService $themeService)
+  {
+
+  }
     /**
      * Display a listing of the resource.
      *
@@ -105,10 +111,16 @@ class SettingsController extends Controller
             $businessData = Setting::getByTeam($teamId);
         }
 
+        if ($id == "theme") {
+          $settingData = $this->themeService->getByTeamId($teamId);
+        } else {
+          $settingData = Setting::getBySection($teamId, $id);
+        }
+
         $taxes = Tax::where('team_id', $teamId)->get();
         return Inertia::render("Settings/".ucfirst($id), [
             "taxes" => $taxes,
-            "settingData" => Setting::getBySection($teamId, $id),
+            "settingData" => $settingData,
             "businessData" => $businessData
         ]);
     }

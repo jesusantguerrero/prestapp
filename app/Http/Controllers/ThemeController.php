@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Setting;
-use App\Services\ThemeService;
+use App\Domains\Atmosphere\Models\Setting;
+use App\Domains\Atmosphere\Services\ApplicationConfigService;
+use App\Domains\Atmosphere\Services\ThemeService;
 use Exception;
 use Inertia\Inertia;
 use Insane\Journal\Models\Core\Tax;
@@ -27,34 +28,13 @@ class ThemeController extends Controller
         ]);
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function section(Request $request, $name = "business")
-    {
-        $businessData = [];
-        $teamId = $request->user()->current_team_id;
-        if ($name !== 'business') {
-            $businessData = Setting::getByTeam($teamId);
-        }
-
-        $taxes = Tax::where('team_id', $teamId)->get();
-        return Inertia::render("Settings/".ucfirst($name), [
-            "taxes" => $taxes,
-            "settingData" => Setting::getBySection($teamId, $name),
-            "businessData" => $businessData
-        ]);
-    }
-
-    public function store(ThemeService $service)
+    public function store(ThemeService $service, ApplicationConfigService $configService)
     {
       try {
         $postData = request()->post();
-        $resource =$service->store(auth()->user(),$postData);
+        $service->store(auth()->user(),$postData);
+        $configService->clear(auth()->user());
       } catch (Exception $e) {
-        dd($e->getMessage());
         response($e->getMessage(), Response::HTTP_NOT_FOUND);
       }
     }

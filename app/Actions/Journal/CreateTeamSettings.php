@@ -2,7 +2,7 @@
 
 namespace App\Actions\Journal;
 
-use App\Models\Setting;
+use App\Domains\Atmosphere\Models\Setting;
 use Insane\Journal\Models\Invoice\DocumentType;
 
 class CreateTeamSettings {

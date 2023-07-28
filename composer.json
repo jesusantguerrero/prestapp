@@ -13,13 +13,13 @@
         "insane/journal": "dev-master",
         "insane/treasurer": "1.x-dev",
         "lab404/laravel-impersonate": "^1.7",
-        "laravel/framework": "^9.19",
+        "laravel/framework": "^10.0",
         "laravel/jetstream": "^2.12",
-        "laravel/sanctum": "^3.0",
+        "laravel/sanctum": "^3.2",
         "laravel/scout": "^9.8",
         "laravel/tinker": "^2.7",
         "meilisearch/meilisearch-php": "^0.27.0",
-        "nwidart/laravel-modules": "^9.0",
+        "nwidart/laravel-modules": "^10.0",
         "phpoffice/phpspreadsheet": "^1.27",
         "phpoffice/phpword": "^1.0",
         "predis/predis": "^2.2",
@@ -37,9 +37,9 @@
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.0.1",
         "mockery/mockery": "^1.4.4",
-        "nunomaduro/collision": "^6.1",
-        "phpunit/phpunit": "^9.5.10",
-        "spatie/laravel-ignition": "^1.0"
+        "nunomaduro/collision": "^7.1",
+        "phpunit/phpunit": "^10.0",
+        "spatie/laravel-ignition": "^2.0"
     },
     "autoload": {
         "psr-4": {
@@ -87,6 +87,6 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true
 }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Domains\Properties\Services\OwnerReportService;
 use App\Domains\Properties\Services\OwnerService;
 use App\Http\Controllers\Traits\HasEnrichedRequest;
-use App\Models\Setting;
+use App\Domains\Atmosphere\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Insane\Journal\Contracts\PdfExporter;

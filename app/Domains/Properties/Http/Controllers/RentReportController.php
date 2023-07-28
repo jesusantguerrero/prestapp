@@ -9,7 +9,7 @@ use App\Domains\Properties\Services\OwnerService;
 use App\Domains\Properties\Services\RentService;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\HasEnrichedRequest;
-use App\Models\Setting;
+use App\Domains\Atmosphere\Models\Setting;
 use Exception;
 use Illuminate\Http\Request;
 
