@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace App\Domains\Atmosphere\Services;
 
-use App\Models\Setting;
+use App\Domains\Atmosphere\Models\Setting;
+use App\Domains\Atmosphere\Models\Theme;
 use App\Models\Team;
 use App\Models\User;
 
@@ -21,6 +22,7 @@ class ApplicationConfigService {
           "userSettings" => $team ? Setting::getSettingsByUser($team->id, $user->id) : [],
           "teamSettings" => $team ? Setting::getSettingsByUser($team->id, $user->id) : [],
           "isTeamApproved" => $isAdmin || $team?->approved_at,
+          "theme" => $team ? (new ThemeService())->getByTeamId($team->id) : []
         ];
 
         session(["$user->id.isApplicationConfigSent" => true], true);

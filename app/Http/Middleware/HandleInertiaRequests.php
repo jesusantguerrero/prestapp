@@ -2,8 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Setting;
-use App\Services\ApplicationConfigService;
+use App\Domains\Atmosphere\Services\ApplicationConfigService;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Insane\Journal\Models\Core\Account;

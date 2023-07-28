@@ -16,6 +16,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ThemeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,7 +38,13 @@ Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->name('api.')->g
      'index' => 'api.settings.index',
      'store' => 'api.settings.store',
      'update' => 'api.settings.update',
-     'delete' => 'api.settings.delete',
+     'delete' => 'api.settings.delete'
+    ]);
+
+    Route::apiResource('/themes', ThemeController::class, [
+     "only" => [ 'store' ]
+    ])->names([
+     'store' => 'api.themes.store',
     ]);
 
     Route::apiResource('/accounts', AccountApiController::class);

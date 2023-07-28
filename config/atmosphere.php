@@ -6,5 +6,12 @@ return [
   ],
   "backup" => [
     "email" => env('APP_BACKUP_EMAIL', null)
+  ],
+  "appProfiles" => [
+    "agent" => "agent",
+  ],
+  "appProfilesDashboards" => [
+    "agent" => ["general","properties", "loans"],
+    "dropshipping" => ["general"]
   ]
 ];

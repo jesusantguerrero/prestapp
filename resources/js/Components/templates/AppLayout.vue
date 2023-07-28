@@ -39,6 +39,7 @@ onMounted(() => {
   });
 
   applicationStore.setApplicationData(pageProps);
+  applicationStore.setTheme();
 });
 
 const currentPath = computed(() => {

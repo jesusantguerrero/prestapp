@@ -1,6 +1,14 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
 const themes = require('./resources/tailwindTheme/index');
 
+const generateColorClass = (variable) => {
+  return ({ opacityValue }) =>
+    opacityValue
+      ? `rgb(var(--${variable}) / ${opacityValue})`
+      : `rgb(var(--${variable}))`
+}
+
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     content: [
@@ -18,7 +26,9 @@ module.exports = {
                 sans: ['Nunito', ...defaultTheme.fontFamily.sans],
             },
             colors: {
-                ...themes.blueLight
+                ...themes.blueLight,
+                primary: generateColorClass('ic-primary-color'),
+                secondary: generateColorClass('ic-secondary-color')
             },
             gridTemplateRows: {
               'section-footer': '1fr 100px',

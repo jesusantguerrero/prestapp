@@ -92,7 +92,7 @@ const themeColors = ref({
 
 const save = () => {
   axios({
-    url: "/api/settings",
+    url: "/api/themes",
     method: "POST",
     data: {
       ...formData.value,
