@@ -4,7 +4,7 @@ import { router } from "@inertiajs/core";
 import { AtBackgroundIconCard } from "atmosphere-ui";
 import AppButton from "@/Components/shared/AppButton.vue";
 import IncomeSummaryWidget from "./Partials/IncomeSummaryWidget.vue";
-import WelcomeWidget from "./Partials/WelcomeWidget.vue";
+import WelcomeWidget from "@/Components/WelcomeWidget.vue";
 import SectionFooterCard from "./Partials/SectionFooterCard.vue";
 
 import { formatMoney } from "@/utils/formatMoney";
