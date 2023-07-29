@@ -31,7 +31,6 @@ class Kernel extends ConsoleKernel
         ->log("Backup generation was complete complete");
       })->runInBackground();
       $schedule->command('background:health-check')->everyMinute()->runInBackground();
-      $schedule->command('cache:prune-stale-tags')->hourly();
     }
 
     /**
