@@ -317,7 +317,7 @@ function refresh() {
       :closeable="true"
       @close="closeModal"
     >
-      <FastAccessOptions />
+      <FastAccessOptions @action="closeModal" />
     </ResponsiveModal>
   </div>
 </template>

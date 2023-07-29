@@ -113,7 +113,7 @@ const handlePayment = (invoice: IInvoice) => {
     invoices: `/rents/${invoice.invoiceable_id}/invoices/${invoice?.id}/payments`,
   };
 
-  const url = urls[filters.section] ?? urls.invoices;
+  const url = urls.bills;
 
   nextTick(() => {
     openModal({

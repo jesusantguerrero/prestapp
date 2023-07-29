@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { router } from "@inertiajs/core";
-
-import { useTransactionModal } from "@/Modules/transactions/useTransactionModal";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
 import { computed } from "vue";
 import { useResponsive } from "@/utils/useResponsive";
@@ -126,7 +124,10 @@ const welcomeCards = computed(() => {
         v-if="card.action"
         class="flex flex-col items-center hover:text-primary justify-center w-full py-3 text-center transition-all ease-in bg-white border-2 border-transparent rounded-lg hover:border-primary group"
         :class="[extended ? 'text-body-1/50' : 'text-primary']"
-        @click="card.action()"
+        @click="
+          card.action();
+          $emit('action');
+        "
       >
         <div class="icon-container" :class="extended ? 'text-2xl' : 'text-4xl'">
           <IMdiUserOutline v-if="card.icon == 'contact'" />

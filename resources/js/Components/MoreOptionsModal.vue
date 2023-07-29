@@ -16,7 +16,12 @@ withDefaults(
   }
 );
 
-defineEmits(["close", "saved"]);
+const emit = defineEmits(["close", "saved", "action"]);
+
+const emitAction = (actionName: string) => {
+  emit("action", actionName);
+  emit("close");
+};
 </script>
 
 <template>
@@ -36,7 +41,7 @@ defineEmits(["close", "saved"]);
             v-ripple
             class="w-full py-2 font-bold capitalize hover:bg-base-lvl-2 overflow-hidden"
             v-for="(action, actionName) in actions"
-            @click="$emit('action', actionName)"
+            @click="emitAction(actionName)"
           >
             {{ $t(action?.label) }}
           </button>
