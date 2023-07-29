@@ -3,7 +3,7 @@ import { router } from "@inertiajs/vue3";
 
 import WelcomeWidget from "@/Components/WelcomeWidget.vue";
 
-import RentTemplate from "../Partials/RentTemplate.vue";
+import OrderTemplate from "../Partials/OrderTemplate.vue";
 import { IRent } from "@/Modules/properties/propertyEntity";
 import PaymentsCard from "@/Components/PaymentsCard.vue";
 import { IPayment } from "@/Modules/loans/loanEntity";
@@ -35,7 +35,7 @@ const deletePayment = async (payment: IPayment) => {
 </script>
 
 <template>
-  <RentTemplate :rents="rents" :current-tab="currentTab">
+  <OrderTemplate :rents="rents" :current-tab="currentTab">
     <WelcomeWidget message="Pagos del contrato">
       <template #content>
         <PaymentsCard
@@ -48,5 +48,5 @@ const deletePayment = async (payment: IPayment) => {
         />
       </template>
     </WelcomeWidget>
-  </RentTemplate>
+  </OrderTemplate>
 </template>
