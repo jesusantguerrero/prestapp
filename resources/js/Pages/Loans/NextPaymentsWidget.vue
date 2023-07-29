@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
+import WelcomeWidget from "@/Components/WelcomeWidget.vue";
 
 import { onMounted, ref, computed } from "vue";
 import { getRangeParams } from "@/utils";

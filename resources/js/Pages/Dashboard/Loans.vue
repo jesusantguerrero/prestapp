@@ -3,7 +3,7 @@
 import { AtBackgroundIconCard, AtButton } from "atmosphere-ui";
 
 import IncomeSummaryWidget from "@/Pages/Dashboard/Partials/IncomeSummaryWidget.vue";
-import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
+import WelcomeWidget from "@/Components/WelcomeWidget.vue";
 import NextPaymentsWidget from "@/Pages/Loans/NextPaymentsWidget.vue";
 import ChartBar from "./Partials/ChartBar.vue";
 

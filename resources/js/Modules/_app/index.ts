@@ -75,6 +75,7 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
           label:t('Agent Tools'),
           to: '/agent-tools',
           as: Link,
+          hideMobile: true,
           isActiveFunction(url: string, currentPath: string) {
             return /agents/.test(currentPath)
           },
@@ -92,12 +93,12 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
         },
     ].filter(item => !item?.hidden);
 
-    let mobileMenu = cloneDeep(appMenu)
+    let mobileMenu = cloneDeep(appMenu).filter( item => !item.hideMobile);
     mobileMenu.splice(2, null, {
         name: 'add',
         label: 'Add',
         icon: IMdiPlus,
-        action: 'openTransactionModal'
+        action: 'openAddModal'
     });
 
     const headerMenu =  [

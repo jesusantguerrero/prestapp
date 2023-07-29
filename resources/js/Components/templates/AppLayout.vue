@@ -24,6 +24,9 @@ import { useLocalStorage } from "@vueuse/core";
 import MobileMenuBar from "../mobile/MobileMenuBar.vue";
 import { useI18n } from "vue-i18n";
 import AppButtonCircle from "../shared/AppButtonCircle.vue";
+import FastAccessOptions from "@/Pages/Dashboard/Partials/FastAccessOptions.vue";
+import { useToggleModal } from "@/Modules/_app/useToggleModal";
+import ResponsiveModal from "../ResponsiveModal.vue";
 
 defineProps({
   title: String,
@@ -88,13 +91,21 @@ onUnmounted(() => {
   routerEvent.value && routerEvent.value();
 });
 
-const handleActions = (action) => {
-  // const actions = {
-  //   openAddModal: {
-  //     handler: openTransactionModal,
-  //   },
-  // };
-  // actions[action]?.handler();
+const { isOpen, openModal, closeModal } = useToggleModal("fastAccess");
+
+const actions: Record<
+  string,
+  {
+    handler: Function;
+  }
+> = {
+  openAddModal: {
+    handler: openModal,
+  },
+};
+
+const handleActions = (action: string) => {
+  actions[action]?.handler();
 };
 
 function refresh() {
@@ -124,7 +135,7 @@ function refresh() {
               </AppButton>
               <h4
                 :class="[showBackButton ? 'lg:ml-2' : 'lg:ml-6']"
-                class="pl-4 text-lg font-bold md:pl-0 md:text-secondary text-white"
+                class="pl-4 text-lg font-bold md:pl-0 md:text-secondary capitalize text-white"
               >
                 {{ title }}
               </h4>
@@ -184,7 +195,7 @@ function refresh() {
                       class="flex text-sm transition border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300"
                     >
                       <img
-                        class="object-cover w-8 h-8 rounded-full"
+                        class="object-cover w-8 h-8 min-w-min rounded-full"
                         :src="$page.props.user.profile_photo_url"
                         :alt="$page.props.user.name"
                       />
@@ -263,13 +274,18 @@ function refresh() {
         >
           <template #brand>
             <!-- Logo -->
-            <h1 class="flex items-center w-full text-gray-100"
-            :class="{' md:shrink-0 md:px-7': isExpanded }"
+            <h1
+              class="flex items-center w-full text-gray-100"
+              :class="{ ' md:shrink-0 md:px-7': isExpanded }"
             >
-              <Link :href="route('dashboard')" class="flex items-center justify-center space-x-2" :class="{'mx-auto': !isExpanded}">
+              <Link
+                :href="route('dashboard')"
+                class="flex items-center justify-center space-x-2"
+                :class="{ 'mx-auto': !isExpanded }"
+              >
                 <ApplicationMark class="flex justify-center w-10 h-14" />
                 <span class="text-xl font-bold text-white" v-if="isExpanded">
-                   ICLoan
+                  ICLoan
                 </span>
               </Link>
             </h1>
@@ -294,6 +310,15 @@ function refresh() {
     </AppShell>
     <MobileMenuBar :menu="mobileMenu" @action="handleActions" />
     <TheGlobals @reload="refresh" />
+
+    <ResponsiveModal
+      :show="isOpen"
+      max-width="mobile"
+      :closeable="true"
+      @close="closeModal"
+    >
+      <FastAccessOptions />
+    </ResponsiveModal>
   </div>
 </template>
 

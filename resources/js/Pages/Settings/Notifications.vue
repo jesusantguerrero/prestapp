@@ -9,9 +9,14 @@
           :table-data="notifications"
         >
           <template #data="{ scope }">
-            <div class="flex w-full py-3 pl-4 space-between">
-              {{ scope.row.data.message }}
-            </div>
+            <section class="w-full">
+              <article class="py-3">
+                {{ scope.row.data.message }}
+              </article>
+              <footer class="mt-2 text-body-1">
+                {{ formatDate(scope.row.created_at) }}
+              </footer>
+            </section>
           </template>
           <template #actions="{ scope }">
             <div class="flex items-center ml-auto space-x-2">
@@ -48,6 +53,7 @@ import { AtButton } from "atmosphere-ui";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import { router } from "@inertiajs/vue3";
 import BaseTable from "@/Components/shared/BaseTable.vue";
+import { formatDate } from "@/utils";
 
 defineProps({
   notifications: {
@@ -68,15 +74,15 @@ const cols = [
     render(row: any) {
       return row.data.message || "N/D";
     },
-    width: 300,
   },
   {
     label: "Actions",
     name: "actions",
     type: "custom",
+    align: "right",
     class: "text-right",
     headerClass: "text-right px-2",
-    minWidth: 100,
+    width: 300,
   },
 ];
 

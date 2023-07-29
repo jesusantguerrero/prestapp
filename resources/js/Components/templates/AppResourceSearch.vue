@@ -48,7 +48,11 @@ watch(
     @close="state.searchText = ''"
   >
     <template #reference>
-      <div v-bind="$attrs" class="hover:w-96 transition" :class="{ 'w-96': hasResults }">
+      <div
+        v-bind="$attrs"
+        class="hover:w-96 transition duration-[3s]"
+        :class="{ 'w-96': hasResults }"
+      >
         <AppSearch v-model="state.searchText" />
       </div>
     </template>

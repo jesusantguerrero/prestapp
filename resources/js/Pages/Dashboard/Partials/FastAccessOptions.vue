@@ -4,6 +4,7 @@ import { router } from "@inertiajs/core";
 import { useTransactionModal } from "@/Modules/transactions/useTransactionModal";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
 import { computed } from "vue";
+import { useResponsive } from "@/utils/useResponsive";
 
 const props = defineProps<{
   extended: boolean;
@@ -11,6 +12,7 @@ const props = defineProps<{
 
 const { openModal } = useToggleModal("contact");
 const { openModal: openInvoiceModal } = useToggleModal("propertyCharge");
+const { isMobile } = useResponsive();
 
 const welcomeCards = computed(() => {
   const options = [
@@ -106,12 +108,19 @@ const welcomeCards = computed(() => {
     },
   ];
 
+  if (isMobile.value) {
+    return options.filter((item) => item.action);
+  }
+
   return options.filter((option) => props.extended || !option.extended);
 });
 </script>
 
 <template>
-  <div class="grid py-2" :class="[extended ? 'grid-cols-3' : 'grid-cols-2']">
+  <div
+    class="grid py-2"
+    :class="[extended ? 'grid-cols-3' : 'grid-cols-3 md:grid-cols-2']"
+  >
     <template v-for="card in welcomeCards">
       <button
         v-if="card.action"

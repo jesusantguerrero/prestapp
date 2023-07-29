@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import CustomCell from "../customCell";
 import AppSearch from "./AppSearch/AppSearch.vue";
 import { useResponsive } from "@/utils/useResponsive";
@@ -38,6 +38,8 @@ const props = withDefaults(
   }
 );
 
+const emit = defineEmits(["selection-change"]);
+
 const getHeaderClass = (row: Record<string, any>) => {
   return row.headerClass;
 };
@@ -57,6 +59,33 @@ const visibleCols = computed(() => {
   return props.hiddenCols
     ? parsedCols.filter((col) => !props.hiddenCols?.includes(col.name))
     : parsedCols;
+});
+
+const selectedRows = ref<Record<number, boolean>>({});
+
+const toggleSelection = (rows?: number[]) => {
+  if (rows) {
+    rows.forEach((row) => {
+      selectedRows.value[row] = !selectedRows.value[row];
+    });
+  } else {
+    selectedRows.value = {};
+  }
+};
+
+watch(selectedRows, () => {
+  emit(
+    "selection-change",
+    Object.entries(selectedRows)
+      .filter(([_id, isSelected]) => isSelected)
+      .map(([rowId, isSelected]) => {
+        props.tableData.find((row) => row.id == rowId);
+      })
+  );
+});
+
+defineExpose({
+  toggleSelection,
 });
 </script>
 

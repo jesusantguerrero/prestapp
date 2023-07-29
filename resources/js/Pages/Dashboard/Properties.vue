@@ -18,7 +18,7 @@ import { Link } from "@inertiajs/vue3";
 
 import BudgetProgress from "@/Components/BudgetProgress.vue";
 import IncomeSummaryWidget from "@/Pages/Dashboard/Partials/IncomeSummaryWidget.vue";
-import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
+import WelcomeWidget from "@/Components/WelcomeWidget.vue";
 import ChartBar from "./Partials/ChartBar.vue";
 import PropertyInvoiceWidget from "./Partials/PropertyInvoiceWidget.vue";
 import NextPaymentsWidget from "../Loans/NextPaymentsWidget.vue";
