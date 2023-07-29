@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\CRM;
 
+use App\Domains\CRM\Data\ContactData;
 use App\Domains\CRM\Models\Client;
+use App\Domains\CRM\Services\ClientService;
 use App\Http\Controllers\InertiaController;
 use Exception;
 use Illuminate\Http\Request;
@@ -11,7 +13,7 @@ class ClientController extends InertiaController
 {
   use ClientTabs;
 
-  public function __construct(Client $client)
+  public function __construct(Client $client, protected ClientService $clientService)
   {
       $this->model = $client;
       $this->searchable = ['names', 'lastnames'];
@@ -30,6 +32,10 @@ class ClientController extends InertiaController
         'lastnames' => 'required',
         'dni' => 'required|unique:clients',
       ];
+  }
+
+  protected function createResource(mixed $request, $postData) {
+    return $this->clientService->create(ContactData::c ($request->post()));
   }
 
   protected function byTypes(Request $request, $type) {
