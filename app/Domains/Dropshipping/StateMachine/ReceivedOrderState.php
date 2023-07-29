@@ -11,10 +11,4 @@ final class ReceivedOrderState extends BaseOrderState  {
       "status" => OrderStatusEnum::Returned
     ]);
   }
-
-  function cancel() {
-    $this->order->update([
-      "status" => OrderStatusEnum::Cancelled
-    ]);
-  }
 }

@@ -20,7 +20,7 @@ class Order extends Model
     protected $table = "dropshipping_orders";
 
     protected $fillable = [
-      "user_id", "team_id", "client_id"
+      "user_id", "team_id", "client_id", "status"
     ];
 
     protected $attributes = [

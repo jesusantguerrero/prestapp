@@ -58,20 +58,10 @@ export default [
         headerClass: "text-center",
         label: 'clients'
     }, {
-        name: 'days',
-        label: 'Dias restantes',
-        render(row) {
-            let daysLeft = null;
-            if (row.end_date) {
-              daysLeft = differenceInCalendarDays(parseISO(row.end_date), new Date())
-            }
-            return h(Link, {href: `/contacts/${row.client?.id}/tenants/rents/${row.id}/renew`} , h(ElTag, { type: getRentStatusColor(row.status) }, daysLeft))
-        }
-    }, {
         name: 'status',
         label: 'Estado',
         render(row) {
-            return h(ElTag, { type: getRentStatusColor(row.status) }, getRentStatus(row.status))
+            return h(ElTag, { type: getRentStatusColor(row.status), class: 'capitalize' }, getRentStatus(row.status))
         }
     },
     {

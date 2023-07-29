@@ -43,12 +43,16 @@ class OrderController extends InertiaController
     }
 
     public function action(Order $order, string $action) {
-      match($action) {
-        "send" => $this->orderService->send($order),
-        "mark-as-received" => $this->orderService->markAsReceived($order),
-        "cancel" => $this->orderService->cancel($order),
-        "return" => $this->orderService->return($order),
-        default => throw new Exception('this action is nor supported')
-      };
+      try {
+        match($action) {
+          "send" => $this->orderService->send($order),
+          "mark-as-received" => $this->orderService->markAsReceived($order),
+          "cancel" => $this->orderService->cancel($order),
+          "return" => $this->orderService->return($order),
+          default => throw new Exception('this action is nor supported')
+        };
+      } catch (Exception $e) {
+        return redirect()->back()->withErrors($e->getMessage());
+      }
     }
 }
