@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\Heartbeat;
 use App\Listeners\ClearRentInvoiceData;
+use App\Listeners\Heartbeaten;
+use App\Listeners\HeartbeatListener;
 use App\Listeners\RegisterLastLogin;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Registered;
@@ -33,7 +36,10 @@ class EventServiceProvider extends ServiceProvider
         ],
         InvoiceDeleted::class => [
           ClearRentInvoiceData::class
-        ]
+        ],
+        Heartbeat::class => [
+          HeartbeatListener::class
+        ],
     ];
 
     /**

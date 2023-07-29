@@ -19,6 +19,8 @@ import { Link } from "@inertiajs/vue3";
 import { propertyStatus } from "@/Modules/properties/constants";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import { ElMessageBox, ElNotification } from "element-plus";
+import { useResponsive } from "@/utils/useResponsive";
+import ButtonCircle from "@/Components/mobile/ButtonCircle.vue";
 
 const props = defineProps<{
   units: IProperty[] | IPaginatedData<IProperty>;
@@ -100,6 +102,8 @@ const sections: Record<string, any> = {
 const handleChange = (sectionName: string) => {
   router.get(sections[sectionName].link);
 };
+
+const { isMobile } = useResponsive();
 </script>
 
 <template>
@@ -108,8 +112,8 @@ const handleChange = (sectionName: string) => {
       <PropertySectionNav />
     </template>
 
-    <main class="p-5 mx-auto mt-8 text-gray-500 sm:px-6 lg:px-8">
-      <section class="flex space-x-4">
+    <main class="py-16 -mx-4 md:mx-0">
+      <section class="grid grid-cols-2 md:flex md:space-x-4 gap-4 md:gap-0">
         <AppSearch
           v-model.lazy="searchState.search"
           class="w-full md:flex"
@@ -126,17 +130,25 @@ const handleChange = (sectionName: string) => {
           @update:model-value="onStateSelected"
         />
         <ButtonGroup
-          class="w-full md:w-fit"
+          class="hidden md:flex w-full md:w-fit"
           @update:modelValue="handleChange"
           :values="sections"
           v-model="section"
         />
-        <AppButton variant="secondary" @click="router.visit(route('properties.create'))">
-          Agregar Propiedad
+        <AppButton
+          class="hidden"
+          variant="secondary"
+          @click="router.visit(route('properties.create'))"
+        >
+          <IMdiPlus />
+          <span class="hidden md:inline-block">
+            {{ $t("add property") }}
+          </span>
         </AppButton>
       </section>
+
       <AtTable
-        class="bg-white rounded-md text-body-1 mt-4"
+        class="mt-4 md:bg-white rounded-md text-body-1"
         :table-data="listData.data"
         :cols="cols"
         :pagination="searchState"
@@ -186,6 +198,11 @@ const handleChange = (sectionName: string) => {
           </div>
         </template>
       </AtTable>
+      <div class="fixed bottom-16 right-5 flex space-x-2 z-50" v-if="isMobile">
+        <ButtonCircle @click="router.visit(route('properties.create'))">
+          <IMdiPlus />
+        </ButtonCircle>
+      </div>
     </main>
   </AppLayout>
 </template>

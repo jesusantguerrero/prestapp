@@ -25,7 +25,7 @@ const handleClick = (section: any, sectionName: string | number) => {
 </script>
 
 <template>
-  <div class="flex justify-between w-full pr-8">
+  <div class="flex justify-between w-full md:pr-8">
     <SectionNavTab
       v-for="(section, sectionName) in sections"
       @click="handleClick(section, sectionName)"

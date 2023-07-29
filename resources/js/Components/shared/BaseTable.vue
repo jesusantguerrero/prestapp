@@ -1,48 +1,91 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import CustomCell from "../customCell";
 import AppSearch from "./AppSearch/AppSearch.vue";
 import { useResponsive } from "@/utils/useResponsive";
-import { ElTable, ElTableColumn } from "element-plus";
+import { ElTable, ElTableColumn, TableColumnCtx } from "element-plus";
 
 const { isMobile } = useResponsive();
 
 const props = withDefaults(
   defineProps<{
-    selectable: boolean;
-    defaultExpandAll: boolean;
-    showSummary: boolean;
-    summaryMethod: null | Function;
+    selectable?: boolean;
+    defaultExpandAll?: boolean;
+    showSummary?: boolean;
+    summaryMethod: Function;
     cols: any[];
     hiddenCols?: string[];
-    isLoading: boolean;
+    isLoading?: boolean;
     tableData: any[];
-    config: Record<string, any>;
-    pagination: Record<string, any>;
-    total: number;
+    config?: Record<string, any>;
+    pagination?: Record<string, any>;
+    total?: number;
     showPrepend?: boolean;
-    showAppend: boolean;
-    emptyText: string;
-    hideEmptyText: boolean;
-    hideHeaders: boolean;
-    responsive: boolean;
-    tableClass: string;
-    layout: string;
+    showAppend?: boolean;
+    emptyText?: string;
+    hideEmptyText?: boolean;
+    hideHeaders?: boolean;
+    responsive?: boolean;
+    tableClass?: string;
+    layout?: string;
   }>(),
   {
+    summaryMethod: (data: { columns: TableColumnCtx<any>[]; data: any[] }) => {
+      return () => {};
+    },
     tableClass: "md:px-4",
     layout: "table",
   }
 );
 
+const emit = defineEmits(["selection-change"]);
+
 const getHeaderClass = (row: Record<string, any>) => {
   return row.headerClass;
 };
 
+const parseColumn = (column: Record<string, any> | string) => {
+  if (typeof column == "string") {
+    return {
+      name: column,
+      label: column,
+    };
+  }
+  return column;
+};
+
 const visibleCols = computed(() => {
+  const parsedCols = props.cols.map(parseColumn);
   return props.hiddenCols
-    ? props.cols.filter((col) => !props.hiddenCols?.includes(col.name))
-    : props.cols;
+    ? parsedCols.filter((col) => !props.hiddenCols?.includes(col.name))
+    : parsedCols;
+});
+
+const selectedRows = ref<Record<number, boolean>>({});
+
+const toggleSelection = (rows?: number[]) => {
+  if (rows) {
+    rows.forEach((row) => {
+      selectedRows.value[row] = !selectedRows.value[row];
+    });
+  } else {
+    selectedRows.value = {};
+  }
+};
+
+watch(selectedRows, () => {
+  emit(
+    "selection-change",
+    Object.entries(selectedRows)
+      .filter(([_id, isSelected]) => isSelected)
+      .map(([rowId, isSelected]) => {
+        props.tableData.find((row) => row.id == rowId);
+      })
+  );
+});
+
+defineExpose({
+  toggleSelection,
 });
 </script>
 

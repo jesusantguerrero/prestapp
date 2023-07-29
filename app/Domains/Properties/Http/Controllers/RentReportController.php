@@ -3,9 +3,14 @@
 namespace App\Domains\Properties\Http\Controllers;
 
 use App\Domains\CRM\Services\ClientService;
+use App\Domains\Properties\Models\PropertyUnit;
+use App\Domains\Properties\Models\Rent;
+use App\Domains\Properties\Services\OwnerService;
 use App\Domains\Properties\Services\RentService;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\HasEnrichedRequest;
+use App\Models\Setting;
+use Exception;
 use Illuminate\Http\Request;
 
 class RentReportController extends Controller
@@ -64,6 +69,38 @@ class RentReportController extends Controller
       ]);
     }
 
+    public function occupancy(Request $request) {
+      $teamId = $request->user()->current_team_id;
+      $filters = $request->query('filter');
+      $ownerId = $filters['owner'] ?? null;
+      $status = $filters['status'] ?? null;
+      [$startDate] = $this->getFilterDates($filters);
+      $units = OwnerService::occupancyByMonth($teamId, $startDate);
+
+      $unitsByOwners = $units->groupBy(['owner_name', 'property_id'])
+      ->map(function ($properties) {
+        $units = $properties->flatten();
+        $rented = $units
+        ->filter(fn ($value) => $value->rent_id)->count();
+
+        return [
+          "total" => $units->count(),
+          "propertyCount" => $properties->count(),
+          "properties" => $properties->all(),
+          "occupancyRate" => ($rented / $units->count()) * 100,
+          "rented" => $rented,
+          "vacant" => $units->count() - $rented
+        ];
+      });
+
+      return inertia('Rents/Reports/Occupancy',
+      [
+        'invoices' => $unitsByOwners,
+          "serverSearchOptions" => $this->getServerParams(),
+          "section" => 'invoices'
+      ]);
+    }
+
     public function management(Request $request) {
       $teamId = $request->user()->current_team_id;
       $filters = $request->query('filters');
@@ -106,4 +143,28 @@ class RentReportController extends Controller
           "section" => $section
       ]);
     }
-}
+
+    public function ownerStatement(int $invoiceId)
+    {
+      try {
+        $invoice = $this->getInvoiceSecured($invoiceId, false);
+        $isJson = request()->query('json');
+        $withReport = request()->query('report');
+
+        $response = [
+          'invoice' => $invoice->getInvoiceData(),
+          'businessData' => Setting::getByTeam($invoice->team_id),
+          'type' => $invoice->type,
+          'occupancy' => RentService::occupancy($invoice->team_id)
+        ];
+
+        if ($isJson) {
+          return response($response, 200);
+        } else {
+          return inertia(config('journal.invoices_inertia_path') . '/Preview', $response);
+        }
+      } catch (Exception $e) {
+        redirect('/invoices');
+      }
+    }
+  }

@@ -11,6 +11,7 @@ export const MODULES = {
     LOAN: 'loan',
     INVOICING: 'invoicing',
     PROPERTY: 'property',
+    AGENT: 'agent',
     ACCOUNTING: 'accounting',
     ADMIN: 'admin',
     REPORT: 'report'
@@ -112,9 +113,28 @@ const menus = {
       },
       icon: StreamlineInterfaceSecurityShieldPerson
     }],
-    [MODULES.REPORT]: [{
-        label: 'Facturas propietarios',
-        to: '/property-reports/',
+    [MODULES.AGENT]: [
+    {
+        label: 'Distribuciones',
+        to: '/agents/owner-draws',
+        isActiveFunction(currentPath: string) {
+          return /owner-draws/.test(currentPath)
+        },
+        icon: IcOutlineRealEstateAgent,
+        as: Link,
+    }, {
+        label: 'Comisiones',
+        to: '/agents/commissions',
+        isActiveFunction(currentPath: string) {
+          return /agents\/commissions/.test(currentPath)
+        },
+        icon: MaterialSymbolsHomeWorkOutline,
+        as: Link,
+    }],
+    [MODULES.REPORT]: [
+      {
+        label: 'Ocupación',
+        to: '/rent-reports/occupancy',
         as: Link,
         icon: IcOutlineRealEstateAgent,
       },

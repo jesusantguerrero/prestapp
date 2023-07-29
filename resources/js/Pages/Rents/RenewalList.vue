@@ -159,6 +159,7 @@ const statusTabs = computed(() => {
           {{ $t(stateName) }} ({{ status }})
         </AppButtonTab>
       </section>
+
       <AtTable
         class="mt-4 md:bg-white rounded-md text-body-1"
         :table-data="listData"

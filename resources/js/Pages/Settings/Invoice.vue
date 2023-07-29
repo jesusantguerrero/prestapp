@@ -42,35 +42,32 @@
               :options="[
                 {
                   name: 1,
-                  label: 'Uppon receipt',
+                  label: $t('Upon receipt'),
                 },
                 {
                   name: 7,
-                  label: '7 Days',
+                  label: $t('7 Days'),
                 },
                 {
                   name: 15,
-                  label: '15 Days',
+                  label: $t('15 Days'),
                 },
                 {
                   name: 30,
-                  label: '30 Days',
+                  label: $t('30 Days'),
                 },
                 {
                   name: 45,
-                  label: '45 Days',
+                  label: $t('45 Days'),
                 },
               ]"
             />
-          </AtField>
-          <AtField class="mt-5" label="Aceptar pagos online">
-            <el-switch v-model="formData.invoice_accept_online_payments" />
           </AtField>
         </div>
       </article>
 
       <article>
-        <h2 class="my-4 font-bold">Titulo de factura</h2>
+        <h2 class="my-4 font-bold">{{ $t("Invoice title") }}</h2>
         <p class="mb-2 text-sm text-gray-400 md:w-8/12">
           By default, all Invoices are labelled 'Invoice' followed by a number (e.g.,
           "Invoice 1"). If your local law, language or occupation requires a different
@@ -81,7 +78,7 @@
         </AtField>
         <AtField class="md:max-w-sm" label="Factura Compra" rounded>
           <AtInput
-            v-model="formData.invoice_label"
+            v-model="formData.purchase_label"
             placeholder="Factura Compra"
             rounded
           />
@@ -95,7 +92,7 @@
           class="border rounded-md"
         />
       </article>
-      <!-- 
+      <!--
         <article>
             <AtField class="w-full" label="Texto de email">
                 <AtTextarea v-model="formData.invoice_email_text" class="border rounded-md" />
@@ -117,12 +114,15 @@ import TaxDefinitionBox from "./TaxDefinitionBox.vue";
 import IconAdd from "@/Components/icons/IconAdd.vue";
 import AppButton from "../../Components/shared/AppButton.vue";
 import { AtButton, AtField, AtInput, AtSimpleSelect, AtTextarea } from "atmosphere-ui";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const props = defineProps({
   settingData: {
     type: Object,
     default: () => ({
       invoice_label: "Invoice",
+      purchase_label: "Purchase",
       invoice_payment_due_days: 7,
       invoice_accept_online_payments: false,
       invoice_payment_instructions: "",
@@ -174,14 +174,14 @@ const removeTax = (tax, index) => {
       .then(() => {
         taxesDefinition.splice(index, 1);
         ElNotification.success({
-          title: "Tax removed",
-          message: "Tax has been removed",
+          title: t("Tax removed"),
+          message: t("Tax has been removed"),
         });
       })
       .catch(() => {
         ElNotification.error({
-          title: "Error",
-          message: "Could not delete tax",
+          title: t("Error"),
+          message: t("Could not delete tax"),
         });
       });
   }
@@ -218,8 +218,8 @@ const save = () => {
       preserveScroll: true,
     });
     ElNotification({
-      title: "Invoicing Data Updated",
-      message: "Invoicing settings has being updated",
+      title: t("Invoicing Data Updated"),
+      message: t("Invoicing settings has being updated"),
       type: "success",
     });
   });

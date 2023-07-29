@@ -88,6 +88,9 @@ class AdminController extends InertiaController
         ], [
           "label" => 'Generate Loan Fees',
           "command" => 'background:generate-loan-fees'
+        ], [
+          "label" => 'Heartbeat',
+          "command" => 'heartbeat'
         ]
       ];
 
@@ -102,5 +105,6 @@ class AdminController extends InertiaController
         abort(403);
       }
       $this->commandService->runAdminCommand(request()->post('command'), request()->user());
+      back();
     }
 }

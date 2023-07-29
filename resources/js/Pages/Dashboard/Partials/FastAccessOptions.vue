@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { router } from "@inertiajs/core";
-
-import { useTransactionModal } from "@/Modules/transactions/useTransactionModal";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
 import { computed } from "vue";
+import { useResponsive } from "@/utils/useResponsive";
 
 const props = defineProps<{
   extended: boolean;
@@ -11,6 +10,7 @@ const props = defineProps<{
 
 const { openModal } = useToggleModal("contact");
 const { openModal: openInvoiceModal } = useToggleModal("propertyCharge");
+const { isMobile } = useResponsive();
 
 const welcomeCards = computed(() => {
   const options = [
@@ -106,18 +106,28 @@ const welcomeCards = computed(() => {
     },
   ];
 
+  if (isMobile.value) {
+    return options.filter((item) => item.action);
+  }
+
   return options.filter((option) => props.extended || !option.extended);
 });
 </script>
 
 <template>
-  <div class="grid py-2" :class="[extended ? 'grid-cols-3' : 'grid-cols-2']">
+  <div
+    class="grid py-2"
+    :class="[extended ? 'grid-cols-3' : 'grid-cols-3 md:grid-cols-2']"
+  >
     <template v-for="card in welcomeCards">
       <button
         v-if="card.action"
         class="flex flex-col items-center hover:text-primary justify-center w-full py-3 text-center transition-all ease-in bg-white border-2 border-transparent rounded-lg hover:border-primary group"
         :class="[extended ? 'text-body-1/50' : 'text-primary']"
-        @click="card.action()"
+        @click="
+          card.action();
+          $emit('action');
+        "
       >
         <div class="icon-container" :class="extended ? 'text-2xl' : 'text-4xl'">
           <IMdiUserOutline v-if="card.icon == 'contact'" />

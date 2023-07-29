@@ -6,19 +6,23 @@ import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
 import { IInvoice } from "@/Modules/invoicing/entities";
 import { ElMessageBox } from "element-plus";
 import { formatMoney } from "@/utils";
+import { useResponsive } from "@/utils/useResponsive";
+import { useActionSheet } from "@/Modules/_app/useActionSheet";
 
 const { openModal } = usePaymentModal();
 
-interface Props {
-  invoice: Object;
-  accountsEndpoint: string;
-  allowEdit: boolean;
-  externalActions?: Record<string, any>;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  accountsEndpoint: "/api/accounts",
-});
+const props = withDefaults(
+  defineProps<{
+    invoice: IInvoice;
+    accountsEndpoint?: string;
+    allowEdit: boolean;
+    externalActions?: Record<string, any>;
+  }>(),
+  {
+    accountsEndpoint: "/api/accounts",
+    allowEdit: false,
+  }
+);
 
 const emit = defineEmits(["edit"]);
 
@@ -108,26 +112,28 @@ const onDelete = async (invoice: IInvoice) => {
   }
 };
 
+const { isMobile } = useResponsive();
+const { openAction } = useActionSheet();
 const handleActions = (actionName: string, invoice: IInvoice) => {
   const externalActions = props.externalActions;
   switch (actionName) {
     case "payment":
       if (externalActions?.payment) {
-        externalActions?.payment?.(invoice)
+        externalActions?.payment?.(invoice);
       } else {
         onPayment(invoice);
       }
       break;
     case "download":
       if (externalActions?.download) {
-        externalActions?.download?.(invoice)
+        externalActions?.download?.(invoice);
       } else {
         onDownload(invoice);
       }
       break;
     case "edit":
       if (externalActions?.edit) {
-        externalActions?.edit?.(invoice)
+        externalActions?.edit?.(invoice);
       } else {
         emit("edit");
       }
@@ -137,7 +143,7 @@ const handleActions = (actionName: string, invoice: IInvoice) => {
       break;
     case "delete":
       if (externalActions?.delete) {
-        externalActions?.delete?.(invoice)
+        externalActions?.delete?.(invoice);
       } else {
         onDelete(invoice);
       }
@@ -145,24 +151,40 @@ const handleActions = (actionName: string, invoice: IInvoice) => {
   }
 };
 
-const refresh = () => {
-  router.reload();
+const createBasic = () => {
+  openAction({
+    data: {
+      actions: actions,
+      title: "Payment options",
+      onAction: (actionName: string) => {
+        handleActions(actionName, props.invoice);
+      },
+    },
+    isOpen: true,
+  });
 };
 </script>
 
 <template>
-  <ElDropdown v-if="actions" @command="handleActions($event, invoice)">
+  <ElDropdown v-if="actions && !isMobile" @command="handleActions($event, invoice)">
     <button class="px-5 py-2 rounded-md hover:bg-base-lvl-2">
       <i class="fa fa-ellipsis-h" />
     </button>
     <template #dropdown>
       <ElDropdownMenu>
         <ElDropdownItem :command="actionName" v-for="(action, actionName) in actions">
-          {{ $t(action.label) }}
+          {{ $t(action?.label) }}
         </ElDropdownItem>
       </ElDropdownMenu>
     </template>
   </ElDropdown>
+  <button
+    class="px-5 py-2 rounded-md hover:bg-base-lvl-2"
+    v-else-if="actions"
+    @click="createBasic"
+  >
+    <i class="fa fa-ellipsis-h" />
+  </button>
 
   <a :href="linkToPrint" target="_blank" ref="invoiceLink" type="hidden"></a>
 </template>

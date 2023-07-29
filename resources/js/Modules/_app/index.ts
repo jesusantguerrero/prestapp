@@ -72,6 +72,17 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
         },
         {
           icon: 'fas fa-chart-bar',
+          label:t('Agent Tools'),
+          to: '/agent-tools',
+          as: Link,
+          hideMobile: true,
+          isActiveFunction(url: string, currentPath: string) {
+            return /agents/.test(currentPath)
+          },
+          items: getSectionMenu(MODULES.AGENT),
+        },
+        {
+          icon: 'fas fa-chart-bar',
           label:t('Reports'),
           to: '/statements',
           as: Link,
@@ -79,15 +90,15 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
             return /statements/.test(currentPath)
           },
           items: getSectionMenu(MODULES.REPORT),
-      },
+        },
     ].filter(item => !item?.hidden);
 
-    let mobileMenu = cloneDeep(appMenu)
+    let mobileMenu = cloneDeep(appMenu).filter( item => !item.hideMobile);
     mobileMenu.splice(2, null, {
         name: 'add',
         label: 'Add',
         icon: IMdiPlus,
-        action: 'openTransactionModal'
+        action: 'openAddModal'
     });
 
     const headerMenu =  [

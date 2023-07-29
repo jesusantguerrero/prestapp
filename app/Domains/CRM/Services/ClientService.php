@@ -2,6 +2,7 @@
 
 namespace App\Domains\CRM\Services;
 
+use App\Domains\CRM\Data\ContactData;
 use App\Domains\CRM\Models\Client;
 use App\Domains\Loans\Models\Loan;
 use Illuminate\Database\Eloquent\Builder;
@@ -10,8 +11,8 @@ use Insane\Journal\Models\Invoice\Invoice;
 
 class ClientService {
 
-    public static function createClient(mixed $clientData) {
-        return Client::create(array_merge($clientData, [
+    public static function create(ContactData $clientData) {
+        return Client::create(array_merge($clientData->toArray(), [
             'display_name' => $clientData['names']
         ]));
     }

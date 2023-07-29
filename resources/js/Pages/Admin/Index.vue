@@ -4,7 +4,7 @@ import { router } from "@inertiajs/core";
 import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import IncomeSummaryWidget from "@/Pages/Dashboard/Partials/IncomeSummaryWidget.vue";
-import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
+import WelcomeWidget from "@/Components/WelcomeWidget.vue";
 import DashboardTemplate from "./Partials/AdminTemplate.vue";
 
 const props = defineProps({
