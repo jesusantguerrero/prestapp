@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import WelcomeWidget from "@/Components/WelcomeWidget.vue";
-import RentTemplate from "../Partials/RentTemplate.vue";
+import OrderTemplate from "../Partials/OrderTemplate.vue";
 import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 
 import { IRent } from "@/Modules/properties/propertyEntity";
@@ -14,7 +14,7 @@ defineProps<Props>();
 </script>
 
 <template>
-  <RentTemplate :rents="rents" :current-tab="currentTab" :hide-panel="true">
+  <OrderTemplate :rents="rents" :current-tab="currentTab" :hide-panel="true">
     <WelcomeWidget message="Facturas de renta">
       <template #content>
         <InvoiceCard
@@ -25,5 +25,5 @@ defineProps<Props>();
         />
       </template>
     </WelcomeWidget>
-  </RentTemplate>
+  </OrderTemplate>
 </template>
