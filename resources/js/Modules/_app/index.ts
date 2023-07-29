@@ -98,7 +98,7 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
         name: 'add',
         label: 'Add',
         icon: IMdiPlus,
-        action: 'openTransactionModal'
+        action: 'openAddModal'
     });
 
     const headerMenu =  [

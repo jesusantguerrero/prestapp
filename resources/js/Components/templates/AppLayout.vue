@@ -24,6 +24,9 @@ import { useLocalStorage } from "@vueuse/core";
 import MobileMenuBar from "../mobile/MobileMenuBar.vue";
 import { useI18n } from "vue-i18n";
 import AppButtonCircle from "../shared/AppButtonCircle.vue";
+import FastAccessOptions from "@/Pages/Dashboard/Partials/FastAccessOptions.vue";
+import { useToggleModal } from "@/Modules/_app/useToggleModal";
+import ResponsiveModal from "../ResponsiveModal.vue";
 
 defineProps({
   title: String,
@@ -88,13 +91,21 @@ onUnmounted(() => {
   routerEvent.value && routerEvent.value();
 });
 
-const handleActions = (action) => {
-  // const actions = {
-  //   openAddModal: {
-  //     handler: openTransactionModal,
-  //   },
-  // };
-  // actions[action]?.handler();
+const { isOpen, openModal, closeModal } = useToggleModal("fastAccess");
+
+const actions: Record<
+  string,
+  {
+    handler: Function;
+  }
+> = {
+  openAddModal: {
+    handler: openModal,
+  },
+};
+
+const handleActions = (action: string) => {
+  actions[action]?.handler();
 };
 
 function refresh() {
@@ -299,6 +310,15 @@ function refresh() {
     </AppShell>
     <MobileMenuBar :menu="mobileMenu" @action="handleActions" />
     <TheGlobals @reload="refresh" />
+
+    <ResponsiveModal
+      :show="isOpen"
+      max-width="mobile"
+      :closeable="true"
+      @close="closeModal"
+    >
+      <FastAccessOptions />
+    </ResponsiveModal>
   </div>
 </template>
 
