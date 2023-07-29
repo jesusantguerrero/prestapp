@@ -75,7 +75,7 @@ const deleteProperty = async (property: IProperty) => {
       <PropertySectionNav />
     </template>
 
-    <main class="p-5 mx-auto mt-8 text-gray-500 sm:px-6 lg:px-8">
+    <main class="py-16 -mx-4 md:mx-0">
       <section class="flex space-x-4">
         <AppSearch
           v-model.lazy="searchState.search"
@@ -91,13 +91,16 @@ const deleteProperty = async (property: IProperty) => {
           v-model="section"
         />
         <AppButton variant="secondary" @click="router.visit(route('properties.create'))">
-          Agregar Propiedad
+          <IMdiPlus />
+          <span class="hidden md:inline-block">
+            {{ $t("add property") }}
+          </span>
         </AppButton>
       </section>
       <AtTable
         :table-data="listData"
         :cols="cols"
-        class="bg-white rounded-md text-body-1 mt-4"
+        class="mt-4 md:bg-white rounded-md text-body-1"
       >
         <template v-slot:status="{ scope: { row } }" class="flex">
           <div>

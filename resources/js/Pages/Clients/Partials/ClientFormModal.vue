@@ -3,7 +3,7 @@ import { ref } from "vue";
 // @ts-ignore
 import { AtButton } from "atmosphere-ui";
 
-import Modal from "@/Components/Modal.vue";
+import ResponsiveModal from "@/Components/ResponsiveModal.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import ClientForm from "./ClientForm.vue";
 import { ElNotification } from "element-plus";
@@ -45,7 +45,12 @@ const onError = (message: string) => {
 </script>
 
 <template>
-  <Modal :show="show" :max-width="maxWidth" :closeable="closeable" @close="close()">
+  <ResponsiveModal
+    :show="show"
+    :max-width="maxWidth"
+    :closeable="closeable"
+    @close="close()"
+  >
     <header
       class="border-b bg-secondary/80 text-white py-4 px-4 flex items-center justify-between"
     >
@@ -79,5 +84,5 @@ const onError = (message: string) => {
         Guardar
       </AppButton>
     </footer>
-  </Modal>
+  </ResponsiveModal>
 </template>

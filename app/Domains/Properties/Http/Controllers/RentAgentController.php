@@ -17,8 +17,8 @@ class RentAgentController extends Controller
       $ownerId = $filters['owner'] ?? null;
 
       $methods = [
-        "owner-draws" => fn() => ClientService::invoices($teamId, $ownerId)->get(),
-        "commissions" => fn() => RentService::commissions($teamId)->get()
+        "owner-draws" => fn() => ClientService::invoices($teamId, $ownerId)->paginate(),
+        "commissions" => fn() => RentService::commissions($teamId)->paginate()
       ];
 
       $method = $methods[$viewName];

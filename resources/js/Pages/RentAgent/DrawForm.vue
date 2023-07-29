@@ -178,7 +178,7 @@ function createOwnerDistribution() {
   formData.description = ` ${props.invoices?.at?.(0)?.owner_name} (${monthName})`;
 
   ElMessageBox({
-    title: "Selecciona descripcion",
+    title: "Descripcion",
     message: () =>
       h(AppFormField, {
         label: "Descripcion de factura",
@@ -267,9 +267,11 @@ router.on("finish", () => {
                 !canSubmitForm && 'Debe seleccionar facturas para aplicar la distribucion'
               "
             >
+              <IMdiBankPlus />
               <span class="hidden md:inline-block">
                 Crear Factura de distribucion ({{ formData.invoices.length }})
               </span>
+              <span class="md:hidden"> ({{ formData.invoices.length }}) </span>
             </AppButton>
           </section>
         </template>
