@@ -34,10 +34,6 @@ class ClientController extends InertiaController
       ];
   }
 
-  protected function createResource(mixed $request, $postData) {
-    return $this->clientService->create(ContactData::c ($request->post()));
-  }
-
   protected function byTypes(Request $request, $type) {
     $resourceName = $this->resourceName ?? $this->model->getTable();
     $resources = $this->parser($this->getModelQuery($request,null, function ($builder) use ($type) {
