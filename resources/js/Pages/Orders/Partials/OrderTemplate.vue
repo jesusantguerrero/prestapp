@@ -14,6 +14,7 @@ import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
 import { IRent } from "@/Modules/properties/propertyEntity";
 import { IInvoice } from "@/Modules/invoicing/entities";
+import OrderOptions from "../../../Components/Orders/OrderOptions.vue";
 
 const { openModal: openInvoiceModal } = useToggleModal("propertyCharge");
 
@@ -30,10 +31,7 @@ const props = withDefaults(defineProps<Props>(), {
 const tabs = {
   "": "Detalles",
   payments: "Pagos",
-  invoices: "Facturas De Renta",
-  deposits: "Depositos",
-  notes: "Notas de credito",
-  expenses: "Gastos",
+  invoices: "Facturas",
 };
 
 const clientName = computed(
@@ -133,7 +131,7 @@ const onEdit = (invoice: IInvoice) => {
 
     <main class="p-5 mt-16 md:mt-8">
       <AppSectionHeader
-        name="Contrato de Alquiler a"
+        :name="$t('Order')"
         class="px-5 bg-white border-2 border-white rounded-md rounded-b-none"
         :resource="rents"
         :title="`${clientName}`"
@@ -143,48 +141,12 @@ const onEdit = (invoice: IInvoice) => {
         <template #actions>
           <section class="flex space-x-2">
             <AppButton
-              v-if="rents.status !== 'CANCELLED'"
-              variant="error"
-              @click="
-                openInvoiceModal({
-                  data: {
-                    type: 'expense',
-                    clientId: rents.client_id,
-                    rentId: rents.id,
-                    hideClientOptions: true,
-                  },
-                  isOpen: true,
-                })
-              "
-            >
-              <IMdiBankMinus class="mr-2" />
-              Crear Gasto
-            </AppButton>
-            <AppButton
-              v-if="rents.status !== 'CANCELLED'"
-              variant="success"
-              @click="
-                openInvoiceModal({
-                  data: {
-                    type: 'fee',
-                    clientId: rents.client_id,
-                    rentId: rents.id,
-                    hideClientOptions: true,
-                    title: 'Crear cargo de mora',
-                  },
-                  isOpen: true,
-                })
-              "
-            >
-              <IMdiCashPlus class="mr-2" />
-              Crear Mora
-            </AppButton>
-            <AppButton
               variant="neutral"
               @click="router.visit(route('rents.edit', rents))"
             >
               <IMdiEdit />
             </AppButton>
+            <OrderOptions :order="rents" />
           </section>
         </template>
       </AppSectionHeader>
@@ -192,8 +154,8 @@ const onEdit = (invoice: IInvoice) => {
         class="w-full px-5 pt-10 pb-2 mb-5 space-y-5 text-gray-600 bg-white rounded-b-md"
       >
         <header class="flex justify-between">
-          <div>Alquiler #{{ rents.id }} para {{ clientName }}</div>
-          <div>
+          <div>Order #{{ rents.id }} para {{ clientName }}</div>
+          <div class="capitalize font-bold">
             {{ $t(rents.status) }}
           </div>
         </header>

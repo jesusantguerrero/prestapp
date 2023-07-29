@@ -25,7 +25,7 @@ const toggleQuickEdit = () => {};
 </script>
 
 <template>
-  <OrderTemplate :rents="orders" :current-tab="currentTab">
+  <OrderTemplate :rents="orders" :current-tab="currentTab" hide-panel>
     <WelcomeWidget :message="$t('items')" class="w-full text-body-1">
       <template #content>
         <section class="py-4 space-y-2">
@@ -83,7 +83,7 @@ const toggleQuickEdit = () => {};
       </template>
     </WelcomeWidget>
 
-    <WelcomeWidget message="Detalles de propiedad" class="w-full text-body-1">
+    <WelcomeWidget :message="$t('customers')" class="w-full text-body-1">
       <template #content>
         <UnitTitle
           class="px-4 py-2 mt-4 bg-white rounded-md cursor-pointer hover:bg-white"

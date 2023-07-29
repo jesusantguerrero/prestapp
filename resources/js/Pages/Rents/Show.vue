@@ -3,7 +3,7 @@ import { router, useForm } from "@inertiajs/vue3";
 import { AtInput } from "atmosphere-ui";
 
 import AppButton from "@/Components/shared/AppButton.vue";
-import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
+import WelcomeWidget from "@/Components/WelcomeWidget.vue";
 
 import { formatMoney, formatDate } from "@/utils";
 import UnitTitle from "@/Components/realState/UnitTitle.vue";

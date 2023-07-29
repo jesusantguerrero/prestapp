@@ -172,5 +172,10 @@
     "30 Days": "30 Días",
     "45 Days": "45 Días",
     "add property": "Agregar propiedad",
-    "create order": "Crear orden"
+    "create order": "Crear orden",
+    "Delete order": "Eliminar orden",
+    "Send": "Enviar",
+    "Mark as received": "Marcar como recibida",
+    "Cancel": "Cancelar",
+    "Return": "Devolver"
   }

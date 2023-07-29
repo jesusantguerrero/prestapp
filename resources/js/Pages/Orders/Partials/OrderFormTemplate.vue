@@ -52,6 +52,7 @@ const rentForm = reactive({
   late_fee: 10,
   late_fee_type: "",
   grace_days: 0,
+  status: "draft",
   additional_fees: [],
 });
 
@@ -156,12 +157,8 @@ const onFinished = () => {
     ...rentForm,
     deposit_due: formatDate(rentForm.deposit_due, "yyyy-MM-dd"),
     date: formatDate(rentForm.date, "yyyy-MM-dd"),
-    first_invoice_date: dateToIso(rentForm.first_invoice_date),
-    next_invoice_date: dateToIso(rentForm.next_invoice_date),
-    end_date: dateToIso(rentForm.end_date),
-    unit_id: rentForm.unit?.id,
-    property_id: rentForm.property?.id,
     client_id: rentForm.client?.id,
+    status: "draft",
   };
 
   delete data.property;

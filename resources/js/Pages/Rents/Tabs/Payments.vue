@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { router } from "@inertiajs/vue3";
 
-import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
+import WelcomeWidget from "@/Components/WelcomeWidget.vue";
 
 import RentTemplate from "../Partials/RentTemplate.vue";
 import { IRent } from "@/Modules/properties/propertyEntity";
