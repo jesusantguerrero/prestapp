@@ -16,7 +16,7 @@ interface IRent {
 export default [
     {
         name: 'client',
-        label: 'Inquilino',
+        label: 'Vendor',
         class: "text-center",
         headerClass: "text-center",
         minWidth: 150,
@@ -38,7 +38,7 @@ export default [
     },
     {
             name: 'id',
-            label: 'Detalles de Contrato',
+            label: 'Order details',
             class: "text-left",
             headerClass: "text-center",
             align: 'left',
@@ -56,7 +56,7 @@ export default [
         class: "text-center",
         type: 'money',
         headerClass: "text-center",
-        label: 'Propietario'
+        label: 'clients'
     }, {
         name: 'days',
         label: 'Dias restantes',

@@ -1,60 +1,32 @@
 <script setup lang="ts">
-import { router, useForm } from "@inertiajs/vue3";
+import {  useForm } from "@inertiajs/vue3";
 import { AtInput } from "atmosphere-ui";
 
-import AppButton from "@/Components/shared/AppButton.vue";
-import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
+import WelcomeWidget from "@/Components/WelcomeWidget.vue";
 
 import { formatMoney, formatDate } from "@/utils";
 import UnitTitle from "@/Components/realState/UnitTitle.vue";
-import RentTemplate from "./Partials/RentTemplate.vue";
+import OrderTemplate from "./Partials/OrderTemplate.vue";
 import { IRent } from "@/Modules/properties/propertyEntity";
-import { ElMessageBox } from "element-plus";
-import { parseISO } from "date-fns";
 import { ref } from "vue";
 
-interface Props {
-  rents: IRent;
+defineProps<{
+  orders: IRent;
   currentTab: string;
-}
-
-const props = defineProps<Props>();
+}>();
 
 const updateRentForm = useForm({
-  next_invoice_date: parseISO(props.rents.next_invoice_date)
-})
+  date: "",
+});
 
 const isEditing = ref(false);
 
-const toggleQuickEdit = () => {
-  if (isEditing.value && props.rents.next_invoice_date !== updateRentForm.next_invoice_date) {
-      updateRentForm.put(route('rents.update', props.rents), {
-        onSuccess() {
-          router.reload();
-        }
-      })
-  }
-  isEditing.value= !isEditing.value
-}
-
-const deleteRent = async (rent: IRent) => {
-  const isValid = await ElMessageBox.confirm(
-    `Estas seguro de eliminar el contrato de ${rent.address} ${rent.client_name}?`,
-    "Eliminar contrato"
-  );
-  if (isValid) {
-    router.delete(route("rents.destroy", rent), {
-      onSuccess() {
-        router.reload();
-      },
-    });
-  }
-};
+const toggleQuickEdit = () => {};
 </script>
 
 <template>
-  <RentTemplate :rents="rents" :current-tab="currentTab">
-    <WelcomeWidget message="Detalles de contrato" class="w-full text-body-1">
+  <OrderTemplate :rents="orders" :current-tab="currentTab">
+    <WelcomeWidget :message="$t('items')" class="w-full text-body-1">
       <template #content>
         <section class="py-4 space-y-2">
           <p class="flex items-center space-x-2">
@@ -63,8 +35,8 @@ const deleteRent = async (rent: IRent) => {
               <AtInput
                 class="form-control"
                 number-format
-                @update:model-value="rents.amount = $event"
-                :model-value="rents.amount"
+                @update:model-value="orders.amount = $event"
+                :model-value="orders.amount"
                 rounded
                 required
                 borderless
@@ -79,16 +51,16 @@ const deleteRent = async (rent: IRent) => {
           </p>
           <p>
             Fecha de Inicio:
-            {{ formatDate(rents.date) }}
+            {{ formatDate(orders.date) }}
           </p>
           <p>
             Contrato hasta:
-            {{ formatDate(rents.end_date) }}
+            {{ formatDate(orders.end_date) }}
           </p>
           <p class="flex items-center">
             Proximo pago:
             <span v-if="!isEditing">
-              {{ formatDate(rents.next_invoice_date) }}
+              {{ formatDate(orders.next_invoice_date) }}
             </span>
             <ElDatePicker v-else v-model="updateRentForm.next_invoice_date" size="large" class="ml-2" />
             <button
@@ -102,45 +74,11 @@ const deleteRent = async (rent: IRent) => {
           </p>
           <p>
             Estatus:
-            {{ $t(`commons.${rents.status}`) }}
+            {{ $t(`commons.${orders.status}`) }}
           </p>
           <p class="py-2 cursor-pointer hover:bg-base-lvl-1">
-            Deposito {{ formatMoney(rents.deposit) }}
+            Deposito {{ formatMoney(orders.deposit) }}
           </p>
-        </section>
-      </template>
-      <template #actions>
-        <section class="flex space-x-2">
-          <AppButton
-            variant="neutral"
-            class="hover:bg-error hover:text-white"
-            v-if="rents.status !== 'CANCELLED'"
-            @click="router.visit(`/contacts/${rents.client_id}/tenants/rents/${rents.id}/end`)"
-          >
-            <IMdiFileDocumentRemove class="mr-2" />
-            Terminar Contrato
-          </AppButton>
-          <AppButton
-            variant="neutral"
-            class="hover:bg-success hover:text-white"
-            v-if="rents.status !== 'CANCELLED'"
-            @click="
-              router.visit(`/contacts/${rents.client_id}/tenants/rents/${rents.id}/renew`)
-            "
-          >
-            <IClarityContractLine class="mr-2" />
-            <span class="capitalize">
-              {{ $t("extend rent") }}
-            </span>
-          </AppButton>
-          <AppButton
-            v-if="rents.status !== 'CANCELLED'"
-            variant="error"
-            class="flex flex-col items-center justify-center transition hover:text-error hover:border-red-400"
-            @click="deleteRent(rents)"
-          >
-            <IMdiTrash />
-          </AppButton>
         </section>
       </template>
     </WelcomeWidget>
@@ -149,12 +87,12 @@ const deleteRent = async (rent: IRent) => {
       <template #content>
         <UnitTitle
           class="px-4 py-2 mt-4 bg-white rounded-md cursor-pointer hover:bg-white"
-          :title="rents.address + ' ' + rents.unit?.name"
-          :owner-name="rents.owner_name"
-          :owner-link="`/contacts/${rents.property?.owner_id}/owners`"
-          :tenant-name="formatMoney(rents.amount)"
+          :title="orders.address + ' ' + orders.unit?.name"
+          :owner-name="orders.owner_name"
+          :owner-link="`/contacts/${orders.property?.owner_id}/owners`"
+          :tenant-name="formatMoney(orders.amount)"
         />
       </template>
     </WelcomeWidget>
-  </RentTemplate>
+  </OrderTemplate>
 </template>

@@ -37,7 +37,7 @@ const tabs = {
 };
 
 const clientName = computed(
-  () => props.rents.client?.names + " " + props.rents.client?.lastnames
+  () => props.rents?.client?.names + " " + props.rents?.client?.lastnames
 );
 const sectionTitle = computed(() => `${clientName.value.split(",")[0]}`);
 

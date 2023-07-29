@@ -41,7 +41,7 @@ const cardSize = computed(() => {
   >
     <section class="items-center justify-between flex" :class="!$slots.title && 'pb-2'">
       <slot name="title">
-        <h1 class="font-bold text-body-1">
+        <h1 class="font-bold text-body-1 capitalize">
           {{ message }} <span class="text-primary">{{ username }}</span>
         </h1>
       </slot>

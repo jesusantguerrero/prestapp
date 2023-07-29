@@ -26,7 +26,7 @@ interface IPaginatedData {
 }
 
 const props = defineProps<{
-  rents: IRent[] | IPaginatedData;
+  orders: IRent[] | IPaginatedData;
   kpis: Record<string, number>;
   serverSearchOptions: IServerSearchData;
 }>();
@@ -56,25 +56,6 @@ const filters = ref({
   endDate: null,
 });
 
-const expiringRanges = [
-  {
-    text: "Este mes",
-    range: [30, 0],
-  },
-  {
-    text: "3 Meses",
-    range: [90, 0],
-  },
-  {
-    text: "Last 6 months",
-    range: [180, 0],
-  },
-  {
-    text: "Expired",
-    range: [null, 0],
-  },
-];
-
 const onStateSelected = (statusName: string) => {
   searchState.filters.status = statusName !== "TOTAL" ? statusName : "";
   executeSearch();
@@ -91,7 +72,7 @@ const setRange = (field: string, range: number[]) => {
   );
 };
 const listData = computed(() => {
-  return Array.isArray(props.rents) ? props.rents : props.rents.data;
+  return Array.isArray(props.orders) ? props.orders : props.orders.data;
 });
 
 const tableConfig = {
@@ -126,7 +107,7 @@ const statusTabs = computed(() => {
 </script>
 
 <template>
-  <AppLayout title="Contratos de alquiler">
+  <AppLayout :title="$t('orders')">
     <template #header>
       <PropertySectionNav />
     </template>
@@ -135,14 +116,18 @@ const statusTabs = computed(() => {
       <section class="flex space-x-4">
         <AppSearch
           v-model.lazy="searchState.search"
-          class="w-full md:flex"
+          class="w-full md:flex capitalize"
           :has-filters="true"
           @clear="reset()"
           @search="executeSearch"
           @blur="executeSearch"
         />
-        <AppButton @click="router.visit(route('rents.create'))" v-if="!isMobile">
-          Agregar Contrato
+        <AppButton
+          class="capitalize"
+          @click="router.visit(route('orders.create'))"
+          v-if="!isMobile"
+        >
+          {{ $t("add order") }}
         </AppButton>
       </section>
 
@@ -160,7 +145,7 @@ const statusTabs = computed(() => {
         :table-data="listData"
         :cols="cols"
         :pagination="searchState"
-        :total="rents.total"
+        :total="orders.total"
         responsive
         @search="executeSearch"
         @paginate="paginate"
@@ -179,19 +164,10 @@ const statusTabs = computed(() => {
 
             <Link
               class="relative inline-block px-5 py-2 ml-4 overflow-hidden font-bold transition rounded-md cursor-pointer hover:bg-primary hover:text-white text-body focus:outline-none hover:bg-opacity-80 min-w-max"
-              :href="`/rents/${row.id}`"
+              :href="`/orders/${row.id}`"
             >
               <IMdiChevronRight />
             </Link>
-            <div class="flex">
-              <AppButton
-                class="flex flex-col items-center justify-center transition hover:text-primary hover:border-primary-400"
-                variant="neutral"
-                @click="router.visit(`/property/${row.property_id}`)"
-              >
-                <IMdiFile />
-              </AppButton>
-            </div>
             <AppButton
               variant="neutral"
               class="flex flex-col items-center justify-center transition hover:text-error hover:border-red-400"

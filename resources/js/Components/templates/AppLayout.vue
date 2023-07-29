@@ -135,7 +135,7 @@ function refresh() {
               </AppButton>
               <h4
                 :class="[showBackButton ? 'lg:ml-2' : 'lg:ml-6']"
-                class="pl-4 text-lg font-bold md:pl-0 md:text-secondary text-white"
+                class="pl-4 text-lg font-bold md:pl-0 md:text-secondary capitalize text-white"
               >
                 {{ title }}
               </h4>

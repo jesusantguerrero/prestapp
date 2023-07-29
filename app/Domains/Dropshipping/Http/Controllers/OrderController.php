@@ -34,6 +34,14 @@ class OrderController extends InertiaController
       $this->orderService->create(OrderData::from($postData));
     }
 
+    
+    protected function getEditProps(Request $request, $rent)
+    {
+      return [
+        'orders' => $this->orderService->getOrderById($rent->id)
+      ];
+    }
+
     public function action(Order $order, string $action) {
       match($action) {
         "send" => $this->orderService->send($order),
