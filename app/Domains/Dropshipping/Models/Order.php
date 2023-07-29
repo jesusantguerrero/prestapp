@@ -17,6 +17,12 @@ class Order extends Model
 {
     use HasFactory;
 
+    protected $table = "dropshipping_orders";
+
+    protected $fillable = [
+      "user_id", "team_id", "client_id"
+    ];
+
     protected $attributes = [
       "status" => OrderStatusEnum::Draft
     ];

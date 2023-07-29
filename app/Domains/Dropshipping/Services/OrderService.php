@@ -1,9 +1,16 @@
 <?php
 
-namespace App\Domains\Dropshipping\Models;
+namespace App\Domains\Dropshipping\Services;
+
+use App\Domains\Dropshipping\Data\OrderData;
+use App\Domains\Dropshipping\Models\Order;
 
 class OrderService
 {
+    public function create(OrderData $order) {
+      return Order::create($order->toArray());
+    }
+
     public function send(Order $order) {
       $order->state()->send();
     }
