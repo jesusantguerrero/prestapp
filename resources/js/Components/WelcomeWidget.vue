@@ -15,6 +15,7 @@ interface Props {
   borderless?: boolean;
   rounded: boolean;
   size: string;
+  verticalHeader?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -39,14 +40,17 @@ const cardSize = computed(() => {
     class="px-5 pt-3 transition divide-y divide-base bg-base-lvl-3"
     :class="[!borderless && 'border-base border', rounded && 'rounded-lg ']"
   >
-    <section class="items-center justify-between flex" :class="!$slots.title && 'pb-2'">
+    <section
+      class="items-center justify-between flex"
+      :class="[!$slots.title && 'pb-2', verticalHeader && 'flex-col']"
+    >
       <slot name="title">
-        <h1 class="font-bold text-body-1 capitalize">
+        <h1 class="font-bold text-body-1 capitalize w-full">
           {{ message }} <span class="text-primary">{{ username }}</span>
         </h1>
       </slot>
 
-      <div>
+      <div class="w-full" v-if="$slots.actions || actionLabel">
         <slot name="actions">
           <div class="space-x-2" v-if="actionLabel && actionLink">
             <AtButton

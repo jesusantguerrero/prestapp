@@ -131,20 +131,23 @@ const onEdit = (invoice: IInvoice) => {
       <PropertySectionNav />
     </template>
 
-    <main class="p-5 mt-16 md:mt-8">
+    <main class="md:p-5 mt-16 md:mt-8">
       <AppSectionHeader
-        name="Contrato de Alquiler a"
+        :name="`Alquiler #${rents.id}: ${clientName}`"
         class="px-5 bg-white border-2 border-white rounded-md rounded-b-none"
         :resource="rents"
-        :title="`${clientName}`"
+        :title="$t(rents.status)"
         hide-action
         @create="router.visit('/loans/create')"
       >
         <template #actions>
-          <section class="flex space-x-2">
+          <section
+            class="flex flex-col md:justify-end md:flex-row md:space-x-2 mt-4 md:mt-0 w-full space-y-2 md:space-y-0"
+          >
             <AppButton
               v-if="rents.status !== 'CANCELLED'"
               variant="error"
+              class="w-full md:w-fit"
               @click="
                 openInvoiceModal({
                   data: {
@@ -191,13 +194,8 @@ const onEdit = (invoice: IInvoice) => {
       <div
         class="w-full px-5 pt-10 pb-2 mb-5 space-y-5 text-gray-600 bg-white rounded-b-md"
       >
-        <header class="flex justify-between">
-          <div>Alquiler #{{ rents.id }} para {{ clientName }}</div>
-          <div>
-            {{ $t(rents.status) }}
-          </div>
-        </header>
-        <div class="flex space-x-2">
+        <header class="flex justify-between"></header>
+        <div class="md:flex md:space-x-2 grid grid-cols-2 gap-2">
           <Link
             class="px-2 py-1 transition rounded-md cursor-pointer bg-gray-50 hover:bg-gray-200"
             v-for="(tabLabel, tab) in tabs"
