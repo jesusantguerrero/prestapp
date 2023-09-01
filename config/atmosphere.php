@@ -6,5 +6,8 @@ return [
   ],
   "backup" => [
     "email" => env('APP_BACKUP_EMAIL', null)
+  ],
+  "dropshipping" => [
+    "serviceUrl" => "http://localhost:5000/api/v1/dropshipping"
   ]
 ];

@@ -86,6 +86,7 @@ const modalMaxWidth = computed(() => {
 
   <MoreOptionsModal
     v-model:show="isActionSheetOpen"
+    @close="closeAction()"
     max-width="mobile"
     v-bind="actionData"
     v-if="isMobile"
@@ -95,6 +96,7 @@ const modalMaxWidth = computed(() => {
     v-model:show="isContactModalOpen"
     v-bind="contactData"
     :full-height="isMobile"
+    :max-width="isMobile ? 'mobile' : null"
     @saved="onContactSaved"
   />
 

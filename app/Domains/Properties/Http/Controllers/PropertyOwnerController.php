@@ -53,21 +53,21 @@ class PropertyOwnerController extends InertiaController
 
     public function generateDraw(Client $client, int $invoiceId = null) {
       PropertyTransactionService::createOwnerDistribution($client, $invoiceId);
-      return redirect("/property-reports");
+      return redirect("/agents/owner-draws");
     }
 
     public function storeDraws(Client $client) {
       $postData = request()->post();
       $ownerDistribution = new OwnerDistributionService($client);
       $ownerDistribution->fromRequest($postData);
-      return redirect("/property-reports");
+      return redirect("/agents/owner-draws");
     }
 
     public function updateDraws(Client $client, int $drawId) {
       $postData = request()->post();
       $ownerDistribution = new OwnerDistributionService($client);
       $ownerDistribution->updateFromRequest($postData, $drawId);
-      return redirect("/property-reports");
+      return redirect("/agents/owner-draws");
     }
 
     public function payDraw(Client $client, int $drawId) {

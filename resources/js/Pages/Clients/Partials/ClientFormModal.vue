@@ -60,29 +60,45 @@ const onError = (message: string) => {
       </button>
     </header>
 
-    <ClientForm
-      :form-data="formData"
-      :type="type"
-      v-model:isLoading="isLoading"
-      ref="clientFormRef"
-      @success="$emit('saved')"
-      @error="onError"
-    />
+    <main class="client-form__container">
+      <ClientForm
+        :form-data="formData"
+        :type="type"
+        v-model:isLoading="isLoading"
+        ref="clientFormRef"
+        @success="$emit('saved')"
+        @error="onError"
+        class="client-form"
+      />
 
-    <footer
-      class="px-6 py-4 flex justify-end space-x-3 text-gray-600 text-right bg-neutral"
-    >
-      <AtButton :disabled="isLoading" @click="close()" class="text-gray">
-        Cancelar
-      </AtButton>
-      <AppButton
-        :processing="isLoading"
-        :disabled="isLoading"
-        variant="secondary"
-        @click="onSubmit()"
+      <footer
+        class="px-6 py-2 md:py-4 flex justify-end space-x-3 text-gray-600 text-right bg-neutral"
       >
-        Guardar
-      </AppButton>
-    </footer>
+        <AtButton :disabled="isLoading" @click="close()" class="text-gray">
+          Cancelar
+        </AtButton>
+        <AppButton
+          :processing="isLoading"
+          :disabled="isLoading"
+          variant="secondary"
+          @click="onSubmit()"
+        >
+          Guardar
+        </AppButton>
+      </footer>
+    </main>
   </ResponsiveModal>
 </template>
+
+<style lang="scss">
+.client-form__container {
+  height: calc(100vh - 61px);
+  display: grid;
+  grid-template-rows: 1fr 60px;
+  grid-template-columns: 1fr;
+}
+
+.client-form {
+  overflow: auto;
+}
+</style>

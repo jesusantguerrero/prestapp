@@ -11,6 +11,7 @@ import { MathHelper } from "@/Modules/loans/mathHelper";
 import { paymentMethods } from "@/Modules/loans/constants";
 import AppFormField from "@/Components/shared/AppFormField.vue";
 import { IClient, IClientSaved } from "@/Modules/clients/clientEntity";
+import { useResponsive } from "@/utils/useResponsive";
 
 const defaultFormData = {
   amount: 0,
@@ -173,12 +174,15 @@ function resetForm(shouldClose) {
 function emitChange(value) {
   emit("update:modelValue", value);
 }
+
+const { isMobile } = useResponsive();
 </script>
 
 <template>
   <ElDialog
     @open="setFormData()"
     :model-value="modelValue"
+    :fullscreen="isMobile"
     class="overflow-hidden"
     @update:model-value="$emit('update:modelValue', $event)"
   >
