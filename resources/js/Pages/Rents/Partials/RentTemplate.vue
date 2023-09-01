@@ -131,7 +131,7 @@ const onEdit = (invoice: IInvoice) => {
       <PropertySectionNav />
     </template>
 
-    <main class="md:p-5 mt-16 md:mt-8">
+    <main class="px-0 md:p-5 mt-16 md:mt-8">
       <AppSectionHeader
         :name="`Alquiler #${rents.id}: ${clientName}`"
         class="px-5 bg-white border-2 border-white rounded-md rounded-b-none"
