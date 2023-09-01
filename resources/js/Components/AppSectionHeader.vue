@@ -57,10 +57,10 @@ const createButtonTitle = computed(() => {
 
 <template>
   <header
-    class="flex items-center justify-between w-full px-5 py-2 border rounded-lg bg-base-lvl-3 border-base-lvl-3 no-print"
+    class="flex flex-col md:flex-row items-center justify-between w-full px-5 py-2 border rounded-lg bg-base-lvl-3 border-base-lvl-3 no-print"
   >
     <h2
-      class="flex items-center text-sm md:text-xl font-semibold leading-tight text-gray-500"
+      class="w-full flex items-center text-sm md:text-xl font-semibold leading-tight text-gray-500"
     >
       <span class="mr-2 font-bold text-primary capitalize"> {{ name }} </span>
       <span v-if="resource && resource.id">
@@ -72,7 +72,7 @@ const createButtonTitle = computed(() => {
         >editing</span
       >
     </h2>
-    <div>
+    <div class="w-full">
       <slot name="actions" v-if="$slots.actions || !hideAction">
         <div class="button-container">
           <div v-if="!resource || resource.id" class="flex">

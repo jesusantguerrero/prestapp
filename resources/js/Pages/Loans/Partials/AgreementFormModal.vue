@@ -6,6 +6,7 @@ import { ref } from "vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import { useForm } from "@inertiajs/vue3";
 import AppFormField from "@/Components/shared/AppFormField.vue";
+import { useResponsive } from "@/utils/useResponsive";
 
 const props = defineProps({
   modelValue: Boolean,
@@ -44,12 +45,15 @@ function onSubmit() {
 function emitChange(value: boolean) {
   emit("update:modelValue", value);
 }
+
+const { isMobile } = useResponsive();
 </script>
 
 <template>
   <ElDialog
     class="rounded-lg overflow-hidden"
     width="550"
+    :fullscreen="isMobile"
     :model-value="modelValue"
     @update:model-value="$emit('update:modelValue', $event)"
   >

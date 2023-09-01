@@ -303,7 +303,7 @@ function refresh() {
         </header>
 
         <!-- Page Content -->
-        <main class="px-4 pt-0 mx-auto md:pt-8">
+        <main class="px-0 md:px-4 pt-0 mx-auto md:pt-8">
           <slot />
         </main>
       </template>
