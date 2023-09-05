@@ -28,14 +28,15 @@
                 {{ scope.row.data.cta }}
               </Link>
 
-              <AtButton
+              <AppButton
                 :href="scope.row.data.link"
                 class="ml-auto text-white transition-colors rounded-md bg-primary"
                 @click="markAsRead(scope.row)"
                 v-if="!scope.row.read_at"
+                :processing="scope.row.isLoading"
               >
                 {{ $t("Mark as read") }}
-              </AtButton>
+              </AppButton>
             </div>
           </template>
         </BaseTable>
@@ -54,6 +55,7 @@ import AppLayout from "@/Components/templates/AppLayout.vue";
 import { router } from "@inertiajs/vue3";
 import BaseTable from "@/Components/shared/BaseTable.vue";
 import { formatDate } from "@/utils";
+import AppButton from "@/Components/shared/AppButton.vue";
 
 defineProps({
   notifications: {
@@ -103,8 +105,20 @@ const state = reactive({
 });
 
 const markAsRead = (notification: any) => {
-  router.put(`/notifications/${notification.id}`, {
-    read_at: new Date(),
-  });
+  notification.isLoading = true;
+  router.put(
+    `/notifications/${notification.id}`,
+    {
+      read_at: new Date(),
+    },
+    {
+      onSuccess() {
+        router.reload({
+          preserveState: true,
+          preserveScroll: true,
+        });
+      },
+    }
+  );
 };
 </script>
