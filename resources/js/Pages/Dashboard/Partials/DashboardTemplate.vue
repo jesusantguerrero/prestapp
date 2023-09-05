@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, provide } from "vue";
+import { ref, provide, computed } from "vue";
 import { router } from "@inertiajs/core";
 import { usePage } from "@inertiajs/vue3";
 // @ts-ignore
@@ -15,6 +15,7 @@ import AppButton from "@/Components/shared/AppButton.vue";
 import { useResponsive } from "@/utils/useResponsive";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import ResponsiveButtonGroup from "./ResponsiveButtonGroup.vue";
+import { format } from "date-fns";
 
 defineProps<{
   user: Record<string, any>;
@@ -32,10 +33,6 @@ const sections: Record<string, IButtonSection> = {
   general: {
     label: "General",
     link: "/dashboard",
-  },
-  loans: {
-    label: "Prestamos",
-    link: "/dashboard/loan",
   },
   realState: {
     label: "Inmobiliaria",
@@ -65,6 +62,14 @@ const isOnboardingOpen = useLocalStorage("icloan:isOnboardingOpen", true);
 provide("isOnboardingOpen", isOnboardingOpen);
 
 const { isMobile } = useResponsive();
+
+const currentDate = computed(() => {
+  try {
+    return format(pageState.dates.startDate, "MMMM yyyy");
+  } catch (err) {
+    return null;
+  }
+});
 </script>
 
 <template>
@@ -89,7 +94,11 @@ const { isMobile } = useResponsive();
             @change="executeSearchWithDelay()"
             controlsClass="bg-transparent text-body hover:bg-base-lvl-1 hover:text-secondary"
             next-mode="month"
-          />
+          >
+            <span class="capitalize">
+              {{ currentDate }}
+            </span>
+          </AtDatePager>
           <AppButton
             @click="isOnboardingOpen = !isOnboardingOpen"
             title="Open onboarding help"

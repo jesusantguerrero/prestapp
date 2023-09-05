@@ -67,10 +67,6 @@ const documentType = computed(() => {
 
 const clientTypes = [
   {
-    value: "lender",
-    label: "Cliente de Prestamos",
-  },
-  {
     value: "owner",
     label: "Propietario",
   },
