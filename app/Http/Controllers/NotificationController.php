@@ -6,7 +6,7 @@ class NotificationController {
 
     public function index() {
         return inertia('Settings/Notifications', [
-            'notifications' => request()->user()->notifications,
+            'notifications' => request()->user()->unreadNotifications,
         ]);
     }
 

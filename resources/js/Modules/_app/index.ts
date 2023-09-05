@@ -34,7 +34,7 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
                return /loans|lender/.test(currentPath)
             },
             items: getSectionMenu(MODULES.LOAN),
-            hidden: !isTeamApproved.value,
+            hidden: true,
         },
         {
             icon: 'fas fa-building',
