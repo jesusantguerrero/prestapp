@@ -3,6 +3,7 @@
     class="inline-block font-bold items-center flex transition border rounded-md min-w-max"
     :class="[typeClasses]"
     :size="size"
+    :disabled="processing | disabled"
   >
     <component :is="icon" v-if="icon" />
     <slot v-if="!processing" />
@@ -37,6 +38,9 @@ const props = defineProps({
     type: Object,
   },
   processing: {
+    type: Boolean,
+  },
+  disabled: {
     type: Boolean,
   },
   size: {
