@@ -37,7 +37,9 @@ const unitLabel = (unit: IUnit) => {
 };
 
 const propertyLabel = (property: IProperty) => {
-  return `${property.name} (${property.address})`;
+  return `${property.name} [${
+    property.units.filter((unit) => unit.status !== "RENTED").length
+  }] (${property.address}) `;
 };
 </script>
 

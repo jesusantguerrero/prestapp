@@ -24,6 +24,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(["success", "error", "update:isLoading"]);
 
 const clientForm = useForm({
+  id: null,
   names: "",
   lastnames: "",
   email: "",

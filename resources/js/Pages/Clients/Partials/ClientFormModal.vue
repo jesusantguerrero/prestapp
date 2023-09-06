@@ -17,7 +17,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  type: "lender",
+  type: "tenant",
   formData: null,
 });
 
