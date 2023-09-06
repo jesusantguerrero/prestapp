@@ -1,9 +1,11 @@
+import IcOutlineRealEstateAgent from '~icons/ic/outline-real-estate-agent'
 import { cloneDeep } from 'lodash';
 import { Link } from "@inertiajs/vue3"
 import IMdiPlus from '~icons/mdi/plus-thick';
 import MaterialSymbolsDashboard from '~icons/material-symbols/dashboard'
 import { MaybeRef } from "@vueuse/core";
 import { MODULES, getSectionMenu } from './menus';
+import { h } from "vue";
 
 export * from "./menus";
 interface IAppMenuItem {
@@ -71,11 +73,10 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
           items: getSectionMenu(MODULES.INVOICING),
         },
         {
-          icon: 'fas fa-chart-bar',
+          icon: 'fas fa-users',
           label:t('Agent Tools'),
           to: '/agent-tools',
           as: Link,
-          hideMobile: true,
           isActiveFunction(url: string, currentPath: string) {
             return /agents/.test(currentPath)
           },

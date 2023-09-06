@@ -32,7 +32,7 @@ const { serverSearchOptions } = toRefs(props);
 const { executeSearch, updateSearch, reset, state: searchState } = useServerSearch(
   serverSearchOptions,
   (finalUrl: string) => {
-    updateSearch(`/units?${finalUrl}`);
+    updateSearch(`/properties?${finalUrl}`);
   },
   {
     manual: true,

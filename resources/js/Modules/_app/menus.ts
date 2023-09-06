@@ -3,7 +3,7 @@ import MaterialSymbolsHomeWorkOutline from '~icons/material-symbols/home-work-ou
 import ClarityContractLine from '~icons/clarity/contract-line'
 import StreamlineInterfaceSecurityShieldPerson from '~icons/streamline/interface-security-shield-personshield-secure-security-person'
 import FluentPeopleCommunity16Regular from '~icons/fluent/people-community-16-regular'
-import IcOutlineRealEstateAgent from '~icons/ic/outline-real-estate-agent'
+import IcOutlineRealEstateAgent from './IconComponent.vue';
 import ClarityBankLine from '~icons/clarity/bank-line'
 
 export const MODULES = {

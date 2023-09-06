@@ -118,4 +118,12 @@ class ClientController extends InertiaController
 
     return true;
   }
+
+  protected function getValidationRules($postData) {
+    return [
+      'names' => 'required',
+      'lastnames' => 'required',
+      'dni' => 'required|unique:clients'.$postData["id"] ?? "",
+    ];
+  }
 }
