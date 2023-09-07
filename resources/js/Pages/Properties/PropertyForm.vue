@@ -98,7 +98,7 @@ const onCancel = () => {
 </script>
 
 <template>
-  <AppLayout title="Agregar propiedad">
+  <AppLayout :title="$t('Add property')">
     <template #header>
       <PropertySectionNav>
         <template #actions v-if="!properties?.id">

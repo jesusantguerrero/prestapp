@@ -101,7 +101,7 @@ const deleteProperty = async (property: IProperty) => {
       </section>
       <AtTable
         :table-data="listData"
-        :cols="cols"
+        :cols="cols($t)"
         class="mt-4 md:bg-white rounded-md text-body-1"
       >
         <template v-slot:status="{ scope: { row } }" class="flex">

@@ -121,7 +121,7 @@ const { openModal } = useToggleModal("contact");
             @click="router.visit(route('properties.create'))"
             v-if="type == 'owner'"
           >
-            Agregar Propiedad
+            {{ $t("Add property")}}
           </AppButton>
           <AppButton
             variant="inverse"
