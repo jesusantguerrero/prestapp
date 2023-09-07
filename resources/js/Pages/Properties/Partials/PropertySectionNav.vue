@@ -2,9 +2,11 @@
 import { getSectionMenu, MODULES } from "@/Modules/_app";
 import { computed } from "vue";
 import SectionNav from "@/Components/SectionNav.vue";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const menu = computed(() => {
-  return getSectionMenu(MODULES.PROPERTY);
+  return getSectionMenu(MODULES.PROPERTY, t);
 });
 </script>
 

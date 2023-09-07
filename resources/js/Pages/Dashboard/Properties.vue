@@ -91,16 +91,16 @@ const props = defineProps({
 
 const unitStats = [
   {
-    label: "Total unidades",
+    label: t("Total units"),
     value: props.stats?.total || 0,
   },
   {
-    label: "Alquiladas",
+    label: t("Rented"),
     icon: "fa-money",
     value: `${props.stats?.rented || 0}`,
   },
   {
-    label: "Libres",
+    label: t("Available"),
     icon: "fa-money",
     value: `${props.stats?.available || 0}`,
   },
@@ -108,11 +108,11 @@ const unitStats = [
 
 const ownerStats = computed(() => [
   {
-    label: "Propietarios",
+    label: "Owners",
     value: props.ownerStats?.total || 0,
   },
   {
-    label: "Pagado mes",
+    label: "Paid in month",
     value: formatMoney(props.ownerStats?.paid || 0),
   },
 ]);
@@ -186,7 +186,7 @@ const interestPerformance = {
   },
   series: [
     {
-      name: "Ganancias intereses",
+      name: t("Interest profit"),
       data: props.paidCommissions?.months.map(
         (item: Record<string, any>) => item.income ?? 0
       ),
@@ -358,7 +358,7 @@ const summaryType = ref("cash-flow");
         </NextPaymentsWidget>
       </section>
       <WelcomeWidget
-        message="Unidades recientes"
+        :message="$t('Recent units')"
         class="text-body-1 w-full shadow-md"
         :cards="unitStats"
         v-if="false"

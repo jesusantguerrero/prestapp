@@ -63,12 +63,12 @@ const appStats = [
 
 const propertyStats = [
   {
-    label: "Unidades",
+    label: "Units",
     icon: "fa-money",
     value: `${props.stats?.units || 0}`,
   },
   {
-    label: "Propiedades",
+    label: "Properties",
     icon: "fa-money",
     value: `${props.stats?.properties || 0}`,
   },
@@ -165,7 +165,7 @@ const comparisonRevenue = {
         />
 
         <WelcomeWidget
-          message="Unidades recientes"
+          message="Recent units"
           class="text-body-1 w-full shadow-md"
           :cards="propertyStats"
           v-if="false"

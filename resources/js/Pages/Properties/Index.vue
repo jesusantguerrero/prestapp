@@ -18,6 +18,7 @@ import { IServerSearchData, useServerSearch } from "@/utils/useServerSearch";
 import { ElMessageBox } from "element-plus";
 import { IProperty } from "@/Modules/properties/propertyEntity";
 import cols from "./Partials/propertyCols";
+import { useI18n } from "vue-i18n";
 
 const props = defineProps<{
   properties: ILoan[] | IPaginatedData<ILoan>;
@@ -39,14 +40,15 @@ const { executeSearch, updateSearch, reset, state: searchState } = useServerSear
   }
 );
 
+const { t } = useI18n();
 const section = ref("properties");
 const sections: Record<string, any> = {
   units: {
-    label: "Unidades",
+    label: t("Units"),
     link: "/units?filter[status]=RENTED",
   },
   properties: {
-    label: "Propiedades",
+    label: t("Properties"),
     link: "/properties",
   },
 };
@@ -116,9 +118,9 @@ const deleteProperty = async (property: IProperty) => {
                   <div class="text-sm">
                     <span class="text-secondary">
                       {{ row.available_units }}
-                      disponible
+                      {{ $t("available") }}
                     </span>
-                    de {{ row.unit_count }} unidades
+                    {{ $t("of") }} {{ row.unit_count }} {{ $t("Units") }}
                   </div>
                   <span class="text-primary">{{ progress }}% </span>
                 </header>
