@@ -14,6 +14,10 @@
     "Welcome": "Hola",
     "Mark as read": "Marcar como leido",
     "Expiring rents": "Contratos proximos a expirar",
+    "Pending owner draws": "Distribución a propietarios pendientes",
+    "Add funds": "Agregar fondos",
+    "Fast access": "Accesos Rápidos",
+    "Owner draws": "Distribucion a propietario",
     "Home": "Inicio",
     "Loans": "Prestamos",
     "Gross earnings": "Ganancias netas",
@@ -24,6 +28,7 @@
     "Configuration": "Configuración",
     "earnings": "ganancias",
     "cashflow": "Flujo de efectivo",
+
     "approval": {
       "consultantPending": {
           "content": "Your account is currently unverified and your application is pending approval. Please check back again within 24 hours."
@@ -64,6 +69,8 @@
     },
     "Property invoice": "Factura de propiedades",
     "Monthly rent": "Mensualidad",
+    "Loan account":"Cuenta de Prestamos",
+    "Real estate account": "Cuenta de inmobiliaria",
     "Agent discount": "Descuento de abogado",
     "Agent payment": "Cobro de abogado",
     "Rent commissions": "Comisiones por renta",
@@ -111,6 +118,15 @@
     "description": "Descripción",
     "owner": "propietario",
     ":owner, (:invoiceCount) invoices": "{owner}, ({invoiceCount} facturas)",
+    "Inflow": "Recibido",
+    "Outflow": "Gastado",
+    "Late": "En mora",
+    "Contacts": "Contactos",
+    "Real estate": "Inmobiliaria",
+    "Pay loan": "Pagar prestamo",
+    "Calculate loan":"Pre-calcular prestamo",
+    "Create rent": "Crear contrato",
+    "Property expense": "Gasto de propiedad",
     ":owner, (:count) units": "{owner}, ({count} unidades)",
     "Explore ICLoan": "Explora ICLoan",
     "Initial steps to setup your system": "Pasos iniciales para configurar el sistema",

@@ -239,7 +239,7 @@ const summaryType = ref("cash-flow");
           href="/property-reports"
           class="flex items-center cursor-pointer h-14 hover:text-primary hover:font-bold transition-all justify-center w-full mt-4 rounded-md bg-white shadow-md md:mt-4"
         >
-          Distribución a propietarios pendientes
+          {{ $t("Pending owner draws") }}
           <IMdiChevronRight />
           <span> {{ pendingDraws }} </span>
         </Link>

@@ -6,16 +6,15 @@ import { usePage } from "@inertiajs/vue3";
 import { AtDatePager } from "atmosphere-ui";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
-import ButtonGroup from "@/Components/ButtonGroup.vue";
 import TeamApproval from "./TeamApproval.vue";
 import { toRefs } from "@vueuse/shared";
 import { useServerSearch } from "@/utils/useServerSearch";
 import { useLocalStorage } from "@vueuse/core";
 import AppButton from "@/Components/shared/AppButton.vue";
 import { useResponsive } from "@/utils/useResponsive";
-import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import ResponsiveButtonGroup from "./ResponsiveButtonGroup.vue";
 import { format } from "date-fns";
+import { useI18n } from "vue-i18n";
 
 defineProps<{
   user: Record<string, any>;
@@ -29,13 +28,15 @@ interface IButtonSection {
   link: string;
 }
 
+const { t } = useI18n();
+
 const sections: Record<string, IButtonSection> = {
   general: {
-    label: "General",
+    label: t("General"),
     link: "/dashboard",
   },
   realState: {
-    label: "Inmobiliaria",
+    label: t("Real estate"),
     link: "/dashboard/property",
   },
 };
