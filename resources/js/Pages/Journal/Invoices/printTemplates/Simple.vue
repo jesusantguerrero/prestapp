@@ -349,7 +349,9 @@ const removePayment = async (payment: Record<string, string>) => {
   text-transform: uppercase;
   border-radius: 1rem;
   font-family: "Courier";
+  mask-image: url("/grunge.png");
   -webkit-mask-image: url("/grunge.png");
+  mask-size: 944px 604px;
   -webkit-mask-size: 944px 604px;
   mix-blend-mode: multiply;
   position: absolute;
@@ -360,6 +362,7 @@ const removePayment = async (payment: Record<string, string>) => {
 .is-approved {
   color: #0a9928;
   border: 0.5rem solid #0a9928;
+  mask-position: 13rem 6rem;
   -webkit-mask-position: 13rem 6rem;
   transform: rotate(-14deg);
   font-size: 2rem;
