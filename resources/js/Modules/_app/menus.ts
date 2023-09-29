@@ -75,7 +75,7 @@ const menus = {
     ],
     [MODULES.PROPERTY]: [
     {
-        label: 'Propiedades',
+        label: 'Properties',
         to: '/units/',
         isActiveFunction(currentPath: string) {
           return /properties|units/.test(currentPath)
@@ -84,19 +84,19 @@ const menus = {
         as: Link,
     },
     {
-        label: 'Contratos',
+        label: 'Rents',
         to: '/rents/',
         as: Link,
         icon:  ClarityContractLine
     },
     {
-        label: 'Renovaciones',
+        label: 'Renewals',
         to: '/rent-renewals/',
         as: Link,
         icon:  ClarityContractLine
     },
     {
-        label: 'Inquilinos',
+        label: 'Tenants',
         to: '/contacts/tenant',
         isActiveFunction(currentPath: string) {
           return /contacts\/\d+\/tenant/.test(currentPath)
@@ -105,7 +105,7 @@ const menus = {
         icon: FluentPeopleCommunity16Regular,
     },
     {
-      label: 'Propietarios',
+      label: 'Owners',
       to: '/contacts/owner',
       as: Link,
       isActiveFunction(currentPath: string) {
@@ -213,6 +213,10 @@ const menus = {
 }
 
 
-export const getSectionMenu = (sectionName: string) => {
+export const getSectionMenu = (sectionName: string, t: Function = (text: string) => text) => {
     return menus[sectionName].filter(item => !item.hidden)
+    .map(item => ({
+      ...item,
+      label: t(item.label)
+    }))
 }

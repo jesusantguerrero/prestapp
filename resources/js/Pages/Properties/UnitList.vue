@@ -21,6 +21,7 @@ import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import { ElMessageBox, ElNotification } from "element-plus";
 import { useResponsive } from "@/utils/useResponsive";
 import ButtonCircle from "@/Components/mobile/ButtonCircle.vue";
+import { useI18n } from "vue-i18n";
 
 const props = defineProps<{
   units: IProperty[] | IPaginatedData<IProperty>;
@@ -88,14 +89,15 @@ const deleteUnit = async (unit: IUnit) => {
   });
 };
 
+const { t } = useI18n();
 const section = ref("units");
 const sections: Record<string, any> = {
   units: {
-    label: "Unidades",
+    label: t("Units"),
     link: "/units?filter[status]=RENTED",
   },
   properties: {
-    label: "Propiedades",
+    label: t("Properties"),
     link: "/properties",
   },
 };
@@ -150,7 +152,7 @@ const { isMobile } = useResponsive();
       <AtTable
         class="mt-4 md:bg-white rounded-md text-body-1"
         :table-data="listData.data"
-        :cols="cols"
+        :cols="cols($t)"
         :pagination="searchState"
         :total="units.total"
         @search="executeSearch"

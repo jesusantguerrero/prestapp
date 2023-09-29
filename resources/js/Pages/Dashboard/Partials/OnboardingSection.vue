@@ -30,7 +30,7 @@ defineEmits(["close"]);
         </article>
       </div>
       <section
-        class="flex-col space-y-8 md:space-y-0 md:flex bg-base-lvl-3 px-4 py-4 rounded-md shadow-md overflow-auto items-center w-full md:space-x-12"
+        class="flex-col md:flex-row space-y-8 md:space-y-0 md:flex bg-base-lvl-3 px-4 py-4 rounded-md shadow-md overflow-auto items-center w-full md:space-x-12"
       >
         <article v-for="(step, index) in steps" class="text-body-1">
           <h4 class="font-bold text-secondary">

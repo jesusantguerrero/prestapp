@@ -121,9 +121,7 @@ const isMultiple = computed(() => {
 const isLoading = ref(false);
 
 function onSubmit() {
-  if (isLoading.value) {
-    return;
-  }
+  if (isLoading.value) return
 
   if (!paymentForm.id) {
     createPayment();

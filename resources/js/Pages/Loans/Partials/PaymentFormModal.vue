@@ -127,10 +127,7 @@ const isMultiple = computed(() => {
 const isLoading = ref(false);
 
 function onSubmit() {
-  if (isLoading.value) {
-    return;
-  }
-
+  if (isLoading.value) return;
   if (paymentForm.value.payment_method_id.id == "deposit") {
     applyDeposit();
     return;

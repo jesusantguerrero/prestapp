@@ -1,6 +1,6 @@
 <template>
   <AtButton
-    class="inline-block font-bold items-center flex transition border rounded-md min-w-max"
+    class="inline-block font-bold items-center capitalize flex transition border rounded-md min-w-max"
     :class="[typeClasses]"
     :size="size"
     :disabled="processing | disabled"

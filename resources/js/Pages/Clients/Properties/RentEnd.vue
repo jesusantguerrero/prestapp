@@ -29,6 +29,7 @@ const endRentForm = useForm({
 });
 
 const onSubmit = () => {
+  if (endRentForm.processing) return;
   ElMessageBox.alert("¿Seguro que desea terminar este contrato?", "Terminar Contrato", {
     confirmButtonText: "Si, Terminar Contraro",
     cancelButtonText: "Cancelar",

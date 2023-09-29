@@ -27,6 +27,7 @@ const formData = useForm({
 
 const isLoading = ref(false);
 function onSubmit() {
+  if (formData.processing) return;
   isLoading.value = true;
   formData.post(`/loans/${props.loan.id}/agreements`, {
     onSuccess() {

@@ -57,6 +57,7 @@ const isLoading = ref(false);
 
 const { t } = useI18n();
 function onSubmit() {
+  if (isLoading.value) return;
   if (!+formData.total) {
     ElNotification({
       type: "error",

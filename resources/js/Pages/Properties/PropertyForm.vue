@@ -57,6 +57,7 @@ const client = null;
 
 // api calls
 const onSubmit = () => {
+  if (formData.processing) return;
   const isEditing = props.properties?.id;
   const method = isEditing ? "put" : "post";
   const param = isEditing ? `/${props.properties.id}` : "";
@@ -98,19 +99,27 @@ const onCancel = () => {
 </script>
 
 <template>
-  <AppLayout title="Agregar propiedad">
+  <AppLayout :title="$t('Add property')">
     <template #header>
       <PropertySectionNav>
         <template #actions v-if="!properties?.id">
           <section class="flex justify-end space-x-2">
             <AtButton
-              class="font-bold text-red-400 bg-gray-100 rounded-md"
+              class="font-bold text-red-400 bg-gray-100 rounded-md capitalize"
               variant="secondary"
+              :disabled="formData.processing"
               @click="onCancel()"
             >
-              Cancelar
+              {{ $t("cancel") }}
             </AtButton>
-            <AppButton variant="inverse" @click="onSubmit"> Guardar propiedad </AppButton>
+            <AppButton
+              variant="inverse"
+              class="capitalize"
+              :processing="formData.processing"
+              @click="onSubmit"
+            >
+              {{ $t("save") }}
+            </AppButton>
           </section>
         </template>
       </PropertySectionNav>
@@ -133,11 +142,11 @@ const onCancel = () => {
               variant="secondary"
               @click="onCancel()"
             >
-              Cancelar
+              {{ $t("cancel") }}
             </AtButton>
             <AppButton variant="secondary" @click="onSubmit">
               <IMdiContentSaveCheck class="ml-2" />
-              Guardar propiedad
+              {{ $t("save") }}
             </AppButton>
           </section>
         </template>
@@ -145,18 +154,18 @@ const onCancel = () => {
       <div class="w-full px-5 py-4 space-y-4 text-gray-600 bg-white rounded-md shadow-md">
         <div class="flex space-x-5">
           <AppFormField
-            label="Dirección"
+            :label="$t('address')"
             v-model="formData.address"
             class="w-full border-b focus:outline-none"
-            placeholder="Dirección"
+            :placeholder="$t('address')"
             rounded
             required
           />
-          <AppFormField class="w-4/12" label="Dueño de propiedad" required>
+          <AppFormField class="w-4/12" :label="$t('owner')" required>
             <BaseSelect
               v-model="formData.owner"
               endpoint="/api/clients?filter[is_owner]=1"
-              placeholder="Selecciona un dueño"
+              :placeholder="$t('select an owner')"
               label="display_name"
               track-by="id"
             />
@@ -164,18 +173,18 @@ const onCancel = () => {
         </div>
         <div class="md:flex md:space-x-2 space-y-4">
           <AppFormField
-            label="Nombre de propiedad"
+            :label="$t('property name')"
             v-model="formData.name"
             class="w-full"
-            placeholder="Nombre de propiedad"
+            :placeholder="$t('property name')"
             rounded
           />
-          <AppFormField class="w-full" label="Tipo de propiedad" required>
+          <AppFormField class="w-full" :label="$t('property type')" required>
             <BaseSelect
               v-model="formData.type"
               @update:model-value="formData.property_type = $event.name"
               :options="propertyTypes"
-              placeholder="Selecciona un tipo"
+              :placeholder="$t('select a type')"
               label="label"
               track-by="name"
             />
@@ -187,7 +196,7 @@ const onCancel = () => {
           <section v-for="(unit, index) in formData.units" class="">
             <header class="flex space-x-4 items-center justify-between">
               <section class="grid grid-cols-4 gap-4 w-full">
-                <AppFormField class="w-full" label="Precio de Renta" required>
+                <AppFormField class="w-full" :label="$t('rent price')" required>
                   <AtInput v-model="unit.price" class="w-full" rounded number-format />
                 </AppFormField>
                 <AppFormField class="w-full" label="Area" v-model="unit.area" rounded>
@@ -199,7 +208,7 @@ const onCancel = () => {
                 </AppFormField>
                 <AppFormField
                   class="w-full"
-                  label="Habitaciones"
+                  :label="$t('rooms')"
                   v-model="unit.bedrooms"
                   rounded
                 >
@@ -211,7 +220,7 @@ const onCancel = () => {
                 </AppFormField>
                 <AppFormField
                   class="w-full"
-                  label="Baños"
+                  :label="$t('bathrooms')"
                   v-model="unit.bathrooms"
                   rounded
                   placeholder="0"
@@ -230,17 +239,17 @@ const onCancel = () => {
                 <IMdiMinus />
               </button>
             </header>
-            <AppFormField label="Notas/Detalles">
+            <AppFormField :label="$t('description')">
               <AtTextarea
                 v-model="unit.description"
                 class="w-full p-2 border focus:outline-none"
-                placeholder="Descripcion de la propiedad"
+                :placeholder="$t('Notes, description, details')"
               />
             </AppFormField>
           </section>
-          <AtButton class="text-primary hover:font-bold" @click="addUnit()">
+          <AtButton class="text-primary capitalize hover:font-bold" @click="addUnit()">
             <i class="mr-2 fa fa-plus-circle"></i>
-            Agregar unidad
+            {{ $t("add unit") }}
           </AtButton>
         </template>
       </div>
