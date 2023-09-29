@@ -121,6 +121,7 @@ const endpoints: Record<string, string> = {
   fee: "/properties/:rent_id/transactions/fee",
 };
 function onSubmit() {
+  if (isLoading.value) return;
   if (!formData.value.amount) {
     ElNotification({
       type: "error",
@@ -269,7 +270,7 @@ const { isMobile } = useResponsive();
             @update:model-value="setClient"
           />
         </AppFormField>
-        <AppFormField label="Propiedad">
+        <AppFormField :label="$t('property')">
           <BaseSelect
             v-model="formData.rent"
             :endpoint="rentsUrl"

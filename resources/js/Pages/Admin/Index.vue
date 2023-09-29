@@ -140,7 +140,7 @@ const comparisonRevenue = {
               variant="inverse"
               @click="router.visit(route('properties.create'))"
             >
-              Agregar Contrato
+              {{ $t("add rent") }}
             </AppButton>
           </header>
           <section class="px-5 space-y-4">

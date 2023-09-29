@@ -52,6 +52,7 @@ watchEffect(() => {
 });
 
 const onSubmit = () => {
+  if (formData.processing) return;
   ElMessageBox.alert("¿Seguro que desea extender este contrato?", "Extender Contrato", {
     confirmButtonText: "Si, Extender Contraro",
     cancelButtonText: "Cancelar",

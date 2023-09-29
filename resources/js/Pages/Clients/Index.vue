@@ -121,7 +121,7 @@ const { openModal } = useToggleModal("contact");
             @click="router.visit(route('properties.create'))"
             v-if="type == 'owner'"
           >
-            {{ $t("Add property")}}
+            {{ $t("Add property") }}
           </AppButton>
           <AppButton
             variant="inverse"
@@ -137,7 +137,7 @@ const { openModal } = useToggleModal("contact");
             @click="router.visit(route('properties.create'))"
             v-else
           >
-            Agregar Contrato
+            {{ $t("add rent") }}
           </AppButton>
           <AppButton
             variant="secondary"

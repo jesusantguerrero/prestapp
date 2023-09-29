@@ -40,6 +40,7 @@ const loanProductForm = useForm({
 });
 
 const onSubmit = () => {
+  if (loanProductForm.processing) return;
   loanProductForm
     .transform((data) => ({
       ...data,

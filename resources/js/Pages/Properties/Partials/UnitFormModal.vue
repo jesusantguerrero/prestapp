@@ -30,6 +30,7 @@ const formData = useForm({
 
 // api calls
 const onSubmit = () => {
+  if (formData.processing) return;
   if (!formData.name || !formData.price) {
     ElNotification({
       type: "error",

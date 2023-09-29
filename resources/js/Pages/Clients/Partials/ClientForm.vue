@@ -15,6 +15,7 @@ interface Props {
   formData: Object | null;
   type: string;
   disabled: boolean;
+  isLoading: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -88,6 +89,7 @@ const selectedClientType = computed({
 });
 
 const onSubmit = () => {
+  if (props.isLoading) return;
   emit("update:isLoading", true);
   clientInteractions
     .create({

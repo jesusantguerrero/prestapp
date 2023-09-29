@@ -18,6 +18,7 @@ const props = defineProps<{
 const rentForm = useForm({ ...(props.rents ?? {}) });
 
 const onSubmit = (formData: Record<string, any>) => {
+  if (rentForm.processing) return;
   const url = props.rents?.id ? route("rents.update", props.rents) : route("rents.store");
   const method = props.rents?.id ? "put" : "post";
   rentForm
@@ -35,7 +36,7 @@ const onSubmit = (formData: Record<string, any>) => {
 </script>
 
 <template>
-  <AppLayout title="Crear contrato">
+  <AppLayout :title="$t('create rent')">
     <main
       class="w-full rent-form pb-24 md:pb-4 bg-white px-5 py-5 rounded-md text-body-1"
     >

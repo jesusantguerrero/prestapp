@@ -113,7 +113,7 @@ const validateStep = () => {
 };
 const currentStep = ref(0);
 const nextButtonLabel = computed(() => {
-  const labels = ["Datos de propiedad", "Datos de renta", "Cargo y Moras", "Guardar"];
+  const labels = ["property data", "rent details", "charges and penalties", "save"];
   return labels[currentStep.value];
 });
 
@@ -151,30 +151,31 @@ const onFinished = () => {
     v-model="currentStep"
     finish-status="success"
     simple
+    class="capitalize"
     style="margin-top: 20px"
     active-class="bg-primary text-white"
     circle-active-color="bg-primary text-white"
     load-shadow-color="shadow-primary"
     @finished="onFinished"
   >
-    <AtStep name="personal" title="Datos Personales" :before-change="validateStep">
+    <AtStep name="personal" :title="$t('personal data')" :before-change="validateStep">
       <RentFormPersonal :model-value="rentForm" @update:model-value="handleUpdate" />
     </AtStep>
-    <AtStep name="property" title="Propiedad" :before-change="validateStep">
+    <AtStep name="property" :title="$t('property')" :before-change="validateStep">
       <RentFormProperty :model-value="rentForm" @update:model-value="handleUpdate" />
     </AtStep>
-    <AtStep name="rent_details" title="Detalles de renta" :before-change="validateStep">
+    <AtStep name="rent_details" :title="$t('rent details')" :before-change="validateStep">
       <RentFormContract :model-value="rentForm" @update:model-value="handleUpdate" />
     </AtStep>
-    <AtStep name="fees" title="Cargos y mora">
+    <AtStep name="fees" :title="$t('charges and penalties')">
       <RentFormFees :model-value="rentForm" @update:model-value="handleUpdate" />
     </AtStep>
 
     <template v-slot:footer="{ prev, next }">
       <footer class="flex justify-end space-x-2 mt-auto md:mt-16 md:px-32">
-        <AppButton variant="neutral" @click="prev()" class="w-full md:w-fit"
-          >Atras</AppButton
-        >
+        <AppButton variant="neutral" @click="prev()" class="w-full md:w-fit">
+          {{ $t("back") }}
+        </AppButton>
         <AppButton
           variant="inverse"
           rounded
@@ -183,7 +184,7 @@ const onFinished = () => {
           :disabled="isProcessing"
           @click="next()"
         >
-          {{ nextButtonLabel }}
+          {{ $t(nextButtonLabel) }}
         </AppButton>
       </footer>
     </template>

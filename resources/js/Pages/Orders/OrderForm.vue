@@ -18,6 +18,7 @@ const props = defineProps<{
 const rentForm = useForm({ ...(props.rents ?? {}) });
 
 const onSubmit = (formData: Record<string, any>) => {
+  if (rentForm.processing) return;
   const url = props.rents?.id
     ? route("orders.update", props.rents)
     : route("orders.store");

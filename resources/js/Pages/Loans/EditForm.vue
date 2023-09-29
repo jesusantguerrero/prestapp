@@ -107,6 +107,7 @@ const hasInstallments = computed(() => {
 
 const isLoading = ref(false);
 const onSubmit = () => {
+  if (isLoading.value) return;
   const formData = {
     ...loanForm,
     date: formatDate(loanForm.disbursement_date, "yyyy-MM-dd"),
