@@ -12,21 +12,21 @@ import Banner from "@/Components/Banner.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import AppButton from "../shared/AppButton.vue";
+import MobileMenuBar from "../mobile/MobileMenuBar.vue";
 import TheGlobals from "../TheGlobals.vue";
 import AppNotificationBell from "./AppNotificationBell.vue";
 import AddNewButton from "./AddNewButton.vue";
+import AppButtonCircle from "../shared/AppButtonCircle.vue";
+import FastAccessOptions from "@/Pages/Dashboard/Partials/FastAccessOptions.vue";
+import ResponsiveModal from "../ResponsiveModal.vue";
 // @ts-ignore
 import AppResourceSearch from "./AppResourceSearch.vue";
 
 import { useAppMenu } from "@/Modules/_app";
 import { useSelect } from "@/Modules/shared/useSelects";
 import { useLocalStorage } from "@vueuse/core";
-import MobileMenuBar from "../mobile/MobileMenuBar.vue";
 import { useI18n } from "vue-i18n";
-import AppButtonCircle from "../shared/AppButtonCircle.vue";
-import FastAccessOptions from "@/Pages/Dashboard/Partials/FastAccessOptions.vue";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
-import ResponsiveModal from "../ResponsiveModal.vue";
 
 defineProps({
   title: String,
@@ -46,23 +46,23 @@ const logout = () => {
 };
 
 //  categories
-const pageProps = usePage().props;
-const isTeamApproved = computed(() => {
-  return pageProps?.isTeamApproved;
+const page = usePage();
+const isTeamApproved = computed<boolean>(() => {
+  return page.props?.isTeamApproved ?? false;
 });
 
 provide("isTeamApproved", isTeamApproved);
 
 const { t } = useI18n();
-const { appMenu: currentMenu, headerMenu, mobileMenu } = useAppMenu(isTeamApproved, t);
+const { appMenu: currentMenu, footerMenu, mobileMenu } = useAppMenu(isTeamApproved, t);
 const { categoryOptions: transformCategoryOptions } = useSelect();
 
-transformCategoryOptions(pageProps?.categories, "sub_categories", "categoryOptions");
+transformCategoryOptions(page?.props.categories, "sub_categories", "categoryOptions");
 transformCategoryOptions(
-  pageProps?.accounts,
+  page.props?.accounts,
   "accounts",
   "accountsOptions",
-  (account) => {
+  (account: Record<string, string>) => {
     return {
       ...account,
       name: account.id,
@@ -116,6 +116,9 @@ function refresh() {
     });
   });
 }
+
+const notificationsCount = computed(() => page.props.unreadNotifications.count as number)
+const notificationsData = computed(() => page.props.unreadNotifications.data as Record<string, string>)
 </script>
 
 <template>
@@ -135,7 +138,7 @@ function refresh() {
               </AppButton>
               <h4
                 :class="[showBackButton ? 'lg:ml-2' : 'lg:ml-6']"
-                class="pl-4 text-lg font-bold md:pl-0 md:text-secondary capitalize text-white"
+                class="pl-4 text-lg font-bold text-white capitalize md:pl-0 md:text-secondary"
               >
                 {{ title }}
               </h4>
@@ -157,8 +160,8 @@ function refresh() {
               </AddNewButton>
               <AppResourceSearch v-if="false" />
               <AppNotificationBell
-                :count="pageProps.unreadNotifications.count"
-                :notifications="pageProps.unreadNotifications.data"
+                :count="notificationsCount"
+                :notifications="notificationsData"
                 @click="$router.visit('/notifications')"
               />
               <!-- Settings Dropdown -->
@@ -195,7 +198,7 @@ function refresh() {
                       class="flex text-sm transition border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300"
                     >
                       <img
-                        class="object-cover w-8 h-8 min-w-min rounded-full"
+                        class="object-cover w-8 h-8 rounded-full min-w-min"
                         :src="$page.props.user.profile_photo_url"
                         :alt="$page.props.user.name"
                       />
@@ -263,13 +266,13 @@ function refresh() {
           :is-expanded="isExpanded"
           @update:isExpanded="isExpanded = $event"
           :menu="currentMenu"
-          :header-menu="headerMenu"
+          :header-menu="footerMenu"
           :current-path="currentPath"
           brand-container-class="py-2"
           nav-container-class="px-2 pt-1 space-y-2 border-t border-base-lvl-3/20"
           icon-class="text-gray-100 py-2.5 transition hover:text-primary hover:bg-base-lvl-3/10"
-          item-class="px-5 rounded-md font-bold text-sm text-gray-200 w-54 hover:text-white hover:bg-base-lvl-3/20"
-          item-active-class="text-white rounded-md text-sm bg-base-lvl-3/10"
+          item-class="px-5 text-sm font-bold text-gray-200 rounded-md w-54 hover:text-white hover:bg-base-lvl-3/20"
+          item-active-class="text-sm text-white rounded-md bg-base-lvl-3/10"
           is-expandable
         >
           <template #brand>
@@ -303,7 +306,7 @@ function refresh() {
         </header>
 
         <!-- Page Content -->
-        <main class="px-0 md:px-4 pt-0 mx-auto md:pt-8">
+        <main class="px-0 pt-0 mx-auto md:px-4 md:pt-8">
           <slot />
         </main>
       </template>

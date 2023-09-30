@@ -1,5 +1,5 @@
 <template>
-  <AppLayout :title="$t('Notifications')">
+  <AppLayout :title="$t('notifications')">
     <div class="px-2 py-10 mx-auto sm:px-6 lg:px-8">
       <div class="w-full rounded-md bg-base-lvl-3">
         <BaseTable
@@ -48,8 +48,6 @@
 <script lang="ts" setup>
 import { Link } from "@inertiajs/vue3";
 import { reactive } from "vue";
-// @ts-ignore
-import { AtButton } from "atmosphere-ui";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import { router } from "@inertiajs/vue3";
@@ -57,14 +55,10 @@ import BaseTable from "@/Components/shared/BaseTable.vue";
 import { formatDate } from "@/utils";
 import AppButton from "@/Components/shared/AppButton.vue";
 
-defineProps({
-  notifications: {
-    type: Array,
-    default() {
-      return [];
-    },
-  },
-});
+defineProps<{
+  notifications: Record<string, string>[];
+  unreadNotifications: number;
+}>();
 
 const cols = [
   {
@@ -111,14 +105,6 @@ const markAsRead = (notification: any) => {
     {
       read_at: new Date(),
     },
-    {
-      onSuccess() {
-        router.reload({
-          preserveState: true,
-          preserveScroll: true,
-        });
-      },
-    }
   );
 };
 </script>
