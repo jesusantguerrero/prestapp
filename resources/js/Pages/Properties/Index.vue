@@ -18,6 +18,7 @@ import { IServerSearchData, useServerSearch } from "@/utils/useServerSearch";
 import { ElMessageBox } from "element-plus";
 import { IProperty } from "@/Modules/properties/propertyEntity";
 import cols from "./Partials/propertyCols";
+import { useI18n } from "vue-i18n";
 
 const props = defineProps<{
   properties: ILoan[] | IPaginatedData<ILoan>;
@@ -32,21 +33,22 @@ const { serverSearchOptions } = toRefs(props);
 const { executeSearch, updateSearch, reset, state: searchState } = useServerSearch(
   serverSearchOptions,
   (finalUrl: string) => {
-    updateSearch(`/units?${finalUrl}`);
+    updateSearch(`/properties?${finalUrl}`);
   },
   {
     manual: true,
   }
 );
 
+const { t } = useI18n();
 const section = ref("properties");
 const sections: Record<string, any> = {
   units: {
-    label: "Unidades",
+    label: t("Units"),
     link: "/units?filter[status]=RENTED",
   },
   properties: {
-    label: "Propiedades",
+    label: t("Properties"),
     link: "/properties",
   },
 };
@@ -75,7 +77,7 @@ const deleteProperty = async (property: IProperty) => {
       <PropertySectionNav />
     </template>
 
-    <main class="p-5 mx-auto mt-8 text-gray-500 sm:px-6 lg:px-8">
+    <main class="py-16 -mx-4 md:mx-0">
       <section class="flex space-x-4">
         <AppSearch
           v-model.lazy="searchState.search"
@@ -91,13 +93,16 @@ const deleteProperty = async (property: IProperty) => {
           v-model="section"
         />
         <AppButton variant="secondary" @click="router.visit(route('properties.create'))">
-          Agregar Propiedad
+          <IMdiPlus />
+          <span class="hidden md:inline-block">
+            {{ $t("add property") }}
+          </span>
         </AppButton>
       </section>
       <AtTable
         :table-data="listData"
-        :cols="cols"
-        class="bg-white rounded-md text-body-1 mt-4"
+        :cols="cols($t)"
+        class="mt-4 md:bg-white rounded-md text-body-1"
       >
         <template v-slot:status="{ scope: { row } }" class="flex">
           <div>
@@ -113,9 +118,9 @@ const deleteProperty = async (property: IProperty) => {
                   <div class="text-sm">
                     <span class="text-secondary">
                       {{ row.available_units }}
-                      disponible
+                      {{ $t("available") }}
                     </span>
-                    de {{ row.unit_count }} unidades
+                    {{ $t("of") }} {{ row.unit_count }} {{ $t("Units") }}
                   </div>
                   <span class="text-primary">{{ progress }}% </span>
                 </header>

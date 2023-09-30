@@ -13,5 +13,8 @@ return [
   "appProfilesDashboards" => [
     "agent" => ["general","properties", "loans"],
     "dropshipping" => ["general"]
+  ],
+  "dropshipping" => [
+    "serviceUrl" => "http://localhost:5000/api/v1/dropshipping"
   ]
 ];

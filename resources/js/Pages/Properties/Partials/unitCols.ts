@@ -1,4 +1,3 @@
-import  IMdiPlus  from '~icons/mdi/plus-thick';
 import IIcSharpArea from '~icons/ic/sharp-photo-size-select-small';
 import  IIcTwotoneBed  from '~icons/ic/twotone-bed';
 import  IIcTwotoneBathtub  from '~icons/ic/twotone-bathtub';
@@ -10,10 +9,10 @@ import { IProperty } from '@/Modules/properties/propertyEntity';
 import UnitTitle from "@/Components/realState/UnitTitle.vue";
 
 
-export default [
+export default (t: Function = (text: string) => text) => ([
     {
         name: 'property',
-        label: 'Propiedad/Unidad',
+        label: t('Property/Unit'),
         class: "text-left",
         headerClass: "text-left",
         width: 550,
@@ -35,7 +34,7 @@ export default [
 
     {
       name: 'price',
-      label: 'Precio de Renta',
+      label: t('Rent price'),
       align: 'right',
       class: 'text-right',
       render(row: IProperty) {
@@ -46,4 +45,4 @@ export default [
       name: 'actions',
       label: ' ',
     },
-]
+])

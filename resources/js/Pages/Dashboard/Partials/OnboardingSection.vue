@@ -22,22 +22,22 @@ defineEmits(["close"]);
         <IMdiClose />
       </AppButton>
     </header>
-    <section class="mb-8 md:flex items-center justify-between md:space-x-4">
-      <div class="mb-4 min-w-max flex justify-center md:block">
+    <section class="items-center justify-between mb-8 md:flex md:space-x-4">
+      <div class="flex justify-center mb-4 min-w-max md:block">
         <article class="relative">
-          <ApplicationMark class="h-48 w-48 text-body-1" />
-          <small class="absolute bottom-5 italic">Property management system</small>
+          <ApplicationMark class="w-48 h-48 text-body-1" />
+          <small class="absolute italic bottom-5">Property management system</small>
         </article>
       </div>
       <section
-        class="flex flex-col space-y-8 md:space-y-0 md:flex-row bg-base-lvl-3 px-4 py-4 md:items-start rounded-md shadow-md overflow-auto items-center w-full md:space-x-12"
+        class="flex-col items-center w-full px-4 py-4 space-y-8 overflow-auto rounded-md shadow-md md:flex-row md:space-y-0 md:flex bg-base-lvl-3 md:space-x-12"
       >
         <article v-for="(step, index) in steps" class="text-body-1">
           <h4 class="font-bold text-secondary">
             {{ index + 1 }} -
             {{ $t(step.title) }}
           </h4>
-          <p class="text-body mt-4">{{ $t(step.description) }}</p>
+          <p class="mt-4 text-body">{{ $t(step.description) }}</p>
           <AppButton
             :variant="step.action.variant"
             class="mt-6"

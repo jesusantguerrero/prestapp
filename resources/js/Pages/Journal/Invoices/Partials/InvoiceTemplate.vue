@@ -2,8 +2,8 @@
 import { format as formatDate } from "date-fns";
 import parseISO from "date-fns/esm/fp/parseISO/index.js";
 import { useForm, router } from "@inertiajs/vue3";
-import { AtInput, AtField, AtFieldCheck, AtSelect, AtSimpleSelect } from "atmosphere-ui";
-import { computed, reactive, toRefs, watch, inject, toRaw } from "vue";
+import { AtInput, AtField, AtFieldCheck } from "atmosphere-ui";
+import { computed, reactive, toRefs, watch, toRaw } from "vue";
 
 import AppButton from "@/Components/shared/AppButton.vue";
 import InvoiceTotals from "./InvoiceTotals.vue";
@@ -264,7 +264,7 @@ defineExpose({
 
 <template>
   <section class="w-full py-2 rounded-md section">
-    <div class="section-body">
+    <div class="section-body relative">
       <div class="invoice-body">
         <ElCollapse v-model="activeSections" class="w-full">
           <ElCollapseItem

@@ -6,6 +6,7 @@ import { ref } from "vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import { useForm } from "@inertiajs/vue3";
 import AppFormField from "@/Components/shared/AppFormField.vue";
+import { useResponsive } from "@/utils/useResponsive";
 
 const props = defineProps({
   modelValue: Boolean,
@@ -26,6 +27,7 @@ const formData = useForm({
 
 const isLoading = ref(false);
 function onSubmit() {
+  if (formData.processing) return;
   isLoading.value = true;
   formData.post(`/loans/${props.loan.id}/agreements`, {
     onSuccess() {
@@ -44,12 +46,15 @@ function onSubmit() {
 function emitChange(value: boolean) {
   emit("update:modelValue", value);
 }
+
+const { isMobile } = useResponsive();
 </script>
 
 <template>
   <ElDialog
     class="rounded-lg overflow-hidden"
     width="550"
+    :fullscreen="isMobile"
     :model-value="modelValue"
     @update:model-value="$emit('update:modelValue', $event)"
   >

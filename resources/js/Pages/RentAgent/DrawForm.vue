@@ -144,10 +144,6 @@ function handleSelection(selectedInvoices: IInvoice[]) {
   }));
 }
 
-const isSelected = (invoiceId: number) => {
-  return formData.invoices.map((invoice) => invoice.id == invoiceId);
-};
-
 const selectedItems = ref<Record<number, boolean | IInvoice>>({});
 const toggleSelection = (rows: IInvoice[]) => {
   rows.map((invoice) => {
@@ -161,6 +157,10 @@ const toggleSelection = (rows: IInvoice[]) => {
   handleSelection(
     Object.values(selectedItems.value).filter((value) => value) as IInvoice[]
   );
+};
+
+const isSelected = (invoiceId: number) => {
+  return selectedItems.value[invoiceId];
 };
 
 function createOwnerDistribution() {
@@ -178,7 +178,7 @@ function createOwnerDistribution() {
   formData.description = ` ${props.invoices?.at?.(0)?.owner_name} (${monthName})`;
 
   ElMessageBox({
-    title: "Selecciona descripcion",
+    title: "Descripcion",
     message: () =>
       h(AppFormField, {
         label: "Descripcion de factura",
@@ -267,9 +267,11 @@ router.on("finish", () => {
                 !canSubmitForm && 'Debe seleccionar facturas para aplicar la distribucion'
               "
             >
+              <IMdiBankPlus />
               <span class="hidden md:inline-block">
                 Crear Factura de distribucion ({{ formData.invoices.length }})
               </span>
+              <span class="md:hidden"> ({{ formData.invoices.length }}) </span>
             </AppButton>
           </section>
         </template>
@@ -374,10 +376,10 @@ router.on("finish", () => {
               <template v-slot:card="{ row: invoice }">
                 <InvoiceCard
                   :invoice="invoice"
-                  @click="toggleSelection([invoice.id])"
+                  @click="toggleSelection([invoice])"
                   class="mb-6 border-b py-6 px-2 cursor-pointer"
-                  :classs="{
-                    'bg-primary/20': isSelected(invoices.id),
+                  :class="{
+                    'bg-primary/20': isSelected(invoice.id),
                   }"
                   hide-actions
                 />

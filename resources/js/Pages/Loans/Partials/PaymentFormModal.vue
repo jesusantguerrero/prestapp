@@ -18,7 +18,6 @@ import BaseDatePicker from "@/Components/shared/BaseDatePicker.vue";
 import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import DepositSelect from "@/Components/shared/Selects/DepositSelect.vue";
 
-
 const { t } = useI18n();
 
 const defaultPaymentForm = {
@@ -128,10 +127,7 @@ const isMultiple = computed(() => {
 const isLoading = ref(false);
 
 function onSubmit() {
-  if (isLoading.value) {
-    return;
-  }
-
+  if (isLoading.value) return;
   if (paymentForm.value.payment_method_id.id == "deposit") {
     applyDeposit();
     return;
@@ -390,7 +386,6 @@ const dialogWidth = computed(() => {
             placeholder="Selecciona una cuenta"
             @update:modelValue="paymentForm.account_id = $event?.id"
           />
-          {{ paymentForm.payment_method_id }}
         </AppFormField>
         <AppFormField
           v-else-if="paymentForm.payment_method_id?.id == 'deposit'"

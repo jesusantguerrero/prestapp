@@ -113,7 +113,7 @@ const handlePayment = (invoice: IInvoice) => {
     invoices: `/rents/${invoice.invoiceable_id}/invoices/${invoice?.id}/payments`,
   };
 
-  const url = urls[filters.section] ?? urls.invoices;
+  const url = urls.bills;
 
   nextTick(() => {
     openModal({
@@ -187,7 +187,7 @@ const onDelete = async (invoice: IInvoice) => {
     </template>
 
     <div class="py-10 mx-auto sm:px-6 lg:px-8 print:hidden">
-      <section class="flex space-x-4">
+      <section class="hidden md:flex space-x-4">
         <AtBackgroundIconCard
           class="w-full bg-white border h-28 text-body-1"
           title="Pagado"
@@ -217,16 +217,17 @@ const onDelete = async (invoice: IInvoice) => {
           placeholder="Filtrar por dueño"
           v-model="filters.owner"
         />
-        <BaseSelect
-          placeholder="Filtrar"
-          :options="[]"
-          v-model="filters.status"
-          label="label"
-          track-by="name"
-        />
       </section>
 
-      <InvoiceTable :invoice-data="invoices" class="mt-10 rounded-md bg-base-lvl-3">
+      <InvoiceTable
+        :invoice-data="invoices.data"
+        class="mt-10 rounded-md bg-base-lvl-3"
+        :responsive-actions="{
+          payment: handlePayment,
+          download: printExternal,
+          delete: onDelete,
+        }"
+      >
         <template v-slot:actions="{ row }">
           <div class="flex items-center justify-end space-x-2s group">
             <div class="text-sm font-bold capitalize" :class="getStatusColor(row.status)">

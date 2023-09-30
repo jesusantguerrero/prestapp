@@ -3,7 +3,7 @@ import { router, useForm } from "@inertiajs/vue3";
 import { AtInput } from "atmosphere-ui";
 
 import AppButton from "@/Components/shared/AppButton.vue";
-import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
+import WelcomeWidget from "@/Components/WelcomeWidget.vue";
 
 import { formatMoney, formatDate } from "@/utils";
 import UnitTitle from "@/Components/realState/UnitTitle.vue";
@@ -12,6 +12,7 @@ import { IRent } from "@/Modules/properties/propertyEntity";
 import { ElMessageBox } from "element-plus";
 import { parseISO } from "date-fns";
 import { ref } from "vue";
+import { useResponsive } from "@/utils/useResponsive";
 
 interface Props {
   rents: IRent;
@@ -50,11 +51,17 @@ const deleteRent = async (rent: IRent) => {
     });
   }
 };
+
+const { isMobile } = useResponsive();
 </script>
 
 <template>
   <RentTemplate :rents="rents" :current-tab="currentTab">
-    <WelcomeWidget message="Detalles de contrato" class="w-full text-body-1">
+    <WelcomeWidget
+      message="Detalles de contrato"
+      class="w-full text-body-1"
+      :vertical-header="isMobile"
+    >
       <template #content>
         <section class="py-4 space-y-2">
           <p class="flex items-center space-x-2">
@@ -110,10 +117,10 @@ const deleteRent = async (rent: IRent) => {
         </section>
       </template>
       <template #actions>
-        <section class="flex space-x-2">
+        <section class="flex md:flex-row flex-col md:space-x-2 w-full">
           <AppButton
             variant="neutral"
-            class="hover:bg-error hover:text-white"
+            class="hover:bg-error hover:text-white w-full md:w-fit"
             v-if="rents.status !== 'CANCELLED'"
             @click="router.visit(`/contacts/${rents.client_id}/tenants/rents/${rents.id}/end`)"
           >
@@ -122,7 +129,7 @@ const deleteRent = async (rent: IRent) => {
           </AppButton>
           <AppButton
             variant="neutral"
-            class="hover:bg-success hover:text-white"
+            class="hover:bg-success hover:text-white md:w-fit"
             v-if="rents.status !== 'CANCELLED'"
             @click="
               router.visit(`/contacts/${rents.client_id}/tenants/rents/${rents.id}/renew`)
@@ -136,10 +143,13 @@ const deleteRent = async (rent: IRent) => {
           <AppButton
             v-if="rents.status !== 'CANCELLED'"
             variant="error"
-            class="flex flex-col items-center justify-center transition hover:text-error hover:border-red-400"
+            class="flex items-center w-full md:w-fit md:justify-center justify-start transition hover:text-error hover:border-red-400"
             @click="deleteRent(rents)"
           >
-            <IMdiTrash />
+            <IMdiTrash class="mr-2"/>
+            <span v-if="isMobile" class="capitalize">
+              {{ $t("delete rent") }}
+            </span>
           </AppButton>
         </section>
       </template>

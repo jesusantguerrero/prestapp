@@ -10,6 +10,7 @@ import { paymentMethods } from "@/Modules/loans/constants";
 import AppFormField from "@/Components/shared/AppFormField.vue";
 import { useForm } from "@inertiajs/vue3";
 import { useI18n } from "vue-i18n";
+import { useResponsive } from "@/utils/useResponsive";
 
 const props = withDefaults(
   defineProps<{
@@ -56,6 +57,7 @@ const isLoading = ref(false);
 
 const { t } = useI18n();
 function onSubmit() {
+  if (isLoading.value) return;
   if (!+formData.total) {
     ElNotification({
       type: "error",
@@ -103,12 +105,15 @@ function emitChange(value: boolean) {
 const modalTitle = computed(() => {
   return props.invoiceData?.id ? "Edit invoice" : "Create invoice";
 });
+
+const { isMobile } = useResponsive();
 </script>
 
 <template>
   <ElDialog
     :model-value="modelValue"
     class="overflow-hidden"
+    :fullscreen="isMobile"
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <template #header>

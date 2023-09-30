@@ -13,6 +13,7 @@ import AccountSelect from "@/Components/shared/Selects/AccountSelect.vue";
 import AppFormField from "@/Components/shared/AppFormField.vue";
 import axios from "axios";
 import { useI18n } from "vue-i18n";
+import { useResponsive } from "@/utils/useResponsive";
 
 const { t } = useI18n();
 
@@ -120,9 +121,7 @@ const isMultiple = computed(() => {
 const isLoading = ref(false);
 
 function onSubmit() {
-  if (isLoading.value) {
-    return;
-  }
+  if (isLoading.value) return
 
   if (!paymentForm.id) {
     createPayment();
@@ -262,6 +261,8 @@ function emitChange(value) {
 const savePaymentText = computed(() => {
   return paymentForm.value.id ? "Update payment" : "Save payment";
 });
+
+const { isMobile } = useResponsive();
 </script>
 
 <template>
@@ -269,6 +270,7 @@ const savePaymentText = computed(() => {
     class="rounded-lg overflow-hidden"
     @open="setFormData()"
     :model-value="modelValue"
+    :fullscreen="isMobile"
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <template #header>

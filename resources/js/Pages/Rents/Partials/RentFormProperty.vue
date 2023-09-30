@@ -37,28 +37,30 @@ const unitLabel = (unit: IUnit) => {
 };
 
 const propertyLabel = (property: IProperty) => {
-  return `${property.name} (${property.address})`;
+  return `${property.name} [${
+    property.units.filter((unit) => unit.status !== "RENTED").length
+  }] (${property.address}) `;
 };
 </script>
 
 <template>
   <section>
     <FormSection section-class="flex flex-col md:space-x-4 md:flex-row">
-      <AppFormField class="w-full" label="Propiedad">
+      <AppFormField class="w-full" :label="$t('property')">
         <BaseSelect
           v-model="formData.property"
           endpoint="/api/properties"
-          placeholder="Selecciona una propiedad"
+          :placeholder="$t('select a property')"
           label="name"
           track-by="id"
           :custom-label="propertyLabel"
         />
       </AppFormField>
-      <AppFormField class="w-full" v-if="formData.property" label="Unidad">
+      <AppFormField class="w-full" v-if="formData.property" :label="$t('unit')">
         <BaseSelect
           v-model="formData.unit"
           :options="availableUnits"
-          placeholder="Seleccione unidad"
+          :placeholder="$t('select a unit')"
           label="name"
           track-by="id"
           :custom-label="unitLabel"

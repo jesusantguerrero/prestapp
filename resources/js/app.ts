@@ -15,9 +15,17 @@ import { vRipple } from './utils/vRipple';
 import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
 import { initWithLocale} from './plugins/i18n';
 import { createPinia } from 'pinia'
+import { es , enUS } from "date-fns/locale";
+import setDefaultOptions from "date-fns/setDefaultOptions";
+import { Locale } from 'date-fns';
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 const pinia = createPinia()
+
+const dateLocales: Record<string, Locale> = {
+ es,
+ en: enUS
+}
 
 createInertiaApp({
     progress: {
@@ -28,6 +36,10 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
       // @ts-expect-error: will send this always
         const locale = props.initialPage.props?.userSettings?.region_language ?? "es";
+
+        setDefaultOptions({
+          locale: dateLocales[locale] ?? enUS
+        })
 
         return createApp({ render: () => h(App, props) })
             .use(plugin)

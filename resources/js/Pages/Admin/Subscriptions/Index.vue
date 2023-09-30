@@ -71,9 +71,9 @@ const deleteTeam = () => {};
           @clear="reset()"
           @blur="executeSearch"
         />
-        <AppButton @click="router.visit(route('rents.create'))"
-          >Agregar Contrato</AppButton
-        >
+        <AppButton @click="router.visit(route('rents.create'))">
+          {{ $t("add rent") }}
+        </AppButton>
       </section>
       <AtTable
         class="bg-white rounded-md text-body-1 mt-4"

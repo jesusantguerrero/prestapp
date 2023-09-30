@@ -1,5 +1,5 @@
 <template>
-  <AppLayout :title="$t('Notifications')">
+  <AppLayout :title="$t('notifications')">
     <div class="px-2 py-10 mx-auto sm:px-6 lg:px-8">
       <div class="w-full rounded-md bg-base-lvl-3">
         <BaseTable
@@ -28,14 +28,15 @@
                 {{ scope.row.data.cta }}
               </Link>
 
-              <AtButton
+              <AppButton
                 :href="scope.row.data.link"
                 class="ml-auto text-white transition-colors rounded-md bg-primary"
                 @click="markAsRead(scope.row)"
                 v-if="!scope.row.read_at"
+                :processing="scope.row.isLoading"
               >
                 {{ $t("Mark as read") }}
-              </AtButton>
+              </AppButton>
             </div>
           </template>
         </BaseTable>
@@ -47,22 +48,17 @@
 <script lang="ts" setup>
 import { Link } from "@inertiajs/vue3";
 import { reactive } from "vue";
-// @ts-ignore
-import { AtButton } from "atmosphere-ui";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import { router } from "@inertiajs/vue3";
 import BaseTable from "@/Components/shared/BaseTable.vue";
 import { formatDate } from "@/utils";
+import AppButton from "@/Components/shared/AppButton.vue";
 
-defineProps({
-  notifications: {
-    type: Array,
-    default() {
-      return [];
-    },
-  },
-});
+defineProps<{
+  notifications: Record<string, string>[];
+  unreadNotifications: number;
+}>();
 
 const cols = [
   {
@@ -103,8 +99,12 @@ const state = reactive({
 });
 
 const markAsRead = (notification: any) => {
-  router.put(`/notifications/${notification.id}`, {
-    read_at: new Date(),
-  });
+  notification.isLoading = true;
+  router.put(
+    `/notifications/${notification.id}`,
+    {
+      read_at: new Date(),
+    },
+  );
 };
 </script>

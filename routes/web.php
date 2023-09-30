@@ -119,3 +119,5 @@ Route::group([],  app_path('/Domains/Admin/routes.php'));
 Route::group([],  app_path('/Domains/Loans/routes.php'));
 // properties
 Route::group([],  app_path('/Domains/Properties/routes.php'));
+
+Route::group([],  app_path('/Domains/Dropshipping/routes.php'));

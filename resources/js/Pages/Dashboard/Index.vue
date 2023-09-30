@@ -4,7 +4,7 @@ import { router } from "@inertiajs/core";
 import { AtBackgroundIconCard } from "atmosphere-ui";
 import AppButton from "@/Components/shared/AppButton.vue";
 import IncomeSummaryWidget from "./Partials/IncomeSummaryWidget.vue";
-import WelcomeWidget from "./Partials/WelcomeWidget.vue";
+import WelcomeWidget from "@/Components/WelcomeWidget.vue";
 import SectionFooterCard from "./Partials/SectionFooterCard.vue";
 
 import { formatMoney } from "@/utils/formatMoney";
@@ -91,15 +91,15 @@ const comparisonRevenue = {
       blur: 1,
       opacity: 0.5,
     },
-    colors: ["#fa6b88", "#80CDFE"],
+    colors: ["#80CDFE", "#fa6b88"],
   },
   series: [
     {
-      name: t("Entradas"),
+      name: t("Inflow"),
       data: props.revenue.map((item: IStatDetails) => item.income ?? 0),
     },
     {
-      name: t("Salidas"),
+      name: t("Outflow"),
       data: props.revenue.map((item: IStatDetails) => item.outcome ?? 0),
     },
   ],
@@ -222,14 +222,14 @@ export default {
                     <IMdiArrowUpThick />
                     <span class="font-bold">
                       {{ formatMoney(accounts.cash_and_bank?.at(0)?.income ?? 0) }}
-                      {{ !isMobile ? "Recibido" : "" }}
+                      {{ !isMobile ? $t("Inflow") : "" }}
                     </span>
                   </p>
                   <p class="flex items-center text-xs text-error/70 md:text-sm" rounded>
                     <IMdiArrowDownThick />
                     <span class="font-bold">
                       {{ formatMoney(accounts.cash_and_bank?.at(0)?.outcome ?? 0) }}
-                      {{ !isMobile ? "Gastado" : "" }}
+                      {{ !isMobile ? $t("Outflow") : "" }}
                     </span>
                   </p>
                 </template>
@@ -250,7 +250,7 @@ export default {
                   >
                     <IMdiFileDocumentAlertOutline class="mr-2" />
                     <span class="font-bold">
-                      {{ formatMoney(stats.overdue) }} En mora
+                      {{ formatMoney(stats.overdue) }} {{ $t("Late") }}
                     </span>
                   </Link>
                   <!-- <AtButton
@@ -268,13 +268,13 @@ export default {
           href="/property-reports"
           class="flex items-center justify-center w-full h-10 mt-4 transition-all rounded-md shadow-sm hover:text-primary hover:font-bold bg-base-lvl-3 md:mt-4"
         >
-          Distribución a propietarios pendientes
+          {{ $t("Pending owner draws") }}
           <IMdiChevronRight />
           <span> {{ pendingDraws }} </span>
         </Link>
       </div>
       <WelcomeWidget
-        message="Accesos Rapidos"
+        :message="$t('Fast access')"
         class="w-full mt-4 md:block md:mt-0 md:w-3/12"
       >
         <template #content>
@@ -296,7 +296,7 @@ export default {
             class="md:h-32 border-2 cursor-pointer text-primary bg-primary/10 border-primary/20"
             icon="fas fa-wallet"
             :value="formatMoney(props.dailyBox?.balance | 0)"
-            title="Cuenta de Prestamos"
+            :title="$t('Loan account')"
             icon-class="text-primary opacity-40"
             @click="openLoanAccount()"
           />
@@ -304,12 +304,12 @@ export default {
             class="md:h-32 border-2 cursor-pointer text-secondary bg-secondary/10 border-secondary/20"
             icon="fas fa-wallet"
             :value="formatMoney(props.realState.balance | 0)"
-            title="Cuenta Inmobiliaria"
+            :title="t('Real estate account')"
             icon-class="text-secondary opacity-40"
           />
         </div>
         <AppButton variant="secondary" class="w-full" @click="openLoanAccount()">
-          Agregar fondos
+          {{ $t("Add funds") }}
         </AppButton>
       </article>
     </section>

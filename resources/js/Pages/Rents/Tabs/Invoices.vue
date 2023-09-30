@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import WelcomeWidget from "@/Pages/Dashboard/Partials/WelcomeWidget.vue";
+import WelcomeWidget from "@/Components/WelcomeWidget.vue";
 import RentTemplate from "../Partials/RentTemplate.vue";
 import InvoiceCard from "@/Components/templates/InvoiceCard.vue";
 

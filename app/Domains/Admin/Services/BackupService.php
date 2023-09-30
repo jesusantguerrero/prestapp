@@ -4,6 +4,7 @@ namespace App\Domains\Admin\Services;
 
 use App\Jobs\GenerateBackup;
 use App\Jobs\SendBackupEmail;
+use App\Mail\BackupGenerated;
 use Exception;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
@@ -21,18 +22,11 @@ class BackupService {
     $backupDir = config('app.name');
 
     try {
-      Mail::send(["text" => $message],
-      ["user" => auth()->user(), "message" => $message],
-      function($m) use ($to, $from, $fileName, $backupDir) {
-        $m->from($from, 'ICLoan')
-        ->to($to)
-        ->subject("Backup for icloan " . now()->format('Y-m-d'))
-        ->attach(storage_path("app/$backupDir/$fileName"));
-      });
+      Mail::to($to)->send(new BackupGenerated(storage_path("app/$backupDir/$fileName"), $fileName, auth()->user()->name));
 
       activity()
       ->withProperties(['file' => $fileName])
-      ->log("System sent the backup file $fileName");
+      ->log("System sent the backup $to with the file $fileName");
     } catch (Exception $e) {
       activity()
       ->withProperties([

@@ -17,7 +17,7 @@ const props = defineProps({
   },
   placeholder: {
     type: String,
-    default: "Buscar...",
+    default: "Search...",
   },
   hasFilters: {
     type: Boolean,
@@ -84,7 +84,7 @@ const handleInput = useDebounceFn((searchText) => {
       :is-borderless="true"
       borderless
       input-class="overflow-visible"
-      :placeholder="placeholder"
+      :placeholder="$t(placeholder)"
       :model-value="modelValue"
       @update:modelValue="handleInput"
       @focus="$emit('focus')"

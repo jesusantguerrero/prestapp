@@ -1,9 +1,11 @@
+import IcOutlineRealEstateAgent from '~icons/ic/outline-real-estate-agent'
 import { cloneDeep } from 'lodash';
 import { Link } from "@inertiajs/vue3"
 import IMdiPlus from '~icons/mdi/plus-thick';
 import MaterialSymbolsDashboard from '~icons/material-symbols/dashboard'
 import { MaybeRef } from "@vueuse/core";
 import { MODULES, getSectionMenu } from './menus';
+import { ComputedRef, computed, h } from "vue";
 
 export * from "./menus";
 interface IAppMenuItem {
@@ -13,10 +15,12 @@ interface IAppMenuItem {
   to: string;
   as: string | Object;
   hidden?: boolean;
+  hiddeMobile?: boolean;
   isActiveFunction?: (url: string, currentPath: string) => boolean
 }
-export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
-    const appMenu: IAppMenuItem[] =  [
+export const useAppMenu = (isTeamApproved: ComputedRef<boolean>, t: Function) => {
+    const appMenu =  computed<IAppMenuItem[]>(() => {
+      return [
         {
             icon: MaterialSymbolsDashboard,
             name: 'home',
@@ -33,7 +37,7 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
             isActiveFunction(url: string, currentPath: string) {
                return /loans|lender/.test(currentPath)
             },
-            items: getSectionMenu(MODULES.LOAN),
+            items: getSectionMenu(MODULES.LOAN, t),
             hidden: true,
         },
         {
@@ -46,7 +50,7 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
             isActiveFunction(url: string, currentPath: string) {
               return /properties|units|tenant|owner/.test(currentPath)
             },
-            items: getSectionMenu(MODULES.PROPERTY),
+            items: getSectionMenu(MODULES.PROPERTY, t),
 
         },
         {
@@ -71,15 +75,14 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
           items: getSectionMenu(MODULES.INVOICING, t),
         },
         {
-          icon: 'fas fa-chart-bar',
+          icon: 'fas fa-users',
           label:t('Agent Tools'),
           to: '/agent-tools',
           as: Link,
           isActiveFunction(url: string, currentPath: string) {
             return /agents/.test(currentPath)
           },
-          items: getSectionMenu(MODULES.AGENT),
-          hidden: true,
+          items: getSectionMenu(MODULES.AGENT, t),
         },
         {
           icon: 'fas fa-chart-bar',
@@ -89,20 +92,20 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
           isActiveFunction(url: string, currentPath: string) {
             return /statements/.test(currentPath)
           },
-          items: getSectionMenu(MODULES.REPORT),
-          hidden: true,
+          items: getSectionMenu(MODULES.REPORT, t),
         },
-    ].filter(item => !item?.hidden);
+      ].filter(item => !item?.hidden)
+    });
 
-    let mobileMenu = cloneDeep(appMenu)
+    let mobileMenu = cloneDeep(appMenu.value).filter( item => !item.hideMobile);
     mobileMenu.splice(2, null, {
         name: 'add',
         label: 'Add',
         icon: IMdiPlus,
-        action: 'openTransactionModal'
+        action: 'openAddModal'
     });
 
-    const headerMenu =  [
+    const footerMenu =  [
         {
             icon: 'fas fa-question',
             label: t('Help & support'),
@@ -120,7 +123,7 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
 
     return {
         appMenu,
-        headerMenu,
+        footerMenu,
         mobileMenu
     }
 }

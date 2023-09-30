@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { router } from "@inertiajs/core";
-
-import { useTransactionModal } from "@/Modules/transactions/useTransactionModal";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
 import { computed } from "vue";
 import { useResponsive } from "@/utils/useResponsive";
+import { useI18n } from "vue-i18n";
 
 const props = defineProps<{
   extended: boolean;
@@ -14,35 +13,37 @@ const { openModal } = useToggleModal("contact");
 const { openModal: openInvoiceModal } = useToggleModal("propertyCharge");
 const { isMobile } = useResponsive();
 
+const { t } = useI18n();
+
 const welcomeCards = computed(() => {
   const options = [
     {
-      label: "Contactos",
+      label: t("Contacts"),
       extended: true,
     },
     {
-      label: "Crear un contacto",
+      label: t("Create contact"),
       icon: "contact",
       action() {
         openModal({
-          data: { type: "lender " },
+          data: { type: "tenant" },
           isOpen: true,
         });
       },
     },
     {
-      label: "Prestamos",
+      label: t("Loans"),
       extended: true,
     },
     {
-      label: "Crear un prestamo",
+      label: t("Create a loan"),
       icon: "money",
       action() {
         router.visit("/loans/create");
       },
     },
     {
-      label: "Precalcular prestamo",
+      label: t("Calculate loan"),
       icon: "calculator",
       action() {
         router.visit("/loans/create");
@@ -50,7 +51,7 @@ const welcomeCards = computed(() => {
       extended: true,
     },
     {
-      label: "Pago prestamo",
+      label: t("Pay loan"),
       icon: "money",
       action() {
         router.visit("/payment-center");
@@ -58,18 +59,18 @@ const welcomeCards = computed(() => {
       extended: true,
     },
     {
-      label: "Propiedades",
+      label: t("Properties"),
       extended: true,
     },
     {
-      label: "Agregar propiedad",
+      label: t("Add property"),
       icon: "home",
       action() {
         router.visit("/properties/create");
       },
     },
     {
-      label: "Crear un contrato",
+      label: t("Create rent"),
       icon: "document",
       action() {
         router.visit("/rents/create");
@@ -77,7 +78,7 @@ const welcomeCards = computed(() => {
       extended: true,
     },
     {
-      label: "Gasto de propiedad",
+      label: t("Property expense"),
       icon: "document",
       action() {
         openInvoiceModal({
@@ -88,7 +89,7 @@ const welcomeCards = computed(() => {
       extended: true,
     },
     {
-      label: "Distribucion a propietario",
+      label: t("Owner draws"),
       icon: "users",
       action() {
         router.visit("/owners/draws");
@@ -96,11 +97,11 @@ const welcomeCards = computed(() => {
       extended: true,
     },
     {
-      label: "Reportes",
+      label: t("Reports"),
       extended: true,
     },
     {
-      label: "Renta Mensual",
+      label: t("Monthly rent"),
       icon: "document",
       action() {
         router.visit("/rent-reports/monthly-summary");
@@ -126,7 +127,10 @@ const welcomeCards = computed(() => {
         v-if="card.action"
         class="flex flex-col items-center hover:text-primary justify-center w-full py-3 text-center transition-all ease-in bg-white border-2 border-transparent rounded-lg hover:border-primary group"
         :class="[extended ? 'text-body-1/50' : 'text-primary']"
-        @click="card.action()"
+        @click="
+          card.action();
+          $emit('action');
+        "
       >
         <div class="icon-container" :class="extended ? 'text-2xl' : 'text-4xl'">
           <IMdiUserOutline v-if="card.icon == 'contact'" />

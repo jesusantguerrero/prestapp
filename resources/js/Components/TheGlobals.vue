@@ -19,6 +19,7 @@ import {
 import { useResponsive } from "@/utils/useResponsive";
 import { useActionSheet } from "@/Modules/_app/useActionSheet";
 import { computed } from "vue";
+import MoreOptionsModal from "./MoreOptionsModal.vue";
 
 const emit = defineEmits(["reload"]);
 
@@ -85,7 +86,8 @@ const modalMaxWidth = computed(() => {
 
   <MoreOptionsModal
     v-model:show="isActionSheetOpen"
-    :max-width="modalMaxWidth"
+    @close="closeAction()"
+    max-width="mobile"
     v-bind="actionData"
     v-if="isMobile"
   />
@@ -93,6 +95,8 @@ const modalMaxWidth = computed(() => {
   <ClientFormModal
     v-model:show="isContactModalOpen"
     v-bind="contactData"
+    :full-height="isMobile"
+    :max-width="isMobile ? 'mobile' : null"
     @saved="onContactSaved"
   />
 

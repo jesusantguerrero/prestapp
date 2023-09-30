@@ -11,6 +11,7 @@ import { MathHelper } from "@/Modules/loans/mathHelper";
 import { paymentMethods } from "@/Modules/loans/constants";
 import AppFormField from "@/Components/shared/AppFormField.vue";
 import { IClient, IClientSaved } from "@/Modules/clients/clientEntity";
+import { useResponsive } from "@/utils/useResponsive";
 
 const defaultFormData = {
   amount: 0,
@@ -120,6 +121,7 @@ const endpoints: Record<string, string> = {
   fee: "/properties/:rent_id/transactions/fee",
 };
 function onSubmit() {
+  if (isLoading.value) return;
   if (!formData.value.amount) {
     ElNotification({
       type: "error",
@@ -173,12 +175,15 @@ function resetForm(shouldClose) {
 function emitChange(value) {
   emit("update:modelValue", value);
 }
+
+const { isMobile } = useResponsive();
 </script>
 
 <template>
   <ElDialog
     @open="setFormData()"
     :model-value="modelValue"
+    :fullscreen="isMobile"
     class="overflow-hidden"
     @update:model-value="$emit('update:modelValue', $event)"
   >
@@ -265,7 +270,7 @@ function emitChange(value) {
             @update:model-value="setClient"
           />
         </AppFormField>
-        <AppFormField label="Propiedad">
+        <AppFormField :label="$t('property')">
           <BaseSelect
             v-model="formData.rent"
             :endpoint="rentsUrl"

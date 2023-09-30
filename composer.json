@@ -1,8 +1,8 @@
 {
-    "name": "laravel/laravel",
+    "name": "freesgen/atmosphere-starter",
     "type": "project",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "description": "Starer boilerplate for atmosphere-stack laravel project",
+    "keywords": ["atmosphere", "jetstream", "atmosphere-ui", "template", "boilerplate", "starter", "laravel"],
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
@@ -25,7 +25,8 @@
         "predis/predis": "^2.2",
         "spatie/laravel-activitylog": "^4.7",
         "spatie/laravel-backup": "^8.1",
-        "spatie/laravel-data": "^2.2",
+        "spatie/laravel-data": "^3.0",
+        "spatie/laravel-typescript-transformer": "^2.3",
         "spatie/laravel-permission": "^5.8",
         "spatie/laravel-searchable": "^1.11",
         "tightenco/ziggy": "^1.0"
@@ -87,6 +88,6 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true
 }

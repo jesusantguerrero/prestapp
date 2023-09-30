@@ -24,7 +24,7 @@
   </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { provide, ref, onMounted } from "vue";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
@@ -41,8 +41,8 @@ const props = defineProps([
   "type",
 ]);
 
-const InvoiceTemplateForm = ref(null);
-const saveForm = (isApplied) => {
+const InvoiceTemplateForm = ref();
+const saveForm = (isApplied: boolean) => {
   InvoiceTemplateForm.value.saveForm(isApplied);
 };
 

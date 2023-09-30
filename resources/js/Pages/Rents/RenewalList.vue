@@ -140,7 +140,7 @@ const statusTabs = computed(() => {
           @blur="executeSearch"
         />
         <AppButton @click="router.visit(route('rents.create'))" v-if="!isMobile">
-          Agregar Contrato
+          {{ $t("add rent") }}
         </AppButton>
       </section>
 
@@ -159,6 +159,7 @@ const statusTabs = computed(() => {
           {{ $t(stateName) }} ({{ status }})
         </AppButtonTab>
       </section>
+
       <AtTable
         class="mt-4 md:bg-white rounded-md text-body-1"
         :table-data="listData"
