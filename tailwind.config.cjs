@@ -17,7 +17,7 @@ module.exports = {
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
         './resources/js/**/*.{vue,ts,js}',
-        './node_modules/atmosphere-ui/**/*.{vue,js,ts}',
+        './node_modules/atmosphere-ui/dist/**/*.{vue,js,ts}',
     ],
 
     theme: {

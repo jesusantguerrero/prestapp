@@ -36,14 +36,7 @@ defineProps({
 });
 
 const applicationStore = useApplicationStore();
-onMounted(() => {
-  routerEvent.value = router.on("error", (event) => {
-    if (event.detail.errors) catchErrors(event.detail.errors);
-  });
 
-  applicationStore.setApplicationData(pageProps);
-  applicationStore.setTheme();
-});
 
 const currentPath = computed(() => {
   return document?.location?.pathname;
@@ -91,6 +84,15 @@ const catchErrors = (errors: Record<string, string>) => {
 };
 
 const routerEvent = ref<null | Function>(null);
+
+onMounted(() => {
+  routerEvent.value = router.on("error", (event) => {
+    if (event.detail.errors) catchErrors(event.detail.errors);
+  });
+  console.log(page.props)
+  applicationStore.setApplicationData(page.props);
+  applicationStore.setTheme();
+});
 
 onUnmounted(() => {
   routerEvent.value && routerEvent.value();
@@ -267,7 +269,7 @@ const notificationsData = computed(() => page.props.unreadNotifications.data as 
         <AtSide
           v-auto-animate
           class="border-none shadow-none text-secondary text-bold bg-secondary"
-          title="ICLoan"
+          title="Loger"
           :is-expanded="isExpanded"
           @update:isExpanded="isExpanded = $event"
           :menu="currentMenu"

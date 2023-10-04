@@ -2,6 +2,7 @@
 import { ref } from "@vue/reactivity";
 import axios from "axios";
 import { ElNotification } from "element-plus";
+import { useForm } from "atmosphere-ui";
 
 import AppLayout from "../../Components/templates/AppLayout.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
@@ -16,18 +17,18 @@ const props = defineProps({
     },
   },
 });
-const formData = ref({
+
+const formData = useForm({
   name: "",
   description: "",
+  ...props.settingData,
+},
+{
+  axiosInstance: axios
 });
 
-formData.value = {
-  ...formData.value,
-  ...props.settingData,
-};
-
 const themeColors = ref({
-  primary: "",
+  primary: "#47A9F1",
   secondary: "#95b3f9",
   accent: "#7c5bbf",
   neutral: "#232130",
@@ -42,17 +43,14 @@ const themeColors = ref({
   error: "#F61909",
   body: "white",
   "body-1": "",
-  ...props.settingData.values,
+  ...(props.settingData?.values ?? {}),
 });
-
 const save = () => {
-  axios({
-    url: "/api/themes",
-    method: "POST",
-    data: {
-      ...formData.value,
+  formData.transform(() => ({
+    ...formData.value,
       values: themeColors.value,
-    },
+  })).submit('post', {
+    url: '/api/themes'
   }).then(() => {
     ElNotification({
       title: "Business Data Updated",
@@ -66,16 +64,16 @@ const save = () => {
 <template>
   <AppLayout title="Configuration / Theme">
     <template #header>
-      <div class="flex items-center justify-end py-1 px-5">
+      <div class="flex items-center justify-end px-5 py-1">
         <div class="flex overflow-hidden font-bold text-gray-500 rounded-t-lg max-w-min">
-          <AppButton variant="secondary" @click="save()"> Save </AppButton>
+          <AppButton variant="secondary" @click="save()" :processing="formData?.processing"> Save </AppButton>
         </div>
       </div>
     </template>
 
     <main class="h-auto py-12 mx-auto">
       <div class="w-full px-5 py-4 space-y-5 bg-white divide-y divide-gray-200">
-        <section class="pb-2 w-full">
+        <section class="w-full pb-2">
           <article class="md:w-full">
             <h2 class="my-4 font-bold text-primary">{{ $t("Theme") }}</h2>
             <AppFormField
@@ -90,10 +88,10 @@ const save = () => {
             />
           </article>
         </section>
-        <section class="pb-2 w-full">
+        <section class="w-full pb-2">
           <article class="md:w-full">
             <h2 class="my-4 font-bold text-primary">{{ $t("Colors") }}</h2>
-            <section class="gap-1 grid grid-cols-3">
+            <section class="grid grid-cols-3 gap-1">
               <AppFormField
                 class="w-4/12"
                 :label="colorName"

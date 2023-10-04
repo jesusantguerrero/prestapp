@@ -49,6 +49,7 @@ createInertiaApp({
             .use(VueApexCharts)
             .use(autoAnimatePlugin)
             .use(pinia)
+            .provide('axios', axios)
             .component('multiselect', VueMultiselect)
             .directive('ripple', vRipple)
             .mount(el);
