@@ -6,16 +6,17 @@
         <h1 class="mb-0 text-xl font-bold" v-if="title"> {{ title }}</h1>
         <p class="my-0" v-if="subtitle"> {{ subtitle }} </p>
 
-        <div>
+        <section>
             <ServiceBlockItem
-              v-for="item in items"
+              v-for="(item, index) in items"
               :key="item.index"
               :item="item"
               :disabled="disabled"
               :hide-fields="hideFields"
               :labels="labels"
+              @set-item="$emit('set-item', index, $event)"
             />
-        </div>
+        </section>
     </div>
 </template>
 

@@ -53,6 +53,7 @@ const rentForm = reactive({
   late_fee_type: "",
   grace_days: 0,
   status: "draft",
+  items: [],
   additional_fees: [],
 });
 
@@ -175,14 +176,14 @@ const onFinished = () => {
     finish-status="success"
     simple
     style="margin-top: 20px"
-    active-class="bg-primary text-white"
+    active-class="text-white bg-primary"
     circle-active-color="bg-primary text-white"
     load-shadow-color="shadow-primary"
     @finished="onFinished"
   >
-    <AtStep name="personal" :title="$t('Vendor data')" :before-change="validateStep">
+    <!-- <AtStep name="personal" :title="$t('vendor data')" :before-change="validateStep">
       <OrderFormVendor :model-value="rentForm" @update:model-value="handleUpdate" />
-    </AtStep>
+    </AtStep> -->
     <AtStep name="property" :title="$t('Propiedad')" :before-change="validateStep">
       <OrderFormItems :model-value="rentForm" @update:model-value="handleUpdate" />
     </AtStep>
@@ -194,14 +195,14 @@ const onFinished = () => {
     </AtStep>
 
     <template v-slot:footer="{ prev, next }">
-      <footer class="flex justify-end space-x-2 mt-auto md:mt-16 md:px-32">
-        <AppButton variant="neutral" @click="prev()" class="w-full md:w-fit capitalize">
+      <footer class="flex justify-end mt-auto space-x-2 md:mt-16 md:px-32">
+        <AppButton variant="neutral" @click="prev()" class="w-full capitalize md:w-fit">
           {{ $t("back") }}
         </AppButton>
         <AppButton
           variant="inverse"
           rounded
-          class="w-full md:w-fit capitalize"
+          class="w-full capitalize md:w-fit"
           :processing="isProcessing"
           :disabled="isProcessing"
           @click="next()"
