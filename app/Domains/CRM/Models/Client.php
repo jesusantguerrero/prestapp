@@ -130,4 +130,23 @@ class Client extends Model implements Searchable {
     {
         return ClientFactory::new();
     }
+
+
+    public static function findOrCreateByName($session, string $name) {
+        $client = self::where(
+          [
+              'names' => $name,
+              'team_id' => $session['team_id'],
+          ])->limit(1)->get();
+
+      if (!count($client)) {
+          return self::create([
+              'name' => $name,
+              'user_id' => $session['user_id'],
+              'team_id' => $session['team_id'],
+          ]);
+      } else {
+          return $client->first();
+      }
+  }
 }

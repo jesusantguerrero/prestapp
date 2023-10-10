@@ -8,7 +8,6 @@ import TaxTypeSelector from "@/Pages/Settings/TaxTypeSelector.vue";
 import { AtField, AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { useReactiveForm } from "@/utils/useReactiveForm";
 import { addMonths } from "date-fns";
-import AccountSelect from "@/Components/shared/Selects/AccountSelect.vue";
 import { paymentMethods } from "@/Modules/loans/constants";
 import AppFormField from "@/Components/shared/AppFormField.vue";
 
@@ -44,10 +43,10 @@ const { formData } = useReactiveForm(
 <template>
   <section>
     <FormSection
-      title="Datos de deposito"
+      title="Datos de pago"
       section-class="flex flex-col md:space-x-4 md:flex-row"
     >
-      <AppFormField label="Deposito" class="w-full">
+      <AppFormField label="Monto abonado" class="w-full">
         <AtInput
           :number-format="true"
           :model-value="formData.deposit"
@@ -85,7 +84,7 @@ const { formData } = useReactiveForm(
         />
       </AppFormField>
       <AppFormField
-        label="Fecha de pago deposito"
+        label="Fecha de pago abono"
         class="flex flex-col w-full -mt-8 md:mt-0"
       >
         <ElDatePicker v-model="formData.deposit_due" size="large" class="w-full" />
@@ -96,12 +95,6 @@ const { formData } = useReactiveForm(
       title="Datos de renta"
       section-class="flex flex-col md:grid md:grid-cols-2 md:gap-2"
     >
-      <AppFormField
-        label="Precio de renta"
-        class="w-full"
-        :number-format="true"
-        v-model="formData.amount"
-      />
       <AppFormField label="Comisión" class="w-full" v-model="formData.commission">
         <template #suffix>
           <TaxTypeSelector
@@ -109,15 +102,6 @@ const { formData } = useReactiveForm(
             @update:modelValue="formData.commission_type = $event"
           />
         </template>
-      </AppFormField>
-      <AppFormField label="Fecha de Inicio" class="flex flex-col">
-        <ElDatePicker v-model="formData.date" size="large" />
-      </AppFormField>
-      <AppFormField label="Fecha de primer pago" class="flex flex-col">
-        <ElDatePicker v-model="formData.first_invoice_date" size="large" />
-      </AppFormField>
-      <AppFormField label="Finaliza en" class="flex flex-col">
-        <ElDatePicker v-model="formData.end_date" size="large" />
       </AppFormField>
     </FormSection>
   </section>

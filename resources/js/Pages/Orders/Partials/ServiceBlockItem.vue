@@ -1,3 +1,82 @@
+<script setup lang="ts">
+// @ts-expect-error: no definitions
+import { AtField, AtInput } from 'atmosphere-ui';
+import axios from 'axios';
+import { computed, watch, ref, watchEffect } from 'vue';
+
+const props = defineProps({
+    item: {
+        type: Object,
+        required: true
+    },
+    disabled: {
+        type: Boolean,
+        required: false
+    },
+    hideFields: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    labels: {
+      type: Object
+    }
+});
+
+const defaultLabels = {
+  name: 'Service Name',
+  price: 'Price',
+  qty: 'Qty',
+  total: 'Total'
+}
+
+const emit = defineEmits(['set-item', 'update:item']);
+
+const labels = computed(() => {
+  return Object.assign(defaultLabels, props.labels)
+})
+
+const isFieldHidden = (name: string) => {
+  return props.hideFields.includes(name)
+}
+
+const getLabel = (name: string) => {
+  return labels.value[name] || name;
+}
+
+
+const fetchVendorProduct = (productUrl: string) => {
+  return axios.get(`/dropshipping/vendor-products/shein?search=${productUrl}`)
+}
+
+
+const isFetching = ref(false);
+watch(() => props.item.concept, async (concept) => {
+  if (concept.includes("https://")) {
+    isFetching.value = true;
+    fetchVendorProduct(concept).then(({ data }) => {
+      emit('set-item', {
+        concept: data.productName,
+        id: data.id,
+        price: data.price,
+        product_image: data.image,
+      })
+    }).finally(() => {
+      isFetching.value = false;
+    })
+  }
+})
+
+watchEffect(async () => {
+  emit('update:item', {
+    ...props.item,
+    total: props.item.price * props.item.qty
+  });
+})
+</script>
+
+
 <template>
     <div
         class="w-full text-gray-600 rounded-md form-field"
@@ -25,7 +104,7 @@
                     <textarea
                         v-model="item.description"
                         v-if="!isFieldHidden('description') && !disabled || (disabled && description)"
-                        class="w-full transition border-gray-200 rounded-md resize-none focus:outline-none focus:border-gray-400"
+                        class="w-full px-2 py-1 transition border-gray-200 shadow-sm resize-none focus:outline-none focus:border-gray-400"
                         :class="[disabled ? 'border-0 mt-2 px-0' : 'border mt-4']"
                         placeholder="Enter description here"
                         :disabled="disabled"
@@ -55,72 +134,3 @@
     </div>
 </template>
 
-<script setup lang="ts">
-import { AtField, AtInput } from 'atmosphere-ui';
-import { computed, watch, ref } from 'vue';
-
-const props = defineProps({
-    item: {
-        type: Object,
-        required: true
-    },
-    disabled: {
-        type: Boolean,
-        required: false
-    },
-    hideFields: {
-      type: Array,
-      default() {
-        return []
-      }
-    },
-    labels: {
-      type: Object
-    }
-});
-
-const defaultLabels = {
-  name: 'Service Name',
-  price: 'Price',
-  qty: 'Qty',
-  total: 'Total'
-}
-
-const emit = defineEmits(['set-item']);
-
-const labels = computed(() => {
-  return Object.assign(defaultLabels, props.labels)
-})
-
-const isFieldHidden = (name) => {
-  return props.hideFields.includes(name)
-}
-
-const getLabel = (name) => {
-  return labels.value[name] || name;
-}
-
-
-const fetchVendorProduct = (productUrl: string) => {
-  return axios.get(`/vendor-products/shein?search=${productUrl}`)
-}
-
-
-const isFetching = ref(false);
-watch(() => props.item.concept, async (concept) => {
-  if (concept.includes("https://")) {
-    isFetching.value = true;
-    fetchVendorProduct(concept).then(({ data }) => {
-      emit('set-item', {
-        concept: data.productName,
-        id: data.id,
-        price: data.price,
-        product_image: data.image,
-      })
-    }).finally(() => {
-      isFetching.value = false;
-    })
-  }
-})
-
-</script>

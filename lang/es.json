@@ -8,6 +8,7 @@
     "validation": {
       "unique": ""
     },
+    "month performance": "Rendimiento del mes",
     "notifications": "notificaciones",
     "Performance of the month": "Estadisticas del mes",
     "Payments": "Pagos",
@@ -232,5 +233,13 @@
     "property data": "Datos de propiedad",
     "property": "propiedad",
     "unit": "unidad",
-    "rent details": "Detalles de renta"
+    "rent details": "Detalles de renta",
+    "vendor data": "Informacion de proveedor",
+    "vendor": "Proveedor",
+    "select a vendor": "Selecciona un proveedor",
+    "client data": "Informacion de cliente",
+    "client": "cliente",
+    "select a client": "Selecciona un cliente",
+    "products": "productos",
+    "review invoice": "Revisar factura"
   }

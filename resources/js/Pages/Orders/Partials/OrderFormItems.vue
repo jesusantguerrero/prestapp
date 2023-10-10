@@ -1,15 +1,11 @@
 <script setup lang="ts">
-import { computed, toRefs } from "vue";
+import { toRefs } from "vue";
 
-import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import FormSection from "./FormSection.vue";
 import ServiceBlock from "./ServiceBlock.vue";
 
-import { IProperty, IUnit } from "@/Modules/properties/propertyEntity";
 import { useReactiveForm } from "@/utils/useReactiveForm";
-import AppFormField from "@/Components/shared/AppFormField.vue";
-import { formatMoney } from "@/utils";
-import UnitTitle from "@/Components/realState/UnitTitle.vue";
+
 
 const props = defineProps<{
   modelValue: Record<string, any>;
@@ -29,18 +25,6 @@ const { formData } = useReactiveForm(
   emit
 );
 
-const availableUnits = computed(() => {
-  // @ts-expect-error
-  return formData.property?.units.filter((unit: IUnit) => unit.status !== "RENTED");
-});
-
-const unitLabel = (unit: IUnit) => {
-  return `${unit.name} (${formatMoney(unit.price)})`;
-};
-
-const propertyLabel = (property: IProperty) => {
-  return `${property.name} (${property.address})`;
-};
 
 
 const checkScroll = () => {
@@ -63,6 +47,7 @@ const onDelete = (index) => {
 
 // Blocks
 const addServiceBlock = () => {
+    if (formData.items.at(-1)?.concept) return
     const index = formData.items.length + 1
     formData.items.push({
         index: index,
@@ -75,8 +60,7 @@ const addServiceBlock = () => {
     })
 }
 
-const onSetItem = (index: number, item) => {
-    debugger
+const onSetItem = (index: number, item: Record<string, string>) => {
     formData.items[index] = {
         index: index,
         product_image: item.product_image,
@@ -84,12 +68,11 @@ const onSetItem = (index: number, item) => {
         description: item.description,
         price: item.price ?? formData.items[index].price ?? 0,
         quantity: item.quantity ?? formData.items[index].quantity ?? 1,
-        total: ''
+        total: item.total
     }
     if (!formData.items.at(-1).concept) addServiceBlock()
 }
 
-addServiceBlock()
 addServiceBlock()
 </script>
 

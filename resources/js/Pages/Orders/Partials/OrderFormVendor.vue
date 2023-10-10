@@ -28,15 +28,15 @@ const { formData } = useReactiveForm(
   <section>
     <FormSection section-class="w-full -px-10">
       <div class="w-full mt-8">
-        <header class="flex justify-between">
-          <label for="">{{ $t("Vendor") }}</label>
+        <header class="flex justify-between capitalize">
+          <label for="">{{ $t("client") }}</label>
         </header>
         <BaseSelect
           v-model="formData.client"
           tag
           :allow-create="true"
           endpoint="/api/clients"
-          :placeholder="$t('Select a vendor')"
+          :placeholder="$t('select a client')"
           label="display_name"
           track-by="id"
         />
