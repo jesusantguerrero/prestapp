@@ -2,10 +2,8 @@
 
 namespace App\Domains\Dropshipping\Http\Controllers;
 
-use App\Domains\Dropshipping\Data\OrderData;
 use App\Domains\Dropshipping\Models\Order;
 use App\Domains\Dropshipping\Services\InvoiceService;
-use App\Domains\Dropshipping\Services\OrderService;
 use App\Http\Controllers\InertiaController;
 use Exception;
 use Illuminate\Http\Request;
@@ -40,17 +38,17 @@ class InvoiceController extends InertiaController
     protected function getEditProps(Request $request, $rent)
     {
       return [
-        'orders' => $this->orderService->getOrderById($rent->id)
+        'orders' => $this->invoiceService->getOrderById($rent->id)
       ];
     }
 
     public function action(Order $order, string $action) {
       try {
         match($action) {
-          "send" => $this->orderService->send($order),
-          "mark-as-received" => $this->orderService->markAsReceived($order),
-          "cancel" => $this->orderService->cancel($order),
-          "return" => $this->orderService->return($order),
+          "send" => $this->invoiceService->send($order),
+          "mark-as-received" => $this->invoiceService->markAsReceived($order),
+          "cancel" => $this->invoiceService->cancel($order),
+          "return" => $this->invoiceService->return($order),
           default => throw new Exception('this action is nor supported')
         };
       } catch (Exception $e) {
