@@ -115,6 +115,7 @@ const print = () => {
 
         <InvoiceSimple
           :user="user"
+          :imageUrl="$page.props.user.current_team?.profile_photo_url"
           :type="type"
           :business-data="businessData"
           :invoice-data="invoice"
