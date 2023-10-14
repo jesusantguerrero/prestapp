@@ -47,8 +47,7 @@ const invoiceForm = reactive({
 watch(
   () => props.data,
   (newValue) => {
-    if (!newValue || !Object.values(newValue).filter(value => value).length) return;
-
+    if (!newValue || !Object.values(newValue).filter((value) => value).length) return;
     Object.keys(invoiceForm).forEach((field: string) => {
       if (newValue[field]?.split && newValue[field]?.split("-").length == 3) {
         // @ts-ignore
@@ -69,8 +68,9 @@ const validations = [
   {
     handle: () => {
       console.log(invoiceForm.items);
-      return invoiceForm.items
-      .filter((item: InvoiceItem) => item.price && item.quantity && item.concept).length;
+      return invoiceForm.items.filter(
+        (item: InvoiceItem) => item.price && item.quantity && item.concept
+      ).length;
     },
   },
   {
@@ -101,7 +101,9 @@ const onFinished = () => {
     date: formatDate(invoiceForm.date, "yyyy-MM-dd"),
     client_id: invoiceForm.client?.id,
     status: "draft",
-    items:  invoiceForm.items.map((item: InvoiceItem, index) => ({
+    items: invoiceForm.items
+      .map((item: InvoiceItem, index) => ({
+        ...item,
         index,
         quantity: parseFloat(item.quantity),
         price: parseFloat(item.price),
@@ -118,6 +120,7 @@ const onFinished = () => {
 </script>
 
 <template>
+  {{ invoiceForm }}
   <AtSteps
     v-model="currentStep"
     finish-status="success"
@@ -134,7 +137,11 @@ const onFinished = () => {
     <AtStep name="property" :title="$t('products')" :before-change="validateStep">
       <OrderFormItems :model-value="invoiceForm" @update:model-value="handleUpdate" />
     </AtStep>
-    <AtStep name="rent_details" :title="$t('review invoice')" :before-change="validateStep">
+    <AtStep
+      name="rent_details"
+      :title="$t('review invoice')"
+      :before-change="validateStep"
+    >
       <OrderFormReview :model-value="invoiceForm" @update:model-value="handleUpdate" />
     </AtStep>
 

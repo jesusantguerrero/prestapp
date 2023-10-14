@@ -2,11 +2,11 @@
 
 namespace App\Domains\Dropshipping\Services;
 
+use Illuminate\Support\Str;
 use App\Domains\CRM\Models\Client;
-use App\Domains\Dropshipping\Data\OrderData;
 use App\Domains\Dropshipping\Models\Order;
 use Insane\Journal\Models\Invoice\Invoice;
-use Illuminate\Support\Str;
+use App\Domains\Dropshipping\Data\OrderData;
 
 class InvoiceService
 {
@@ -15,12 +15,12 @@ class InvoiceService
       $clientId = $formData["client_id"] ?? null;
       $isNewPayee = Str::contains($clientId, "new::");
 
-
       if ($clientId == 'new' || $isNewPayee) {
-          $label = $formData['client_label'] ?? trim(Str::replace('new::', '', $formData["client_id"])) ?? 'General Provider';
+          $label = trim(str_replace('new::', '',  $clientId)) ?? 'General Provider';
           $client = Client::findOrCreateByName($invoice?->toArray() ?? $formData, $label);
           $formData["client_id"] = $client->id;
       }
+
 
       return $formData;
   }

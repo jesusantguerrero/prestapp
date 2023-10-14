@@ -8,7 +8,7 @@ import AppLayout from "@/Components/templates/AppLayout.vue";
 import AtTable from "@/Components/shared/BaseTable.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import PropertySectionNav from "../Properties/Partials/PropertySectionNav.vue";
-import BaseSelect from "@/Components/shared/BaseSelect.vue";
+
 
 import cols from "./cols";
 import { IRent } from "@/Modules/property/propertyEntity";

@@ -2,9 +2,9 @@
 import { useForm, router } from "@inertiajs/vue3";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
+import OrderFormTemplate from "./Partials/OrderFormTemplate.vue";
 
 import { IClient } from "@/Modules/clients/clientEntity";
-import OrderFormTemplate from "./Partials/OrderFormTemplate.vue";
 import { IInvoice } from "@/Modules/invoicing/entities";
 
 const props = defineProps<{
@@ -26,6 +26,9 @@ const onSubmit = (formData: Record<string, any>) => {
     }))
     .submit(method, url, {
       onSuccess() {
+        Object.entries(formData).forEach(([field, value]) => {
+          invoiceForm[field] = value;
+        });
         props.invoice?.id
           ? router.visit(`/invoices/${props.invoice.id}`)
           : router.visit(`/invoices`);
@@ -40,7 +43,7 @@ const onSubmit = (formData: Record<string, any>) => {
       class="w-full px-5 py-5 pb-24 bg-white rounded-md rent-form md:pb-4 text-body-1"
     >
       <OrderFormTemplate
-        :data="invoiceForm"
+        :data="invoiceForm.data()"
         :client="client"
         :current-step="step"
         :is-processing="invoiceForm.processing"
