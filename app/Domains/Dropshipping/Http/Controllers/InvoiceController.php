@@ -22,7 +22,7 @@ class InvoiceController extends InertiaController
             "show" => 'Orders/Show'
         ];
         $this->validationRules = [];
-        $this->sorts = ['-date'];
+        $this->sorts = ['-date', '-id'];
         $this->includes = ['client'];
         $this->filters = [];
         $this->resourceName= "orders";
@@ -34,13 +34,11 @@ class InvoiceController extends InertiaController
       $this->invoiceService->create($postData, request()->user());
     }
 
-
-    protected function getEditProps(Request $request, $rent)
-    {
-      return [
-        'orders' => $this->invoiceService->getOrderById($rent->id)
-      ];
-    }
+    public function edit(Request $request, int $id) {
+      return inertia($this->templates['edit'],[
+        "invoices" => $this->invoiceService->getOrderById($id)
+      ]);
+  }
 
     public function action(Order $order, string $action) {
       try {

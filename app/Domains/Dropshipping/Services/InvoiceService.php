@@ -42,7 +42,7 @@ class InvoiceService
         "account_id" => null,
         'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
         'total' =>  $formData['total'] ?? 0,
-        'items' => array_merge($formData['items'] ?? $items, []),
+        'items' => $formData['lines'] ?? [],
         "related_invoices" => $formData["related_invoices"] ?? []
       ]);
 
@@ -61,8 +61,9 @@ class InvoiceService
       return Invoice::createDocument($data);
     }
 
-    public function getOrderById(int $orderId): OrderData {
-      return OrderData::from(Order::find($orderId));
+    public function getOrderById(int $invoiceId) {
+      $invoice = Invoice::find($invoiceId);
+      return $invoice->getInvoiceData();
     }
 
     public function send(Order $order) {

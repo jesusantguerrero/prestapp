@@ -94,7 +94,7 @@ watchEffect(async () => {
             <img
               :src="item.product_image"
               alt=""
-              v-if="item.product_image.length"
+              v-if="item.product_image?.length"
               style="
                 min-width: 100%;
                 min-height: 100%;

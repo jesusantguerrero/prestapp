@@ -106,8 +106,7 @@ const handlePayment = (invoice: IInvoice) => {
   };
 
   const urls: Record<string, string> = {
-    bills: `/owners/${invoice.client_id}/draws/${invoice?.id}/payments`,
-    invoices: `/rents/${invoice.invoiceable_id}/invoices/${invoice?.id}/payments`,
+    invoices: `/invoices/${invoice?.id}/payment`,
   };
 
   const url = urls[filters.section] ?? urls.invoices;
@@ -118,10 +117,9 @@ const handlePayment = (invoice: IInvoice) => {
         title: `Pagar ${invoice.concept}`,
         payment: payment,
         endpoint: url,
-        due: payment?.amount,
+        due: invoice.debt,
         defaultConcept: "Pago de " + invoice.concept,
-        accountsEndpoint: "/invoices",
-        hideAccountSelector: true,
+        accountsEndpoint: "/api/accounts",
       },
     });
   });
@@ -185,7 +183,7 @@ const onDelete = async (invoice: IInvoice) => {
     </template>
 
     <div class="py-10 mx-auto sm:px-6 lg:px-8 print:hidden">
-      <section class="flex space-x-4 mt-4 justify-end">
+      <section class="flex justify-end mt-4 space-x-4">
         <section>
           <AppSearch
             v-model.lazy="filters.search"
@@ -199,14 +197,14 @@ const onDelete = async (invoice: IInvoice) => {
       </section>
       <InvoiceTable :invoice-data="orders" class="mt-10 rounded-md bg-base-lvl-3">
         <template v-slot:actions="{ row }">
-          <div class="flex justify-end items-center space-x-2s group">
-            <div class="font-bold capitalize text-sm" :class="getStatusColor(row.status)">
+          <div class="flex items-center justify-end space-x-2s group">
+            <div class="text-sm font-bold capitalize" :class="getStatusColor(row.status)">
               <i :class="getStatusIcon(row.status)" />
               {{ getStatus(row.status) }}
             </div>
             <div class="flex">
               <Link
-                class="relative inline-block cursor-pointer ml-4 hover:bg-primary hover:text-white px-5 py-2 overflow-hidden font-bold text-body transition rounded-md focus:outline-none hover:bg-opacity-80 min-w-max"
+                class="relative inline-block px-5 py-2 ml-4 overflow-hidden font-bold transition rounded-md cursor-pointer hover:bg-primary hover:text-white text-body focus:outline-none hover:bg-opacity-80 min-w-max"
                 :href="`/properties/${row.property_id}?unit=${row.id}`"
               >
                 <IMdiChevronRight />
@@ -222,7 +220,7 @@ const onDelete = async (invoice: IInvoice) => {
               </AppButton>
               <div class="flex space-x-2">
                 <AppButton
-                  class="hover:text-primary transition items-center flex flex-col justify-center hover:border-primary-400"
+                  class="flex flex-col items-center justify-center transition hover:text-primary hover:border-primary-400"
                   variant="neutral"
                   title="Imprimir"
                   :processing="isPrinting == row.id"
@@ -242,7 +240,7 @@ const onDelete = async (invoice: IInvoice) => {
               </div>
               <AppButton
                 variant="neutral"
-                class="hover:text-error transition items-center flex flex-col justify-center hover:border-red-400"
+                class="flex flex-col items-center justify-center transition hover:text-error hover:border-red-400"
                 @click="onDelete(row)"
                 title="Eliminar"
               >

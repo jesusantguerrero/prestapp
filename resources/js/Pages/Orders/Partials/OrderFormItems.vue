@@ -19,7 +19,7 @@ const { formData } = useReactiveForm(
     property: null,
     unit_id: null,
     unit: null,
-    items: [],
+    lines: [],
   },
   modelValue,
   emit
@@ -45,9 +45,9 @@ const onDelete = (index) => {
 
 // Blocks
 const addServiceBlock = () => {
-  if (formData.items.length && !formData.items.at(-1)?.concept) return;
-  const index = formData.items.length + 1;
-  formData.items.push({
+  if (formData.lines.length && !formData.lines.at(-1)?.concept) return;
+  const index = formData.lines.length + 1;
+  formData.lines.push({
     index: index,
     product_image: "",
     concept: "",
@@ -59,13 +59,13 @@ const addServiceBlock = () => {
 };
 
 const onSetItem = (index: number, item: Record<string, string>) => {
-  formData.items[index] = {
+  formData.lines[index] = {
     index: index,
     product_image: item.product_image,
     concept: item.concept,
     description: item.description,
-    price: item.price ?? formData.items[index].price ?? 0,
-    quantity: item.quantity ?? formData.items[index].quantity ?? 1,
+    price: item.price ?? formData.lines[index].price ?? 0,
+    quantity: item.quantity ?? formData.lines[index].quantity ?? 1,
     total: item.total,
   };
   addServiceBlock();
@@ -80,7 +80,7 @@ addServiceBlock();
       <h4 class="text-2xl font-bold">Services</h4>
     </div>
     <ServiceBlock
-      v-model:items="formData.items"
+      v-model:items="formData.lines"
       @delete="onDelete(index)"
       @copy="onCopy(field)"
       @set-item="onSetItem"

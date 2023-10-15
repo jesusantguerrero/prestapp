@@ -22,7 +22,7 @@ export const MODULES = {
 const menus = {
     [MODULES.ORDERS]: [{
         label: 'Create order',
-        to: '/dropshipping/orders/create',
+        to: '/dropshipping/invoices',
         as: Link,
     }],
     [MODULES.LOAN]: [

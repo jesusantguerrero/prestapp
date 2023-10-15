@@ -39,7 +39,7 @@ const invoiceForm = reactive({
   commission: 10,
   commission_type: "",
   status: "draft",
-  items: [],
+  lines: [],
   additional_fees: [],
 });
 
@@ -66,8 +66,7 @@ const validations = [
   },
   {
     handle: () => {
-      console.log(invoiceForm.items);
-      return invoiceForm.items.filter(
+      return invoiceForm.lines.filter(
         (item: InvoiceItem) => item.price && item.quantity && item.concept
       ).length;
     },
@@ -100,7 +99,7 @@ const onFinished = () => {
     date: formatDate(invoiceForm.date, "yyyy-MM-dd"),
     client_id: invoiceForm.client?.id,
     status: "draft",
-    items: invoiceForm.items
+    lines: invoiceForm.lines
       .map((item: InvoiceItem, index) => ({
         ...item,
         index,
@@ -118,14 +117,14 @@ const onFinished = () => {
 };
 
 const subtotal = computed(() => {
-  return invoiceForm.items.reduce((total, row: ILineItem) => {
+  return invoiceForm.lines.reduce((total, row: ILineItem) => {
     total += row.quantity * row.price;
     return total;
   }, 0);
 });
 
 const discount = computed(() =>
-  invoiceForm.items.reduce((total, row: ILineItem) => {
+  invoiceForm.lines.reduce((total, row: ILineItem) => {
     total += row.quantity * row.price;
     return total;
   }, 0)

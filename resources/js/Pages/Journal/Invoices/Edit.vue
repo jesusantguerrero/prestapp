@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { provide, ref, onMounted } from "vue";
+import { provide, ref } from "vue";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import InvoiceTemplate from "./Partials/InvoiceTemplate.vue";

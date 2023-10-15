@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useForm, router } from "@inertiajs/vue3";
-
+import { computed } from "vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import OrderFormTemplate from "./Partials/OrderFormTemplate.vue";
 
@@ -8,12 +8,15 @@ import { IClient } from "@/Modules/clients/clientEntity";
 import { IInvoice } from "@/Modules/invoicing/entities";
 
 const props = defineProps<{
-  invoice: IInvoice;
+  invoices: IInvoice;
   client: IClient;
 }>();
 
-const invoiceForm = useForm({ ...(props.invoice ?? {}) });
+const invoiceForm = useForm({ ...(props.invoices ?? {}) });
 
+const invoiceData = computed(() => {
+  return invoiceForm.data();
+});
 const onSubmit = (formData: Record<string, any>) => {
   if (invoiceForm.processing) return;
   const url = props.invoice?.id
@@ -31,7 +34,7 @@ const onSubmit = (formData: Record<string, any>) => {
         });
         props.invoice?.id
           ? router.visit(`/invoices/${props.invoice.id}`)
-          : router.visit(`/invoices`);
+          : router.visit(route("dropshipping.invoices.index"));
       },
     });
 };
@@ -41,9 +44,8 @@ const onSubmit = (formData: Record<string, any>) => {
   <AppLayout :title="$t('Create order')">
     <main class="w-full px-5 py-5 pb-24 rounded-md rent-form md:pb-4 text-body-1">
       <OrderFormTemplate
-        :data="invoiceForm.data()"
+        :data="invoices"
         :client="client"
-        :current-step="step"
         :is-processing="invoiceForm.processing"
         @submit="onSubmit"
       />
