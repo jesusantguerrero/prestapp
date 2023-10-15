@@ -128,7 +128,7 @@ const removePayment = async (payment: Record<string, string>) => {
 </script>
 
 <template>
-  <section class="relative w-full rounded-md simple-template">
+  <section class="relative w-full rounded-md simple-template shein-store-invoice">
     <div class="section-body relative">
       <header class="pt-4 text-sm print:pt-0 invoice__header">
         <section class="flex justify-between w-full px-4 invoice-details">
@@ -156,19 +156,43 @@ const removePayment = async (payment: Record<string, string>) => {
         </section>
 
         <section class="flex px-4 space-x-4">
-          <ClientCard class="w-8/12 text-left" label="Cliente" :client="client" />
+          <ClientCard
+            class="w-8/12 text-left"
+            label="Cliente"
+            :client="client"
+            v-if="client"
+          />
         </section>
       </header>
 
       <InvoiceGrid
         :tableData="tableData"
         :is-editing="false"
-        :hidden-cols="['quantity', 'discount']"
+        :hidden-cols="['taxes']"
         class="w-full mt-5 main-grid"
       >
-        <template #prepend>
-          <div class="py-1 text-base font-bold text-center text-body-1">
-            {{ invoice.concept }} {{ invoice.description }}
+        <template v-slot:concept="{ row, col }">
+          <div class="py-1 text-base font-bold text-body-1 flex">
+            <div
+              class="flex items-center justify-center mr-4 overflow-hidden font-bold text-gray-400 border border-gray-300 rounded-md h-28 w-28 bg-gray-50"
+            >
+              <img
+                :src="row.product_image"
+                alt=""
+                v-if="row.product_image"
+                style="
+                  min-width: 100%;
+                  min-height: 100%;
+                  object-fit: cover;
+                  object-position: top;
+                "
+              />
+              <i class="text-xl fa fa-images" v-else />
+            </div>
+
+            <span>
+              {{ row.concept }}
+            </span>
           </div>
         </template>
       </InvoiceGrid>
@@ -373,12 +397,22 @@ const removePayment = async (payment: Record<string, string>) => {
   border-radius: 0;
   padding: 0.5rem;
 }
+.shein-store-invoice {
+  thead,
+  thead th {
+    @apply bg-pink-600 text-white;
+  }
+}
 
 @media print {
   .section-body {
     width: 100%;
     display: block;
     font-size: 12px;
+    max-width: 210mm;
+    width: 510mm;
+    min-height: 265mm;
+    height: auto;
   }
   @page {
     marks: cross;

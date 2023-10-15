@@ -3,7 +3,6 @@
 import { formatMoney, formatDate } from "@/utils";
 import { computed, reactive, watch, toRefs } from "vue";
 import ExactMath from "exact-math";
-import AppButton from "@/Components/shared/AppButton.vue";
 
 const props = defineProps({
   tableData: {
@@ -87,14 +86,14 @@ const state = reactive({
         const rowTotal = row[props.totalField];
         const { rowSubtotal, taxesRowTotal } = calculateRowTaxes(
           rowTotal,
-          row.taxes,
+          row.taxes ?? [],
           total
         );
 
         const subtotal = rowSubtotal || rowTotal;
         total.subtotal += subtotal;
         total.discountTotal += Number(row[props.discountField]);
-        total.total += ExactMath.add(subtotal, taxesRowTotal ?? 0);
+        total.total += ExactMath.add(subtotal ?? 0, taxesRowTotal ?? 0);
         total.taxesTotal += taxesRowTotal;
 
         return total;

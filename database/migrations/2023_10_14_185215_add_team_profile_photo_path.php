@@ -14,7 +14,8 @@ return new class extends Migration
     public function up()
     {
       Schema::table('teams', function (Blueprint $table) {
-        $table->text('profile_photo_path')->nullable();
+        $table->text('profile_photo_path')->after('personal_team')->nullable();
+        $table->string('app_profile_name')->after('profile_photo_path')->nullable();
       });
     }
 };

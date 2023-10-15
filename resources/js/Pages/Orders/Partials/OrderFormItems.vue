@@ -5,6 +5,7 @@ import FormSection from "./FormSection.vue";
 import ServiceBlock from "./ServiceBlock.vue";
 
 import { useReactiveForm } from "@/utils/useReactiveForm";
+import AppButton from "@/Components/shared/AppButton.vue";
 
 const props = defineProps<{
   modelValue: Record<string, any>;
@@ -67,7 +68,7 @@ const onSetItem = (index: number, item: Record<string, string>) => {
     quantity: item.quantity ?? formData.items[index].quantity ?? 1,
     total: item.total,
   };
-  if (!formData.items.at(-1).concept) addServiceBlock();
+  addServiceBlock();
 };
 
 addServiceBlock();
@@ -84,5 +85,9 @@ addServiceBlock();
       @copy="onCopy(field)"
       @set-item="onSetItem"
     />
+    <AppButton @click="addServiceBlock()" rounded class="w-fit" variant="neutral">
+      <IMdiAdd class="w-4 h-4 mr-1" />
+      {{ $t("add item") }}
+    </AppButton>
   </FormSection>
 </template>

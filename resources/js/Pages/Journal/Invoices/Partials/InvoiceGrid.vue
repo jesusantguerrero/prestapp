@@ -134,17 +134,19 @@ const { renderedCols, cleaveOptions } = toRefs(state);
       :hide-empty-text="true"
     >
       <template v-slot:concept="{ scope: { row, col } }">
-        <div class="d-flex py-2">
-          <AtInput
-            name=""
-            v-model="row.concept"
-            class="form-control border-none hover:border"
-            rounded
-            v-if="isEditing"
-          />
-          <span v-if="col?.render && !isEditing" v-html="col?.render(row)" />
-          <span v-else> {{ row.concept }}</span>
-        </div>
+        <slot name="concept" :row="row" :col="col">
+          <div class="d-flex py-2">
+            <AtInput
+              name=""
+              v-model="row.concept"
+              class="form-control border-none hover:border"
+              rounded
+              v-if="isEditing"
+            />
+            <span v-if="col?.render && !isEditing" v-html="col?.render(row)" />
+            <span v-else> {{ row.concept }}</span>
+          </div>
+        </slot>
       </template>
 
       <template v-slot:quantity="{ scope }" v-if="isEditing">

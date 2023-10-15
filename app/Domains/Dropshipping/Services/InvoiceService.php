@@ -21,7 +21,6 @@ class InvoiceService
           $formData["client_id"] = $client->id;
       }
 
-
       return $formData;
   }
 

@@ -8,6 +8,7 @@ import ClarityBankLine from '~icons/clarity/bank-line'
 
 export const MODULES = {
     CRM: 'CRM',
+    ORDERS: 'orders',
     LOAN: 'loan',
     INVOICING: 'invoicing',
     PROPERTY: 'property',
@@ -19,25 +20,10 @@ export const MODULES = {
 
 
 const menus = {
-    [MODULES.CRM]: [{
-        label: 'Overview',
-        to: '/housing'
-    },
-    {
-        label: 'Chores',
-        to: '/housing/chores'
-    },
-    {
-        label: 'Occurrence Checks',
-        to: '/housing/occurrence'
-    },
-    {
-        label: 'Plans',
-        to: '/housing/plans'
-    },
-    {
-        label: 'Equipment',
-        to: '/housing/equipments'
+    [MODULES.ORDERS]: [{
+        label: 'Create order',
+        to: '/dropshipping/orders/create',
+        as: Link,
     }],
     [MODULES.LOAN]: [
       {
@@ -211,7 +197,6 @@ const menus = {
       }
     ]
 }
-
 
 export const getSectionMenu = (sectionName: string, t: Function = (text: string) => text) => {
     return menus[sectionName].filter(item => !item.hidden)

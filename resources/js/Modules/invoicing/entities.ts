@@ -22,3 +22,8 @@ export interface IInvoice {
 export interface IInvoiceWithRelations extends IInvoice {
   client: IClient
 }
+
+export interface ILineItem {
+  quantity: number;
+  price: number;
+}

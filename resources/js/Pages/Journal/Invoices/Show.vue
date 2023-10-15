@@ -5,7 +5,7 @@ import { AtField } from "atmosphere-ui";
 import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
 
 import AccountingSectionNav from "@/Pages/Journal/Partials/AccountingSectionNav.vue";
-import InvoiceSimple from "./printTemplates/Simple.vue";
+import InvoiceSimple from "./printTemplates/Index.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import InvoicePaymentOptions from "@/Components/templates/InvoicePaymentOptions.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
@@ -44,7 +44,6 @@ const print = () => {
     section.appendChild(cloned);
     window.print();
   }
-  // isModalPrintOpen.value = true;
 }
 </script>
 
@@ -57,7 +56,7 @@ const print = () => {
           <AppButton @click="router.visit(getInvoiceTypeUrl(invoice))"
             variant="inverse"
             v-if="false">
-            Editar Factura
+            {{ $t("edit invoice") }}
           </AppButton>
           <AppButton variant="neutral" @click="print()">
             <IMdiPrinter />
