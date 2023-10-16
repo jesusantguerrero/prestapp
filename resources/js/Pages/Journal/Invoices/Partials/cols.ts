@@ -28,7 +28,7 @@ export default [
     headerClass: 'text-right'
   },
   {
-    label: "Descuento %",
+    label: "Descuento",
     name: "discount",
     width: "100",
     class: "text-right",

@@ -42,7 +42,7 @@ class DashboardController extends Controller
         AppProfileEnum::Renting->value => [
           'revenueAccounts' => ['real_state', 'loans', 'real_state_operative'],
           'revenue' => ['real_state', 'loan_business', 'loans'],
-          "daily_box" => 'loan_business',
+          "dailyBox" => 'loan_business',
           'realEstate' => 'real_state',
           'commissions' => 'real_state_operative'
         ],
@@ -55,7 +55,7 @@ class DashboardController extends Controller
         ]
       ];
 
-      $appAccounts = $accounts[request()->user()->currentTeam->app_profile_name ?? AppProfileEnum::Renting->name];
+      $appAccounts = $accounts[request()->user()->currentTeam->app_profile_name ?? AppProfileEnum::Renting->value];
 
       return inertia('Dashboard/Index',
       [
