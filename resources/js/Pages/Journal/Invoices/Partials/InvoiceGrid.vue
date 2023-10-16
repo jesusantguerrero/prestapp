@@ -68,7 +68,6 @@ const state = reactive({
   rowToAdd: {},
   addMode: false,
   renderedCols: computed(() => {
-    console.log(cols);
     return props.isEditing
       ? cols
       : cols.filter((col) => col.name !== "actions" && col.label);
@@ -135,11 +134,11 @@ const { renderedCols, cleaveOptions } = toRefs(state);
     >
       <template v-slot:concept="{ scope: { row, col } }">
         <slot name="concept" :row="row" :col="col">
-          <div class="d-flex py-2">
+          <div class="py-2 d-flex">
             <AtInput
               name=""
               v-model="row.concept"
-              class="form-control border-none hover:border"
+              class="border-none form-control hover:border"
               rounded
               v-if="isEditing"
             />
@@ -155,7 +154,7 @@ const { renderedCols, cleaveOptions } = toRefs(state);
           min="1"
           type="number"
           v-model="scope.row.quantity"
-          class="text-right form-control border-none hover:border"
+          class="text-right border-none form-control hover:border"
           rounded
         />
       </template>

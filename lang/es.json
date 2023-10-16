@@ -211,7 +211,6 @@
     "Cancel": "Cancelar",
     "Return": "Devolver",
     "save": "guardar",
-
     "Notes, description, details": "Descripcion de la propiedad",
     "add unit": "agregar unidad",
     "rent price": "Precio de Renta",
@@ -241,5 +240,11 @@
     "client": "cliente",
     "select a client": "Selecciona un cliente",
     "products": "productos",
-    "review invoice": "Revisar factura"
+    "review invoice": "Revisar factura",
+    "invoice": "Factura",
+    "invoice number": "Factura No.",
+    "invoice from" : "Factura de",
+    "invoice to" : "Factura a",
+    "date": "fecha",
+    "due date": "fecha limite"
   }

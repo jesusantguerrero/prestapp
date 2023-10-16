@@ -56,9 +56,9 @@ export default [
     name: "amount",
     width: 100,
     type: "calc",
-    class: "text-right",
+    class: "text-right pr-5 font-bold",
     align: 'right',
-    headerClass: 'text-right',
+    headerClass: 'text-right pr-5',
     render(row: any) {
       const discount = Number(row.discount ?? 0);
       row.subtotal = row.quantity * row.price;

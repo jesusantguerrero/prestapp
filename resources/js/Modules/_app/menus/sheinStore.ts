@@ -21,7 +21,6 @@ export default {
                return /dropshipping-orders/.test(currentPath)
             },
             items: getSectionMenu(MODULES.ORDERS),
-            hidden: true,
         },
     ],
     headerMenu: [

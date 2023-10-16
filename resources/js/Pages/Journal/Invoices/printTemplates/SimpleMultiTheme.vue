@@ -1,20 +1,36 @@
 <script lang="ts" setup>
 import { toDate, differenceInDays } from "date-fns";
-import { reactive, computed, watch, toRefs } from "vue";
+import { reactive, computed, watch, toRefs, onMounted, useCssVars, ref } from "vue";
 import { parseISO } from "date-fns";
 import { router } from "@inertiajs/vue3";
 
 import InvoiceTotals from "../Partials/InvoiceTotals.vue";
 import InvoiceGrid from "../Partials/InvoiceGrid.vue";
-import ClientCard from "./ClientCard.vue";
-import BusinessCard from "./BusinessCard.vue";
 
 import { IClient } from "@/Modules/clients/clientEntity";
-import { formatDate } from "@/utils";
+import { formatDate, formatMoney } from "@/utils";
 import { IInvoice, ILineItem } from "@/Modules/invoicing/entities";
 import { ElMessageBox, ElNotification } from "element-plus";
 import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
 import { IPayment } from "@/Modules/loans/loanEntity";
+import InvoiceHeader from "./InvoiceHeader.vue";
+import InvoiceSubHeader from "./InvoiceSubHeader.vue";
+import { useI18n } from "vue-i18n";
+import SignaturePad from "../Partials/SignaturePad.vue";
+
+interface InvoiceLayoutTheme {
+  headerLogoPosition: "left" | "right";
+  headerLogoSize?: "sm" | "md" | "lg";
+  headerLogoOnly?: boolean;
+  headerHideInvoiceDetails?: boolean;
+  subheaderCards: string[];
+  accentColor: string;
+  accentColorBackground: string;
+  tableHeaderCellDivider?: boolean;
+  tableHeaderCellAlign?: "center" | "left" | "right";
+}
+
+defineEmits(["signature-clicked"]);
 
 const props = withDefaults(
   defineProps<{
@@ -25,10 +41,17 @@ const props = withDefaults(
     products?: Record<string, string>[];
     clients?: IClient[];
     invoiceData: IInvoice;
+    layoutTheme: InvoiceLayoutTheme;
   }>(),
   {
     type: "INVOICE",
     imageUrl: "/logo.png",
+    layoutTheme: () => ({
+      headerLogoPosition: "left",
+      subheaderCards: ["contactInfo", "businessInfo"],
+      accentColor: "text-pink-400",
+      accentColorBackground: "text-white bg-pink-400",
+    }),
   }
 );
 
@@ -87,7 +110,50 @@ watch(
   { immediate: true }
 );
 
-const { tableData, client, invoice, totals, totalValues, dueDays } = toRefs(state);
+const { tableData, invoice, totals, totalValues, dueDays } = toRefs(state);
+
+const { t } = useI18n();
+const availableCards = computed(() => {
+  return {
+    contactInfo: {
+      type: "ContactInfo",
+      client: invoice.value?.client,
+      label: t("invoice to"),
+      class: "invoice-secondary-text w-fit w-full",
+    },
+    businessInfo: {
+      type: "BusinessInfo",
+      business: props.businessData,
+      label: t("invoice from"),
+      class: "invoice-secondary-text",
+    },
+    totalDue: {
+      type: "InvoiceTotalItem",
+      label: t("total due"),
+      value: formatMoney(invoice.value.debt),
+      class: "invoice-accent-text capitalize",
+      vertical: true,
+      valueSize: "lg",
+    },
+    invoiceDetails: {
+      type: "InvoiceDetails",
+      logoUrl: props.imageUrl,
+      invoiceDate: formatDate(invoice.value.date),
+      logoPosition: props.layoutTheme.headerLogoPosition,
+      hideInvoiceDetails: props.layoutTheme.headerHideInvoiceDetails,
+      invoiceNumber: invoice.value.number,
+      displayCompanyInfo: true,
+      invoiceTitle: t("invoice"),
+      invoiceTitleClass: "invoice-accent-text",
+      class: "pt-0 mt-0",
+    },
+  };
+});
+const visibleHeaderCards = computed(() => {
+  return props.layoutTheme.subheaderCards
+    .map((name: string) => availableCards.value[name])
+    .filter((value) => value);
+});
 
 const { openModal } = usePaymentModal();
 const editPayment = (payment: IPayment) => {
@@ -125,56 +191,61 @@ const removePayment = async (payment: Record<string, string>) => {
     },
   });
 };
+
+const invoiceTemplateRef = ref();
+onMounted(() => {
+  invoiceTemplateRef.value.style?.setProperty(
+    "--invoice-accent-color",
+    props.layoutTheme.accentColor
+  );
+  invoiceTemplateRef.value.style?.setProperty(
+    "--invoice-table-header-cell-align",
+    props.layoutTheme.tableHeaderCellAlign
+  );
+});
+
+const testClick = () => {
+  debugger;
+};
 </script>
 
 <template>
-  <section class="relative w-full rounded-md simple-template shein-store-invoice">
-    <div class="section-body relative">
-      <header class="pt-4 text-sm print:pt-0 invoice__header">
-        <section class="flex justify-between w-full px-4 invoice-details">
-          <article class="flex items-center w-full">
-            <img :src="imageUrl" v-if="imageUrl" class="w-40 rounded-md" />
-            <BusinessCard :business="businessData" class="w-full text-left" />
-          </article>
+  <section
+    class="relative w-full rounded-md simple-template shein-store-invoice"
+    ref="invoiceTemplateRef"
+  >
+    <div class="relative section-body">
+      <InvoiceHeader
+        :logo-url="imageUrl"
+        :logo-size="layoutTheme.headerLogoSize"
+        :logo-only="layoutTheme.headerLogoOnly"
+        :business-data="businessData"
+        :invoice-date="formatDate(invoice.date)"
+        :logo-position="layoutTheme.headerLogoPosition"
+        :hide-invoice-details="layoutTheme.headerHideInvoiceDetails"
+        :invoice-number="invoice.number"
+        :display-company-info="true"
+        :invoice-title="$t('invoice')"
+        invoice-title-class="invoice-accent-text"
+        class="px-5"
+      />
 
-          <article class="w-full text-right">
-            <h4 class="px-5 text-2xl font-bold text-primary">
-              Factura {{ invoice.series }}-{{ invoice.number }}
-            </h4>
-            <h5 class="text-md">
-              <span class="font-bold">Concepto:</span> {{ invoice.concept }}
-            </h5>
-            <p>
-              <span class="font-bold">Fecha</span>
-              {{ formatDate(invoice.date) }}
-            </p>
-            <p>
-              <span class="font-bold">Fecha Limite</span>
-              {{ formatDate(invoice.due_date) }}
-            </p>
-          </article>
-        </section>
-
-        <section class="flex px-4 space-x-4">
-          <ClientCard
-            class="w-8/12 text-left"
-            label="Cliente"
-            :client="client"
-            v-if="client"
-          />
-        </section>
-      </header>
+      <InvoiceSubHeader class="px-10" :cards="visibleHeaderCards" />
 
       <InvoiceGrid
         :tableData="tableData"
         :is-editing="false"
         :hidden-cols="['taxes']"
-        class="w-full mt-5 main-grid"
+        class="w-full pb-4 mt-5 border-b main-grid"
+        :class="{
+          'header-cell-dividers': layoutTheme.tableHeaderCellDivider,
+          'header-cell-align': layoutTheme.tableHeaderCellAlign,
+        }"
       >
         <template v-slot:concept="{ row, col }">
-          <div class="py-1 text-base font-bold text-body-1 flex">
+          <div class="flex px-5 py-1 text-base font-bold text-body-1">
             <div
-              class="flex items-center justify-center mr-4 overflow-hidden font-bold text-gray-400 border border-gray-300 rounded-md h-28 w-28 bg-gray-50"
+              class="flex items-center justify-center mr-4 overflow-hidden font-bold text-gray-400 border border-gray-300 rounded-md w-14 h-14 bg-gray-50"
             >
               <img
                 :src="row.product_image"
@@ -197,7 +268,7 @@ const removePayment = async (payment: Record<string, string>) => {
         </template>
       </InvoiceGrid>
 
-      <div class="flex justify-end px-4 mt-5 text-gray-600">
+      <div class="flex justify-end px-4 text-gray-600">
         <InvoiceTotals
           :tableData="tableData"
           :subtotal-field="totals.subtotalField"
@@ -208,16 +279,33 @@ const removePayment = async (payment: Record<string, string>) => {
           :subtotalFormula="totals.subtotalFormula"
           :discountFormula="totals.discountFormula"
           :totalFormula="totals.totalFormula"
+          :hide-debt="true"
+          :hide-payments="true"
+          :hide-separators="true"
+          total-class="bg"
           @edit-payment="editPayment"
           @delete-payment="removePayment"
-        />
+        >
+          <template v-slot:total="{ value, label }">
+            <section
+              class="grid grid-cols-2 gap-2 px-2 py-1.5 font-bold divide-x rounded-sm invoice-accent-background"
+            >
+              <span class="py-1 uppercase">
+                {{ label }}
+              </span>
+              <span class="py-1 pl-4">
+                {{ value }}
+              </span>
+            </section>
+          </template>
+        </InvoiceTotals>
       </div>
 
       <div
         class="flex text-sm text-center invoice-footer-details mt-14"
         v-if="invoice.id"
       >
-        <div class="w-full text-gray-600">
+        <div class="w-full text-left text-gray-600">
           <p class="font-bold text-gray-600">Gracias por su preferencia!</p>
           <div class="mt-5 font-bold text-gray-600" v-if="invoice.type == 'INVOICE'">
             Terminos y condiciones
@@ -227,16 +315,25 @@ const removePayment = async (payment: Record<string, string>) => {
           </div>
         </div>
 
-        <section class="flex flex-col items-end justify-center w-full text-right">
-          <div class="mx-auto mb-2 font-serif border-b-2 invoice__signature w-96" />
-          <article class="justify-center w-full text-center">
-            <div class="font-bold">{{ user?.name }}</div>
-            <div>Firma</div>
-          </article>
+        <section
+          class="flex flex-col items-end justify-center w-full text-right cursor-pointer"
+        >
+          <section
+            @click="$emit('signature-clicked')"
+            class="px-2 pt-5 transition rounded-md hover:bg-base-lvl-2"
+          >
+            <SignaturePad
+              :signatures="invoice.signatures"
+              :entity="invoice"
+              :label="user?.name"
+            />
+          </section>
         </section>
       </div>
 
-      <span class="mt-8 stamp is-approved" v-if="invoice.debt == 0">Pagado</span>
+      <span class="mt-8 stamp is-approved" v-if="invoice.debt == 0">{{
+        $t("paid")
+      }}</span>
     </div>
   </section>
 </template>
@@ -250,10 +347,6 @@ const removePayment = async (payment: Record<string, string>) => {
 
 .invoice-title {
   padding-left: 15px;
-}
-
-.section-body {
-  padding: 0 15px;
 }
 
 .invoice-actions {
@@ -351,9 +444,36 @@ const removePayment = async (payment: Record<string, string>) => {
 </style>
 
 <style lang="scss">
+:root {
+  --invoice-accent-color: #333;
+  --invoice-table-header-cell-align: "center";
+}
+
+.invoice-accent-background {
+  background-color: var(--invoice-accent-color);
+  color: white;
+}
+
+.invoice-accent-text {
+  color: var(--invoice-accent-color);
+}
+
 .main-grid {
   .el-table__body-wrapper td {
     font-size: 1em !important;
+  }
+
+  &.header-cell-align {
+    thead th {
+      text-align: var(--invoice-table-header-cell-align) !important;
+    }
+  }
+
+  &.header-cell-dividers {
+    thead th {
+      border-left: 2px solid white;
+      border-right: 2px solid white;
+    }
   }
 }
 
@@ -400,7 +520,7 @@ const removePayment = async (payment: Record<string, string>) => {
 .shein-store-invoice {
   thead,
   thead th {
-    @apply bg-pink-600 text-white;
+    @extend .invoice-accent-background !optional;
   }
 }
 
@@ -424,5 +544,5 @@ const removePayment = async (payment: Record<string, string>) => {
   .client-card {
     font-size: 12px;
   }
-} ;
+}
 </style>
