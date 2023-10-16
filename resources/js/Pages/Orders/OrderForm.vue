@@ -1,19 +1,23 @@
 <script lang="ts" setup>
 import { useForm, router } from "@inertiajs/vue3";
-
+import { computed } from "vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
+import OrderFormTemplate from "./Partials/OrderFormTemplate.vue";
 
 import { IClient } from "@/Modules/clients/clientEntity";
-import OrderFormTemplate from "./Partials/OrderFormTemplate.vue";
 import { IInvoice } from "@/Modules/invoicing/entities";
+import DropshippingSectionNav from "./Partials/DropshippingSectionNav.vue";
 
 const props = defineProps<{
-  invoice: IInvoice;
+  invoices: IInvoice;
   client: IClient;
 }>();
 
-const invoiceForm = useForm({ ...(props.invoice ?? {}) });
+const invoiceForm = useForm({ ...(props.invoices ?? {}) });
 
+const invoiceData = computed(() => {
+  return invoiceForm.data();
+});
 const onSubmit = (formData: Record<string, any>) => {
   if (invoiceForm.processing) return;
   const url = props.invoice?.id
@@ -26,9 +30,12 @@ const onSubmit = (formData: Record<string, any>) => {
     }))
     .submit(method, url, {
       onSuccess() {
+        Object.entries(formData).forEach(([field, value]) => {
+          invoiceForm[field] = value;
+        });
         props.invoice?.id
           ? router.visit(`/invoices/${props.invoice.id}`)
-          : router.visit(`/invoices`);
+          : router.visit(route("dropshipping.invoices.index"));
       },
     });
 };
@@ -36,13 +43,14 @@ const onSubmit = (formData: Record<string, any>) => {
 
 <template>
   <AppLayout :title="$t('Create order')">
-    <main
-      class="w-full px-5 py-5 pb-24 bg-white rounded-md rent-form md:pb-4 text-body-1"
-    >
+    <template #header>
+      <DropshippingSectionNav />
+    </template>
+
+    <main class="w-full px-5 py-10 pb-24 rounded-md rent-form md:pb-4 text-body-1">
       <OrderFormTemplate
-        :data="invoiceForm"
+        :data="invoices"
         :client="client"
-        :current-step="step"
         :is-processing="invoiceForm.processing"
         @submit="onSubmit"
       />

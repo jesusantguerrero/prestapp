@@ -2,11 +2,11 @@
 
 namespace App\Domains\Dropshipping\Services;
 
+use Illuminate\Support\Str;
 use App\Domains\CRM\Models\Client;
-use App\Domains\Dropshipping\Data\OrderData;
 use App\Domains\Dropshipping\Models\Order;
 use Insane\Journal\Models\Invoice\Invoice;
-use Illuminate\Support\Str;
+use App\Domains\Dropshipping\Data\OrderData;
 
 class InvoiceService
 {
@@ -15,9 +15,8 @@ class InvoiceService
       $clientId = $formData["client_id"] ?? null;
       $isNewPayee = Str::contains($clientId, "new::");
 
-
       if ($clientId == 'new' || $isNewPayee) {
-          $label = $formData['client_label'] ?? trim(Str::replace('new::', '', $formData["client_id"])) ?? 'General Provider';
+          $label = trim(str_replace('new::', '',  $clientId)) ?? 'General Provider';
           $client = Client::findOrCreateByName($invoice?->toArray() ?? $formData, $label);
           $formData["client_id"] = $client->id;
       }
@@ -43,7 +42,7 @@ class InvoiceService
         "account_id" => null,
         'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
         'total' =>  $formData['total'] ?? 0,
-        'items' => array_merge($formData['items'] ?? $items, []),
+        'items' => $formData['lines'] ?? [],
         "related_invoices" => $formData["related_invoices"] ?? []
       ]);
 
@@ -62,8 +61,9 @@ class InvoiceService
       return Invoice::createDocument($data);
     }
 
-    public function getOrderById(int $orderId): OrderData {
-      return OrderData::from(Order::find($orderId));
+    public function getOrderById(int $invoiceId) {
+      $invoice = Invoice::find($invoiceId);
+      return $invoice->getInvoiceData();
     }
 
     public function send(Order $order) {

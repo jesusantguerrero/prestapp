@@ -2,16 +2,16 @@
 
 namespace App\Domains\Properties\Services;
 
-use App\Domains\CRM\Models\Client;
-use App\Domains\Properties\Enums\PropertyInvoiceTypes;
-use App\Domains\Properties\Models\Property;
-use App\Domains\Properties\Models\Rent;
-use App\Models\User;
-use App\Notifications\InvoiceGenerated;
 use Exception;
-use Insane\Journal\Models\Core\Account;
+use App\Models\User;
+use App\Domains\CRM\Models\Client;
 use Insane\Journal\Models\Core\Tax;
+use App\Domains\Properties\Models\Rent;
+use App\Notifications\InvoiceGenerated;
+use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Invoice\Invoice;
+use App\Domains\Properties\Models\Property;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 
 class OwnerDistributionService {
     private $client;
@@ -118,11 +118,11 @@ class OwnerDistributionService {
       $error = "";
 
       if (!$invoice) {
-          $error = "resource not found";
+          $error = __t("resource not found");
       }
 
       if ($invoice && $invoice->debt <= 0) {
-          $error = "This invoice is already paid";
+          $error = __("This invoice is already paid");
       }
 
       if ($error) {

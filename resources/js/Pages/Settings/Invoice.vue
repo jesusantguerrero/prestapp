@@ -1,12 +1,10 @@
 <template>
   <AppLayout title="Configuracion / Facturas">
     <template #header>
-      <div
-        class="flex items-center justify-between px-5 border-4 border-white rounded-md"
-      >
+      <div class="flex items-center justify-between px-5 py-2 rounded-md">
         <div class="flex items-center space-x-2"></div>
         <div class="flex overflow-hidden font-bold text-gray-500 rounded-t-lg max-w-min">
-          <AppButton variant="inverse" @click="save()" class="w-32"> Save </AppButton>
+          <AppButton variant="inverse" @click="save()"> Save </AppButton>
         </div>
       </div>
     </template>
@@ -15,7 +13,7 @@
       class="w-full h-auto px-5 py-10 mx-auto mt-12 space-y-5 bg-white divide-y divide-gray-200 rounded-md sm:px-6 lg:px-8"
     >
       <article class="w-full pb-2">
-        <h2 class="font-bold">Comisiones</h2>
+        <h2 class="font-bold capitalize">{{ $t("commissions") }}</h2>
         <template v-for="(tax, index) in taxesDefinition" :key="`taxt-${index}`">
           <TaxDefinitionBox
             class="w-full"
@@ -26,10 +24,10 @@
         <AtButton
           @click="addTax"
           rounded
-          class="flex items-center mt-2 text-gray-400 border cursor-pointer hover:bg-gray-100"
+          class="flex items-center capitalize mt-2 text-gray-400 border cursor-pointer hover:bg-gray-100"
         >
           <IconAdd class="w-4 h-4 mr-2" />
-          Agregar Comision
+          {{ $t("add commission") }}
         </AtButton>
       </article>
 
@@ -67,6 +65,14 @@
       </article>
 
       <article>
+        <AppFormField :label="$t('company logo')">
+          <ProfilePhoto
+            :photo-url="$page.props.user.current_team?.profile_photo_url"
+            v-model:file="companyForm.file"
+            :alt="formData.invoice_label"
+            @deleted="deletePhoto"
+          />
+        </AppFormField>
         <h2 class="my-4 font-bold">{{ $t("Invoice title") }}</h2>
         <p class="mb-2 text-sm text-gray-400 md:w-8/12">
           By default, all Invoices are labelled 'Invoice' followed by a number (e.g.,
@@ -103,10 +109,10 @@
 </template>
 
 <script setup lang="ts">
-import { ElNotification, ElSwitch } from "element-plus";
-import { reactive, watch } from "vue";
+import { ElNotification } from "element-plus";
+import { reactive, watch, ref } from "vue";
 import axios from "axios";
-import { router } from "@inertiajs/vue3";
+import { router, useForm } from "@inertiajs/vue3";
 
 // import TaxDefinitionBox from './TaxDefinitionBox.vue'
 import AppLayout from "../../Components/templates/AppLayout.vue";
@@ -115,9 +121,14 @@ import IconAdd from "@/Components/icons/IconAdd.vue";
 import AppButton from "../../Components/shared/AppButton.vue";
 import { AtButton, AtField, AtInput, AtSimpleSelect, AtTextarea } from "atmosphere-ui";
 import { useI18n } from "vue-i18n";
+import AppFormField from "@/Components/shared/AppFormField.vue";
+import ProfilePhoto from "@/Components/ProfilePhoto.vue";
 
 const { t } = useI18n();
 const props = defineProps({
+  team: {
+    type: Object,
+  },
   settingData: {
     type: Object,
     default: () => ({
@@ -204,6 +215,33 @@ const updateTaxes = () => {
     });
 };
 
+const companyForm = useForm({
+  file: null,
+});
+
+const deletePhoto = () => {
+  companyForm.delete(route("team-profile-photo.destroy"), {
+    preserveScroll: true,
+    onSuccess: () => {
+      companyForm.file = null;
+    },
+  });
+};
+
+const clearPhotoFileInput = () => {
+  companyForm.file = null;
+};
+
+const updateCompanyInformation = () => {
+  if (!companyForm.file) return;
+
+  companyForm.post(route("team-profile-photo.update"), {
+    errorBag: "updateProfileInformation",
+    preserveScroll: true,
+    onSuccess: () => clearPhotoFileInput(),
+  });
+};
+
 const updateSettingsData = () => {
   return axios({
     url: "/api/settings",
@@ -222,6 +260,8 @@ const save = () => {
       message: t("Invoicing settings has being updated"),
       type: "success",
     });
+
+    updateCompanyInformation();
   });
 };
 </script>

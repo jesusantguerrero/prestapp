@@ -2,19 +2,19 @@
 
 namespace App\Domains\Dropshipping\Http\Controllers;
 
-use App\Domains\Dropshipping\Models\Order;
-use App\Domains\Dropshipping\Services\InvoiceService;
-use App\Http\Controllers\InertiaController;
 use Exception;
 use Illuminate\Http\Request;
+use App\Domains\Dropshipping\Models\Order;
 use Insane\Journal\Models\Invoice\Invoice;
+use App\Http\Controllers\InertiaController;
+use App\Domains\Dropshipping\Services\InvoiceService;
 
 class InvoiceController extends InertiaController
 {
     public function __construct(Invoice $invoice, private InvoiceService $invoiceService)
     {
         $this->model = $invoice;
-        $this->searchable = ['vendor_name', 'amount', 'total'];
+        $this->searchable = ['concept', 'amount', 'total'];
         $this->templates = [
             "index" => 'Orders/Index',
             "create" => 'Orders/OrderForm',
@@ -22,8 +22,8 @@ class InvoiceController extends InertiaController
             "show" => 'Orders/Show'
         ];
         $this->validationRules = [];
-        $this->sorts = ['created_at'];
-        $this->includes = [];
+        $this->sorts = ['-date', '-id'];
+        $this->includes = ['client'];
         $this->filters = [];
         $this->resourceName= "orders";
     }
@@ -34,13 +34,11 @@ class InvoiceController extends InertiaController
       $this->invoiceService->create($postData, request()->user());
     }
 
-
-    protected function getEditProps(Request $request, $rent)
-    {
-      return [
-        'orders' => $this->invoiceService->getOrderById($rent->id)
-      ];
-    }
+    public function edit(Request $request, int $id) {
+      return inertia($this->templates['edit'],[
+        "invoices" => $this->invoiceService->getOrderById($id)
+      ]);
+  }
 
     public function action(Order $order, string $action) {
       try {

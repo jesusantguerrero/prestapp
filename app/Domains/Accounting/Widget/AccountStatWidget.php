@@ -2,13 +2,13 @@
 
 namespace App\Domains\Accounting\Widget;
 
-use App\Domains\Loans\Models\LoanInstallment;
-use App\Domains\Properties\Models\Rent;
-use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Domains\Properties\Models\Rent;
 use Insane\Journal\Helpers\ReportHelper;
+use Illuminate\Database\Query\JoinClause;
 use Insane\Journal\Models\Invoice\Invoice;
+use App\Domains\Loans\Models\LoanInstallment;
 
 class AccountStatWidget {
 
@@ -38,8 +38,8 @@ class AccountStatWidget {
         ->where([
           'invoices.team_id' => $teamId,
           'invoices.type' => 'INVOICE',
-          'invoiceable_type' => Rent::class
         ])
+        ->where(fn ($q) => $q->where('invoiceable_type', Rent::class)->orWhereNull('invoiceable_type'))
         ->where('debt', '>', 0)
         ->when($endDate, fn ($q) => $q->where('due_date', '<=', $endDate))
         ->when($endDate && $startDate, fn ($q) => $q->where('due_date', '<=', $today))

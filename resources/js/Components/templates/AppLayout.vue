@@ -51,10 +51,21 @@ const isTeamApproved = computed(() => {
   return pageProps?.isTeamApproved;
 });
 
+const appProfileName = computed(() => {
+  return pageProps.user?.current_team?.app_profile_name;
+});
+
 provide("isTeamApproved", isTeamApproved);
+provide("appProfileName", appProfileName);
 
 const { t } = useI18n();
-const { appMenu: currentMenu, headerMenu, mobileMenu } = useAppMenu(isTeamApproved, t);
+const { appMenu: currentMenu, headerMenu, mobileMenu } = useAppMenu(
+  isTeamApproved,
+  t,
+  pageProps.user?.current_team?.app_profile_name ?? "renting",
+  pageProps?.role
+);
+
 const { categoryOptions: transformCategoryOptions } = useSelect();
 
 transformCategoryOptions(pageProps?.categories, "sub_categories", "categoryOptions");

@@ -2,18 +2,19 @@
 
 namespace App\Domains\CRM\Models;
 
+use Illuminate\Support\Str;
+use Spatie\Searchable\Searchable;
+use Illuminate\Support\Facades\DB;
+use Spatie\Searchable\SearchResult;
+use Database\Factories\ClientFactory;
 use App\Domains\CRM\Enums\ClientStatus;
-use App\Domains\CRM\Models\Traits\BorrowerTrait;
+use Illuminate\Database\Eloquent\Model;
 use App\Domains\CRM\Models\Traits\OwnerTrait;
 use App\Domains\CRM\Models\Traits\TenantTrait;
-use App\Domains\Properties\Enums\PropertyInvoiceTypes;
-use Database\Factories\ClientFactory;
+use App\Domains\CRM\Models\Traits\BorrowerTrait;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
-use Spatie\Searchable\Searchable;
-use Spatie\Searchable\SearchResult;
 
 class Client extends Model implements Searchable {
     use HasFactory;
@@ -135,13 +136,17 @@ class Client extends Model implements Searchable {
     public static function findOrCreateByName($session, string $name) {
         $client = self::where(
           [
-              'names' => $name,
+              'display_name' => $name,
               'team_id' => $session['team_id'],
           ])->limit(1)->get();
 
       if (!count($client)) {
+          $names = explode(" ", trim($name));
+          $lastNames = [...$names];
+          array_shift($lastNames);
           return self::create([
-              'name' => $name,
+              'names' => $names[0],
+              'lastnames' => count($lastNames) ? implode(" ", $lastNames) : "",
               'user_id' => $session['user_id'],
               'team_id' => $session['team_id'],
           ]);

@@ -68,7 +68,6 @@ const state = reactive({
   rowToAdd: {},
   addMode: false,
   renderedCols: computed(() => {
-    console.log(cols);
     return props.isEditing
       ? cols
       : cols.filter((col) => col.name !== "actions" && col.label);
@@ -134,17 +133,19 @@ const { renderedCols, cleaveOptions } = toRefs(state);
       :hide-empty-text="true"
     >
       <template v-slot:concept="{ scope: { row, col } }">
-        <div class="d-flex py-2">
-          <AtInput
-            name=""
-            v-model="row.concept"
-            class="form-control border-none hover:border"
-            rounded
-            v-if="isEditing"
-          />
-          <span v-if="col?.render && !isEditing" v-html="col?.render(row)" />
-          <span v-else> {{ row.concept }}</span>
-        </div>
+        <slot name="concept" :row="row" :col="col">
+          <div class="py-2 d-flex">
+            <AtInput
+              name=""
+              v-model="row.concept"
+              class="border-none form-control hover:border"
+              rounded
+              v-if="isEditing"
+            />
+            <span v-if="col?.render && !isEditing" v-html="col?.render(row)" />
+            <span v-else> {{ row.concept }}</span>
+          </div>
+        </slot>
       </template>
 
       <template v-slot:quantity="{ scope }" v-if="isEditing">
@@ -153,7 +154,7 @@ const { renderedCols, cleaveOptions } = toRefs(state);
           min="1"
           type="number"
           v-model="scope.row.quantity"
-          class="text-right form-control border-none hover:border"
+          class="text-right border-none form-control hover:border"
           rounded
         />
       </template>

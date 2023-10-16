@@ -1,22 +1,22 @@
 <?php
 
-use App\Http\Controllers\Api\AccountApiController;
-use App\Http\Controllers\Api\CategoryApiController;
-use App\Http\Controllers\Api\ClientApiController;
-use App\Http\Controllers\Api\PropertyApiController;
-use App\Http\Controllers\Api\RentApiController;
-use App\Http\Controllers\Api\TransactionLineApiController;
-use App\Http\Controllers\BackgroundController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\SettingsController;
-
-use App\Http\Controllers\CRM\ClientController;
-use App\Http\Controllers\InvoiceController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SearchController;
-use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\BackgroundController;
+use App\Http\Controllers\CRM\ClientController;
+
+use App\Http\Controllers\Api\RentApiController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Api\ClientApiController;
+use App\Http\Controllers\Api\AccountApiController;
+use App\Http\Controllers\Api\CategoryApiController;
+use App\Http\Controllers\Api\PropertyApiController;
+use App\Http\Controllers\Api\TransactionLineApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,6 +63,8 @@ Route::middleware([
     // settings
     Route::resource('/settings', SettingsController::class);
     Route::get('/settings/{name}', [SettingsController::class, 'index']);
+    Route::post('/settings/current-team-photo', [SettingsController::class, 'updateTeamPhoto'])->name('team-profile-photo.update');
+    Route::delete('/settings/current-team-photo', [SettingsController::class, 'deleteTeamPhoto'])->name('team-profile-photo.destroy');
     Route::get('/help', function() {
     return inertia('Help');
     });
@@ -101,6 +103,7 @@ Route::middleware([
     Route::post('/invoices/{id}/mark-as-paid', [InvoiceController::class, 'markAsPaid']);
     Route::delete('/invoices/{id}/payment/{paymentId}', [InvoiceController::class, 'deletePayment']);
     Route::get('/invoices/{invoice}/preview', [InvoiceController::class, 'publicPreview']);
+    Route::post('/invoices/{invoice}/sign', [InvoiceController::class, 'signInvoice']);
     // Bills
     Route::resource('/bills', InvoiceController::class);
   });
