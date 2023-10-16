@@ -22,46 +22,29 @@ const { formData } = useReactiveForm(
   modelValue,
   emit
 );
-
-const clientToggleText = computed(() => {
-  return formData.is_new_client ? "Lista de clientes" : "Nuevo cliente";
-});
 </script>
 
 <template>
   <section>
     <FormSection section-class="w-full -px-10">
       <div class="w-full mt-8">
-        <header class="flex justify-between">
-          <label for="">{{ $t("Vendor") }}</label>
+        <header class="flex justify-between capitalize">
+          <label for="">{{ $t("client") }}</label>
         </header>
         <BaseSelect
           v-model="formData.client"
-          endpoint="/api/clients?filter[is_tenant]=1"
-          :placeholder="$t('Select a vendor')"
+          tag
+          :allow-create="true"
+          endpoint="/api/clients"
+          :placeholder="$t('select a client')"
           label="display_name"
           track-by="id"
-          v-if="!formData.is_new_client"
         />
-
-        <AtInput v-else v-model="formData.client_name" rounded />
       </div>
 
       <AtField label="Apellidos" class="w-full" v-if="formData.is_new_client">
         <AtInput v-model="formData.client_last_name" rounded />
       </AtField>
     </FormSection>
-
-    <div v-if="formData.is_new_client" class="grid grid-cols-2 gap-2">
-      <AtField label="Telefono" class="w-full">
-        <AtInput v-model="formData.client_phone_number" rounded />
-      </AtField>
-      <AtField label="Email" class="w-full">
-        <AtInput v-model="formData.client_email" rounded />
-      </AtField>
-      <AtField label="Cedula" class="w-full">
-        <AtInput v-model="formData.client_dni" rounded />
-      </AtField>
-    </div>
   </section>
 </template>

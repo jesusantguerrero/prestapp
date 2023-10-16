@@ -250,11 +250,11 @@ const summaryType = ref("cash-flow");
       <section class="flex lg:space-x-4 flex-col w-full lg:flex-row">
         <article class="space-y-5 lg:w-7/12">
           <WelcomeWidget
-            message="Rendimiento del mes"
+            :message="$t('month performance')"
             class="order-2 mt-4 lg:mt-0 lg:order-1"
           >
             <template #actions>
-              <section class="flex space-x-2">
+              <section class="flex space-x-2 w-full justify-end">
                 <button
                   @click="summaryType = 'gains'"
                   class="bg-base-lvl-2 capitalize py-1 rounded-3xl text-body-1 px-4 border border-transparent"

@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import { computed, toRefs } from "vue";
+import { toRefs } from "vue";
 
-import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import FormSection from "./FormSection.vue";
+import ServiceBlock from "./ServiceBlock.vue";
 
-import { IProperty, IUnit } from "@/Modules/properties/propertyEntity";
 import { useReactiveForm } from "@/utils/useReactiveForm";
-import AppFormField from "@/Components/shared/AppFormField.vue";
-import { formatMoney } from "@/utils";
-import UnitTitle from "@/Components/realState/UnitTitle.vue";
+import AppButton from "@/Components/shared/AppButton.vue";
 
 const props = defineProps<{
   modelValue: Record<string, any>;
@@ -22,29 +19,75 @@ const { formData } = useReactiveForm(
     property: null,
     unit_id: null,
     unit: null,
+    lines: [],
   },
   modelValue,
   emit
 );
 
-const availableUnits = computed(() => {
-  // @ts-expect-error
-  return formData.property?.units.filter((unit: IUnit) => unit.status !== "RENTED");
-});
-
-const unitLabel = (unit: IUnit) => {
-  return `${unit.name} (${formatMoney(unit.price)})`;
+const checkScroll = () => {
+  nextTick(() => {
+    ActionButtons.value.scrollIntoView({ smooth: true });
+  });
 };
 
-const propertyLabel = (property: IProperty) => {
-  return `${property.name} (${property.address})`;
+// actions
+const onCopy = (field) => {
+  field.name = uuid();
+  state.formData.fields.push({ ...field });
+  checkScroll();
 };
+
+const onDelete = (index) => {
+  state.formData.fields.splice(index, 1);
+  checkScroll();
+};
+
+// Blocks
+const addServiceBlock = () => {
+  if (formData.lines.length && !formData.lines.at(-1)?.concept) return;
+  const index = formData.lines.length + 1;
+  formData.lines.push({
+    index: index,
+    product_image: "",
+    concept: "",
+    description: "",
+    price: 0,
+    quantity: 1,
+    total: "",
+  });
+};
+
+const onSetItem = (index: number, item: Record<string, string>) => {
+  formData.lines[index] = {
+    index: index,
+    product_image: item.product_image,
+    concept: item.concept,
+    description: item.description,
+    price: item.price ?? formData.lines[index].price ?? 0,
+    quantity: item.quantity ?? formData.lines[index].quantity ?? 1,
+    total: item.total,
+  };
+  addServiceBlock();
+};
+
+addServiceBlock();
 </script>
 
 <template>
-  <section>
-    <FormSection section-class="flex flex-col md:space-x-4 md:flex-row">
-      <AppFormField class="w-full" :label="$t('item')" v-model="formData.item" />
-    </FormSection>
-  </section>
+  <FormSection section-class="flex flex-col md:space-y-4">
+    <div class="w-full">
+      <h4 class="text-2xl font-bold capitalize">{{ $t("services") }}</h4>
+    </div>
+    <ServiceBlock
+      v-model:items="formData.lines"
+      @delete="onDelete(index)"
+      @copy="onCopy(field)"
+      @set-item="onSetItem"
+    />
+    <AppButton @click="addServiceBlock()" rounded class="w-fit" variant="neutral">
+      <IMdiAdd class="w-4 h-4 mr-1" />
+      {{ $t("add item") }}
+    </AppButton>
+  </FormSection>
 </template>

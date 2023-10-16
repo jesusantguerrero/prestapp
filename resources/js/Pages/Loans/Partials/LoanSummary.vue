@@ -10,6 +10,10 @@ import IconCoins from "@/Components/icons/IconCoins.vue";
 import { formatMoney } from "@/utils";
 
 interface Props {
+  cards: {
+    label: string;
+    value: number | string;
+  }[];
   payment: number;
   totalInterest: number;
   totalDebt: number;
@@ -33,26 +37,16 @@ const classes = computed(() => {
   <section
     ref="containerRef"
     :class="classes"
-    class="rounded-md flex w-full justify-between bg-primary/5 border-primary/20 font-bold border px-4 relative"
+    class="relative flex justify-between w-full px-4 font-bold border rounded-md bg-primary/5 border-primary/20"
   >
     <div
       class="h-8 w-8 rounded-full items-center flex justify-center cursor-pointer hover:bg-primary hover:text-white transition-colors text-primary bg-[#F6FBFE] border border-primary/20 absolute top-6 -left-4"
     >
       <IconCoins />
     </div>
-    <AtField label="Monto Cuotas">
+    <AtField :label="card.label" v-for="(card, index) in cards" :key="index">
       <span class="text-primary">
-        {{ formatMoney(payment) }}
-      </span>
-    </AtField>
-    <AtField label="Interes a pagar">
-      <span class="text-error">
-        {{ formatMoney(totalInterest) }}
-      </span>
-    </AtField>
-    <AtField label="Total a pagar">
-      <span class="text-secondary">
-        {{ formatMoney(totalDebt) }}
+        {{ card.value }}
       </span>
     </AtField>
   </section>

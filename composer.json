@@ -10,7 +10,7 @@
       "guzzlehttp/guzzle": "^7.2",
       "http-interop/http-factory-guzzle": "^1.2",
       "inertiajs/inertia-laravel": "^0.6.3",
-      "insane/journal": "dev-master",
+      "insane/journal": "^0.x-dev",
       "insane/treasurer": "1.x-dev",
       "lab404/laravel-impersonate": "^1.7",
       "laravel/framework": "^9.19",
@@ -29,7 +29,8 @@
       "spatie/laravel-permission": "^5.8",
       "spatie/laravel-searchable": "^1.11",
       "spatie/laravel-typescript-transformer": "^2.3",
-      "tightenco/ziggy": "^1.0"
+      "tightenco/ziggy": "^1.0",
+      "symfony/dom-crawler": "^6.0"
   },
   "require-dev": {
       "barryvdh/laravel-debugbar": "^3.8",

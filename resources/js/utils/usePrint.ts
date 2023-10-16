@@ -5,10 +5,16 @@ export const usePrint = (elementId?: string) => {
   } = {
     beforePrint: () => {},
     delay: 0
-  }) => {
+  }, title?: string) => {
     const modalInvoice = document.getElementById(element)
     const cloned = modalInvoice?.cloneNode(true)
     let section = document.getElementById("print")
+    const $title = document.querySelector('title');
+    const oldTitle = $title?.text;
+
+    if ($title) {
+      $title.textContent = title ?? oldTitle;
+    }
 
     if (!section) {
        section  = document.createElement("div")
@@ -22,6 +28,9 @@ export const usePrint = (elementId?: string) => {
       beforePrint()
       setTimeout(() => {
         window.print();
+        if ($title) {
+          $title.textContent = oldTitle;
+        }
       }, delay)
     }
   }

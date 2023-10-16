@@ -5,7 +5,7 @@ import { AtField } from "atmosphere-ui";
 import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
 
 import AccountingSectionNav from "@/Pages/Journal/Partials/AccountingSectionNav.vue";
-import InvoiceSimple from "./printTemplates/Simple.vue";
+import InvoiceSimple from "./printTemplates/Index.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import InvoicePaymentOptions from "@/Components/templates/InvoicePaymentOptions.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
@@ -14,6 +14,8 @@ import { formatDate, formatMoney } from "@/utils";
 import { getInvoiceTypeUrl } from "./utils";
 import { ref } from "vue";
 import { IInvoiceWithRelations } from "@/Modules/invoicing/entities";
+import SignatureModal from "./Partials/SignatureModal.vue";
+import { useToggleModal } from "@/Modules/_app/useToggleModal";
 
 withDefaults(defineProps<{
   user: Record<string, string>
@@ -44,8 +46,9 @@ const print = () => {
     section.appendChild(cloned);
     window.print();
   }
-  // isModalPrintOpen.value = true;
 }
+
+const { isOpen, openModal, data, closeModal } = useToggleModal('signature-modal')
 </script>
 
 
@@ -57,7 +60,7 @@ const print = () => {
           <AppButton @click="router.visit(getInvoiceTypeUrl(invoice))"
             variant="inverse"
             v-if="false">
-            Editar Factura
+            {{ $t("edit invoice") }}
           </AppButton>
           <AppButton variant="neutral" @click="print()">
             <IMdiPrinter />
@@ -115,10 +118,26 @@ const print = () => {
 
         <InvoiceSimple
           :user="user"
+          :imageUrl="$page.props.user.current_team?.profile_photo_url"
           :type="type"
           :business-data="businessData"
           :invoice-data="invoice"
           id="invoice-content"
+          @signature-clicked="openModal({
+            data: {
+              signatures: invoice.signatures,
+              entity: invoice,
+            },
+            isOpen: true,
+          })"
+        />
+
+        <SignatureModal
+            v-if="isOpen"
+            v-model:is-open="isOpen"
+            v-bind="data"
+            :endpoint="`/invoices/${invoice.id}/sign`"
+            @saved="closeModal"
         />
     </div>
   </AppLayout>

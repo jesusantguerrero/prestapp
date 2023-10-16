@@ -1,37 +1,41 @@
 <script lang="ts" setup>
 import { useForm, router } from "@inertiajs/vue3";
-
+import { computed } from "vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
-
-import { IProperty, IRent, IUnit } from "@/Modules/properties/propertyEntity";
-import { IClient } from "@/Modules/clients/clientEntity";
 import OrderFormTemplate from "./Partials/OrderFormTemplate.vue";
 
+import { IClient } from "@/Modules/clients/clientEntity";
+import { IInvoice } from "@/Modules/invoicing/entities";
+import DropshippingSectionNav from "./Partials/DropshippingSectionNav.vue";
+
 const props = defineProps<{
-  rents: IRent;
-  properties: IProperty[];
+  invoices: IInvoice;
   client: IClient;
-  unit: IUnit;
-  property: IProperty;
 }>();
 
-const rentForm = useForm({ ...(props.rents ?? {}) });
+const invoiceForm = useForm({ ...(props.invoices ?? {}) });
 
+const invoiceData = computed(() => {
+  return invoiceForm.data();
+});
 const onSubmit = (formData: Record<string, any>) => {
-  if (rentForm.processing) return;
-  const url = props.rents?.id
-    ? route("orders.update", props.rents)
-    : route("orders.store");
-  const method = props.rents?.id ? "put" : "post";
-  rentForm
+  if (invoiceForm.processing) return;
+  const url = props.invoice?.id
+    ? route("dropshipping.invoices.update", props.invoice)
+    : route("dropshipping.invoices.store");
+  const method = props.invoice?.id ? "put" : "post";
+  invoiceForm
     .transform(() => ({
       ...formData,
     }))
     .submit(method, url, {
       onSuccess() {
-        props.rents?.id
-          ? router.visit(`/orders/${props.rents.id}`)
-          : router.visit(`/orders`);
+        Object.entries(formData).forEach(([field, value]) => {
+          invoiceForm[field] = value;
+        });
+        props.invoice?.id
+          ? router.visit(`/invoices/${props.invoice.id}`)
+          : router.visit(route("dropshipping.invoices.index"));
       },
     });
 };
@@ -39,16 +43,15 @@ const onSubmit = (formData: Record<string, any>) => {
 
 <template>
   <AppLayout :title="$t('Create order')">
-    <main
-      class="w-full rent-form pb-24 md:pb-4 bg-white px-5 py-5 rounded-md text-body-1"
-    >
+    <template #header>
+      <DropshippingSectionNav />
+    </template>
+
+    <main class="w-full px-5 py-10 pb-24 rounded-md rent-form md:pb-4 text-body-1">
       <OrderFormTemplate
-        :data="rentForm"
+        :data="invoices"
         :client="client"
-        :property="property"
-        :unit="unit"
-        :current-step="step"
-        :is-processing="rentForm.processing"
+        :is-processing="invoiceForm.processing"
         @submit="onSubmit"
       />
     </main>

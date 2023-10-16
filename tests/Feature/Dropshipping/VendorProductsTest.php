@@ -21,7 +21,7 @@ class VendorProductsTest extends TestCase
     {
 
         $url = "https://us.shein.com/Manfinity-Sporsity-Men-Cut-And-Sew-Polo-Shirt-p-753301-cat-1981.html?mallCode=1";
-        $response = (new VendorProductService())->getFromSheinUrl($url);
+        $response = (new VendorProductService())->getProductInfo($url);
         dd($response->body());
         $response->assertStatus(200);
     }

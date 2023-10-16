@@ -11,10 +11,14 @@ import BusinessCard from "./BusinessCard.vue";
 
 import { IClient } from "@/Modules/clients/clientEntity";
 import { formatDate } from "@/utils";
-import { IInvoice } from "@/Modules/invoicing/entities";
+import { IInvoice, ILineItem } from "@/Modules/invoicing/entities";
 import { ElMessageBox, ElNotification } from "element-plus";
 import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
 import { IPayment } from "@/Modules/loans/loanEntity";
+
+interface InvoiceLayoutTheme {
+  headerLogoPosition: "left" | "right";
+}
 
 const props = withDefaults(
   defineProps<{
@@ -25,17 +29,16 @@ const props = withDefaults(
     products?: Record<string, string>[];
     clients?: IClient[];
     invoiceData: IInvoice;
+    layoutTheme: InvoiceLayoutTheme;
   }>(),
   {
     type: "INVOICE",
     imageUrl: "/logo.png",
+    layoutTheme: () => ({
+      headerLogoPosition: "left",
+    }),
   }
 );
-
-interface ILineItem {
-  quantity: number;
-  price: number;
-}
 
 const state: any = reactive({
   totalValues: {},
@@ -134,7 +137,7 @@ const removePayment = async (payment: Record<string, string>) => {
 
 <template>
   <section class="relative w-full rounded-md simple-template">
-    <div class="section-body relative">
+    <div class="relative section-body">
       <header class="pt-4 text-sm print:pt-0 invoice__header">
         <section class="flex justify-between w-full px-4 invoice-details">
           <article class="flex items-center w-full">
