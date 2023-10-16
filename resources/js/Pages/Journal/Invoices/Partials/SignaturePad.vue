@@ -4,7 +4,7 @@
 /> -->
   <section v-if="!editable">
     <p class="relative h-12 text-6xl border-b signature__input pt-auto firma">
-      {{ currentSignature.text }}
+      {{ currentSignature?.text }}
     </p>
     <article class="justify-center w-full text-center capitalize">
       <div class="font-bold">{{ label }}</div>
@@ -55,5 +55,12 @@ const currentSignature = computed(() => {
 <style>
 .firma {
   font-family: "Tangerine", cursive;
+}
+
+@media print {
+  .firma {
+    font-family: "Tangerine", cursive;
+    font-size: 16px;
+  }
 }
 </style>

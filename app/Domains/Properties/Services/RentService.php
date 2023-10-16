@@ -2,20 +2,20 @@
 
 namespace App\Domains\Properties\Services;
 
-use App\Domains\Accounting\Helpers\InvoiceHelper;
-use App\Domains\CRM\Enums\ClientStatus;
-use App\Domains\CRM\Models\Client;
-use App\Domains\Properties\Models\Property;
-use App\Domains\Properties\Models\PropertyUnit;
-use App\Domains\Properties\Models\Rent;
+use Exception;
 use App\Models\Team;
 use App\Models\User;
-use App\Notifications\ExpiringRentNotice;
-use Exception;
+use App\Domains\CRM\Models\Client;
 use Illuminate\Support\Facades\DB;
+use App\Domains\CRM\Enums\ClientStatus;
+use App\Domains\Properties\Models\Rent;
 use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Core\Payment;
+use App\Notifications\ExpiringRentNotice;
 use Insane\Journal\Models\Invoice\Invoice;
+use App\Domains\Properties\Models\Property;
+use App\Domains\Properties\Models\PropertyUnit;
+use App\Domains\Accounting\Helpers\InvoiceHelper;
 use Insane\Journal\Models\Invoice\InvoiceLineTax;
 
 class RentService {
@@ -420,11 +420,11 @@ class RentService {
 
     public static function payInvoice(Rent $rent, Invoice $invoice, mixed $postData) {
         if ($invoice->invoiceable_id != $rent->id || $invoice->invoiceable_type !== Rent::class) {
-          throw new Exception("This invoice doesn't belongs to this rent");
+          throw new Exception(__("This invoice doesn't belongs to this rent"));
         }
 
         if ($invoice && $invoice->debt <= 0) {
-            throw new Exception("This invoice is already paid");
+            throw new Exception(__("This invoice is already paid"));
         }
 
         DB::transaction(function () use ($invoice, $postData, $rent) {

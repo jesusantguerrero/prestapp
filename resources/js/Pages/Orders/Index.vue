@@ -191,7 +191,7 @@ const onDelete = async (invoice: IInvoice) => {
             :has-filters="true"
           />
         </section>
-        <AppButton>
+        <AppButton @click="$inertia.visit(route('dropshipping.invoices.create'))">
           {{ $t("Create invoice") }}
         </AppButton>
       </section>

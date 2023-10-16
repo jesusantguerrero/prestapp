@@ -201,14 +201,14 @@ class InvoiceController
           return $response->sendContent($invoice);
       }
       return Redirect()->back();
-  }
+    }
 
     /**
     * Show the form for editing a resource.
     *
     * @return \Illuminate\Http\Response
     */
-    public function publicPreview(int $invoiceId)
+    public function publicPreview(int $invoiceId, SignatureService $signatureService)
     {
       try {
         $invoice = $this->getInvoiceSecured($invoiceId, false);
@@ -220,10 +220,14 @@ class InvoiceController
         }
 
         $response = [
-          'invoice' => $invoice->getInvoiceData(),
+          'invoice' => [
+            ...$invoice->getInvoiceData(),
+            "signatures" => $signatureService->getSignatures($invoice)
+          ],
           'businessData' => Setting::getByTeam($invoice->team_id),
           'type' => $invoice->type,
-          "report" => $report ?? []
+          "report" => $report ?? [],
+
         ];
 
         if ($isJson) {

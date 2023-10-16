@@ -82,7 +82,7 @@ const onSubmit = () => {
     <template #content>
       <div class="modal-body">
         <div class="w-full px-5 py-2 border">
-          <h4 class="font-bold">{{ $t("Your signature") }}</h4>
+          <h4 class="font-bold capitalize">{{ $t("your signature") }}</h4>
           <SignaturePad
             ref="signatureRef"
             v-model="formData.text"
@@ -101,7 +101,7 @@ const onSubmit = () => {
           :processing="formData.processing"
           :disabled="disabled"
         >
-          {{ $t("Confirm signature") }}
+          {{ $t("confirm signature") }}
         </AppButton>
       </div>
     </template>

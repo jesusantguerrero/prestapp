@@ -28,7 +28,7 @@ export default [
     headerClass: 'text-right'
   },
   {
-    label: "Discount %",
+    label: "Descuento %",
     name: "discount",
     width: "100",
     class: "text-right",
@@ -48,7 +48,7 @@ export default [
     class: "text-center",
     headerClass: 'text-center',
     render(row: any) {
-      return row.taxes?.map(row => `${formatMoney(row.amount)} ${!row.isFixed &&  '(' + row.rate + '%)'}`).join(', ')
+      return row.taxes?.map((row: any) => `${formatMoney(row.amount)} ${!row.isFixed &&  '(' + row.rate + '%)'}`).join(', ')
     }
   },
   {

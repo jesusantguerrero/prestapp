@@ -8,7 +8,7 @@ import OrderFormVendor from "./OrderFormVendor.vue";
 import OrderFormItems from "./OrderFormItems.vue";
 import OrderFormReview from "./OrderFormReview.vue";
 
-import { formatDate } from "@/utils";
+import { formatDate, formatMoney } from "@/utils";
 import { IClient } from "@/Modules/clients/clientEntity";
 import { InvoiceItem, ILineItem } from "@/Modules/invoicing/entities";
 import LoanSummary from "@/Pages/Loans/Partials/LoanSummary.vue";
@@ -125,41 +125,24 @@ const subtotal = computed(() => {
 
 const discount = computed(() =>
   invoiceForm.lines.reduce((total, row: ILineItem) => {
-    total += row.quantity * row.price;
+    total += row.quantity * row.price * parseFloat(row.discount ?? 0);
     return total;
   }, 0)
 );
+
 const total = computed(() => {
-  return subtotal.value - discount.value;
+  return subtotal.value - parseFloat(discount.value ?? 0);
 });
 </script>
 
 <template>
   <section class="flex space-x-8">
-    <section class="w-8/12 bg-base-lvl-3 px-4 rounded-md pt-8">
+    <section class="w-8/12 px-4 pt-8 rounded-md bg-base-lvl-3">
       <OrderFormItems :model-value="invoiceForm" @update:model-value="handleUpdate" />
-
-      <footer>
-        <footer class="flex justify-end mt-auto space-x-2 md:mt-16 md:px-32 pb-8">
-          <AppButton variant="neutral" @click="prev()" class="w-full capitalize md:w-fit">
-            {{ $t("back") }}
-          </AppButton>
-          <AppButton
-            variant="inverse"
-            rounded
-            class="w-full capitalize md:w-fit"
-            :processing="isProcessing"
-            :disabled="isProcessing"
-            @click="next()"
-          >
-            {{ $t(nextButtonLabel) }}
-          </AppButton>
-        </footer>
-      </footer>
     </section>
-    <section class="rounded-md w-4/12 space-y-4">
+    <section class="w-4/12 space-y-4 rounded-md">
       <section
-        class="w-full mt-4 px-4 md:mt-0 rounded-md bg-white shadow-md relative overflow-hidden"
+        class="relative w-full px-4 mt-4 overflow-hidden bg-white rounded-md shadow-md md:mt-0"
       >
         <OrderFormVendor :model-value="invoiceForm" @update:model-value="handleUpdate" />
         <OrderFormReview
@@ -173,20 +156,22 @@ const total = computed(() => {
         class="w-full mt-4 md:mt-0 rounded-md bg-white shadow-md relative overflow-hidden grid gap-4 grid-cols-1 grid-rows-[1fr_50px]"
       >
         <section class="w-full px-4 overflow-hidden text-body-1">
-          <header class="py-4 font-bold">{{ $t("Invoice summary") }}</header>
+          <header class="py-4 font-bold first-letter:capitalize">
+            {{ $t("invoice summary") }}
+          </header>
           <LoanSummary
             :cards="[
               {
-                label: $t('Subtotal'),
-                value: subtotal,
+                label: $t('subtotal'),
+                value: formatMoney(subtotal),
               },
               {
-                label: $t('Discount'),
-                value: discount,
+                label: $t('discount'),
+                value: formatMoney(discount),
               },
               {
-                label: $t('Discount'),
-                value: total,
+                label: $t('total'),
+                value: formatMoney(total),
               },
             ]"
           />

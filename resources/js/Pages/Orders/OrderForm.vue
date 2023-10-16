@@ -6,6 +6,7 @@ import OrderFormTemplate from "./Partials/OrderFormTemplate.vue";
 
 import { IClient } from "@/Modules/clients/clientEntity";
 import { IInvoice } from "@/Modules/invoicing/entities";
+import DropshippingSectionNav from "./Partials/DropshippingSectionNav.vue";
 
 const props = defineProps<{
   invoices: IInvoice;
@@ -42,7 +43,11 @@ const onSubmit = (formData: Record<string, any>) => {
 
 <template>
   <AppLayout :title="$t('Create order')">
-    <main class="w-full px-5 py-5 pb-24 rounded-md rent-form md:pb-4 text-body-1">
+    <template #header>
+      <DropshippingSectionNav />
+    </template>
+
+    <main class="w-full px-5 py-10 pb-24 rounded-md rent-form md:pb-4 text-body-1">
       <OrderFormTemplate
         :data="invoices"
         :client="client"
