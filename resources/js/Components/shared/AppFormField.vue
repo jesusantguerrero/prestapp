@@ -18,7 +18,11 @@ withDefaults(
 </script>
 
 <template>
-  <AtField :label="label" class="w-full text-secondary font-bold" :required="required">
+  <AtField
+    :label="label"
+    class="w-full capitalize text-secondary font-bold"
+    :required="required"
+  >
     <slot>
       <AtInput
         :model-value="modelValue"

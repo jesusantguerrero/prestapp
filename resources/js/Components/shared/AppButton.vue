@@ -1,8 +1,9 @@
 <template>
   <AtButton
-    class="inline-block font-bold items-center flex transition border rounded-md min-w-max"
+    class="inline-block font-bold items-center capitalize flex transition border rounded-md min-w-max"
     :class="[typeClasses]"
     :size="size"
+    :attr-type="type"
     :disabled="processing | disabled"
   >
     <component :is="icon" v-if="icon" />
@@ -42,6 +43,9 @@ const props = defineProps({
   },
   disabled: {
     type: Boolean,
+  },
+  type: {
+    type: String,
   },
   size: {
     type: String,

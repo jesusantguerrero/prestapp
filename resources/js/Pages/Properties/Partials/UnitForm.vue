@@ -23,7 +23,7 @@ defineProps<{
           </span>
         </template>
       </AppFormField>
-      <AppFormField class="w-full" label="Habitaciones" v-model="unit.bedrooms" rounded>
+      <AppFormField class="w-full" :label="$t('rooms')" v-model="unit.bedrooms" rounded>
         <template #prefix>
           <span class="inline-blocks h-full flex items-center px-2">
             <IIcTwotoneBed />
@@ -44,11 +44,11 @@ defineProps<{
         </template>
       </AppFormField>
     </section>
-    <AppFormField label="Notas/Detalles">
+    <AppFormField :label="$t('description')">
       <AtTextarea
         v-model="unit.description"
         class="w-full p-2 border focus:outline-none"
-        placeholder="Descripcion de la propiedad"
+        :placeholder="$t('Notes, description, details...')"
       />
     </AppFormField>
   </section>

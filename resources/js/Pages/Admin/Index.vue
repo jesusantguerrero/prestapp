@@ -63,12 +63,12 @@ const appStats = [
 
 const propertyStats = [
   {
-    label: "Unidades",
+    label: "Units",
     icon: "fa-money",
     value: `${props.stats?.units || 0}`,
   },
   {
-    label: "Propiedades",
+    label: "Properties",
     icon: "fa-money",
     value: `${props.stats?.properties || 0}`,
   },
@@ -140,7 +140,7 @@ const comparisonRevenue = {
               variant="inverse"
               @click="router.visit(route('properties.create'))"
             >
-              Agregar Contrato
+              {{ $t("add rent") }}
             </AppButton>
           </header>
           <section class="px-5 space-y-4">
@@ -165,7 +165,7 @@ const comparisonRevenue = {
         />
 
         <WelcomeWidget
-          message="Unidades recientes"
+          message="Recent units"
           class="text-body-1 w-full shadow-md"
           :cards="propertyStats"
           v-if="false"

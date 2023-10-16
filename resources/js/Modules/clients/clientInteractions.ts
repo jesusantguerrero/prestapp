@@ -13,7 +13,9 @@ class ClientInteractions {
             [`is_${type}`]: true,
         }
         return new Promise((resolve, reject) => {
-            router.post('/clients', formData, {
+          const method = formData.id ? 'put' : 'post';
+          const url  = !formData.id ? '/clients' : `/clients/${formData.id}`;
+            router[method](url, formData, {
                 onSuccess(data: IClient) {
                     resolve(data)
                 },

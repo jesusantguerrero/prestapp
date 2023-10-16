@@ -1,183 +1,295 @@
-<script setup lang="ts">
-import { Link } from "@inertiajs/vue3";
-import { computed, ref, toRefs } from "vue";
-import { router } from "@inertiajs/core";
+<script lang="ts" setup>
+import { reactive, watch, nextTick, ref } from "vue";
+import { router } from "@inertiajs/vue3";
 
-// @ts-ignore: its my template
 import AppLayout from "@/Components/templates/AppLayout.vue";
-import AtTable from "@/Components/shared/BaseTable.vue";
+import InvoiceTable from "@/Components/templates/InvoiceTable";
+
+import { formatMoney } from "@/utils";
 import AppButton from "@/Components/shared/AppButton.vue";
-import PropertySectionNav from "../Properties/Partials/PropertySectionNav.vue";
-import BaseSelect from "@/Components/shared/BaseSelect.vue";
-
-import cols from "./cols";
-import { IRent } from "@/Modules/property/propertyEntity";
-import { getRangeParams } from "@/utils";
+import { IInvoice } from "@/Modules/invoicing/entities";
+import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
+import { usePrint } from "@/utils/usePrint";
+import Simple from "@/Pages/Journal/Invoices/printTemplates/Index.vue";
 import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
-import { IServerSearchData, useServerSearch } from "@/utils/useServerSearch";
+import {
+  clientInteractions,
+  InteractionsState,
+} from "@/Modules/clients/clientInteractions";
 import { ElMessageBox } from "element-plus";
-import { rentStatus } from "@/Modules/properties/constants";
-import ContractCardMini from "@/Components/templates/ContractCardMini.vue";
-import { useResponsive } from "@/utils/useResponsive";
-import AppButtonTab from "@/Components/shared/AppButtonTab.vue";
+import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
+import axios from "axios";
+import DropshippingSectionNav from "./Partials/DropshippingSectionNav.vue";
 
-interface IPaginatedData {
-  data: IRent[];
+const props = defineProps({
+  orders: {
+    type: Array,
+  },
+  type: {
+    type: String,
+  },
+  outstanding: {
+    type: Number,
+  },
+  paid: {
+    type: Number,
+  },
+  lateDays: {
+    type: Number,
+  },
+  properties: {
+    type: Array,
+    default() {
+      return [];
+    },
+  },
+  owners: {
+    type: Array,
+    default() {
+      return [];
+    },
+  },
+  businessData: {
+    type: Object,
+    required: true,
+  },
+  user: {
+    type: Object,
+  },
+  section: {
+    type: String,
+  },
+});
+
+interface IFilter {
+  [key: string]: null | string | Record<string, string>;
 }
 
-const props = defineProps<{
-  orders: IRent[] | IPaginatedData;
-  kpis: Record<string, number>;
-  serverSearchOptions: IServerSearchData;
-}>();
+const filters = reactive<IFilter>({
+  owner: null,
+  property: null,
+  section: props.section,
+});
 
-const { serverSearchOptions } = toRefs(props);
-const {
-  executeSearch,
-  updateSearch,
-  changeSize,
-  paginate,
-  reset,
-  state: searchState,
-} = useServerSearch(
-  serverSearchOptions,
-  (finalUrl: string) => {
-    updateSearch(`/rents?${finalUrl}`);
+watch(
+  () => filters,
+  () => {
+    const selectedFilters = Object.entries(filters).reduce(
+      (acc: Record<string, string | undefined>, [filterName, filter]) => {
+        acc[filterName] = filter?.value ?? filter;
+        return acc;
+      },
+      {}
+    );
+
+    router.get(
+      location.pathname,
+      {
+        // @ts-ignore
+        filters: selectedFilters,
+      },
+      { preserveState: true }
+    );
   },
-  {
-    manual: true,
-  }
+  { deep: true }
 );
 
-const filters = ref({
-  status:
-    rentStatus.find((status) => status.name === searchState.filters.status) ??
-    rentStatus[0],
-  endDate: null,
-});
+const { openModal } = usePaymentModal();
 
-const onStateSelected = (statusName: string) => {
-  searchState.filters.status = statusName !== "TOTAL" ? statusName : "";
-  executeSearch();
+const handlePayment = (invoice: IInvoice) => {
+  const payment = {
+    ...invoice,
+    // @ts-ignore solve backend sending decimals as strings
+    amount: parseFloat(invoice.debt) || invoice.total,
+    id: undefined,
+    invoice_id: invoice.id,
+  };
+
+  const urls: Record<string, string> = {
+    invoices: `/invoices/${invoice?.id}/payment`,
+  };
+
+  const url = urls[filters.section] ?? urls.invoices;
+
+  nextTick(() => {
+    openModal({
+      data: {
+        title: `Pagar ${invoice.concept}`,
+        payment: payment,
+        endpoint: url,
+        due: invoice.debt,
+        defaultConcept: "Pago de " + invoice.concept,
+        accountsEndpoint: "/api/accounts",
+      },
+    });
+  });
 };
 
-const setRange = (field: string, range: number[]) => {
-  const params = getRangeParams(field, range);
-  router.get(
-    `/rents?${params}`,
-    {},
-    {
-      preserveState: true,
-    }
-  );
-};
-const listData = computed(() => {
-  return Array.isArray(props.orders) ? props.orders : props.orders.data;
-});
+interface InvoiceResponse {
+  invoice: IInvoice;
+  businessData: Record<string, string>;
+}
 
-const tableConfig = {
-  selectable: true,
-  searchBar: true,
-  pagination: true,
-};
+const selectedInvoice = ref<InvoiceResponse | null>(null);
 
-const deleteRent = async (rent: IRent) => {
+const { customPrint } = usePrint();
+const isPrinting = ref<number | boolean>(false);
+function printExternal(invoice: IInvoice) {
+  debugger;
+  isPrinting.value = invoice.id;
+  axios
+    .get(`/invoices/${invoice.id}/preview?json=true`)
+    .then(({ data }) => {
+      selectedInvoice.value = data;
+      nextTick(() => {
+        customPrint("invoice-content", {
+          beforePrint() {
+            selectedInvoice.value = null;
+          },
+          delay: 800,
+        });
+      });
+    })
+    .then(() => {
+      isPrinting.value = false;
+    });
+}
+
+const onDelete = async (invoice: IInvoice) => {
   const isValid = await ElMessageBox.confirm(
-    `Estas seguro de eliminar el contrato de ${rent.address} ${rent.client_name}?`,
-    "Eliminar contrato"
+    `Estas seguro de eliminar la factura ${invoice.concept} por ${formatMoney(
+      invoice.total
+    )}?`,
+    "Eliminar factura"
   );
+
   if (isValid) {
-    router.delete(route("rents.destroy", rent), {
+    router.delete(`/invoices/${invoice.id}`, {
       onSuccess() {
-        router.reload();
+        router.reload({
+          preserveState: true,
+          preserveScroll: true,
+        });
       },
     });
   }
 };
-
-const { isMobile } = useResponsive();
-
-const statusTabs = computed(() => {
-  return Object.entries(rentStatus).map(([name, value]) => ({
-    ...value,
-    name,
-    count: props?.kpis[name?.toUpperCase?.()] ?? 0,
-  }));
-});
 </script>
 
 <template>
-  <AppLayout :title="$t('orders')">
+  <AppLayout title="Centro de pago">
     <template #header>
-      <PropertySectionNav />
+      <DropshippingSectionNav />
     </template>
 
-    <main class="py-16 -mx-4 md:mx-0">
-      <section class="flex space-x-4">
-        <AppSearch
-          v-model.lazy="searchState.search"
-          class="w-full md:flex capitalize"
-          :has-filters="true"
-          @clear="reset()"
-          @search="executeSearch"
-          @blur="executeSearch"
-        />
-        <AppButton
-          class="capitalize"
-          @click="router.visit(route('orders.create'))"
-          v-if="!isMobile"
-        >
-          {{ $t("add order") }}
+    <div class="py-10 mx-auto sm:px-6 lg:px-8 print:hidden">
+      <section class="flex justify-end mt-4 space-x-4">
+        <section>
+          <AppSearch
+            v-model.lazy="filters.search"
+            class="w-3/12 md:flex"
+            :has-filters="true"
+          />
+        </section>
+        <AppButton>
+          {{ $t("Create invoice") }}
         </AppButton>
       </section>
-
-      <section class="grid grid-cols-3 gap-2 mt-2 md:flex md:space-x-2">
-        <AppButtonTab
-          v-for="(status, stateName) in kpis"
-          class="capitalize text-xs bg-primary/20 rounded-md"
-          @click="onStateSelected(stateName)"
-        >
-          {{ $t(stateName) }} ({{ status }})
-        </AppButtonTab>
-      </section>
-      <AtTable
-        class="mt-4 md:bg-white rounded-md text-body-1"
-        :table-data="listData"
-        :cols="cols"
-        :pagination="searchState"
-        :total="orders.total"
-        responsive
-        @search="executeSearch"
-        @paginate="paginate"
-        @size-change="changeSize"
-        :config="tableConfig"
-      >
-        <template v-slot:card="{ row }">
-          <ContractCardMini
-            :contract="row"
-            class="mb-6 shadow-md w-full py-6 px-4 border bg-base-lvl-3"
-          />
-        </template>
-        <template v-slot:actions="{ scope: { row } }" class="flex">
-          <div class="flex items-center justify-end">
-            <UnitTag :status="row.status" />
-
-            <Link
-              class="relative inline-block px-5 py-2 ml-4 overflow-hidden font-bold transition rounded-md cursor-pointer hover:bg-primary hover:text-white text-body focus:outline-none hover:bg-opacity-80 min-w-max"
-              :href="`/orders/${row.id}`"
-            >
-              <IMdiChevronRight />
-            </Link>
-            <AppButton
-              variant="neutral"
-              class="flex flex-col items-center justify-center transition hover:text-error hover:border-red-400"
-              @click="deleteRent(row)"
-            >
-              <IMdiTrash />
-            </AppButton>
+      <InvoiceTable :invoice-data="orders" class="mt-10 rounded-md bg-base-lvl-3">
+        <template v-slot:actions="{ row }">
+          <div class="flex items-center justify-end space-x-2s group">
+            <div class="text-sm font-bold capitalize" :class="getStatusColor(row.status)">
+              <i :class="getStatusIcon(row.status)" />
+              {{ getStatus(row.status) }}
+            </div>
+            <div class="flex">
+              <Link
+                class="relative inline-block px-5 py-2 ml-4 overflow-hidden font-bold transition rounded-md cursor-pointer hover:bg-primary hover:text-white text-body focus:outline-none hover:bg-opacity-80 min-w-max"
+                :href="`/properties/${row.property_id}?unit=${row.id}`"
+              >
+                <IMdiChevronRight />
+              </Link>
+              <AppButton
+                @click="handlePayment(row)"
+                variant="inverse-secondary"
+                class="flex items-center justify-center"
+                v-if="row?.status !== 'paid'"
+                :title="$t('Pay')"
+              >
+                <IIcSharpPayment />
+              </AppButton>
+              <div class="flex space-x-2">
+                <AppButton
+                  class="flex flex-col items-center justify-center transition hover:text-primary hover:border-primary-400"
+                  variant="neutral"
+                  title="Imprimir"
+                  :processing="isPrinting == row.id"
+                  :disabled="isPrinting == row.id"
+                  @click="printExternal(row)"
+                >
+                  <IMdiFile />
+                </AppButton>
+                <AppButton
+                  class="mr-2"
+                  variant="neutral"
+                  :process="InteractionsState.isGeneratingDistribution"
+                  @click="route('dropshipping.invoices.edit', row)"
+                >
+                  {{ $t("edit") }}
+                </AppButton>
+              </div>
+              <AppButton
+                variant="neutral"
+                class="flex flex-col items-center justify-center transition hover:text-error hover:border-red-400"
+                @click="onDelete(row)"
+                title="Eliminar"
+              >
+                <IMdiTrash />
+              </AppButton>
+            </div>
           </div>
         </template>
-      </AtTable>
-    </main>
+      </InvoiceTable>
+    </div>
+    <div id="invoice-content" v-if="selectedInvoice">
+      <Simple
+        v-if="selectedInvoice?.invoice"
+        :user="user"
+        :type="type"
+        :imageUrl="$page.props.user.current_team?.profile_photo_url"
+        :business-data="selectedInvoice.businessData"
+        :invoice-data="selectedInvoice.invoice"
+      />
+    </div>
   </AppLayout>
 </template>
+
+<style lang="scss" scoped>
+.body-section {
+  background: white;
+  padding: 15px;
+}
+
+.el-table th {
+  font-weight: bolder;
+  color: #222 !important;
+}
+
+.section-actions {
+  display: flex;
+
+  .app-search__container {
+    width: 80%;
+    margin-right: 15px;
+  }
+
+  .action-buttons {
+    width: 20%;
+    display: flex;
+
+    button {
+      margin-left: auto;
+    }
+  }
+}
+</style>

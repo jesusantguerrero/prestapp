@@ -1,6 +1,6 @@
 <template>
   <div class="py-10 mx-auto max-w-7xl sm:px-6 lg:px-8">
-    <invoice-template
+    <InvoiceTemplate
       ref="InvoiceTemplateForm"
       :is-editing="true"
       :clients="clients"
@@ -15,10 +15,16 @@
 import { provide, ref } from "vue";
 import InvoiceTemplate from "./Partials/InvoiceTemplate.vue";
 
-defineProps(["invoice", "clients", "products", "categories", "availableTaxes"]);
+const props = defineProps([
+  "invoice",
+  "clients",
+  "products",
+  "categories",
+  "availableTaxes",
+]);
 
-const InvoiceTemplateForm = ref(null);
-const saveForm = (isApplied) => {
+const InvoiceTemplateForm = ref();
+const saveForm = (isApplied: boolean) => {
   InvoiceTemplateForm.value.saveForm(isApplied);
 };
 

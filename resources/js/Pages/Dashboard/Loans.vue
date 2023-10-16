@@ -225,7 +225,7 @@ export default {
                 })
               "
             >
-              Agregar fondos
+             {{ $t("Add funds")}}
             </AtButton>
           </template>
         </AtBackgroundIconCard>

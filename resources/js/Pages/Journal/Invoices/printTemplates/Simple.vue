@@ -11,7 +11,7 @@ import BusinessCard from "./BusinessCard.vue";
 
 import { IClient } from "@/Modules/clients/clientEntity";
 import { formatDate } from "@/utils";
-import { IInvoice } from "@/Modules/invoicing/entities";
+import { IInvoice, ILineItem } from "@/Modules/invoicing/entities";
 import { ElMessageBox, ElNotification } from "element-plus";
 import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
 import { IPayment } from "@/Modules/loans/loanEntity";
@@ -31,11 +31,6 @@ const props = withDefaults(
     imageUrl: "/logo.png",
   }
 );
-
-interface ILineItem {
-  quantity: number;
-  price: number;
-}
 
 const state: any = reactive({
   totalValues: {},
@@ -349,7 +344,9 @@ const removePayment = async (payment: Record<string, string>) => {
   text-transform: uppercase;
   border-radius: 1rem;
   font-family: "Courier";
+  mask-image: url("/grunge.png");
   -webkit-mask-image: url("/grunge.png");
+  mask-size: 944px 604px;
   -webkit-mask-size: 944px 604px;
   mix-blend-mode: multiply;
   position: absolute;
@@ -360,6 +357,7 @@ const removePayment = async (payment: Record<string, string>) => {
 .is-approved {
   color: #0a9928;
   border: 0.5rem solid #0a9928;
+  mask-position: 13rem 6rem;
   -webkit-mask-position: 13rem 6rem;
   transform: rotate(-14deg);
   font-size: 2rem;

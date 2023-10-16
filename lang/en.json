@@ -5,6 +5,7 @@
     "LATE": "LATE",
     "new": "New"
   },
+  ":owner, (:invoiceCount) invoices": "{owner}, ({invoiceCount} invoices)",
   "validation": {
     "unique": ""
   },

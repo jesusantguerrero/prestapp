@@ -12,10 +12,10 @@ import { getPropertyStatus, getPropertyStatusColor } from "@/Modules/properties/
 import IconMarkerVue from '@/Components/icons/IconMarker.vue';
 
 
-export default [
+export default (t = (text: string) => text) => ([
     {
         name: 'address',
-        label: 'Dirección',
+        label: t('Address'),
         class: "text-left",
         width: 500,
         render(row: IProperty) {
@@ -36,7 +36,7 @@ export default [
     },
     {
         name: 'balance',
-        label: 'Balance Pendiente',
+        label: t('Pending balance'),
         align: 'right',
         class: 'text-right pr-4',
         width: 200,
@@ -47,7 +47,7 @@ export default [
     },
     {
         name: 'status',
-        label: 'Estado',
+        label: t('Status'),
         width: 300,
         render(row: IProperty) {
             // @ts-ignore: got the right types
@@ -58,4 +58,4 @@ export default [
         name: 'actions',
         label: ' '
     }
-]
+]);

@@ -24,8 +24,8 @@
   </AppLayout>
 </template>
 
-<script setup>
-import { provide, ref, onMounted } from "vue";
+<script setup lang="ts">
+import { provide, ref } from "vue";
 
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import InvoiceTemplate from "./Partials/InvoiceTemplate.vue";
@@ -41,14 +41,10 @@ const props = defineProps([
   "type",
 ]);
 
-const InvoiceTemplateForm = ref(null);
-const saveForm = (isApplied) => {
+const InvoiceTemplateForm = ref();
+const saveForm = (isApplied: boolean) => {
   InvoiceTemplateForm.value.saveForm(isApplied);
 };
-
-onMounted(() => {
-  console.log(props.type, props.invoice.type);
-});
 
 provide("categories", props.categories);
 </script>

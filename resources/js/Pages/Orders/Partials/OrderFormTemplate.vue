@@ -1,135 +1,75 @@
 <script setup lang="ts">
-import { watch, computed, ref, reactive, nextTick } from "vue";
+import { watch, computed, ref, reactive } from "vue";
 import { addMonths, parseISO } from "date-fns";
-// @ts-ignore: has no ts definitions but is my package
-import { AtSteps, AtStep } from "atmosphere-ui";
 
 import AppButton from "@/Components/shared/AppButton.vue";
 
 import OrderFormVendor from "./OrderFormVendor.vue";
 import OrderFormItems from "./OrderFormItems.vue";
 import OrderFormReview from "./OrderFormReview.vue";
-import OrderFormSend from "./OrderFormSend.vue";
 
-import { dateToIso, formatDate } from "@/utils";
+import { formatDate } from "@/utils";
 import { IClient } from "@/Modules/clients/clientEntity";
-import { IProperty, IUnit } from "@/Modules/properties/propertyEntity";
+import { InvoiceItem, ILineItem } from "@/Modules/invoicing/entities";
+import LoanSummary from "@/Pages/Loans/Partials/LoanSummary.vue";
 
 const props = defineProps<{
   data: Record<string, any>;
   isProcessing: boolean;
   client: IClient;
-  unit: IUnit;
-  property: IProperty;
 }>();
 
 const emit = defineEmits(["submit"]);
 
-const rentForm = reactive({
+const invoiceForm = reactive({
   id: null,
-  property_id: props.property?.id,
-  property: props.property,
-  unit_id: props.unit?.id,
-  unit: props.unit,
   is_new_client: false,
   client_id: props.client?.id,
   client: props.client,
   client_name: "",
   date: new Date(),
-  deposit: props.unit?.price,
   deposit_due: new Date(),
   deposit_reference: "",
   is_deposit_received: false,
   payment_account_id: null,
   payment_method: "",
-  amount: props.unit?.price,
   first_invoice_date: addMonths(new Date(), 1),
   next_invoice_date: addMonths(new Date(), 1),
   end_date: null,
-  frequency: "MONTHLY",
   commission: 10,
   commission_type: "",
-  late_fee: 10,
-  late_fee_type: "",
-  grace_days: 0,
   status: "draft",
+  lines: [],
   additional_fees: [],
 });
 
 watch(
-  () => rentForm.unit,
-  (unit) => {
-    if (unit) {
-      rentForm.amount = unit.price;
-    }
-  },
-  {
-    immediate: true,
-  }
-);
-
-watch(
-  () => rentForm.deposit_due,
-  (date) => {
-    rentForm.date = date;
-  },
-  { immediate: true }
-);
-
-watch(
-  () => rentForm.date,
-  (date) => {
-    rentForm.first_invoice_date = addMonths(date, 1);
-  },
-  { immediate: true }
-);
-
-watch(
   () => props.data,
   (newValue) => {
-    if (!newValue) return;
-    Object.keys(rentForm).forEach((field: string) => {
+    if (!newValue || !Object.values(newValue).filter((value) => value).length) return;
+    Object.keys(invoiceForm).forEach((field: string) => {
       if (newValue[field]?.split && newValue[field]?.split("-").length == 3) {
         // @ts-ignore
-        rentForm[field] = parseISO(newValue[field]);
+        invoiceForm[field] = parseISO(newValue[field]);
       } else if (newValue) {
         // @ts-ignore
-        rentForm[field] = newValue[field];
+        invoiceForm[field] = newValue[field];
       }
     });
   },
   { deep: true, immediate: true }
 );
-
-watch(
-  () => props.property,
-  () => {
-    rentForm.property_id = props.property?.id;
-    rentForm.property = props.property;
-  },
-  {
-    immediate: true,
-  }
-);
-
-watch(
-  () => props.unit,
-  () => {
-    rentForm.unit_id = props.unit?.id;
-    rentForm.unit = props.unit;
-  },
-  {
-    immediate: true,
-  }
-);
-
 // Wizard
 const validations = [
   {
-    handle: () => rentForm.client || rentForm.client_name,
+    handle: () => invoiceForm.client || invoiceForm.client_name,
   },
   {
-    handle: () => true,
+    handle: () => {
+      return invoiceForm.lines.filter(
+        (item: InvoiceItem) => item.price && item.quantity && item.concept
+      ).length;
+    },
   },
   {
     handle: () => true,
@@ -140,75 +80,135 @@ const validateStep = () => {
 };
 const currentStep = ref(0);
 const nextButtonLabel = computed(() => {
-  const labels = ["items", "review order", "send", "send"];
+  const labels = ["items", "review order", "send"];
   return labels[currentStep.value];
 });
 
 const handleUpdate = (data: Record<string, any>) => {
-  Object.keys(rentForm).forEach((field) => {
+  Object.keys(invoiceForm).forEach((field) => {
     if (data[field]) {
-      rentForm[field] = data[field];
+      // @ts-ignore: it's ok not to be ok
+      invoiceForm[field] = data[field];
     }
   });
 };
 
 const onFinished = () => {
   const data = {
-    ...rentForm,
-    deposit_due: formatDate(rentForm.deposit_due, "yyyy-MM-dd"),
-    date: formatDate(rentForm.date, "yyyy-MM-dd"),
-    client_id: rentForm.client?.id,
+    ...invoiceForm,
+    date: formatDate(invoiceForm.date, "yyyy-MM-dd"),
+    client_id: invoiceForm.client?.id,
     status: "draft",
+    lines: invoiceForm.lines
+      .map((item: InvoiceItem, index) => ({
+        ...item,
+        index,
+        quantity: parseFloat(item.quantity),
+        price: parseFloat(item.price),
+        amount: parseFloat(item.quantity) * parseFloat(item.price),
+      }))
+      .filter((item) => item.concept),
   };
 
-  delete data.property;
+  // @ts-ignore: is optional
   delete data.client;
-  delete data.unit;
 
   emit("submit", data);
 };
+
+const subtotal = computed(() => {
+  return invoiceForm.lines.reduce((total, row: ILineItem) => {
+    total += row.quantity * row.price;
+    return total;
+  }, 0);
+});
+
+const discount = computed(() =>
+  invoiceForm.lines.reduce((total, row: ILineItem) => {
+    total += row.quantity * row.price;
+    return total;
+  }, 0)
+);
+const total = computed(() => {
+  return subtotal.value - discount.value;
+});
 </script>
 
 <template>
-  <AtSteps
-    v-model="currentStep"
-    finish-status="success"
-    simple
-    style="margin-top: 20px"
-    active-class="bg-primary text-white"
-    circle-active-color="bg-primary text-white"
-    load-shadow-color="shadow-primary"
-    @finished="onFinished"
-  >
-    <AtStep name="personal" :title="$t('Vendor data')" :before-change="validateStep">
-      <OrderFormVendor :model-value="rentForm" @update:model-value="handleUpdate" />
-    </AtStep>
-    <AtStep name="property" :title="$t('Propiedad')" :before-change="validateStep">
-      <OrderFormItems :model-value="rentForm" @update:model-value="handleUpdate" />
-    </AtStep>
-    <AtStep name="rent_details" :title="$t('Review order')" :before-change="validateStep">
-      <OrderFormReview :model-value="rentForm" @update:model-value="handleUpdate" />
-    </AtStep>
-    <AtStep name="fees" :title="$t('Send')">
-      <OrderFormSend :model-value="rentForm" @update:model-value="handleUpdate" />
-    </AtStep>
+  <section class="flex space-x-8">
+    <section class="w-8/12 bg-base-lvl-3 px-4 rounded-md pt-8">
+      <OrderFormItems :model-value="invoiceForm" @update:model-value="handleUpdate" />
 
-    <template v-slot:footer="{ prev, next }">
-      <footer class="flex justify-end space-x-2 mt-auto md:mt-16 md:px-32">
-        <AppButton variant="neutral" @click="prev()" class="w-full md:w-fit capitalize">
-          {{ $t("back") }}
-        </AppButton>
-        <AppButton
-          variant="inverse"
-          rounded
-          class="w-full md:w-fit capitalize"
-          :processing="isProcessing"
-          :disabled="isProcessing"
-          @click="next()"
-        >
-          {{ $t(nextButtonLabel) }}
-        </AppButton>
+      <footer>
+        <footer class="flex justify-end mt-auto space-x-2 md:mt-16 md:px-32 pb-8">
+          <AppButton variant="neutral" @click="prev()" class="w-full capitalize md:w-fit">
+            {{ $t("back") }}
+          </AppButton>
+          <AppButton
+            variant="inverse"
+            rounded
+            class="w-full capitalize md:w-fit"
+            :processing="isProcessing"
+            :disabled="isProcessing"
+            @click="next()"
+          >
+            {{ $t(nextButtonLabel) }}
+          </AppButton>
+        </footer>
       </footer>
-    </template>
-  </AtSteps>
+    </section>
+    <section class="rounded-md w-4/12 space-y-4">
+      <section
+        class="w-full mt-4 px-4 md:mt-0 rounded-md bg-white shadow-md relative overflow-hidden"
+      >
+        <OrderFormVendor :model-value="invoiceForm" @update:model-value="handleUpdate" />
+        <OrderFormReview
+          :model-value="invoiceForm"
+          @update:model-value="handleUpdate"
+          class="mt-4"
+        />
+      </section>
+
+      <article
+        class="w-full mt-4 md:mt-0 rounded-md bg-white shadow-md relative overflow-hidden grid gap-4 grid-cols-1 grid-rows-[1fr_50px]"
+      >
+        <section class="w-full px-4 overflow-hidden text-body-1">
+          <header class="py-4 font-bold">{{ $t("Invoice summary") }}</header>
+          <LoanSummary
+            :cards="[
+              {
+                label: $t('Subtotal'),
+                value: subtotal,
+              },
+              {
+                label: $t('Discount'),
+                value: discount,
+              },
+              {
+                label: $t('Discount'),
+                value: total,
+              },
+            ]"
+          />
+        </section>
+        <footer class="flex justify-between w-full px-4 py-1">
+          <AppButton
+            class="font-bold text-red-400 rounded-md bg-base-lvl-2"
+            variant="neutral"
+            @click="route('dropshipping.invoices')"
+          >
+            {{ $t("cancel") }}
+          </AppButton>
+          <AppButton
+            :processing="isProcessing"
+            variant="secondary"
+            @click="onFinished"
+            :disabled="isProcessing"
+          >
+            {{ $t("save invoice") }}
+          </AppButton>
+        </footer>
+      </article>
+    </section>
+  </section>
 </template>

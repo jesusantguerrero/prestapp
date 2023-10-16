@@ -359,7 +359,7 @@ return [
           "display_id" => "real_state",
           "alias" => "Cuenta de Inmobiliaria",
           "number" => 1103,
-          "name" => "Real State",
+          "name" => "Real Estate",
           "index" => 3,
           "balance_type" => "DEBIT"
         ],
@@ -368,7 +368,7 @@ return [
           "display_id" => "real_state_reserve",
           "alias" => "Reserva para inmobiliaria",
           "number" => 1104,
-          "name" => "Real State",
+          "name" => "Real Estate",
           "index" => 4,
           "balance_type" => "DEBIT"
         ],
@@ -378,7 +378,7 @@ return [
           "alias" => "Cuenta operativa de inmobiliaria",
           "number" => 1105,
           "description" => "Ganancias por concepto de manejo de propiedades",
-          "name" => "Real State",
+          "name" => "Real Estate",
           "index" => 5,
           "balance_type" => "DEBIT"
         ],

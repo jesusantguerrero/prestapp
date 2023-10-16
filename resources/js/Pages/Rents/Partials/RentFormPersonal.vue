@@ -33,7 +33,7 @@ const clientToggleText = computed(() => {
     <FormSection section-class="w-full -px-10">
       <div class="w-full mt-8">
         <header class="flex justify-between">
-          <label for="">Inquilino</label>
+          <label for="" class="capitalize">{{ $t("tenant") }}</label>
           <!-- <button
             @click.prevent.stop="formData.is_new_client = !formData.is_new_client"
             class="text-primary underline underline-offset-2"
@@ -44,7 +44,7 @@ const clientToggleText = computed(() => {
         <BaseSelect
           v-model="formData.client"
           endpoint="/api/clients?filter[is_tenant]=1"
-          placeholder="Selecciona un inquilino"
+          :placeholder="$t('select a tenant')"
           label="display_name"
           track-by="id"
           v-if="!formData.is_new_client"

@@ -2,16 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Insane\Treasurer\Billable;
 use Laravel\Jetstream\Events\TeamCreated;
 use Laravel\Jetstream\Events\TeamDeleted;
 use Laravel\Jetstream\Events\TeamUpdated;
+use App\Models\Traits\HasTeamProfilePhoto;
 use Laravel\Jetstream\Team as JetstreamTeam;
-use Insane\Treasurer\Billable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Team extends JetstreamTeam
 {
     use HasFactory;
+    use HasTeamProfilePhoto;
     use Billable;
 
     /**
@@ -31,6 +33,15 @@ class Team extends JetstreamTeam
     protected $fillable = [
         'name',
         'personal_team',
+    ];
+
+     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+      'profile_photo_url',
     ];
 
     /**
