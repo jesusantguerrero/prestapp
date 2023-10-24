@@ -108,11 +108,11 @@ const unitStats = [
 
 const ownerStats = computed(() => [
   {
-    label: "Owners",
+    label: t("Owners"),
     value: props.ownerStats?.total || 0,
   },
   {
-    label: "Paid in month",
+    label: t("Paid in month"),
     value: formatMoney(props.ownerStats?.paid || 0),
   },
 ]);

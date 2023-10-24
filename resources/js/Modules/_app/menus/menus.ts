@@ -12,6 +12,7 @@ export const MODULES = {
     LOAN: 'loan',
     INVOICING: 'invoicing',
     PROPERTY: 'property',
+    ACADEMIC: 'academic',
     AGENT: 'agent',
     ACCOUNTING: 'accounting',
     ADMIN: 'admin',
@@ -27,6 +28,15 @@ const menus = {
     }, {
         label: 'Create invoice',
         to: '/dropshipping/invoices/create',
+        as: Link,
+    }],
+    [MODULES.ACADEMIC]: [{
+        label: 'Academic years',
+        to: '/academic/periods',
+        as: Link,
+    }, {
+        label: 'Classrooms',
+        to: '/academic/classrooms',
         as: Link,
     }],
     [MODULES.LOAN]: [

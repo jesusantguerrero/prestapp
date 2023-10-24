@@ -77,6 +77,7 @@
     "Rent commissions": "Comisiones por renta",
     "rent": "Renta",
     "deposit": "Deposito",
+    "Invoices": "Facturas",
     "rent_late_fee": "Mora",
     "This month invoices": "Facturas del mes",
     "Next invoices": "Proximas facturas",
@@ -259,5 +260,17 @@
     "confirm signature": "Firmar",
     "your signature": "tu firmar",
     "signature": "firma",
-    "This invoice is already paid": "Esta factura esta pagada"
+    "This invoice is already paid": "Esta factura esta pagada",
+    "Academic years": "Años escolares",
+    "Academic": "Academico",
+    "Classrooms": "Cursos y secciones",
+    "Students": "Estudiantes",
+    "Parents": "Padres",
+    "Teachers": "Profesores",
+    "Paid in month": "Pagado este mes",
+    "Total units": "Unidades totales",
+    "Rented": "Rentadas",
+    "Available": "Disponibles",
+    "See all properties": "Ver propiedades",
+    "See details": "Ver detalles"
   }

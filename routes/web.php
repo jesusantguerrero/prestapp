@@ -66,7 +66,7 @@ Route::middleware([
     Route::post('/settings/current-team-photo', [SettingsController::class, 'updateTeamPhoto'])->name('team-profile-photo.update');
     Route::delete('/settings/current-team-photo', [SettingsController::class, 'deleteTeamPhoto'])->name('team-profile-photo.destroy');
     Route::get('/help', function() {
-    return inertia('Help');
+      return inertia('Help');
     });
 });
 
@@ -107,7 +107,6 @@ Route::middleware([
     // Bills
     Route::resource('/bills', InvoiceController::class);
   });
-
 
   // Admin
 Route::group([],  app_path('/Domains/Admin/routes.php'));

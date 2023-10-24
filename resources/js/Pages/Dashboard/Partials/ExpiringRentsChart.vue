@@ -27,8 +27,6 @@ import { useI18n } from "vue-i18n";
 import VueApexCharts from "vue3-apexcharts";
 import { computed, ref } from "vue";
 
-import formatMoney from "@/utils/formatMoney";
-
 const props = defineProps<{
   stats: {
     expired: number;

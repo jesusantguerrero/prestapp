@@ -4,10 +4,12 @@ import IMdiPlus from '~icons/mdi/plus-thick';
 import { MaybeRef } from "@vueuse/core";
 import sheinStore from "./menus/sheinStore";
 import renting from "./menus/renting";
+import academia from "./menus/academia";
 
 export const modules = {
     renting,
     "shein-store": sheinStore,
+    "icschool": academia,
 };
 
 export * from "./menus/menus";
