@@ -7,7 +7,7 @@ use App\Domains\CRM\Models\Client;
 use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Core\Payment;
 use Insane\Journal\Helpers\ReportHelper;
-use App\Domains\Admin\Data\AppProfileEnum;
+use App\Domains\Apps\Services\AppService;
 use Insane\Journal\Models\Invoice\Invoice;
 use App\Domains\CRM\Services\ClientService;
 use App\Domains\Loans\Services\LoanService;
@@ -24,6 +24,7 @@ class DashboardController extends Controller
 {
     use HasEnrichedRequest;
 
+    public function __construct(private AppService $appService) {}
     public function __invoke(Request $request, $section = "general")
     {
       return $this->$section($request);
@@ -38,33 +39,16 @@ class DashboardController extends Controller
       $startYear = now()->startOfYear()->format('Y-m-d');
       $endYear = now()->endOfYear()->format('Y-m-d');
 
-      $accounts = [
-        AppProfileEnum::Renting->value => [
-          'revenueAccounts' => ['real_state', 'loans', 'real_state_operative'],
-          'revenue' => ['real_state', 'loan_business', 'loans'],
-          "dailyBox" => 'loan_business',
-          'realEstate' => 'real_state',
-          'commissions' => 'real_state_operative'
-        ],
-        AppProfileEnum::SheinStore->value => [
-          'revenueAccounts' => ['cash_and_bank'],
-          'dailyBox' => "daily_box",
-          'realEstate' => 'daily_box',
-          'revenue' => ['cash_and_bank'],
-          'commissions' => 'daily_box'
-        ]
-      ];
-
-      $appAccounts = $accounts[request()->user()->currentTeam->app_profile_name ?? AppProfileEnum::Renting->value];
+      $appAccounts = $this->appService->getProfileAccounts();
 
       return inertia('Dashboard/Index',
       [
-          "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId, $appAccounts["revenueAccounts"], $startYear, $endYear, null)->all(), now()->format('Y')),
+          "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId, $appAccounts->revenueAccounts, $startYear, $endYear, null)->all(), now()->format('Y')),
           "stats" => AccountStatWidget::stats($teamId, $startDate, $endDate),
-          'accounts' => $reportHelper->getTransactionsByAccount($teamId, $appAccounts["revenue"] ,$startDate, $endDate, 'display_id'),
-          'paidCommissions' => AccountStatWidget::balanceInPeriodFor($appAccounts["commissions"], $teamId, $startDate, $endDate),
-          'dailyBox' => $reportHelper->smallBoxRevenue($appAccounts["dailyBox"], $teamId),
-          'realState' => Account::where(['team_id' => $teamId, 'display_id' => $appAccounts["realEstate"]])->first(),
+          'accounts' => $reportHelper->getTransactionsByAccount($teamId, $appAccounts->revenue ,$startDate, $endDate, 'display_id'),
+          'paidCommissions' => AccountStatWidget::balanceInPeriodFor($appAccounts->commissions, $teamId, $startDate, $endDate),
+          'dailyBox' => $reportHelper->smallBoxRevenue($appAccounts->dailyBox, $teamId),
+          'realState' => Account::where(['team_id' => $teamId, 'display_id' => $appAccounts->activity])->first(),
           'section' => "general",
           'pendingDraws' => OwnerService::pendingDrawsCount($teamId),
           "serverSearchOptions" => $this->getServerParams(),

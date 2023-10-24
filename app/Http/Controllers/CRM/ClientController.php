@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\CRM;
 
-use App\Domains\CRM\Data\ContactData;
-use App\Domains\CRM\Models\Client;
-use App\Domains\CRM\Services\ClientService;
-use App\Http\Controllers\InertiaController;
 use Exception;
 use Illuminate\Http\Request;
+use App\Domains\CRM\Models\Client;
+use App\Domains\CRM\Data\ContactData;
+use App\Domains\CRM\Services\ClientService;
+use App\Http\Controllers\InertiaController;
 
 class ClientController extends InertiaController
 {
@@ -37,7 +37,8 @@ class ClientController extends InertiaController
   protected function byTypes(Request $request, $type) {
     $resourceName = $this->resourceName ?? $this->model->getTable();
     $resources = $this->parser($this->getModelQuery($request,null, function ($builder) use ($type) {
-      $builder->where("is_$type", true);
+      $builder->when($type == 'owner' || $type == 'owner')->where("is_$type", true);
+      $builder->when($type != 'owner' && $type != 'owner')->where("type", $type);
     }));
 
     return inertia($this->templates['index'],
