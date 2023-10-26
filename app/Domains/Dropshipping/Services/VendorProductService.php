@@ -3,6 +3,7 @@
 namespace App\Domains\Dropshipping\Services;
 
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -30,6 +31,7 @@ class VendorProductService
         $id = "";
         $price = "";
         $error = $e->getMessage();
+        Log::error($e->getMessage());
       }
       // $price = $body->filter('.product-intro__head-mainprice .original.from')->first()->text() ?? 0;
 
