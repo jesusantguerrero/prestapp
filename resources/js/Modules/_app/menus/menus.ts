@@ -28,6 +28,7 @@ const menus = {
         label: 'Create invoice',
         to: '/dropshipping/invoices/create',
         as: Link,
+
     }],
     [MODULES.LOAN]: [
       {
