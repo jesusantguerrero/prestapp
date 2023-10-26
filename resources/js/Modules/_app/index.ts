@@ -28,7 +28,8 @@ interface IAppMenuItem {
 export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function, moduleName: string, role: string) => {
     const module = modules[moduleName];
     const appMenu: IAppMenuItem[] = module.menu.reduce((visibleItems: IAppMenuItem[], item: IAppMenuItem ) => {
-      if ((!item.roles || item.roles.includes(role)) && item?.hidden) {
+      if ((!item.roles || item.roles.includes(role)) && !item?.hidden) {
+
 
         visibleItems.push({
           ...item,

@@ -13,15 +13,14 @@ export default {
         },
         {
             icon: 'fas fa-money-check-alt',
-            label: 'Orders',
-            name: 'orders',
-            to: '/dropshipping-orders',
+            label: 'Invoices',
+            name: 'invoices',
+            to: '/dropshipping-invoices',
             as: Link,
             isActiveFunction(url: string, currentPath: string) {
-               return /dropshipping-orders/.test(currentPath)
+               return /dropshipping-invoices/.test(currentPath)
             },
             items: getSectionMenu(MODULES.ORDERS),
-            hidden: true,
         },
     ],
     headerMenu: [

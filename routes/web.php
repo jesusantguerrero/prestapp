@@ -103,6 +103,7 @@ Route::middleware([
     Route::post('/invoices/{id}/mark-as-paid', [InvoiceController::class, 'markAsPaid']);
     Route::delete('/invoices/{id}/payment/{paymentId}', [InvoiceController::class, 'deletePayment']);
     Route::get('/invoices/{invoice}/preview', [InvoiceController::class, 'publicPreview']);
+    Route::post('/invoices/{invoice}/sign', [InvoiceController::class, 'signInvoice']);
     // Bills
     Route::resource('/bills', InvoiceController::class);
   });

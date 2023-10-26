@@ -12,10 +12,8 @@ import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
 import { usePrint } from "@/utils/usePrint";
 import Simple from "@/Pages/Journal/Invoices/printTemplates/Index.vue";
 import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
-import {
-  clientInteractions,
-  InteractionsState,
-} from "@/Modules/clients/clientInteractions";
+import { InteractionsState } from "@/Modules/clients/clientInteractions";
+
 import { ElMessageBox } from "element-plus";
 import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
 import axios from "axios";
@@ -135,19 +133,24 @@ const selectedInvoice = ref<InvoiceResponse | null>(null);
 const { customPrint } = usePrint();
 const isPrinting = ref<number | boolean>(false);
 function printExternal(invoice: IInvoice) {
-  debugger;
+
   isPrinting.value = invoice.id;
   axios
     .get(`/invoices/${invoice.id}/preview?json=true`)
     .then(({ data }) => {
       selectedInvoice.value = data;
       nextTick(() => {
-        customPrint("invoice-content", {
-          beforePrint() {
-            selectedInvoice.value = null;
+        customPrint(
+          "invoice-content",
+          {
+            beforePrint() {
+              selectedInvoice.value = null;
+            },
+            delay: 800,
           },
-          delay: 800,
-        });
+          `${data.invoice?.concept}-${data.invoice?.client?.fullName}`
+        );
+
       });
     })
     .then(() => {
@@ -191,7 +194,7 @@ const onDelete = async (invoice: IInvoice) => {
             :has-filters="true"
           />
         </section>
-        <AppButton>
+        <AppButton @click="$inertia.visit(route('dropshipping.invoices.create'))">
           {{ $t("Create invoice") }}
         </AppButton>
       </section>

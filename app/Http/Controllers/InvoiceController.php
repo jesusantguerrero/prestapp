@@ -2,21 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Domains\Properties\Services\OwnerReportService;
-use App\Domains\Properties\Services\OwnerService;
-use App\Http\Controllers\Traits\HasEnrichedRequest;
+use Exception;
 use App\Models\Setting;
+use Insane\Journal\Journal;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Insane\Journal\Models\Core\Tax;
+use Insane\Journal\Models\Core\Category;
 use Insane\Journal\Contracts\PdfExporter;
 use Insane\Journal\Helpers\CategoryHelper;
-use Insane\Journal\Journal;
-use Insane\Journal\Models\Core\Category;
-use Insane\Journal\Models\Core\Tax;
 use Insane\Journal\Models\Invoice\Invoice;
 use Insane\Journal\Models\Product\Product;
 use Insane\Journal\Services\InvoiceService;
-use Exception;
+use App\Domains\Core\Services\SignatureService;
+use App\Domains\Properties\Services\OwnerService;
+use App\Http\Controllers\Traits\HasEnrichedRequest;
+use App\Domains\Properties\Services\OwnerReportService;
 
 class InvoiceController
 {
@@ -130,14 +131,17 @@ class InvoiceController
     *
     * @return \Illuminate\Http\Response
     */
-    public function show(int $invoiceId)
+    public function show(int $invoiceId, SignatureService $signatureService)
     {
       try {
         $invoice = $this->getInvoiceSecured($invoiceId);
         $invoiceData = $invoice->getInvoiceData();
 
         return inertia('Journal/Invoices/Show', [
-          'invoice' => $invoiceData,
+          'invoice' => [
+            ...$invoiceData,
+            "signatures" => $signatureService->getSignatures($invoice)
+          ],
           'businessData' => Setting::getByTeam($invoice->team_id),
           'type' => $invoice->type,
         ]);
@@ -151,12 +155,15 @@ class InvoiceController
     *
     * @return \Illuminate\Http\Response
     */
-    public function edit(int $invoiceId, InvoiceService $invoiceService)
+    public function edit(int $invoiceId, InvoiceService $invoiceService, SignatureService $signatureService)
     {
       try {
         $invoice = $this->getInvoiceSecured($invoiceId);
         return inertia(config('journal.invoices_inertia_path') . '/Edit',
-          $invoiceService->getEditableData($invoice)
+          [
+            ...$invoiceService->getEditableData($invoice),
+            "signatures" => $signatureService->getSignatures($invoice)
+          ]
         );
       } catch (Exception $e) {
         return redirect('/invoices');
@@ -194,14 +201,14 @@ class InvoiceController
           return $response->sendContent($invoice);
       }
       return Redirect()->back();
-  }
+    }
 
     /**
     * Show the form for editing a resource.
     *
     * @return \Illuminate\Http\Response
     */
-    public function publicPreview(int $invoiceId)
+    public function publicPreview(int $invoiceId, SignatureService $signatureService)
     {
       try {
         $invoice = $this->getInvoiceSecured($invoiceId, false);
@@ -213,10 +220,14 @@ class InvoiceController
         }
 
         $response = [
-          'invoice' => $invoice->getInvoiceData(),
+          'invoice' => [
+            ...$invoice->getInvoiceData(),
+            "signatures" => $signatureService->getSignatures($invoice)
+          ],
           'businessData' => Setting::getByTeam($invoice->team_id),
           'type' => $invoice->type,
-          "report" => $report ?? []
+          "report" => $report ?? [],
+
         ];
 
         if ($isJson) {
@@ -277,5 +288,17 @@ class InvoiceController
         $resource->deletePayment($paymentId);
         $resource->save();
         return $response->send($resource);
+    }
+
+
+    public function signInvoice(Invoice $invoice, SignatureService $signatureService)
+    {
+        try {
+          if ($invoice->team_id != request()->user()->current_team_id) return;
+          $signatureService->createSignature(request()->user(), $invoice, request()->all());
+          return Redirect("/invoices/$invoice->id");
+        } catch (Exception $e) {
+          return redirect()->back()->withErrors(['default' => $e->getMessage()]);
+        }
     }
 }

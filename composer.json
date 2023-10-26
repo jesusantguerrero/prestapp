@@ -10,7 +10,7 @@
       "guzzlehttp/guzzle": "^7.2",
       "http-interop/http-factory-guzzle": "^1.2",
       "inertiajs/inertia-laravel": "^0.6.3",
-      "insane/journal": "dev-master#fea88131a73ee189c466b6f01822508e653ee9b5",
+      "insane/journal": "^0.x-dev",
       "insane/treasurer": "1.x-dev",
       "lab404/laravel-impersonate": "^1.7",
       "laravel/framework": "^9.19",

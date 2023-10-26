@@ -3,8 +3,10 @@ import { IClient } from "@/Modules/clients/clientEntity";
 import { IInvoice } from "@/Modules/invoicing/entities";
 import { computed, inject, ref } from "vue";
 import Simple from "./Simple.vue";
-import SheinStore from "./SheinStore.vue";
+import SimpleMultiTheme from "./SimpleMultiTheme.vue";
+import { getInvoiceLayout } from "./index";
 
+defineEmits(["signature-clicked"]);
 withDefaults(
   defineProps<{
     imageUrl: string;
@@ -22,16 +24,25 @@ withDefaults(
 );
 
 const appProfileName = inject("appProfileName", ref());
-const InvoiceTemplate = computed(() => {
+const BaseInvoice = computed(() => {
   const templates = {
     renting: Simple,
-    "shein-store": SheinStore,
+    "shein-store": SimpleMultiTheme,
+
   };
 
   return templates[appProfileName.value] ?? "renting";
 });
+
+const layoutTheme = computed(() => {
+  return getInvoiceLayout("store");
+});
 </script>
 
 <template>
-  <InvoiceTemplate v-bind="$props" />
+  <BaseInvoice
+    v-bind="$props"
+    :layout-theme="layoutTheme"
+    @signature-clicked="$emit('signature-clicked')"
+  />
 </template>

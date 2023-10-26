@@ -4,6 +4,8 @@ import { formatMoney } from "@/utils";
 import { AtField, AtInput } from "atmosphere-ui";
 import axios from "axios";
 import { computed, watch, ref, watchEffect } from "vue";
+import { useI18n } from "vue-i18n";
+
 
 const props = defineProps({
   item: {
@@ -25,11 +27,13 @@ const props = defineProps({
   },
 });
 
+const { t } = useI18n();
+
 const defaultLabels = {
-  name: "Service Name",
-  price: "Price",
-  qty: "Qty",
-  total: "Total",
+  name: t("service name"),
+  price: t("price"),
+  qty: t("qty"),
+  total: t("total"),
 };
 
 const emit = defineEmits(["set-item", "update:item"]);
@@ -108,7 +112,8 @@ watchEffect(async () => {
             <div>
               <AtInput
                 v-model="item.concept"
-                :placeholder="getLabel('name')"
+                :placeholder="$t('copy and paste the shein url here')"
+
                 :disabled="disabled || isFetching"
               >
                 <template #suffix v-if="isFetching">
@@ -125,7 +130,8 @@ watchEffect(async () => {
               :disabled="disabled"
             />
             <section>
-              <span class="font-bold mt-4 inline-block">
+              <span class="inline-block mt-4 font-bold">
+
                 {{ formatMoney(item.price * item.quantity) }}
               </span>
             </section>

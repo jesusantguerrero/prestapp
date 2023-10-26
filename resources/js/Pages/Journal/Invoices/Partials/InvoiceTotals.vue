@@ -3,6 +3,8 @@
 import { formatMoney, formatDate } from "@/utils";
 import { computed, reactive, watch, toRefs } from "vue";
 import ExactMath from "exact-math";
+import InvoiceTotalItem from "./InvoiceTotalItem.vue";
+
 
 const props = defineProps({
   tableData: {
@@ -29,6 +31,14 @@ const props = defineProps({
     required: true,
   },
   isTaxIncluded: {
+    type: Boolean,
+    default: false,
+  },
+  hidePayments: {
+    type: Boolean,
+    default: false,
+  },
+  hideDebt: {
     type: Boolean,
     default: false,
   },
@@ -142,102 +152,45 @@ watch(
   }
 );
 
-const { totals, debt, hasTaxes, paymentTotal } = toRefs(state);
+const { totals, debt, hasTaxes } = toRefs(state);
 </script>
 
 <template>
   <div class="invoice-totals">
-    <p class="total-labels">
-      <span class="label">Subtotal: </span>
-      <span class="value">{{ formatMoney(totals.subtotal) }}</span>
-    </p>
+    <InvoiceTotalItem :label="$t('subtotal')" :value="formatMoney(totals.subtotal)" />
     <template v-if="hasTaxes">
-      <p class="total-labels" v-for="(tax, taxName) in totals.taxes">
-        <span class="label">{{ taxName }}: </span>
-        <span class="value">{{ formatMoney(tax) }}</span>
-      </p>
+      <InvoiceTotalItem
+        v-for="(tax, taxName) in totals.taxes"
+        :label="taxName"
+        :value="formatMoney(tax)"
+      />
     </template>
 
-    <!-- <p class="total-labels">
-      <span class="label">Descuento:</span>
-      <span class="value">{{ formatMoney(totals.discount) }}</span>
-    </p> -->
+    <slot name="discount">
+      <InvoiceTotalItem :label="$t('discount')" :value="formatMoney(totals.discount)" />
+    </slot>
+    <slot name="total" :label="$t('total')" :value="formatMoney(totals.total)">
+      <InvoiceTotalItem :label="$t('total')" :value="formatMoney(totals.total)" />
+    </slot>
 
-    <p class="total-labels total-remark">
-      <span class="label"> Total: </span>
-      <span class="value">{{ formatMoney(totals.total) }}</span>
-    </p>
-
-    <div v-if="payments && payments.length">
-      <i
+    <div v-if="payments && payments.length && !hidePayments">
+      <InvoiceTotalPayment
         class="text-green-500 total-labels payment-label group"
         v-for="payment in payments"
         :key="payment.id"
+        :payment="payment"
         @click.stop="$emit('edit-payment', payment)"
-      >
-        <p class="label flex">Pagado en {{ formatDate(payment.payment_date) }}</p>
-        <p class="value flex items-center justify-end text-right">
-          - {{ formatMoney(payment.amount) }}
-          <button
-            class="text-gray hover:text-success group-hover:flex hidden"
-            @click.stop="$emit('edit-payment', payment)"
-          >
-            <IMdiEdit class="ml-2" />
-          </button>
-          <button
-            class="text-gray hover:text-error group-hover:flex hidden"
-            @click.stop="$emit('delete-payment', payment)"
-          >
-            <IMdiTrash class="ml-2" />
-          </button>
-        </p>
-      </i>
+      />
     </div>
 
-    <p class="total-labels total-remark">
-      <span class="label"> Deuda: </span>
-      <span class="value">{{ formatMoney(debt) }}</span>
-    </p>
+    <slot name="debt" v-if="!hideDebt">
+      <InvoiceTotalItem
+        class="total-remark"
+        :label="$t('debt')"
+        :value="formatMoney(debt)"
+      />
+    </slot>
+
     <slot name="add-payment" v-if="debt" :slot-scope:scope="{ debt }"> </slot>
   </div>
 </template>
-
-<style lang="scss">
-.total-labels {
-  color: #909399;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-column-gap: 5px;
-
-  &.payment-label {
-    cursor: pointer;
-    @apply text-green-500;
-  }
-
-  .value {
-    text-align: right;
-    color: #666;
-    font-weight: bold;
-  }
-
-  .label {
-    text-align: right;
-    margin-right: 10px;
-  }
-}
-
-.total-remark {
-  font-size: 16px;
-  margin: 10px 0;
-
-  .value {
-    border-top: 1px solid #666;
-  }
-}
-
-.invoice-totals {
-  margin-top: 1rem;
-}
-</style>
