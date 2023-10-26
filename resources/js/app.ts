@@ -16,6 +16,7 @@ import { initWithLocale} from './plugins/i18n.ts';
 import { es , enUS } from "date-fns/locale";
 import setDefaultOptions from "date-fns/setDefaultOptions";
 import { Locale } from 'date-fns';
+import "vue-multiselect/dist/vue-multiselect.css";
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
