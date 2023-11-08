@@ -7,6 +7,7 @@ import axios from "axios";
 import { computed, watch, ref, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
 
+
 const props = defineProps({
   item: {
     type: Object,
@@ -165,6 +166,7 @@ const handleLoad = () => {
               <AtInput
                 v-model="localItem.concept"
                 :placeholder="$t('copy and paste the shein url here')"
+
                 :disabled="disabled || isFetching"
               >
                 <template #suffix v-if="isFetching">
@@ -183,6 +185,7 @@ const handleLoad = () => {
             <section>
               <span class="inline-block mt-4 font-bold">
                 {{ formatMoney(localItem.price * localItem.quantity) }}
+
               </span>
             </section>
           </section>

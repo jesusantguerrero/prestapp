@@ -30,6 +30,7 @@ export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function, modul
     const appMenu: IAppMenuItem[] = module.menu.reduce((visibleItems: IAppMenuItem[], item: IAppMenuItem ) => {
       if ((!item.roles || item.roles.includes(role)) && !item?.hidden) {
 
+
         visibleItems.push({
           ...item,
           label: t(item.label),

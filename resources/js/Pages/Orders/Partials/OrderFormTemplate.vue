@@ -124,6 +124,7 @@ const discount = computed(() =>
 
 const total = computed(() => {
   return subtotal.value - parseFloat(discount.value ?? 0);
+
 });
 
 const showActions = ref(false);

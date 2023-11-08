@@ -5,6 +5,7 @@ import { computed, reactive, watch, toRefs } from "vue";
 import ExactMath from "exact-math";
 import InvoiceTotalItem from "./InvoiceTotalItem.vue";
 
+
 const props = defineProps({
   tableData: {
     type: Array,
