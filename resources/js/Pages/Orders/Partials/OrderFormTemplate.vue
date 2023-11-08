@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch, computed, ref, reactive } from "vue";
+import { watch, computed, ref, reactive, nextTick, onMounted } from "vue";
 import { addMonths, parseISO } from "date-fns";
 
 import AppButton from "@/Components/shared/AppButton.vue";
@@ -75,14 +75,6 @@ const validations = [
     handle: () => true,
   },
 ];
-const validateStep = () => {
-  return new Promise((resolve) => resolve(!validations[currentStep.value]?.handle()));
-};
-const currentStep = ref(0);
-const nextButtonLabel = computed(() => {
-  const labels = ["items", "review order", "send"];
-  return labels[currentStep.value];
-});
 
 const handleUpdate = (data: Record<string, any>) => {
   Object.keys(invoiceForm).forEach((field) => {
@@ -118,14 +110,14 @@ const onFinished = () => {
 
 const subtotal = computed(() => {
   return invoiceForm.lines.reduce((total, row: ILineItem) => {
-    total += row.quantity * row.price;
+    total += parseFloat(row.quantity ?? 0) * parseFloat(row.price ?? 0);
     return total;
   }, 0);
 });
 
 const discount = computed(() =>
   invoiceForm.lines.reduce((total, row: ILineItem) => {
-    total += row.quantity * row.price * parseFloat(row.discount ?? 0);
+    total += subtotal.value * parseFloat(row.discount ?? 0);
     return total;
   }, 0)
 );
@@ -133,6 +125,13 @@ const discount = computed(() =>
 const total = computed(() => {
   return subtotal.value - parseFloat(discount.value ?? 0);
 
+});
+
+const showActions = ref(false);
+onMounted(() => {
+  nextTick(() => {
+    showActions.value = true;
+  });
 });
 </script>
 
@@ -196,5 +195,24 @@ const total = computed(() => {
         </footer>
       </article>
     </section>
+    <Teleport to="#outer-action" v-if="showActions">
+      <section class="flex space-x-2">
+        <AppButton
+          class="font-bold text-red-400 rounded-md bg-base-lvl-2"
+          variant="neutral"
+          @click="route('dropshipping.invoices')"
+        >
+          {{ $t("cancel") }}
+        </AppButton>
+        <AppButton
+          :processing="isProcessing"
+          variant="secondary"
+          @click="onFinished"
+          :disabled="isProcessing"
+        >
+          {{ $t("save invoice") }}
+        </AppButton>
+      </section>
+    </Teleport>
   </section>
 </template>

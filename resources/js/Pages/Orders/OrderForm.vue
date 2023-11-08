@@ -44,7 +44,11 @@ const onSubmit = (formData: Record<string, any>) => {
 <template>
   <AppLayout :title="$t('Create order')">
     <template #header>
-      <DropshippingSectionNav />
+      <DropshippingSectionNav>
+        <template #actions>
+          <section class="outer-actions" id="outer-action"></section>
+        </template>
+      </DropshippingSectionNav>
     </template>
 
     <main class="w-full px-5 py-10 pb-24 rounded-md rent-form md:pb-4 text-body-1">

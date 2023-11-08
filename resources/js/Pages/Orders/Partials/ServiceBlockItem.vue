@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppButton from "@/Components/shared/AppButton.vue";
 import { formatMoney } from "@/utils";
 // @ts-expect-error: no definitions
 import { AtField, AtInput } from "atmosphere-ui";
@@ -54,6 +55,11 @@ const fetchVendorProduct = (productUrl: string) => {
   return axios.get(`/dropshipping/vendor-products/shein?search=${productUrl}`);
 };
 
+const iframeUrl = ref();
+const setLocalSearch = (url: string) => {
+  iframeUrl.value = url;
+};
+
 const isFetching = ref(false);
 watch(
   () => props.item.concept,
@@ -69,6 +75,9 @@ watch(
             product_image: data.image,
           });
         })
+        .catch(() => {
+          setLocalSearch(concept);
+        })
         .finally(() => {
           isFetching.value = false;
         });
@@ -76,12 +85,35 @@ watch(
   }
 );
 
+const localItem = computed({
+  get() {
+    return props.item;
+  },
+  set(value) {
+    emit("update:item", {
+      ...value,
+    });
+  },
+});
+
 watchEffect(async () => {
   emit("update:item", {
     ...props.item,
     total: props.item.price * props.item.qty,
   });
 });
+
+const isSetManualImage = ref(false);
+const toggleSetImage = () => {
+  isSetManualImage.value = !isSetManualImage.value;
+};
+
+const productIframe = ref();
+
+const handleLoad = () => {
+  const iframeDocument = productIframe.value?.contentDocument;
+  console.log("here loading", iframeDocument);
+};
 </script>
 
 <template>
@@ -90,15 +122,17 @@ watchEffect(async () => {
     :class="[`item-`, disabled ? 'pb-4' : 'bg-white']"
   >
     <div class="flex space-x-4">
-      <AtField class="w-6/12" :label="getLabel('name')">
+      <AtField :class="isSetManualImage ? 'w-full' : 'w-6/12'" :label="getLabel('name')">
         <section class="flex">
           <div
-            class="flex items-center justify-center mr-4 overflow-hidden font-bold text-gray-400 border border-gray-300 rounded-md h-28 w-28 bg-gray-50"
+            class="flex cursor-pointer items-center justify-center mr-4 overflow-hidden font-bold text-gray-400 border border-gray-300 rounded-md h-28 w-28 bg-gray-50"
+            @click="toggleSetImage"
+            v-if="!isSetManualImage"
           >
             <img
-              :src="item.product_image"
+              :src="localItem.product_image"
               alt=""
-              v-if="item.product_image?.length"
+              v-if="localItem.product_image?.length"
               style="
                 min-width: 100%;
                 min-height: 100%;
@@ -108,10 +142,29 @@ watchEffect(async () => {
             />
             <i class="text-xl fa fa-images" v-else></i>
           </div>
-          <section class="w-full">
+          <div
+            class="px-4 flex-col justify-center cursor-pointer items-center mr-4 overflow-hidden font-bold text-gray-400 border border-gray-300 rounded-md h-28 w-full bg-gray-50"
+            v-else
+          >
+            <section class="my-auto py-2">
+              <AtInput
+                v-model="localItem.product_image"
+                class="rounded-md shadow-none"
+                :placeholder="$t('paste image link here')"
+                :disabled="disabled || isFetching"
+              />
+              <footer class="flex justify-end mt-2 space-x-2">
+                <AppButton @click="toggleSetImage()" variant="neutral" class="text-error">
+                  Cancel
+                </AppButton>
+                <AppButton @click="isSetManualImage = false"> Save </AppButton>
+              </footer>
+            </section>
+          </div>
+          <section class="w-full" v-if="!isSetManualImage">
             <div>
               <AtInput
-                v-model="item.concept"
+                v-model="localItem.concept"
                 :placeholder="$t('copy and paste the shein url here')"
 
                 :disabled="disabled || isFetching"
@@ -131,25 +184,27 @@ watchEffect(async () => {
             />
             <section>
               <span class="inline-block mt-4 font-bold">
+                {{ formatMoney(localItem.price * localItem.quantity) }}
 
-                {{ formatMoney(item.price * item.quantity) }}
               </span>
             </section>
           </section>
         </section>
       </AtField>
-      <div class="flex w-6/12 space-x-2">
+      <div class="flex w-6/12 space-x-2" v-if="!isSetManualImage">
         <AtField class="w-full" v-if="!disabled" :label="getLabel('price')">
-          <AtInput v-model="item.price" number-format :disabled="disabled" />
+          <AtInput v-model="localItem.price" number-format :disabled="disabled" />
         </AtField>
         <AtField
           class="w-full"
           v-if="!isFieldHidden('description') && !disabled"
           :label="getLabel('qty')"
         >
-          <AtInput v-model="item.quantity" :disabled="disabled" />
+          <AtInput v-model="localItem.quantity" :disabled="disabled" />
         </AtField>
       </div>
     </div>
+
+    <iframe ref="productIframe" @load="handleLoad" :src="iframeUrl" v-if="iframeUrl" />
   </div>
 </template>
