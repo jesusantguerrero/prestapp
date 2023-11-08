@@ -23,6 +23,9 @@ const menus = {
     [MODULES.ORDERS]: [{
         label: 'Invoice list',
         to: '/dropshipping/invoices',
+        isActiveFunction(currentPath: string) {
+          return '/dropshipping/invoices' == currentPath
+        },
         as: Link,
     }, {
         label: 'Create invoice',
