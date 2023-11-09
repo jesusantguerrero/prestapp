@@ -36,8 +36,8 @@ class VendorProductService
       // $price = $body->filter('.product-intro__head-mainprice .original.from')->first()->text() ?? 0;
 
       return [
-          "image" => $image,
-          "productName" => $name,
+          "image" => $image ?? "",
+          "productName" => $name ?? "",
           "id" => str_replace('SKU: ', '', $id),
           "price" => $price,
           "error" => $error
