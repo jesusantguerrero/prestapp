@@ -17,4 +17,5 @@ yarn-error.log
 /.idea
 /.vscode
 .env.testing
+Modules/
 resources/core
