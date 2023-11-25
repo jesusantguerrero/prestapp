@@ -2,12 +2,12 @@
 
 namespace App\Domains\Properties\Models;
 
-use App\Domains\CRM\Models\Client;
-use Database\Factories\PropertyUnitFactory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Insane\Journal\Traits\HasResourceAccounts;
 use Laravel\Scout\Searchable;
+use App\Domains\CRM\Models\Client;
+use Illuminate\Database\Eloquent\Model;
+use Database\Factories\PropertyUnitFactory;
+use Insane\Journal\Traits\HasResourceAccounts;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PropertyUnit extends Model {
     use HasFactory;
@@ -32,11 +32,15 @@ class PropertyUnit extends Model {
         'bedrooms',
         'bathrooms',
         'amenities',
-        'status'
+        'status',
+        'images'
     ];
 
     protected $appends = ['clientName'];
     protected $width = ['contract', 'contract.client'];
+    protected $casts = [
+      'images' => 'array'
+    ];
 
     protected static function boot() {
       parent::boot();

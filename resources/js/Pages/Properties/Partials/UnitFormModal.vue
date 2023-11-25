@@ -5,7 +5,9 @@ import { ElNotification } from "element-plus";
 
 import AppButton from "@/Components/shared/AppButton.vue";
 import UnitForm from "./UnitForm.vue";
-import { watch } from "vue";
+import { watch, ref } from "vue";
+import { propertyService } from "@/services/properties";
+import { IUnit } from "@/Modules/properties/propertyEntity";
 
 const props = defineProps({
   property: {
@@ -26,6 +28,7 @@ const formData = useForm({
   area: "",
   bedrooms: 1,
   bathrooms: 1,
+  images: [],
 });
 
 // api calls
@@ -54,17 +57,52 @@ const onSubmit = () => {
     });
   }
 };
-const updateUnit = () => {
-  formData.put(`/properties/${props.property.id}/units/${props.unit?.id}`, {
-    onSuccess() {
-      ElNotification({
-        message: `Unidad ${formData.name} actualizada con exito`,
-        title: "Unidad agregada",
-        type: "success",
-      });
-      emit("close");
-    },
-  });
+
+const isUploadingImages = ref(false);
+const uploadImages = async (rawImages: any[]) => {
+  const images: {
+    name: string;
+    url: string;
+  }[] = [];
+  isUploadingImages.value = true;
+  try {
+    for (const image of rawImages) {
+      const currentImage = image as { raw: File };
+      const uploadedImage = await propertyService.saveImage(
+        formData.data() as IUnit,
+        currentImage.raw,
+        currentImage.raw.name
+      );
+      if (uploadedImage) {
+        images.push({
+          name: uploadedImage.name ?? "",
+          url: uploadedImage.path,
+        });
+        console.log(uploadedImage);
+      }
+    }
+  } catch (err) {
+    console.log(err);
+  }
+  isUploadingImages.value = false;
+  return images;
+};
+const updateUnit = async () => {
+  formData.images = await uploadImages(formData.images);
+  formData
+    .transform((data) => ({
+      ...data,
+    }))
+    .put(`/properties/${props.property.id}/units/${props.unit?.id}`, {
+      onSuccess() {
+        ElNotification({
+          message: `Unidad ${formData.name} actualizada con exito`,
+          title: "Unidad agregada",
+          type: "success",
+        });
+        emit("close");
+      },
+    });
 };
 
 watch(
@@ -77,7 +115,7 @@ watch(
         formData[field] = new Date(newValue[field]);
       } else if (newValue) {
         // @ts-ignore
-        formData[field] = newValue[field];
+        formData[field] = newValue[field] ?? formData[field];
       }
     });
   },
@@ -105,7 +143,13 @@ watch(
       class="px-6 py-4 flex justify-end space-x-3 text-gray-600 text-right bg-neutral"
     >
       <AppButton variant="neutral" @click="$emit('close')"> Cerrar </AppButton>
-      <AppButton variant="secondary" @click="onSubmit()"> Guardar </AppButton>
+      <AppButton
+        variant="secondary"
+        @click="onSubmit()"
+        :processing="formData.processing || isUploadingImages"
+      >
+        Guardar
+      </AppButton>
     </footer>
   </main>
 </template>

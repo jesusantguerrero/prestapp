@@ -42,6 +42,11 @@ export default [
             let daysLeft =  differenceInCalendarDays(new Date(), parseISO(row.created_at))
             return h(Link, {href: `/contacts/${row.client?.id}/tenants/rents/${row.id}/renew`} , h(ElTag, { type: getRentStatusColor(row.status) }, daysLeft))
         }
+    },{
+        name: 'app_profile_name',
+        label: 'App',
+        class: "text-center",
+        align: 'center'
     },
     {
         name: 'actions',

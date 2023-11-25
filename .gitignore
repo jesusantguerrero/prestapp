@@ -18,3 +18,4 @@ yarn-error.log
 /.vscode
 .env.testing
 resources/core
+Modules/
