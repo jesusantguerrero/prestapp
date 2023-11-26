@@ -107,7 +107,12 @@ class RentService {
           $rent->owner->checkStatus();
         }
         Invoice::destroy($rent->invoices()->unpaid()->pluck('id'));
-        Rent::destroy($rent->id);
+        $rent->update([
+          'status' => Rent::STATUS_CANCELLED,
+          "end_date" => date('Y-m-d'),
+          "cancelled_at" => date('Y-m-d'),
+          'next_invoice_date' => null,
+        ]);
       });
     }
 
