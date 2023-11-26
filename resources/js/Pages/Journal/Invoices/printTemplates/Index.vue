@@ -28,6 +28,7 @@ const BaseInvoice = computed(() => {
   const templates = {
     renting: Simple,
     "shein-store": SimpleMultiTheme,
+
   };
 
   return templates[appProfileName.value] ?? "renting";

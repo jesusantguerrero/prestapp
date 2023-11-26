@@ -57,6 +57,7 @@ class DashboardController extends Controller
 
       $appAccounts = $accounts[request()->user()->currentTeam->app_profile_name ?? AppProfileEnum::Renting->value];
 
+
       return inertia('Dashboard/Index',
       [
           "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId, $appAccounts["revenueAccounts"], $startYear, $endYear, null)->all(), now()->format('Y')),
