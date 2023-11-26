@@ -185,7 +185,6 @@ const handleLoad = () => {
             <section>
               <span class="inline-block mt-4 font-bold">
                 {{ formatMoney(localItem.price * localItem.quantity) }}
-
               </span>
             </section>
           </section>

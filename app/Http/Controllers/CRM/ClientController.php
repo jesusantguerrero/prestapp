@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\CRM;
 
-use App\Domains\CRM\Data\ContactData;
-use App\Domains\CRM\Models\Client;
-use App\Domains\CRM\Services\ClientService;
-use App\Http\Controllers\InertiaController;
 use Exception;
 use Illuminate\Http\Request;
+use App\Domains\CRM\Models\Client;
+use App\Domains\CRM\Data\ContactData;
+use App\Domains\CRM\Services\ClientService;
+use App\Http\Controllers\InertiaController;
 
 class ClientController extends InertiaController
 {
@@ -30,7 +30,7 @@ class ClientController extends InertiaController
       $this->validationRules = [
         'names' => 'required',
         'lastnames' => 'required',
-        'dni' => 'required|unique:clients',
+        'dni' => 'required',
       ];
   }
 
@@ -123,7 +123,7 @@ class ClientController extends InertiaController
     return [
       'names' => 'required',
       'lastnames' => 'required',
-      'dni' => 'required|unique:clients'.$postData["id"] ?? "",
+      'dni' => 'required',
     ];
   }
 }

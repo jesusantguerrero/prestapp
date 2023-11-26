@@ -133,6 +133,13 @@ onMounted(() => {
     showActions.value = true;
   });
 });
+
+const showActions = ref(false);
+onMounted(() => {
+  nextTick(() => {
+    showActions.value = true;
+  });
+});
 </script>
 
 <template>
