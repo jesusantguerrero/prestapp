@@ -19,7 +19,14 @@ const props = defineProps<{
 }>();
 
 const businessAddress = computed(() => {
-  return `${props.business.business_street}, ${props.business.business_city}, ${props.business.business_state}, ${props.business.business_country}`;
+  return [
+    props.business.business_street,
+    props.business.business_city,
+    props.business.business_state,
+    props.business.business_country,
+  ]
+    .filter((value) => value)
+    .join(", ");
 });
 const businessPhone = computed(() => {
   return props.business.business_phone;

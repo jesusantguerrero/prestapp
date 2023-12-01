@@ -62,6 +62,7 @@ class SettingsController extends Controller
         ];
 
         foreach ($settings as $settingName => $setting) {
+          //  if (empty($setting) && $setting !== false) continue;
             $setting = array_merge($entryData, [
                 "value" => $setting,
                 "name" => $settingName

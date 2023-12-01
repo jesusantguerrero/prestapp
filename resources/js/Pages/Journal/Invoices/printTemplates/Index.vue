@@ -30,7 +30,7 @@ const BaseInvoice = computed(() => {
     "shein-store": SimpleMultiTheme,
   };
 
-  return templates[appProfileName.value] ?? "renting";
+  return templates[appProfileName.value ?? "renting"] ?? "renting";
 });
 
 const layoutTheme = computed(() => {
