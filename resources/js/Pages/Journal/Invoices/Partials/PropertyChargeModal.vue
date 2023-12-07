@@ -12,6 +12,7 @@ import { paymentMethods } from "@/Modules/loans/constants";
 import AppFormField from "@/Components/shared/AppFormField.vue";
 import { IClient, IClientSaved } from "@/Modules/clients/clientEntity";
 import { useResponsive } from "@/utils/useResponsive";
+import { IProperty, IRent } from "@/Modules/properties/propertyEntity";
 
 const defaultFormData = {
   amount: 0,
@@ -30,7 +31,10 @@ const props = withDefaults(
     hideClientOptions?: boolean;
     clientId: string;
     rentId: string;
+    propertyId: string;
     type: string;
+    property?: IProperty;
+    rent?: IRent;
   }>(),
   {
     type: "expense",
@@ -94,17 +98,11 @@ watch(
   }
 );
 
-const documentTotal = computed(() => {
-  return formData.value.documents?.reduce((total, payment) => {
-    return MathHelper.sum(total, payment.payment);
-  }, 0);
-});
-
 const rentsUrl = computed(() => {
-  return `/api/rents?filter[client_id]=${formData.value.client?.id}`;
+  return `/api/rents?filter[property_id]=${formData.value.property?.id}`;
 });
 
-const setClient = (client: IClientSaved) => {
+const setRent = (rent: IRent) => {
   axios.get(rentsUrl).then(({ data }) => {
     debugger;
     if (data.length) {
@@ -117,8 +115,8 @@ const setClient = (client: IClientSaved) => {
 
 const isLoading = ref(false);
 const endpoints: Record<string, string> = {
-  expense: "/properties/:rent_id/transactions/expense",
-  fee: "/properties/:rent_id/transactions/fee",
+  expense: "/properties/:property_id/transactions/expense",
+  fee: "/properties/:property_id/transactions/fee",
 };
 function onSubmit() {
   if (isLoading.value) return;
@@ -135,7 +133,7 @@ function onSubmit() {
     amount: formData.value.amount,
     concept: formData.value.concept,
     account_id: formData.value.account_id,
-    client_id: formData.value.client?.id ?? props.clientId,
+    property_id: formData.value.property?.id ?? props.clientId,
     rent_id: formData.value.rent?.id ?? props.rentId,
     details: formData.value.notes,
     is_paid_expense: formData.value.is_paid_expense,
@@ -143,7 +141,7 @@ function onSubmit() {
 
   isLoading.value = true;
   const endpoint = endpoints[props.type] ?? endpoints.expense;
-  const url = endpoint.replace(":rent_id", data.rent_id);
+  const url = endpoint.replace(":property_id", data.property_id);
 
   axios
     .post(url, data)
@@ -177,6 +175,10 @@ function emitChange(value) {
 }
 
 const { isMobile } = useResponsive();
+
+const propertyLabel = (property: IProperty) => {
+  return `${property.name} [${property?.units?.length}] (${property.address}) `;
+};
 </script>
 
 <template>
@@ -217,7 +219,7 @@ const { isMobile } = useResponsive();
             <ElDatePicker v-model="formData.date" size="large" class="w-full" rounded />
           </AppFormField>
 
-          <AppFormField class="w-6/12 text-left" label="Monto Recibido">
+          <AppFormField class="w-6/12 text-left" label="Monto">
             <AtInput
               class="form-control"
               number-format
@@ -260,23 +262,24 @@ const { isMobile } = useResponsive();
       </section>
 
       <section class="mt-4 flex space-x-4" v-if="!hideClientOptions">
-        <AppFormField label="Inquilino">
+        <AppFormField :label="$t('property')">
           <BaseSelect
-            v-model="formData.client"
-            endpoint="/api/clients?filter[is_tenant]=1"
-            placeholder="Selecciona cliente"
-            label="display_name"
+            v-model="formData.property"
+            endpoint="/api/properties"
+            placeholder="Selecciona la propiedad"
+            label="name"
             track-by="id"
-            @update:model-value="setClient"
+            :custom-label="propertyLabel"
           />
         </AppFormField>
-        <AppFormField :label="$t('property')">
+        <AppFormField label="Inquilino">
           <BaseSelect
             v-model="formData.rent"
             :endpoint="rentsUrl"
             placeholder="Selecciona el contrato"
-            label="date"
+            label="client_name"
             track-by="id"
+            @update:model-value="setRent"
           />
         </AppFormField>
       </section>

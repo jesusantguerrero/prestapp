@@ -203,10 +203,6 @@ onMounted(() => {
     props.layoutTheme.tableHeaderCellAlign
   );
 });
-
-const testClick = () => {
-  debugger;
-};
 </script>
 
 <template>
