@@ -153,6 +153,7 @@ const onEdit = (invoice: IInvoice) => {
                   data: {
                     type: 'expense',
                     clientId: rents.client_id,
+                    propertyId: rents.property_id,
                     rentId: rents.id,
                     hideClientOptions: true,
                   },
