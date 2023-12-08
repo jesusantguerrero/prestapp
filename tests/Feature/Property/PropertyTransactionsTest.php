@@ -34,7 +34,7 @@ class PropertyTransactionsTest extends PropertyBase
     $rent = $this->createRent();
 
     $this->createExpense($rent->property);
-    $expense = $rent->rentExpenses->first();
+    $expense = $rent->property->expenses->first();
     $transaction = $expense->transaction;
 
     $this->assertEquals(1000, $transaction->total);
@@ -50,11 +50,11 @@ class PropertyTransactionsTest extends PropertyBase
     $account = Account::findByDisplayId('daily_box', $rent->team_id);
 
     $this->createExpense($rent->property);
-    $expense = $rent->rentExpenses->first();
+    $expense = $rent->property->expenses->first();
     $this->payInvoice($rent, $expense, [
       'account_id' => $account->id,
     ]);
-    $payment = $rent->rentExpenses->first()->payments->first();
+    $payment = $rent->property->expenses->first()->payments->first();
 
     $this->assertEquals(1000, $payment->amount);
     $this->assertEquals(1, $payment->transaction->lines[0]->type);
@@ -75,8 +75,8 @@ class PropertyTransactionsTest extends PropertyBase
     $response->assertStatus(200);
     $rent = Rent::first();
 
-    $this->assertCount(1, $rent->rentExpenses);
-    $this->assertEquals(Invoice::STATUS_PAID, $rent->rentExpenses[0]->status);
+    $this->assertCount(1, $rent->property->expenses);
+    $this->assertEquals(Invoice::STATUS_PAID, $rent->property->expenses[0]->status);
   }
 
   public function testItShouldHaveDepositBalance() {

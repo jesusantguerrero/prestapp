@@ -54,7 +54,7 @@ class OwnerDistributionTest extends PropertyBase
     public function testItShouldPayExpenseDebt()
     {
       $rent = $this->generateInvoices();
-      $invoice = $rent->invoices()->where('category_type', PropertyInvoiceTypes::UtilityExpense->value)->first();
+      $invoice = $rent->property->expenses()->where('category_type', PropertyInvoiceTypes::UtilityExpense->value)->first();
       $this->payInvoice($rent, $invoice);
 
 
