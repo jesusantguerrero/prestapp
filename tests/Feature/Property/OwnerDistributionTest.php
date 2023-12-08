@@ -37,9 +37,10 @@ class OwnerDistributionTest extends PropertyBase
       $this->payInvoices($rent);
 
       PropertyTransactionService::createOwnerDistribution($this->owner);
+      $propertyInvoices = $rent->property->fresh()->allInvoices();
 
-      $this->assertEquals(3, $rent->fresh()->invoices()->count());
-      $this->assertEquals(10500, $rent->fresh()->invoices()->sum('total'));
+      $this->assertCount(3, $propertyInvoices);
+      $this->assertEquals(10500, collect($propertyInvoices)->sum('total'));
     }
 
     public function testItShouldPayInvoiceDebt()
@@ -100,8 +101,7 @@ class OwnerDistributionTest extends PropertyBase
       $rent = $this->generateInvoices();
       $this->payInvoices($rent);
 
-
-      return $this->post("/owners/{$this->owner->id}/draws", [
+      $this->post("/owners/{$this->owner->id}/draws", [
           'invoices' => $this->owner->fresh()->getPropertyInvoices()
         ]
       );

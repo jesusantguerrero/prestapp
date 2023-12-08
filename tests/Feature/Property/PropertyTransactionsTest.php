@@ -97,7 +97,7 @@ class PropertyTransactionsTest extends PropertyBase
       "price" => 5000
     ]);
 
-    $response = $this->post("/properties/{$rent->id}/transactions/refund", [
+    $response = $this->post("/rents/{$rent->id}/transactions/refund", [
       'client_id' => $rent->client_id,
       'account_id' => $rent->property->deposit_account_id,
       'total' => 6000,
@@ -123,7 +123,7 @@ class PropertyTransactionsTest extends PropertyBase
       'payment_method' => 'cash'
     ]);
 
-    $response = $this->post("/properties/{$rent->id}/transactions/refund", [
+    $response = $this->post("/rents/{$rent->id}/transactions/refund", [
       'client_id' => $rent->client_id,
       'account_id' => $rent->property->deposit_account_id,
       'total' => $rent->deposit,
@@ -147,7 +147,7 @@ class PropertyTransactionsTest extends PropertyBase
       "price" => 5000
     ]);
 
-    $response = $this->post("/properties/{$rent->id}/transactions/refund", [
+    $response = $this->post("/rents/{$rent->id}/transactions/refund", [
       'client_id' => $rent->client_id,
       'account_id' => $rent->property->deposit_account_id,
       'total' => $rent->deposit,

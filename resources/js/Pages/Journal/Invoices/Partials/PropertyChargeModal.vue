@@ -116,7 +116,7 @@ const setRent = (rent: IRent) => {
 const isLoading = ref(false);
 const endpoints: Record<string, string> = {
   expense: "/properties/:property_id/transactions/expense",
-  fee: "/properties/:property_id/transactions/fee",
+  fee: "/rents/:rents_id/transactions/fee",
 };
 function onSubmit() {
   if (isLoading.value) return;
@@ -133,7 +133,8 @@ function onSubmit() {
     amount: formData.value.amount,
     concept: formData.value.concept,
     account_id: formData.value.account_id,
-    property_id: formData.value.property?.id ?? props.clientId,
+    client_id: formData.value.client?.id ?? props.clientId,
+    property_id: formData.value.property?.id ?? props.propertyId,
     rent_id: formData.value.rent?.id ?? props.rentId,
     details: formData.value.notes,
     is_paid_expense: formData.value.is_paid_expense,
@@ -141,7 +142,9 @@ function onSubmit() {
 
   isLoading.value = true;
   const endpoint = endpoints[props.type] ?? endpoints.expense;
-  const url = endpoint.replace(":property_id", data.property_id);
+  const url = endpoint
+    .replace(":property_id", data.property_id)
+    .replace(":rents_id", data.rent_id);
 
   axios
     .post(url, data)

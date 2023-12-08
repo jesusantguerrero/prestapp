@@ -79,7 +79,8 @@ class Property extends Model {
     }
 
     public function invoices() {
-      return $this->hasManyThrough(Invoice::class, Rent::class, 'id', 'invoiceable_id')->where('invoiceable_type', Rent::class);
+      return $this->hasManyThrough(Invoice::class, Rent::class, 'id', 'invoiceable_id')
+      ->where('invoiceable_type', Rent::class);
     }
 
     public function expenses() {
@@ -88,6 +89,9 @@ class Property extends Model {
       ->where('category_type', PropertyInvoiceTypes::UtilityExpense);
     }
 
+    public function allInvoices() {
+      return [...$this->invoices->toArray(), ...$this->expenses->toArray()];
+    }
 
     protected function shortName(): Attribute {
       return new Attribute(

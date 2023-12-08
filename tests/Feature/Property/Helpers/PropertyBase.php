@@ -129,5 +129,8 @@ class PropertyBase extends TestCase
     foreach ($rent->invoices()->get() as $invoice) {
       $this->payInvoice($rent, $invoice);
     }
+    foreach ($rent->property->expenses()->get() as $expense) {
+      $this->payInvoice($rent, $expense);
+    }
   }
 }
