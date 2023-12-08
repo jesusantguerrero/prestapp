@@ -124,9 +124,7 @@ const documentTotal = computed(() => {
 watch(
   () => documentTotal.value,
   (total) => {
-    nextTick(() => {
-      setPaymentAmount(total, "change of document total");
-    });
+    setPaymentAmount(total, `change of document total ${total}`);
   }
 );
 const isMultiple = computed(() => {

@@ -150,7 +150,7 @@ class RentTest extends PropertyBase
 
     $response = $this->delete("/rents/{$rent->id}");
     $response->assertStatus(302);
-    $this->assertCount(0, Rent::all());
+    $this->assertEquals(Rent::STATUS_CANCELLED, $rent->fresh()->status);
   }
 
   public function testItShouldCreateRentWithEndDate() {
