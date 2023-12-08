@@ -7,7 +7,7 @@ import renting from "./menus/renting";
 
 export const modules = {
     renting,
-    "shein-store": sheinStore,
+    "store": sheinStore,
 };
 
 export * from "./menus/menus";
