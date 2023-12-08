@@ -2,22 +2,69 @@
 
 namespace App\Domains\Properties\Services;
 
-use App\Domains\Accounting\Helpers\InvoiceHelper;
-use App\Domains\Properties\Actions\PropertyTransactionsValidator;
-use App\Domains\Properties\Enums\PropertyInvoiceTypes;
-use App\Domains\Properties\Models\Rent;
 use Exception;
 use Illuminate\Support\Carbon;
-use Insane\Journal\Helpers\ReportHelper;
+use App\Domains\Properties\Models\Rent;
 use Insane\Journal\Models\Core\Account;
+use Insane\Journal\Helpers\ReportHelper;
 use Insane\Journal\Models\Invoice\Invoice;
+use App\Domains\Properties\Models\Property;
 use Insane\Journal\Models\Invoice\InvoiceNote;
+use App\Domains\Accounting\Helpers\InvoiceHelper;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
+use App\Domains\Properties\Actions\PropertyTransactionsValidator;
 
 class PropertyTransactionService {
     public static function getProRatedAmount(Rent $rent) {
       $amountPerDay = $rent->amount / 30;
       $daysUsed = Carbon::createFromFormat('Y-m-d', $rent->first_invoice_date)->diffInDays(Carbon::createFromFormat('Y-m-d', $rent->date));
       return $daysUsed < 30 ? $amountPerDay * abs($daysUsed) : $rent->amount;
+    }
+
+    public static function createPropertyInvoice($formData, Property $property, $withExtraServices = true) {
+      $amountDue =  $formData['total'] ?? $formData['amount'];
+      $additionalFees =  [];
+      $items = [[
+        "name" => "Factura de Renta",
+        "concept" => "Factura de {$property->name}",
+        "quantity" => 1,
+        "price" => $amountDue,
+        "amount" => $amountDue,
+      ]];
+
+      $data = array_merge($formData, [
+        'concept' =>  $formData['concept'],
+        'description' => $formData['description'],
+        'user_id' => $property->user_id,
+        'team_id' => $property->team_id,
+        'client_id' => $property->owner_id,
+        'invoiceable_id' => $property->id,
+        'invoiceable_type' => Property::class,
+        'date' => $formData['date'] ?? date('Y-m-d'),
+        'type' => $formData['type'] ?? Invoice::DOCUMENT_TYPE_INVOICE,
+        'category_type' => $formData['category_type'] ?? PropertyInvoiceTypes::Charge,
+        "invoice_account_id" => $formData["invoice_account_id"] ?? $property->account_id,
+        "account_id" => $formData["account_id"] ?? $property->owner_account_id,
+        'due_date' => $formData['due_date'] ?? $formData['date'] ?? date('Y-m-d'),
+        'total' =>  $amountDue,
+        'items' => array_merge($formData['items'] ?? $items,  $withExtraServices ? $additionalFees : []),
+        "related_invoices" => $formData["related_invoices"] ?? []
+      ]);
+
+      if (isset($formData['payment_details'])) {
+        $data['payment_details'] = $formData['payment_details'];
+      }
+
+      if (isset($formData['is_paid']) && $formData['is_paid']) {
+        $data['payment_details'] = [
+          'account_id' => $property->account_id,
+          'concept' => "Pago {$data['concept']}",
+          'payment_method' => $data['payment_method'] ?? 'cash'
+        ];
+      }
+     
+
+      return Invoice::createDocument($data);
     }
 
     public static function createInvoice($formData, Rent $rent, $withExtraServices = true) {
@@ -232,9 +279,10 @@ class PropertyTransactionService {
 
     }
 
-    public static function createOrUpdateExpense(Rent $rent, $formData, $invoiceId = null) {
-      $vendorAccountId = Account::guessAccount($rent, [$rent->property->name, 'expected_payments_vendors']);
-      $expenseAccountId = Account::guessAccount($rent, ['General Expenses', 'expenses'], [
+    public static function createOrUpdateExpense(Property $property, $formData, $invoiceId = null) {
+     
+      $vendorAccountId = Account::guessAccount($property, [$property->name, 'expected_payments_vendors']);
+      $expenseAccountId = Account::guessAccount($property, ['General Expenses', 'expenses'], [
         'alias' => 'Gastos Generales'
       ]);
 
@@ -254,7 +302,7 @@ class PropertyTransactionService {
         "concept" => $formData['concept'],
         'category_type' => PropertyInvoiceTypes::UtilityExpense,
         'type' => Invoice::DOCUMENT_TYPE_BILL,
-        "description" => "{$formData['concept']} {$rent->client->display_name}",
+        "description" => "{$formData['concept']} {$property->name}",
         "total" => $formData['amount'],
         "invoice_account_id" => $vendorAccountId, // fallback credit account in case that items doesn't have an account_id and default payment account
         "account_id" => $expenseAccountId, // debit account
@@ -263,16 +311,18 @@ class PropertyTransactionService {
 
       if (isset($formData['is_paid_expense']) && $formData['is_paid_expense']) {
         $invoiceData['payment_details'] = [
-          'account_id' => $formData['payment_account_id'] ?? $rent->property->account_id,
+          'account_id' => $formData['payment_account_id'] ?? $property->account_id,
           'concept' => "Pago {$formData['concept']}",
           'payment_method' => $formData['payment_method'] ?? 'cash'
         ];
       }
 
       if ($invoiceId) {
-        Invoice::find($invoiceId)->updateDocument($invoiceData);
+        $invoice = Invoice::find($invoiceId);
+        $invoice->updateDocument($invoiceData);
+        return $invoice;
       } else {
-        self::createInvoice($invoiceData, $rent);
+        return self::createPropertyInvoice($invoiceData, $property);
       }
     }
 

@@ -2,14 +2,13 @@
 
 namespace App\Domains\Properties\Services;
 
-use App\Domains\Atmosphere\DTO\ReportData;
-use App\Domains\Atmosphere\DTO\ReportVisualData;
-use App\Domains\CRM\Models\Client;
-use App\Domains\Properties\Enums\PropertyInvoiceTypes;
-use App\Domains\Properties\Models\Rent;
 use Illuminate\Support\Carbon;
+use App\Domains\CRM\Models\Client;
 use Illuminate\Support\Facades\DB;
+use App\Domains\Properties\Models\Rent;
 use Insane\Journal\Models\Invoice\Invoice;
+use App\Domains\Properties\Models\Property;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 
 class OwnerService {
     public static function invoices($teamId, $clientId = null,  $statuses = []) {
@@ -104,10 +103,14 @@ class OwnerService {
     }
 
     public static function pendingDrawsInvoices($teamId, $ownerId = null, $invoiceId = null) {
-      $invoices = Invoice::selectRaw('invoices.*, DATE_FORMAT(due_date, "%Y-%m-01") invoice_month, clients.display_name owner_name, clients.names owner_first_name, clients.lastnames owner_lastname, clients.id owner_id, properties.name property_name')
-      ->paid()
+      $rentClass = Rent::class;
+      $invoices = Invoice::selectRaw('invoices.*, DATE_FORMAT(due_date, "%Y-%m-01") invoice_month, clients.display_name owner_name, clients.names owner_first_name, clients.lastnames owner_lastname, clients.id owner_id, 
+      CASE WHEN properties.name IS NOT NULL THEN properties.name ELSE rentProp.name END as property_name')
+      ->where([
+        'invoices.status' => 'paid'
+      ])
       ->byTeam($teamId)
-      ->where('invoiceable_type', Rent::class)
+      ->whereIn('invoiceable_type', [Rent::class, Property::class])
       ->whereIn('category_type', [
         PropertyInvoiceTypes::Rent,
         PropertyInvoiceTypes::Deposit->value,
@@ -121,14 +124,16 @@ class OwnerService {
           }
       })
       ->when($ownerId, function($query) use ($ownerId) {
-        $query->where('rents.owner_id', $ownerId);
+        $query->where(fn($q) => $q->where('properties.owner_id', $ownerId)->orWhere('rents.owner_id', $ownerId));
       })
-      ->join('rents', 'invoiceable_id', 'rents.id')
-      ->join('properties', 'rents.property_id', 'properties.id')
-      ->join('clients', 'rents.owner_id', 'clients.id')
+      ->leftJoin('rents', fn ($q) => $q->on('invoiceable_id', '=', 'rents.id')->where('invoiceable_type', Rent::class))
+      ->leftJoin(DB::raw('properties rentProp'), 'rents.property_id', 'rentProp.id')
+      ->leftJoin('properties', fn ($q) => $q->on('invoiceable_id','=' ,'properties.id')->where('invoiceable_type', Property::class))
+      ->join('clients', fn ($q) => $q->on(DB::raw("CASE WHEN rents.id IS NOT NULL THEN rents.owner_id ELSE properties.owner_id END"), 'clients.id'))
       ->leftJoin('invoice_relations', 'related_invoice_id', 'invoices.id')
       ->orderByDesc('due_date')
       ->get();
+
 
       if ($ownerId) {
         return $invoices->groupBy('invoice_month')->map(fn ($months, $monthName) => [

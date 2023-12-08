@@ -83,7 +83,7 @@ const submit = () => {
       0
     ),
   };
-  axios.post(`/properties/${rentId}/transactions/refund`, data).then(({ data }) => {
+  axios.post(`/rents/${rentId}/transactions/refund`, data).then(({ data }) => {
     // todo: launch payment modal or doit automatically in backend?
     console.log(data);
   });

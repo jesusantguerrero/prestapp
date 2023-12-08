@@ -37,7 +37,6 @@ const unitLabel = (unit: IUnit) => {
 };
 
 const propertyLabel = (property: IProperty) => {
-  console.log(property);
   return `${property.name} [${property?.units?.length}] (${property.address}) `;
 };
 </script>

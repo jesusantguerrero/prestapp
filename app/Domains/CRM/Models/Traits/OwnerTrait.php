@@ -2,15 +2,15 @@
 
 namespace App\Domains\CRM\Models\Traits;
 
-use App\Domains\Properties\Enums\PropertyInvoiceTypes;
-use App\Domains\Properties\Models\Property;
-use App\Domains\Properties\Models\PropertyUnit;
-use App\Domains\Properties\Models\Rent;
 use Illuminate\Support\Facades\DB;
+use App\Domains\Properties\Models\Rent;
 use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Core\Payment;
-use Insane\Journal\Models\Core\Transaction;
 use Insane\Journal\Models\Invoice\Invoice;
+use App\Domains\Properties\Models\Property;
+use Insane\Journal\Models\Core\Transaction;
+use App\Domains\Properties\Models\PropertyUnit;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 
 trait OwnerTrait {
     public function scopeOwner($query)
@@ -31,11 +31,14 @@ trait OwnerTrait {
     }
 
     public function getPropertyInvoices($invoiceId = null) {
-      return Invoice::select('invoices.*')->where([
-        'rents.owner_id' => $this->id,
+      return Invoice::select('invoices.*')
+      ->where([
         'invoices.status' => 'paid'
       ])
-      ->where('invoiceable_type', Rent::class)
+      ->where(fn($q) => $q
+        ->where('properties.owner_id', $this->id)
+        ->orWhere('rents.owner_id', $this->id))
+      ->whereIn('invoiceable_type', [Rent::class, Property::class])
       ->whereIn('category_type', [
         PropertyInvoiceTypes::Rent,
         PropertyInvoiceTypes::Deposit->value,
@@ -48,7 +51,8 @@ trait OwnerTrait {
             $query->orWhere('invoice_relations.invoice_id', $invoiceId);
           }
         })
-      ->join('rents', 'invoiceable_id', 'rents.id')
+      ->leftJoin('rents', fn ($q) => $q->on('invoiceable_id', '=', 'rents.id')->where('invoiceable_type', Rent::class))
+      ->leftJoin('properties', fn ($q) => $q->on('invoiceable_id','=' ,'properties.id')->where('invoiceable_type', Property::class))
       ->leftJoin('invoice_relations', 'related_invoice_id', 'invoices.id')
       ->get();
     }

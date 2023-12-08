@@ -156,6 +156,7 @@
     "Search...": "Buscar...",
     "available": "disponible",
     "of": "de",
+    "amount received": "Monto Recibido",
     "tenant": "Inquilino",
     "Renewals": "Renovaciones",
     "Tenants": "Inquilinos",
@@ -259,5 +260,10 @@
     "confirm signature": "Firmar",
     "your signature": "tu firmar",
     "signature": "firma",
-    "This invoice is already paid": "Esta factura esta pagada"
+    "commissions": "comisiones",
+    "add commission": "agregar comision",
+    "This invoice is already paid": "Esta factura esta pagada",
+    "Invoicing Data Updated": "Configuracion de factura actualizada",
+    "Invoicing settings has being updated": "Configuración de fatura ha sido actualizada",
+    "debt": "Saldo pendiente"
   }

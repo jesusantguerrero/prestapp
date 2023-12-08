@@ -1,19 +1,19 @@
 <?php
 
-use App\Domains\Properties\Http\Controllers\Api\InvoiceApiController;
-use App\Domains\Properties\Http\Controllers\Api\PaymentApiController;
-use App\Domains\Properties\Http\Controllers\PropertyController;
-use App\Domains\Properties\Http\Controllers\PropertyInvoiceController;
-use App\Domains\Properties\Http\Controllers\PropertyOwnerController;
-use App\Domains\Properties\Http\Controllers\PropertyTransactionController;
-use App\Domains\Properties\Http\Controllers\PropertyUnitController;
-use App\Domains\Properties\Http\Controllers\RentAgentController;
+use Illuminate\Support\Facades\Route;
 use App\Domains\Properties\Http\Controllers\RentController;
-use App\Domains\Properties\Http\Controllers\RentRenewalController;
+use App\Domains\Properties\Http\Controllers\PropertyController;
+use App\Domains\Properties\Http\Controllers\RentAgentController;
 use App\Domains\Properties\Http\Controllers\RentReportController;
 use App\Domains\Properties\Http\Controllers\TenantRentController;
-use Illuminate\Support\Facades\Route;
-
+use App\Domains\Properties\Http\Controllers\RentRenewalController;
+use App\Domains\Properties\Http\Controllers\PropertyUnitController;
+use App\Domains\Properties\Http\Controllers\PropertyOwnerController;
+use App\Domains\Properties\Http\Controllers\Api\InvoiceApiController;
+use App\Domains\Properties\Http\Controllers\Api\PaymentApiController;
+use App\Domains\Properties\Http\Controllers\PropertyInvoiceController;
+use App\Domains\Properties\Http\Controllers\RentTransactionController;
+use App\Domains\Properties\Http\Controllers\PropertyTransactionController;
 
 Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->name('api.')->group(function () {
   Route::apiResource('invoices', InvoiceApiController::class);
@@ -39,6 +39,12 @@ Route::middleware([
       Route::delete('properties/{property}/units/{propertyUnit}','removeUnit');
     });
 
+     // property transactions
+     Route::controller(PropertyTransactionController::class)->group(function () {
+      Route::get('/properties/transactions/{category}', '__invoke');
+      Route::post('/properties/{property}/transactions/expense',  'saveExpense');
+    });
+
     // rents
     Route::resource('rents', RentController::class);
     Route::get('/rent-renewals', [RentRenewalController::class, 'index']);
@@ -53,20 +59,20 @@ Route::middleware([
     Route::get('/invoices/{invoice}/payments/{payment}/print', [PropertyInvoiceController::class, 'printPayment']);
     Route::post('/rents/{rent}/generate-next-invoice', [RentController::class, 'generateNextInvoice']);
 
+    // rent transactions
+    Route::controller(RentTransactionController::class)->group(function () {
+      Route::get('/rents/{rent}/transactions/deposit-refund/create',  'createDepositRefund')->name('property.transactions.create-refund');
+      Route::post('/rents/{rent}/transactions/{type}',  'store');
+      Route::post('/properties/{rent}/transactions/{type}/{invoiceId}', 'store');
+      Route::post('/rents/{rent}/invoices/{invoice}/apply-deposit', 'applyDeposit');
+    });
 
     // reports
     Route::get('/rent-reports/monthly-summary', [RentReportController::class, 'monthlySummary']);
     Route::get('/rent-reports/occupancy', [RentReportController::class, 'occupancy']);
     Route::get('/property-reports', [RentReportController::class, 'management']);
 
-    // property transactions
-    Route::controller(PropertyTransactionController::class)->group(function () {
-      Route::get('/properties/transactions/{category}', '__invoke');
-      Route::get('/rents/{rent}/transactions/deposit-refund/create',  'createDepositRefund')->name('property.transactions.create-refund');
-      Route::post('/properties/{rent}/transactions/{type}',  'store');
-      Route::post('/properties/{rent}/transactions/{type}/{invoiceId}', 'store');
-      Route::post('/rents/{rent}/invoices/{invoice}/apply-deposit', 'applyDeposit');
-    });
+   
 
     // Owner
     Route::controller(PropertyOwnerController::class)->group(function() {

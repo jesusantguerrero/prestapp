@@ -133,6 +133,10 @@ const removePayment = async (payment: Record<string, string>) => {
     },
   });
 };
+
+const hideLogo = computed(() => {
+  return Boolean(Number(props.businessData.invoice_hide_company_logo));
+});
 </script>
 
 <template>
@@ -141,7 +145,11 @@ const removePayment = async (payment: Record<string, string>) => {
       <header class="pt-4 text-sm print:pt-0 invoice__header">
         <section class="flex justify-between w-full px-4 invoice-details">
           <article class="flex items-center w-full">
-            <img :src="imageUrl" v-if="imageUrl" class="w-40 rounded-md" />
+            <img
+              :src="imageUrl"
+              v-if="imageUrl && !hideLogo"
+              class="w-40 rounded-md mr-2"
+            />
             <BusinessCard :business="businessData" class="w-full text-left" />
           </article>
 
