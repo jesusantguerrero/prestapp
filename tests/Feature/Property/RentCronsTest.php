@@ -2,24 +2,25 @@
 
 namespace Tests\Feature\Property;
 
-use App\Domains\Accounting\Helpers\InvoiceHelper;
-use App\Domains\Properties\Actions\GenerateInvoices;
 use App\Domains\Properties\Models\Rent;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Invoice\Invoice;
+use App\Domains\Properties\Models\Property;
+use Illuminate\Foundation\Testing\WithFaker;
 use Tests\Feature\Property\Helpers\PropertyBase;
+use App\Domains\Accounting\Helpers\InvoiceHelper;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Domains\Properties\Actions\GenerateInvoices;
 
 class RentCronsTest extends PropertyBase
 {
   use WithFaker;
   use RefreshDatabase;
 
-  public function makePropertyExpense($rent) {
-   return $this->post("/properties/{$rent->id}/transactions/expense", array_merge($this->rentData, [
-      'client_id' => $rent->client_id,
-      'account_id' => Account::guessAccount($rent, ['Property Expenses', 'expenses']),
+  public function makePropertyExpense(Property $property) {
+   return $this->post("/properties/{$property->id}/transactions/expense", array_merge($this->rentData, [
+      'client_id' => $property->owner_id,
+      'account_id' => Account::guessAccount($property, ['Property Expenses', 'expenses']),
       'amount' => 1000,
       'date' => '2023-01-30',
       'details' => 'Fix front door',

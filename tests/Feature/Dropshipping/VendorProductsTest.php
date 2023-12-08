@@ -2,10 +2,11 @@
 
 namespace Tests\Feature\CRM;
 
-use App\Domains\Dropshipping\Services\VendorProductService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use App\Models\User;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Domains\Dropshipping\Services\VendorProductService;
 
 class VendorProductsTest extends TestCase
 {
@@ -19,10 +20,10 @@ class VendorProductsTest extends TestCase
      */
     public function testItShouldGetVendorProducts()
     {
-
+        $user = User::factory()->withPersonalTeam()->create();
+        $this->actingAs($user);
         $url = "https://us.shein.com/Manfinity-Sporsity-Men-Cut-And-Sew-Polo-Shirt-p-753301-cat-1981.html?mallCode=1";
-        $response = (new VendorProductService())->getProductInfo($url);
-        dd($response->body());
+        $response = $this->get("/dropshipping/vendor-products/shein?search=$url");
         $response->assertStatus(200);
     }
 }

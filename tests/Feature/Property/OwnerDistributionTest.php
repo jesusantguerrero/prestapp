@@ -2,13 +2,13 @@
 
 namespace Tests\Feature\Property;
 
-use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Rent;
-use App\Domains\Properties\Services\PropertyTransactionService;
 use App\Notifications\InvoiceGenerated;
-use Illuminate\Support\Facades\Notification;
 use Insane\Journal\Models\Invoice\Invoice;
+use Illuminate\Support\Facades\Notification;
 use Tests\Feature\Property\Helpers\PropertyBase;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
+use App\Domains\Properties\Services\PropertyTransactionService;
 
 class OwnerDistributionTest extends PropertyBase
 {
@@ -23,7 +23,7 @@ class OwnerDistributionTest extends PropertyBase
         "interest_rate" => 10
       ]);
 
-      $this->createExpense($rent, [
+      $this->createExpense($rent->property, [
         "date" => '2023-01-15',
         "amount" => 500
       ]);

@@ -2,17 +2,17 @@
 
 namespace Tests\Feature\Property\Helpers;
 
-use App\Domains\Accounting\Helpers\InvoiceHelper;
-use App\Domains\CRM\Models\Client;
-use App\Domains\Properties\Enums\PropertyInvoiceTypes;
-use App\Domains\Properties\Models\Property;
-use App\Domains\Properties\Models\PropertyUnit;
-use App\Domains\Properties\Models\Rent;
-use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Insane\Journal\Models\Core\Account;
 use Tests\TestCase;
+use App\Models\User;
+use App\Domains\CRM\Models\Client;
+use App\Domains\Properties\Models\Rent;
+use Insane\Journal\Models\Core\Account;
+use App\Domains\Properties\Models\Property;
+use Illuminate\Foundation\Testing\WithFaker;
+use App\Domains\Properties\Models\PropertyUnit;
+use App\Domains\Accounting\Helpers\InvoiceHelper;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 
 class PropertyBase extends TestCase
 {
@@ -94,10 +94,10 @@ class PropertyBase extends TestCase
     return PropertyUnit::latest()->first();
   }
 
-  protected function createExpense($rent, $formData = []) {
-    return $this->post("/properties/{$rent->id}/transactions/expense", array_merge($this->rentData, [
-      'client_id' => $rent->client_id,
-      'account_id' => Account::guessAccount($rent, ['Property Expenses', 'expenses']),
+  protected function createExpense(Property $property, $formData = []) {
+    return $this->post("/properties/{$property->id}/transactions/expense", array_merge($this->rentData, [
+      'client_id' => $property->owner_id,
+      'account_id' => Account::guessAccount($property, ['Property Expenses', 'expenses']),
       'amount' => $formData['amount'] ?? 1000,
       'date' => $formData['date'] ?? date('Y-m-d'),
       'details' => 'Fix front door',

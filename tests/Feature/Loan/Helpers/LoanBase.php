@@ -2,13 +2,13 @@
 
 namespace Tests\Feature\Loan\Helpers;
 
+use Tests\TestCase;
+use App\Models\User;
 use App\Domains\CRM\Models\Client;
 use App\Domains\Loans\Models\Loan;
-use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Insane\Journal\Models\Core\Account;
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 abstract class LoanBase extends TestCase
 {
@@ -21,6 +21,7 @@ abstract class LoanBase extends TestCase
 
   protected function setup(): void {
     parent::setup();
+    $this->seed();
     $user = User::factory()->withPersonalTeam()->create();
     $user->current_team_id = $user->fresh()->ownedTeams()->latest('id')->first()->id;
     $user->save();

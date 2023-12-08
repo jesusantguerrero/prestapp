@@ -3,13 +3,11 @@
 namespace Tests\Feature\Property;
 
 use App\Domains\Properties\Models\Rent;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Insane\Journal\Helpers\ReportHelper;
 use Insane\Journal\Models\Core\Account;
-use Insane\Journal\Models\Core\TransactionLine;
 use Insane\Journal\Models\Invoice\Invoice;
+use Illuminate\Foundation\Testing\WithFaker;
 use Tests\Feature\Property\Helpers\PropertyBase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PropertyTransactionsTest extends PropertyBase
 {
@@ -21,22 +19,21 @@ class PropertyTransactionsTest extends PropertyBase
     $this->actingAs($this->user);
     $rent = $this->createRent();
 
-    $response = $this->createExpense($rent, []);
+    $response = $this->createExpense($rent->property, []);
 
     $response->assertStatus(200);
     $rent = Rent::first();
 
-    $this->assertCount(1, $rent->rentExpenses);
-    $this->assertEquals(1000, $rent->rentExpenses[0]->total);
-    $this->assertEquals(Invoice::STATUS_UNPAID, $rent->rentExpenses[0]->status);
+    $this->assertCount(1, $rent->property->expenses);
+    $this->assertEquals(1000, $rent->property->expenses[0]->total);
+    $this->assertEquals(Invoice::STATUS_UNPAID, $rent->property->expenses[0]->status);
   }
 
   public function testPropertyExpenseShouldBeAccountingRight() {
-    $this->seed();
     $this->actingAs($this->user);
     $rent = $this->createRent();
 
-    $this->createExpense($rent);
+    $this->createExpense($rent->property);
     $expense = $rent->rentExpenses->first();
     $transaction = $expense->transaction;
 
@@ -52,7 +49,7 @@ class PropertyTransactionsTest extends PropertyBase
     $rent = $this->createRent();
     $account = Account::findByDisplayId('daily_box', $rent->team_id);
 
-    $this->createExpense($rent);
+    $this->createExpense($rent->property);
     $expense = $rent->rentExpenses->first();
     $this->payInvoice($rent, $expense, [
       'account_id' => $account->id,
@@ -71,7 +68,7 @@ class PropertyTransactionsTest extends PropertyBase
     $this->actingAs($this->user);
     $rent = $this->createRent();
 
-    $response = $this->createExpense($rent, [
+    $response = $this->createExpense($rent->property, [
       'is_paid_expense' => true
     ]);
 
