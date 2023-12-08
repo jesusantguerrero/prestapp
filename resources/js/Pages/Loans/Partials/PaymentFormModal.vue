@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { AtButton, AtInput } from "atmosphere-ui";
 import { format as formatDate, parseISO } from "date-fns";
-import { ElDatePicker, ElDialog, ElNotification } from "element-plus";
+import { ElDialog, ElNotification } from "element-plus";
 import { ref, watch, computed, nextTick } from "vue";
 
 import AppButton from "@/Components/shared/AppButton.vue";
@@ -50,7 +50,9 @@ const emit = defineEmits(["update:modelValue", "saved"]);
 const paymentForm = ref(generatePaymentData());
 
 const setFormData = () => {
-  paymentForm.value = generatePaymentData();
+  nextTick(() => {
+    paymentForm.value = generatePaymentData();
+  });
 };
 
 function generatePaymentData() {
@@ -78,11 +80,18 @@ watch(
   }
 );
 
+const setPaymentAmount = (amount: number, source: string) => {
+  console.log("source: ", source);
+  nextTick(() => {
+    paymentForm.value.amount = amount;
+  });
+};
+
 watch(
   () => props.due,
   (due) => {
-    if (!paymentForm.value.id) {
-      paymentForm.value.amount = due;
+    if (!paymentForm.value?.id && props.due) {
+      setPaymentAmount(due, `change of due ${props.due}`);
     }
   },
   {
@@ -115,9 +124,7 @@ const documentTotal = computed(() => {
 watch(
   () => documentTotal.value,
   (total) => {
-    nextTick(() => {
-      paymentForm.value.amount = total;
-    });
+    setPaymentAmount(total, `change of document total ${total}`);
   }
 );
 const isMultiple = computed(() => {
@@ -360,12 +367,11 @@ const dialogWidth = computed(() => {
           rounded
         />
 
-        <AppFormField class="w-full text-left" label="Monto Recibido" required>
+        <AppFormField class="w-full text-left" :label="$t('amount received')" required>
           <AtInput
             class="form-control"
             number-format
-            @update:model-value="paymentForm.amount = $event"
-            :model-value="paymentForm.amount"
+            v-model="paymentForm.amount"
             rounded
             :disabled="documentTotal"
             required
@@ -441,14 +447,6 @@ const dialogWidth = computed(() => {
         >
           Cancel
         </AtButton>
-        <!-- <AppButton
-          variant="error"
-          v-if="paymentForm.id"
-          @click="deletePayment()"
-          :disabled="isLoading"
-        >
-          Delete
-        </AppButton> -->
         <AppButton
           variant="secondary"
           @click="onSubmit()"

@@ -3,13 +3,11 @@
 namespace Tests\Feature\Property;
 
 use App\Domains\Properties\Models\Rent;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Insane\Journal\Helpers\ReportHelper;
 use Insane\Journal\Models\Core\Account;
-use Insane\Journal\Models\Core\TransactionLine;
 use Insane\Journal\Models\Invoice\Invoice;
+use Illuminate\Foundation\Testing\WithFaker;
 use Tests\Feature\Property\Helpers\PropertyBase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PropertyTransactionsTest extends PropertyBase
 {
@@ -21,23 +19,22 @@ class PropertyTransactionsTest extends PropertyBase
     $this->actingAs($this->user);
     $rent = $this->createRent();
 
-    $response = $this->createExpense($rent, []);
+    $response = $this->createExpense($rent->property, []);
 
     $response->assertStatus(200);
     $rent = Rent::first();
 
-    $this->assertCount(1, $rent->rentExpenses);
-    $this->assertEquals(1000, $rent->rentExpenses[0]->total);
-    $this->assertEquals(Invoice::STATUS_UNPAID, $rent->rentExpenses[0]->status);
+    $this->assertCount(1, $rent->property->expenses);
+    $this->assertEquals(1000, $rent->property->expenses[0]->total);
+    $this->assertEquals(Invoice::STATUS_UNPAID, $rent->property->expenses[0]->status);
   }
 
   public function testPropertyExpenseShouldBeAccountingRight() {
-    $this->seed();
     $this->actingAs($this->user);
     $rent = $this->createRent();
 
-    $this->createExpense($rent);
-    $expense = $rent->rentExpenses->first();
+    $this->createExpense($rent->property);
+    $expense = $rent->property->expenses->first();
     $transaction = $expense->transaction;
 
     $this->assertEquals(1000, $transaction->total);
@@ -52,12 +49,12 @@ class PropertyTransactionsTest extends PropertyBase
     $rent = $this->createRent();
     $account = Account::findByDisplayId('daily_box', $rent->team_id);
 
-    $this->createExpense($rent);
-    $expense = $rent->rentExpenses->first();
+    $this->createExpense($rent->property);
+    $expense = $rent->property->expenses->first();
     $this->payInvoice($rent, $expense, [
       'account_id' => $account->id,
     ]);
-    $payment = $rent->rentExpenses->first()->payments->first();
+    $payment = $rent->property->expenses->first()->payments->first();
 
     $this->assertEquals(1000, $payment->amount);
     $this->assertEquals(1, $payment->transaction->lines[0]->type);
@@ -71,15 +68,15 @@ class PropertyTransactionsTest extends PropertyBase
     $this->actingAs($this->user);
     $rent = $this->createRent();
 
-    $response = $this->createExpense($rent, [
+    $response = $this->createExpense($rent->property, [
       'is_paid_expense' => true
     ]);
 
     $response->assertStatus(200);
     $rent = Rent::first();
 
-    $this->assertCount(1, $rent->rentExpenses);
-    $this->assertEquals(Invoice::STATUS_PAID, $rent->rentExpenses[0]->status);
+    $this->assertCount(1, $rent->property->expenses);
+    $this->assertEquals(Invoice::STATUS_PAID, $rent->property->expenses[0]->status);
   }
 
   public function testItShouldHaveDepositBalance() {
@@ -100,7 +97,7 @@ class PropertyTransactionsTest extends PropertyBase
       "price" => 5000
     ]);
 
-    $response = $this->post("/properties/{$rent->id}/transactions/refund", [
+    $response = $this->post("/rents/{$rent->id}/transactions/refund", [
       'client_id' => $rent->client_id,
       'account_id' => $rent->property->deposit_account_id,
       'total' => 6000,
@@ -126,7 +123,7 @@ class PropertyTransactionsTest extends PropertyBase
       'payment_method' => 'cash'
     ]);
 
-    $response = $this->post("/properties/{$rent->id}/transactions/refund", [
+    $response = $this->post("/rents/{$rent->id}/transactions/refund", [
       'client_id' => $rent->client_id,
       'account_id' => $rent->property->deposit_account_id,
       'total' => $rent->deposit,
@@ -150,7 +147,7 @@ class PropertyTransactionsTest extends PropertyBase
       "price" => 5000
     ]);
 
-    $response = $this->post("/properties/{$rent->id}/transactions/refund", [
+    $response = $this->post("/rents/{$rent->id}/transactions/refund", [
       'client_id' => $rent->client_id,
       'account_id' => $rent->property->deposit_account_id,
       'total' => $rent->deposit,

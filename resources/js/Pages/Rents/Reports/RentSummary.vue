@@ -121,18 +121,17 @@ const handlePayment = (invoice: IInvoice) => {
 
   const url = `/rents/${invoice.invoiceable_id}/invoices/${invoice?.id}/payments`;
 
-  nextTick(() => {
-    openModal({
-      data: {
-        title: `Pagar ${invoice.concept}`,
-        payment: payment,
-        endpoint: url,
-        due: payment?.amount,
-        defaultConcept: "Pago de " + invoice.concept,
-        accountsEndpoint: "/invoices",
-        hideAccountSelector: true,
-      },
-    });
+  openModal({
+    data: {
+      title: `Pagar ${invoice.concept}`,
+      payment: payment,
+      endpoint: url,
+      due: payment?.amount,
+      defaultAmount: payment?.amount,
+      defaultConcept: "Pago de " + invoice.concept,
+      accountsEndpoint: "/invoices",
+      hideAccountSelector: true,
+    },
   });
 };
 

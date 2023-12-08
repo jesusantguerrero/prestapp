@@ -2,14 +2,15 @@
 
 namespace App\Domains\Properties\Models;
 
+use Laravel\Scout\Searchable;
 use App\Domains\CRM\Models\Client;
 use Database\Factories\PropertyFactory;
-use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Insane\Journal\Models\Invoice\Invoice;
 use Insane\Journal\Traits\HasResourceAccounts;
-use Laravel\Scout\Searchable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Property extends Model {
     use HasFactory;
@@ -78,7 +79,18 @@ class Property extends Model {
     }
 
     public function invoices() {
-      return $this->hasManyThrough(Invoice::class, Rent::class, 'id', 'invoiceable_id')->where('invoiceable_type', Rent::class);
+      return $this->hasManyThrough(Invoice::class, Rent::class, 'id', 'invoiceable_id')
+      ->where('invoiceable_type', Rent::class);
+    }
+
+    public function expenses() {
+      return $this->morphMany(Invoice::class, 'invoiceable')
+      ->where('invoiceable_type', Property::class)
+      ->where('category_type', PropertyInvoiceTypes::UtilityExpense);
+    }
+
+    public function allInvoices() {
+      return [...$this->invoices->toArray(), ...$this->expenses->toArray()];
     }
 
     protected function shortName(): Attribute {

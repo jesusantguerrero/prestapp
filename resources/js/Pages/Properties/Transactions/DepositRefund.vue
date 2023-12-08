@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {  useForm } from "@inertiajs/vue3";
+import { useForm } from "@inertiajs/vue3";
 // @ts-ignore
 import { AtField, AtInput } from "atmosphere-ui";
 import { watch, ref } from "vue";
@@ -149,7 +149,7 @@ const submit = () => {
     .transform(() => ({
       ...data,
     }))
-    .post(`/properties/${rentId}/transactions/refund`, {
+    .post(`/rents/${rentId}/transactions/refund`, {
       async onSuccess() {
         ElNotification({
           type: "success",
@@ -163,8 +163,8 @@ const submit = () => {
 };
 
 watch(depositForm.errors, (errors) => {
-  displayErrors(errors)
-})
+  displayErrors(errors);
+});
 
 const tableCols = [
   {
