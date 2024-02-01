@@ -2,13 +2,13 @@
 
 namespace App\Domains\Properties\Actions;
 
-use App\Domains\Accounting\Helpers\InvoiceHelper;
 use App\Domains\CRM\Models\Client;
-use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Rent;
-use App\Domains\Properties\Services\PropertyTransactionService;
-use App\Domains\Properties\Services\RentService;
 use Insane\Journal\Models\Invoice\Invoice;
+use App\Domains\Properties\Services\RentService;
+use App\Domains\Accounting\Helpers\InvoiceHelper;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
+use App\Domains\Properties\Services\PropertyTransactionService;
 
 class GenerateInvoices {
 
@@ -45,7 +45,7 @@ class GenerateInvoices {
 
     public static function chargeLateFees(bool $forceCharge = false) {
       $lateInvoices = Invoice::select(['invoices.*','rents.id as rentId', 'rents.grace_days as rentGraceDays'])
-      ->whereRaw('debt > 0 AND DATE_ADD(due_date, INTERVAL COALESCE(rents.grace_days, 0) DAY) < curdate()')
+      ->whereRaw('debt > 0 AND DATE_ADD(due_date, INTERVAL COALESCE(rents.grace_days, 0) DAY) < curdate() AND rents.late_fee > 0')
       ->join('rents', 'invoiceable_id', 'rents.id')
       ->where('invoiceable_type', Rent::class)
       ->where('category_type', PropertyInvoiceTypes::Rent->value)
