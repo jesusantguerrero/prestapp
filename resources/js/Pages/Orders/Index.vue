@@ -13,6 +13,7 @@ import { usePrint } from "@/utils/usePrint";
 import Simple from "@/Pages/Journal/Invoices/printTemplates/Index.vue";
 import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
 import { InteractionsState } from "@/Modules/clients/clientInteractions";
+
 import { ElMessageBox } from "element-plus";
 import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
 import axios from "axios";
@@ -132,6 +133,7 @@ const selectedInvoice = ref<InvoiceResponse | null>(null);
 const { customPrint } = usePrint();
 const isPrinting = ref<number | boolean>(false);
 function printExternal(invoice: IInvoice) {
+
   isPrinting.value = invoice.id;
   axios
     .get(`/invoices/${invoice.id}/preview?json=true`)
@@ -148,6 +150,7 @@ function printExternal(invoice: IInvoice) {
           },
           `${data.invoice?.concept}-${data.invoice?.client?.fullName}`
         );
+
       });
     })
     .then(() => {

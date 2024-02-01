@@ -78,6 +78,7 @@ addServiceBlock();
   <FormSection section-class="flex flex-col md:space-y-4">
     <div class="w-full">
       <h4 class="text-2xl font-bold capitalize">{{ $t("services") }}</h4>
+
     </div>
     <ServiceBlock
       v-model:items="formData.lines"
