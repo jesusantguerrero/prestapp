@@ -14,6 +14,9 @@ import { parseISO } from "date-fns";
 import { ref } from "vue";
 import { useResponsive } from "@/utils/useResponsive";
 
+import TaxTypeSelector from "@/Pages/Settings/TaxTypeSelector.vue";
+import AppFormField from "@/Components/shared/AppFormField.vue";
+
 interface Props {
   rents: IRent;
   currentTab: string;
@@ -63,58 +66,75 @@ const { isMobile } = useResponsive();
       :vertical-header="isMobile"
     >
       <template #content>
-        <section class="py-4 space-y-2">
-          <p class="flex items-center space-x-2">
-            <span> Mensualidad: </span>
-            <div class=" w-48">
-              <AtInput
-                class="form-control"
-                number-format
-                @update:model-value="rents.amount = $event"
-                :model-value="rents.amount"
-                rounded
-                required
-                borderless
-              >
-              <template #prefix>
-                <div class="flex items-center">
-                  DOP
-                </div>
-              </template>
-            </AtInput>
-            </div>
-          </p>
-          <p>
-            Fecha de Inicio:
-            {{ formatDate(rents.date) }}
-          </p>
-          <p>
-            Contrato hasta:
-            {{ formatDate(rents.end_date) }}
-          </p>
-          <p class="flex items-center">
-            Proximo pago:
-            <span v-if="!isEditing">
-              {{ formatDate(rents.next_invoice_date) }}
-            </span>
-            <ElDatePicker v-else v-model="updateRentForm.next_invoice_date" size="large" class="ml-2" />
-            <button
-              @click="toggleQuickEdit"
-              :disabled="updateRentForm.processing"
-              class="mr-4  h-10 w-14 flex justify-center items-center"
-            :class="[isEditing && 'bg-success text-white border-l-0 border hover:bg-success/80 transition']">
-              <IMdiEdit class="ml-2" v-if="!isEditing" />
-              <IMdiContentSaveCheck v-else />
-            </button>
-          </p>
-          <p>
-            Estatus:
-            {{ $t(`commons.${rents.status}`) }}
-          </p>
-          <p class="py-2 cursor-pointer hover:bg-base-lvl-1">
-            Deposito {{ formatMoney(rents.deposit) }}
-          </p>
-        </section>
+        <article class="flex py-4">
+          <section class="space-y-2 md:w-6/12">
+            <p class="flex items-center space-x-2">
+              <span> Mensualidad: </span>
+              <div class=" w-48">
+                <AtInput
+                  class="form-control"
+                  number-format
+                  @update:model-value="rents.amount = $event"
+                  :model-value="rents.amount"
+                  rounded
+                  required
+                  borderless
+                >
+                <template #prefix>
+                  <div class="flex items-center">
+                    DOP
+                  </div>
+                </template>
+              </AtInput>
+              </div>
+            </p>
+            <p>
+              Fecha de Inicio:
+              {{ formatDate(rents.date) }}
+            </p>
+            <p>
+              Contrato hasta:
+              {{ formatDate(rents.end_date) }}
+            </p>
+            <p class="flex items-center">
+              Proximo pago:
+              <span v-if="!isEditing">
+                {{ formatDate(rents.next_invoice_date) }}
+              </span>
+              <ElDatePicker v-else v-model="updateRentForm.next_invoice_date" size="large" class="ml-2" />
+              <button
+                @click="toggleQuickEdit"
+                :disabled="updateRentForm.processing"
+                class="mr-4  h-10 w-14 flex justify-center items-center"
+              :class="[isEditing && 'bg-success text-white border-l-0 border hover:bg-success/80 transition']">
+                <IMdiEdit class="ml-2" v-if="!isEditing" />
+                <IMdiContentSaveCheck v-else />
+              </button>
+            </p>
+            <p>
+              Estatus:
+              {{ $t(`commons.${rents.status}`) }}
+            </p>
+            <p class="py-2 cursor-pointer hover:bg-base-lvl-1">
+              Deposito {{ formatMoney(rents.deposit) }}
+            </p>
+          </section>
+          <section class="space-y-2 md:w-6/12">
+            <p class="flex items-center space-x-2">
+                <AppFormField
+                  label="Penalidad"
+                  class="w-full"
+                  disabled
+                  row
+                  v-model="rents.late_fee"
+                >
+                  <template #suffix>
+                    <TaxTypeSelector v-model="rents.late_fee_type" disabled />
+                  </template>
+                </AppFormField>
+            </p>
+          </section>
+        </article>
       </template>
       <template #actions>
         <section class="flex md:flex-row flex-col md:space-x-2 w-full">

@@ -1,28 +1,12 @@
-<template>
-  <div class="h-10 mt-auto taxes-box__type">
-    <div class="flex h-full">
-      <button
-        v-for="type in state.types"
-        class="w-6 px-1 text-gray-400 border border-gray-200 focus:outline-none"
-        :class="{ 'bg-gray-200 text-gray-600': modelValue === type.value }"
-        @click="setType(type.value)"
-      >
-        {{ type.name }}
-      </button>
-    </div>
-  </div>
-</template>
-
-<script setup>
+<script setup lang="ts">
 import { AtField, AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { reactive, watch } from "vue";
 import IconTrash from "@/Components/icons/IconTrash.vue";
 
-const props = defineProps({
-  modelValue: {
-    type: String,
-  },
-});
+const props = defineProps<{
+  modelValue: string;
+  disabled?: boolean;
+}>();
 
 const emit = defineEmits(["update:modelValue"]);
 
@@ -50,3 +34,19 @@ const setType = (type) => {
   emit("update:modelValue", type);
 };
 </script>
+
+<template>
+  <div class="h-10 mt-auto taxes-box__type">
+    <div class="flex h-full">
+      <button
+        v-for="type in state.types"
+        :disabled="disabled"
+        class="w-6 px-1 text-gray-400 border border-gray-200 focus:outline-none"
+        :class="{ 'bg-gray-200 text-gray-600': modelValue === type.value }"
+        @click="setType(type.value)"
+      >
+        {{ type.name }}
+      </button>
+    </div>
+  </div>
+</template>
