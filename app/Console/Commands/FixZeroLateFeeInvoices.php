@@ -12,7 +12,7 @@ class FixZeroLateFeeInvoices extends Command
      *
      * @var string
      */
-    protected $signature = 'app:fix-zero-late-fee-invoices {teamId}';
+    protected $signature = 'app:fix-zero-late-fee-invoices {teamId} {date}';
 
     /**
      * The console command description.
@@ -29,8 +29,10 @@ class FixZeroLateFeeInvoices extends Command
     public function handle()
     {
         $teamId = $this->argument('teamId');
+        $date = $this->argument('date');
 
-        RentFixService::removeZeroLateFeeInvoices($teamId);
+        // RentFixService::removeZeroLateFeeInvoices($teamId);
+        RentFixService::removeInvoicesAfterDate($teamId, $date);
         return Command::SUCCESS;
     }
 }
