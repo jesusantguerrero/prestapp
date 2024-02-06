@@ -320,14 +320,30 @@ class RentService {
         'invoices.status' => Invoice::STATUS_UNPAID
       ])
       ->get();
+      $oldAmount = 0;
 
       // dd("update amount", $rent, $invoicesToUpdate);
       $invoiceService = new InvoiceService(new InvoiceValidatorService());
       if (count($invoicesToUpdate)) {
+        $oldAmount = $invoicesToUpdate->first()->total;
         foreach ($invoicesToUpdate as $invoice) {
           $invoiceService->update($invoice, ["total" => $rent->amount]);
         }
+
+        $author = auth()?->user()?->name ?? "Admin";
+        activity()
+          ->performedOn($invoice)
+          ->withProperties([
+            "rent_id" => $rent->id,
+            "client_id" => $invoice->client->display_name,
+            "oldAmount" => $oldAmount,
+            "amount" => $rent->amount,
+            "from" => $invoicesToUpdate[0]->date,
+            "date" => $invoicesToUpdate->last()->date,
+          ])
+          ->log("$author updates rent's invoices of rent $rent->id of {$invoice->client->display_name} from {$oldAmount} to {$rent->amount}");
       }
+
     }
 
     public static function invoices($teamId, $statuses = []) {
