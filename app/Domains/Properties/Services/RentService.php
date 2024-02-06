@@ -14,9 +14,11 @@ use Insane\Journal\Models\Core\Payment;
 use App\Notifications\ExpiringRentNotice;
 use Insane\Journal\Models\Invoice\Invoice;
 use App\Domains\Properties\Models\Property;
+use Insane\Journal\Services\InvoiceService;
 use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Accounting\Helpers\InvoiceHelper;
 use Insane\Journal\Models\Invoice\InvoiceLineTax;
+use \Insane\Journal\Services\InvoiceValidatorService;
 
 class RentService {
     public static function createRent(mixed $rentData, mixed $schedule = null) {
@@ -79,10 +81,16 @@ class RentService {
           $property = $unit->property()->first();
         }
 
+        $shouldUpdateAmount = isset($rentData["amount"]) &&  $rentData["amount"] !== $rent->amount;
+
         $rent->update(collect($rentData)->only(['amount', 'notes', 'next_invoice_date'])->all());
         $rent->unit->update(['status' => PropertyUnit::STATUS_RENTED]);
         $rent->client->update(['status' => ClientStatus::Active]);
         $rent->owner->checkStatus();
+
+        if ($shouldUpdateAmount) {
+          self::updateRentInvoices($rent);
+        }
 
         if (!$rent->payments()->count()) {
           // Invoice::destroy($rent->invoices()->pluck('id'));
@@ -307,6 +315,21 @@ class RentService {
     }
 
     //  payments / invoices
+    public static function updateRentInvoices(Rent $rent) {
+      $invoicesToUpdate = $rent->invoices()->where([
+        'invoices.status' => Invoice::STATUS_UNPAID
+      ])
+      ->get();
+
+      // dd("update amount", $rent, $invoicesToUpdate);
+      $invoiceService = new InvoiceService(new InvoiceValidatorService());
+      if (count($invoicesToUpdate)) {
+        foreach ($invoicesToUpdate as $invoice) {
+          $invoiceService->update($invoice, ["total" => $rent->amount]);
+        }
+      }
+    }
+
     public static function invoices($teamId, $statuses = []) {
       $query = Invoice::selectRaw('
           clients.names contact,
