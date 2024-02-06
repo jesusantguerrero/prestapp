@@ -41,9 +41,44 @@ class RentFixService {
           "date" => $date,
           "dueDate" => $dueDate
         ])
-        ->log("$author deleted orphan invoice for this the rent from $rentId of $clientName");
+        ->log("$author deleted late invoice  rent $rentId of $clientName");
       }
     }
 
+    public static function removeInvoicesAfterDate($teamId, $date) {
+      $invoices = Invoice::where('invoiceable_type', Rent::class)
+      ->where('team_id', $teamId)
+      ->with(['invoiceable'])
+      ->where("status", Invoice::STATUS_UNPAID)
+      ->where('date', '>', $date)
+      ->get();
+
+      foreach ($invoices as $invoice) {
+        $invoice->delete();
+
+        $rentId = (string) $invoice->invoiceable_id;
+        $clientName = $invoice->client->display_name;
+        $amount = (string) $invoice->total;
+        $debt = (string) $invoice->debt;
+        $date = $invoice->date;
+        $dueDate = $invoice->due_date;
+
+        $author = auth()?->user()?->name ?? "Admin";
+
+        echo "$clientName invoice $rentId deleted" . PHP_EOL;
+
+        activity()
+        ->performedOn($invoice)
+        ->withProperties([
+          "rent_id" => $rentId,
+          "client_id" => $clientName,
+          "orphans" => $amount,
+          "debt" => $debt,
+          "date" => $date,
+          "dueDate" => $dueDate
+        ])
+        ->log("$author deleted late invoice  rent $rentId {$invoice->date} of $clientName");
+    }
+  }
 
 }
