@@ -128,7 +128,7 @@ const isEditingAmount = computed(() => {
                   class="h-10 w-14 flex justify-center items-center"
                   variant="neutral"
               >
-                  <IMdiTimes  />
+                  X
               </AppButton>
             </section>
             </p>
@@ -164,7 +164,7 @@ const isEditingAmount = computed(() => {
                 class=" h-10 w-14 flex justify-center items-center"
                 variant="neutral"
             >
-                <IMdiTimes  />
+                X
             </AppButton>
               </section>
             </p>
