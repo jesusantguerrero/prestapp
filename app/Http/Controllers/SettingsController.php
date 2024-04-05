@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Journal\CreateTeamSettings;
-use Illuminate\Http\Request;
-use App\Models\Setting;
-use Illuminate\Http\Response;
 use Inertia\Inertia;
+use App\Models\Setting;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Insane\Journal\Models\Core\Tax;
+use App\Actions\Journal\CreateTeamSettings;
 
 class SettingsController extends Controller
 {
@@ -62,6 +62,7 @@ class SettingsController extends Controller
         ];
 
         foreach ($settings as $settingName => $setting) {
+          //  if (empty($setting) && $setting !== false) continue;
             $setting = array_merge($entryData, [
                 "value" => $setting,
                 "name" => $settingName
@@ -111,5 +112,14 @@ class SettingsController extends Controller
             "settingData" => Setting::getBySection($teamId, $id),
             "businessData" => $businessData
         ]);
+    }
+
+
+    public function updateTeamPhoto() {
+      auth()->user()->currentTeam->updateProfilePhoto(request()->file('file'));
+    }
+
+    public function deleteTeamPhoto() {
+      auth()->user()->currentTeam->deleteProfilePhoto(request()->file('file'));
     }
 }

@@ -1,5 +1,10 @@
 import { IClient } from "../clients/clientEntity";
 
+export interface InvoiceItem {
+  price: number;
+  quantity: number;
+  concept: string;
+}
 export interface IInvoice {
   id: number;
   client_id: number;
@@ -16,4 +21,9 @@ export interface IInvoice {
 
 export interface IInvoiceWithRelations extends IInvoice {
   client: IClient
+}
+
+export interface ILineItem {
+  quantity: number;
+  price: number;
 }

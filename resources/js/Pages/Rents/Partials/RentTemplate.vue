@@ -153,6 +153,7 @@ const onEdit = (invoice: IInvoice) => {
                   data: {
                     type: 'expense',
                     clientId: rents.client_id,
+                    propertyId: rents.property_id,
                     rentId: rents.id,
                     hideClientOptions: true,
                   },
@@ -217,11 +218,11 @@ const onEdit = (invoice: IInvoice) => {
 
         <article
           v-if="!hidePanel"
-          class="w-full p-4 mt-4 space-y-2 rounded-md md:w-4/12 md:mt-0 bg-base-lvl-3"
+          class="w-full p-4 mt-4 space-y-2 overflow-hidden rounded-md md:w-4/12 md:mt-0 bg-base-lvl-3 h-max invoice-panel"
         >
           <section class="flex space-x-4">
             <AppButton
-              class="w-full"
+              class="w-full text-center justify-center"
               variant="secondary"
               v-if="rents.status !== 'CANCELLED'"
               @click="generateNextInvoice"
@@ -232,7 +233,7 @@ const onEdit = (invoice: IInvoice) => {
             </AppButton>
           </section>
 
-          <section class="py-4 mt-8 space-y-2">
+          <section class="py-4 mt-8 space-y-2 ic-scroller h-[initial] overflow-y-auto">
             <div class="text-sm" v-if="rents.transaction">
               {{ rents.transaction.description }}
               <span class="font-bold text-green-500">
@@ -286,3 +287,11 @@ const onEdit = (invoice: IInvoice) => {
     </main>
   </AppLayout>
 </template>
+
+<style lang="scss">
+.invoice-panel {
+  height: 460px;
+  display: grid;
+  grid-template-rows: 40px 1fr;
+}
+</style>

@@ -4,14 +4,9 @@ import AppButton from "@/Components/shared/AppButton.vue";
 import BaseTable from "@/Components/shared/BaseTable.vue";
 // @ts-ignore
 import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
-import {
-  ILoanInstallment,
-  ILoanInstallmentSaved,
-} from "@/Modules/loans/loanInstallmentEntity";
+import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
 import cols from "./installmentCols";
-import { router } from "@inertiajs/core";
 import { useI18n } from "vue-i18n";
-import { onMounted, ref } from "vue";
 
 interface Props {
   installments: ILoanInstallment[];

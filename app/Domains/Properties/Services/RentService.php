@@ -2,21 +2,23 @@
 
 namespace App\Domains\Properties\Services;
 
-use App\Domains\Accounting\Helpers\InvoiceHelper;
-use App\Domains\CRM\Enums\ClientStatus;
-use App\Domains\CRM\Models\Client;
-use App\Domains\Properties\Models\Property;
-use App\Domains\Properties\Models\PropertyUnit;
-use App\Domains\Properties\Models\Rent;
+use Exception;
 use App\Models\Team;
 use App\Models\User;
-use App\Notifications\ExpiringRentNotice;
-use Exception;
+use App\Domains\CRM\Models\Client;
 use Illuminate\Support\Facades\DB;
+use App\Domains\CRM\Enums\ClientStatus;
+use App\Domains\Properties\Models\Rent;
 use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Core\Payment;
+use App\Notifications\ExpiringRentNotice;
 use Insane\Journal\Models\Invoice\Invoice;
+use App\Domains\Properties\Models\Property;
+use Insane\Journal\Services\InvoiceService;
+use App\Domains\Properties\Models\PropertyUnit;
+use App\Domains\Accounting\Helpers\InvoiceHelper;
 use Insane\Journal\Models\Invoice\InvoiceLineTax;
+use \Insane\Journal\Services\InvoiceValidatorService;
 
 class RentService {
     public static function createRent(mixed $rentData, mixed $schedule = null) {
@@ -79,10 +81,16 @@ class RentService {
           $property = $unit->property()->first();
         }
 
+        $shouldUpdateAmount = isset($rentData["amount"]) &&  $rentData["amount"] !== $rent->amount;
+
         $rent->update(collect($rentData)->only(['amount', 'notes', 'next_invoice_date'])->all());
         $rent->unit->update(['status' => PropertyUnit::STATUS_RENTED]);
         $rent->client->update(['status' => ClientStatus::Active]);
         $rent->owner->checkStatus();
+
+        if ($shouldUpdateAmount) {
+          self::updateRentInvoices($rent);
+        }
 
         if (!$rent->payments()->count()) {
           // Invoice::destroy($rent->invoices()->pluck('id'));
@@ -107,7 +115,12 @@ class RentService {
           $rent->owner->checkStatus();
         }
         Invoice::destroy($rent->invoices()->unpaid()->pluck('id'));
-        Rent::destroy($rent->id);
+        $rent->update([
+          'status' => Rent::STATUS_CANCELLED,
+          "end_date" => date('Y-m-d'),
+          "cancelled_at" => date('Y-m-d'),
+          'next_invoice_date' => null,
+        ]);
       });
     }
 
@@ -302,6 +315,37 @@ class RentService {
     }
 
     //  payments / invoices
+    public static function updateRentInvoices(Rent $rent) {
+      $invoicesToUpdate = $rent->invoices()->where([
+        'invoices.status' => Invoice::STATUS_UNPAID
+      ])
+      ->get();
+      $oldAmount = 0;
+
+      // dd("update amount", $rent, $invoicesToUpdate);
+      $invoiceService = new InvoiceService(new InvoiceValidatorService());
+      if (count($invoicesToUpdate)) {
+        $oldAmount = $invoicesToUpdate->first()->total;
+        foreach ($invoicesToUpdate as $invoice) {
+          $invoiceService->update($invoice, ["total" => $rent->amount]);
+        }
+
+        $author = auth()?->user()?->name ?? "Admin";
+        activity()
+          ->performedOn($invoice)
+          ->withProperties([
+            "rent_id" => $rent->id,
+            "client_id" => $invoice->client->display_name,
+            "oldAmount" => $oldAmount,
+            "amount" => $rent->amount,
+            "from" => $invoicesToUpdate[0]->date,
+            "date" => $invoicesToUpdate->last()->date,
+          ])
+          ->log("$author updates rent's invoices of rent $rent->id of {$invoice->client->display_name} from {$oldAmount} to {$rent->amount}");
+      }
+
+    }
+
     public static function invoices($teamId, $statuses = []) {
       $query = Invoice::selectRaw('
           clients.names contact,
@@ -420,11 +464,11 @@ class RentService {
 
     public static function payInvoice(Rent $rent, Invoice $invoice, mixed $postData) {
         if ($invoice->invoiceable_id != $rent->id || $invoice->invoiceable_type !== Rent::class) {
-          throw new Exception("This invoice doesn't belongs to this rent");
+          throw new Exception(__("This invoice doesn't belongs to this rent"));
         }
 
         if ($invoice && $invoice->debt <= 0) {
-            throw new Exception("This invoice is already paid");
+            throw new Exception(__("This invoice is already paid"));
         }
 
         DB::transaction(function () use ($invoice, $postData, $rent) {

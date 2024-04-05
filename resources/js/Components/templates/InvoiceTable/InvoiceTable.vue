@@ -44,7 +44,7 @@ const visibleData = computed(() => {
       <slot name="card" row="row">
         <InvoiceCard
           :invoice="invoice"
-          class="mb-6 border-b py-6"
+          class="py-6 mb-6 border-b"
           :external-actions="responsiveActions"
         />
       </slot>
@@ -63,7 +63,7 @@ const visibleData = computed(() => {
           <p>
             <Link
               :href="`/${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}`"
-              class="text-blue-400 inline-flex capitalize border-b justify-between border-blue-400 border-dashed cursor-pointer text-sm"
+              class="inline-flex justify-between text-sm text-blue-400 capitalize border-b border-blue-400 border-dashed cursor-pointer"
             >
               <section>
                 {{ row.concept }}
@@ -75,11 +75,11 @@ const visibleData = computed(() => {
           </p>
           <p>
             <Link
-              class="text-sm text-body-1 mt-2"
+              class="mt-2 text-sm text-body-1"
               :href="`/clients/${row.client_id || row.contact_id}`"
             >
-              <i class="fa fa-user text-xs" />
-              {{ row.client_name }}
+              <i class="text-xs fa fa-user" />
+              {{ row.client_name ?? row.client?.fullName }}
             </Link>
           </p>
           <p class="flex items-center">
@@ -96,7 +96,7 @@ const visibleData = computed(() => {
 
     <template v-slot:status="{ scope: { row } }">
       <div
-        class="font-bold capitalize text-sm"
+        class="text-sm font-bold capitalize"
         :class="getStatusColor(row.status)"
         v-if="!isLoading"
       >

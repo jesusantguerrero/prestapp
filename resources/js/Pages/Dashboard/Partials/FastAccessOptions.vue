@@ -32,33 +32,6 @@ const welcomeCards = computed(() => {
       },
     },
     {
-      label: t("Loans"),
-      extended: true,
-    },
-    {
-      label: t("Create a loan"),
-      icon: "money",
-      action() {
-        router.visit("/loans/create");
-      },
-    },
-    {
-      label: t("Calculate loan"),
-      icon: "calculator",
-      action() {
-        router.visit("/loans/create");
-      },
-      extended: true,
-    },
-    {
-      label: t("Pay loan"),
-      icon: "money",
-      action() {
-        router.visit("/payment-center");
-      },
-      extended: true,
-    },
-    {
       label: t("Properties"),
       extended: true,
     },

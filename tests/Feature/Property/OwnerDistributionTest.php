@@ -2,13 +2,13 @@
 
 namespace Tests\Feature\Property;
 
-use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Domains\Properties\Models\Rent;
-use App\Domains\Properties\Services\PropertyTransactionService;
 use App\Notifications\InvoiceGenerated;
-use Illuminate\Support\Facades\Notification;
 use Insane\Journal\Models\Invoice\Invoice;
+use Illuminate\Support\Facades\Notification;
 use Tests\Feature\Property\Helpers\PropertyBase;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
+use App\Domains\Properties\Services\PropertyTransactionService;
 
 class OwnerDistributionTest extends PropertyBase
 {
@@ -23,7 +23,7 @@ class OwnerDistributionTest extends PropertyBase
         "interest_rate" => 10
       ]);
 
-      $this->createExpense($rent, [
+      $this->createExpense($rent->property, [
         "date" => '2023-01-15',
         "amount" => 500
       ]);
@@ -37,9 +37,10 @@ class OwnerDistributionTest extends PropertyBase
       $this->payInvoices($rent);
 
       PropertyTransactionService::createOwnerDistribution($this->owner);
+      $propertyInvoices = $rent->property->fresh()->allInvoices();
 
-      $this->assertEquals(3, $rent->fresh()->invoices()->count());
-      $this->assertEquals(10500, $rent->fresh()->invoices()->sum('total'));
+      $this->assertCount(3, $propertyInvoices);
+      $this->assertEquals(10500, collect($propertyInvoices)->sum('total'));
     }
 
     public function testItShouldPayInvoiceDebt()
@@ -54,7 +55,7 @@ class OwnerDistributionTest extends PropertyBase
     public function testItShouldPayExpenseDebt()
     {
       $rent = $this->generateInvoices();
-      $invoice = $rent->invoices()->where('category_type', PropertyInvoiceTypes::UtilityExpense->value)->first();
+      $invoice = $rent->property->expenses()->where('category_type', PropertyInvoiceTypes::UtilityExpense->value)->first();
       $this->payInvoice($rent, $invoice);
 
 
@@ -100,8 +101,7 @@ class OwnerDistributionTest extends PropertyBase
       $rent = $this->generateInvoices();
       $this->payInvoices($rent);
 
-
-      return $this->post("/owners/{$this->owner->id}/draws", [
+      $this->post("/owners/{$this->owner->id}/draws", [
           'invoices' => $this->owner->fresh()->getPropertyInvoices()
         ]
       );

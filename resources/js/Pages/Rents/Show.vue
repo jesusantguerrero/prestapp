@@ -14,6 +14,10 @@ import { parseISO } from "date-fns";
 import { ref } from "vue";
 import { useResponsive } from "@/utils/useResponsive";
 
+import TaxTypeSelector from "@/Pages/Settings/TaxTypeSelector.vue";
+import AppFormField from "@/Components/shared/AppFormField.vue";
+import { computed } from "vue";
+
 interface Props {
   rents: IRent;
   currentTab: string;
@@ -22,20 +26,33 @@ interface Props {
 const props = defineProps<Props>();
 
 const updateRentForm = useForm({
-  next_invoice_date: parseISO(props.rents.next_invoice_date)
+  next_invoice_date: parseISO(props.rents.next_invoice_date),
+  amount: props.rents.amount,
 })
 
-const isEditing = ref(false);
 
-const toggleQuickEdit = () => {
-  if (isEditing.value && props.rents.next_invoice_date !== updateRentForm.next_invoice_date) {
+const isEditing = ref<string|boolean>(false);
+
+const toggleQuickEdit = (mode: string|boolean) => {
+  if (!mode) {
+    isEditing.value = false;
+  } else if (isEditingDate.value && mode == 'next_invoice_date' && props.rents.next_invoice_date !== updateRentForm.next_invoice_date) {
       updateRentForm.put(route('rents.update', props.rents), {
         onSuccess() {
           router.reload();
+          isEditing.value = false;
         }
       })
+  } else if (isEditingAmount.value && mode == 'amount' && props.rents.amount !== updateRentForm.amount) {
+      updateRentForm.put(route('rents.update', props.rents), {
+        onSuccess() {
+          router.reload();
+          isEditing.value = false;
+        }
+      })
+  } else {
+    isEditing.value = mode;
   }
-  isEditing.value= !isEditing.value
 }
 
 const deleteRent = async (rent: IRent) => {
@@ -53,6 +70,14 @@ const deleteRent = async (rent: IRent) => {
 };
 
 const { isMobile } = useResponsive();
+
+const isEditingDate = computed(() => {
+  return isEditing.value =='next_invoice_date'
+})
+
+const isEditingAmount = computed(() => {
+  return isEditing.value =='amount'
+})
 </script>
 
 <template>
@@ -63,58 +88,110 @@ const { isMobile } = useResponsive();
       :vertical-header="isMobile"
     >
       <template #content>
-        <section class="py-4 space-y-2">
-          <p class="flex items-center space-x-2">
-            <span> Mensualidad: </span>
-            <div class=" w-48">
-              <AtInput
-                class="form-control"
-                number-format
-                @update:model-value="rents.amount = $event"
-                :model-value="rents.amount"
-                rounded
-                required
-                borderless
-              >
-              <template #prefix>
-                <div class="flex items-center">
-                  DOP
-                </div>
-              </template>
-            </AtInput>
+        <article class="flex py-4">
+          <section class="space-y-2 md:w-6/12">
+            <p class="flex items-center space-x-2">
+              <span> Mensualidad: </span>
+              <span v-if="!isEditingAmount">
+                {{ formatMoney(rents.amount) }}
+              </span>
+              <div class=" w-48 flex" v-else>
+                <AtInput
+                  class="form-control"
+                  number-format
+                  v-model="updateRentForm.amount"
+                  rounded
+                  required
+                  borderless
+                >
+                <template #prefix>
+                  <div class="flex items-center">
+                    DOP
+                  </div>
+                </template>
+              </AtInput>
             </div>
-          </p>
-          <p>
-            Fecha de Inicio:
-            {{ formatDate(rents.date) }}
-          </p>
-          <p>
-            Contrato hasta:
-            {{ formatDate(rents.end_date) }}
-          </p>
-          <p class="flex items-center">
-            Proximo pago:
-            <span v-if="!isEditing">
-              {{ formatDate(rents.next_invoice_date) }}
-            </span>
-            <ElDatePicker v-else v-model="updateRentForm.next_invoice_date" size="large" class="ml-2" />
-            <button
-              @click="toggleQuickEdit"
-              :disabled="updateRentForm.processing"
-              class="mr-4  h-10 w-14 flex justify-center items-center"
-            :class="[isEditing && 'bg-success text-white border-l-0 border hover:bg-success/80 transition']">
-              <IMdiEdit class="ml-2" v-if="!isEditing" />
-              <IMdiContentSaveCheck v-else />
-            </button>
-          </p>
-          <p>
-            Estatus:
-            {{ $t(`commons.${rents.status}`) }}
-          </p>
-          <p class="py-2 cursor-pointer hover:bg-base-lvl-1">
-            Deposito {{ formatMoney(rents.deposit) }}
-          </p>
-        </section>
+            <section class="flex">
+              <AppButton
+                  @click="toggleQuickEdit('amount')"
+                  :processing="isEditingAmount && updateRentForm.processing"
+                  :disabled="updateRentForm.processing"
+                  class="h-10 w-14 flex justify-center items-center"
+                  :variant="isEditingAmount ? 'success' : 'neutral'">
+                  <IMdiContentSaveCheck v-if="isEditingAmount" />
+                  <IMdiEdit  v-else />
+              </AppButton>
+              <AppButton
+                  v-if="isEditingAmount"
+                  @click="toggleQuickEdit(false)"
+                  :disabled="updateRentForm.processing"
+                  class="h-10 w-14 flex justify-center items-center"
+                  variant="neutral"
+              >
+                  X
+              </AppButton>
+            </section>
+            </p>
+            <p>
+              Fecha de Inicio:
+              {{ formatDate(rents.date) }}
+            </p>
+            <p>
+              Contrato hasta:
+              {{ formatDate(rents.end_date) }}
+            </p>
+            <p class="flex items-center">
+              Proximo pago:
+              <span v-if="!isEditingDate">
+                {{ formatDate(rents.next_invoice_date) }}
+              </span>
+              <ElDatePicker v-else v-model="updateRentForm.next_invoice_date" size="large" class="ml-2" />
+              <section class="flex">
+                <AppButton
+                  @click="toggleQuickEdit('next_invoice_date')"
+                  class="h-10 w-14 flex justify-center items-center"
+                  :processing="isEditingDate && updateRentForm.processing"
+                  :disabled="updateRentForm.processing"
+                  :variant="isEditingDate ? 'success' : 'neutral'"
+               >
+                <IMdiContentSaveCheck v-if="isEditingDate" />
+                  <IMdiEdit class="ml-2" v-else />
+                </AppButton>
+                <AppButton
+                v-if="isEditingDate"
+                @click="toggleQuickEdit(false)"
+                :disabled="updateRentForm.processing"
+                class=" h-10 w-14 flex justify-center items-center"
+                variant="neutral"
+            >
+                X
+            </AppButton>
+              </section>
+            </p>
+            <p>
+              Estatus:
+              {{ $t(`commons.${rents.status}`) }}
+            </p>
+            <p class="py-2 cursor-pointer hover:bg-base-lvl-1">
+              Deposito {{ formatMoney(rents.deposit) }}
+            </p>
+          </section>
+          <section class="space-y-2 md:w-6/12">
+            <p class="flex items-center space-x-2">
+                <AppFormField
+                  label="Penalidad"
+                  class="w-full"
+                  disabled
+                  row
+                  v-model="rents.late_fee"
+                >
+                  <template #suffix>
+                    <TaxTypeSelector v-model="rents.late_fee_type" disabled />
+                  </template>
+                </AppFormField>
+            </p>
+          </section>
+        </article>
       </template>
       <template #actions>
         <section class="flex md:flex-row flex-col md:space-x-2 w-full">

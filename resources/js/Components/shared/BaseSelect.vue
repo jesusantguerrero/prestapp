@@ -1,31 +1,30 @@
 <template>
-  <div>
-    <multiselect
-      class="base-select h-full"
-      :id="id"
-      :modelValue="modelValue"
-      :disabled="disabled"
-      :trackBy="trackBy"
-      :loading="isLoading"
-      :label="label"
-      :internal-search="!endpoint"
-      :placeholder="placeholder"
-      :hideSelected="hideSelected"
-      :showLabels="showLabels"
-      :allowCreate="allowCreate"
-      :customLabel="customLabel"
-      :options="localOptions"
-      :size="size"
-      v-on="multiselectListeners"
-    >
-      <template v-slot:singleLabel="{ option }">
-        <slot name="singleLabel" :option="option" />
-      </template>
-      <template v-slot:option="{ option }">
-        <slot name="option" :option="option" />
-      </template>
-    </multiselect>
-  </div>
+  <multiselect
+    class="h-full base-select"
+    :id="id"
+    :modelValue="modelValue"
+    :disabled="disabled"
+    :trackBy="trackBy"
+    :loading="isLoading"
+    :label="label"
+    :tag="tag"
+    :internal-search="!endpoint"
+    :placeholder="placeholder"
+    :hideSelected="hideSelected"
+    :showLabels="showLabels"
+    :allowCreate="allowCreate"
+    :customLabel="customLabel"
+    :options="localOptions"
+    :size="size"
+    v-on="multiselectListeners"
+  >
+    <template v-slot:singleLabel="{ option }">
+      <slot name="singleLabel" :option="option" />
+    </template>
+    <template v-slot:option="{ option }">
+      <slot name="option" :option="option" />
+    </template>
+  </multiselect>
 </template>
 
 <script setup lang="ts">
@@ -47,6 +46,7 @@ interface Props {
   showLabels?: boolean;
   endpoint?: string;
   size?: string;
+  tag?: boolean;
   allowCreate?: boolean;
   customLabel?: Function;
 }
@@ -71,6 +71,53 @@ const emit = defineEmits([
   "update:label",
 ]);
 
+const localOptions = ref(props.options ?? []);
+const isLoading = ref(false);
+
+const resultParser = (apiOptions: Record<string, string>[], query: string = "") => {
+  let includeCustom = true;
+  const originalMap = apiOptions.map((option) => {
+    const optionLabel = props.label ? option[props.label] : option.label;
+    if (includeCustom && query && optionLabel.toLowerCase().includes(query))
+      includeCustom = false;
+
+    return {
+      ...option,
+      [props.label]: optionLabel,
+      [props.trackBy]: props.trackBy ? option[props.trackBy] : option.id,
+    };
+  });
+
+  const custom = includeCustom
+    ? [
+        {
+          [props.label]: query,
+          [props.trackBy]: `new::${query}`,
+        },
+      ]
+    : [];
+
+  return [...custom, ...originalMap];
+};
+
+const handleSearch = debounce((query) => {
+  if (!query.length) {
+    localOptions.value = [];
+    return;
+  }
+  isLoading.value = true;
+  const params = props.endpoint?.includes("?") ? `&search=${query}` : `?search=${query}`;
+
+  axios
+    .get(`${props.endpoint}${params}`)
+    .then(({ data }) => {
+      localOptions.value = resultParser(Array.isArray(data) ? data : data.data, query);
+    })
+    .finally(() => {
+      isLoading.value = false;
+    });
+}, 400);
+
 const multiselectListeners = {
   "update:modelValue": (value: SelectOption) => emit("update:modelValue", value),
   select: (selectedOption: string) => emit("select", selectedOption),
@@ -89,28 +136,15 @@ const multiselectListeners = {
       emit("searchChange", searchQuery);
     }
   },
+  value: (optionId: string, option?: Record<string, string>) => {
+    const optionData =
+      option ?? localOptions.value.find((option) => option.value == optionId);
+    selected.value = optionData;
+    emit("update:modelValue", optionId);
+    emit("update:value", optionData);
+    emit("update:label", optionData?.label);
+  },
 };
-
-const localOptions = ref(props.options ?? []);
-const isLoading = ref(false);
-
-const handleSearch = debounce((query) => {
-  if (!query.length) {
-    localOptions.value = [];
-    return;
-  }
-  isLoading.value = true;
-  const params = props.endpoint?.includes("?") ? `&search=${query}` : `?search=${query}`;
-
-  axios
-    .get(`${props.endpoint}${params}`)
-    .then(({ data }) => {
-      localOptions.value = Array.isArray(data) ? data : data.data;
-    })
-    .finally(() => {
-      isLoading.value = false;
-    });
-}, 400);
 </script>
 
 <style lang="scss">

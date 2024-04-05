@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Loan;
 
-use App\Domains\CRM\Enums\ClientStatus;
 use App\Domains\Loans\Models\Loan;
+use App\Domains\CRM\Enums\ClientStatus;
 use Tests\Feature\Loan\Helpers\LoanBase;
 
 class LoanTest extends LoanBase

@@ -1,105 +1,56 @@
-import IcOutlineRealEstateAgent from '~icons/ic/outline-real-estate-agent'
 import { cloneDeep } from 'lodash';
 import { Link } from "@inertiajs/vue3"
 import IMdiPlus from '~icons/mdi/plus-thick';
-import MaterialSymbolsDashboard from '~icons/material-symbols/dashboard'
 import { MaybeRef } from "@vueuse/core";
-import { MODULES, getSectionMenu } from './menus';
-import { h } from "vue";
+import sheinStore from "./menus/sheinStore";
+import renting from "./menus/renting";
 
-export * from "./menus";
+export const modules = {
+    renting,
+    "store": sheinStore,
+};
+
+export * from "./menus/menus";
+
 interface IAppMenuItem {
   icon?: string | Object;
   name: string;
   label: string;
-  to: string;
+  to?: string;
   as: string | Object;
+  items?: IAppMenuItem[];
+  action?: string;
+  hideMobile?: boolean;
   hidden?: boolean;
+  roles?: string;
   isActiveFunction?: (url: string, currentPath: string) => boolean
 }
-export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function) => {
-    const appMenu: IAppMenuItem[] =  [
-        {
-            icon: MaterialSymbolsDashboard,
-            name: 'home',
-            label: t('Home'),
-            to: '/dashboard',
-            as: Link
-        },
-        {
-            icon: 'fas fa-money-check-alt',
-            label: t('Loans'),
-            name: 'loans',
-            to: '/loans',
-            as: Link,
-            isActiveFunction(url: string, currentPath: string) {
-               return /loans|lender/.test(currentPath)
-            },
-            items: getSectionMenu(MODULES.LOAN),
-            hidden: true,
-        },
-        {
-            icon: 'fas fa-building',
-            name: 'properties',
-            label:t('Properties'),
-            to: '/units?filter[status]=RENTED',
-            as: Link,
-            isActiveFunction(url: string, currentPath: string) {
-              return /properties|units|tenant|owner/.test(currentPath)
-            },
-            items: getSectionMenu(MODULES.PROPERTY),
-            hidden: !isTeamApproved.value,
+export const useAppMenu = (isTeamApproved: MaybeRef<boolean>, t: Function, moduleName: string, role: string) => {
+    const module = modules[moduleName];
+    const appMenu: IAppMenuItem[] = module.menu.reduce((visibleItems: IAppMenuItem[], item: IAppMenuItem ) => {
+      if ((!item.roles || item.roles.includes(role)) && !item?.hidden) {
 
-        },
-        {
-            icon: 'fas fa-calculator',
-            label: t('Accounting'),
-            to: '/invoices?filter[type]=expense|invoice',
-            as: Link,
-            isActiveFunction(url:string, currentPath: string) {
-                return /invoices/.test(currentPath)
-            },
-            hidden: true,
-        },
-        {
-          icon: 'fas fa-chart-bar',
-          label:t('Invoice'),
-          to: '/statements',
-          as: Link,
-          hidden: true,
-          isActiveFunction(url: string, currentPath: string) {
-            return /invoice/.test(currentPath)
-          },
-          items: getSectionMenu(MODULES.INVOICING),
-        },
-        {
-          icon: 'fas fa-users',
-          label:t('Agent Tools'),
-          to: '/agent-tools',
-          as: Link,
-          isActiveFunction(url: string, currentPath: string) {
-            return /agents/.test(currentPath)
-          },
-          items: getSectionMenu(MODULES.AGENT),
-        },
-        {
-          icon: 'fas fa-chart-bar',
-          label:t('Reports'),
-          to: '/statements',
-          as: Link,
-          isActiveFunction(url: string, currentPath: string) {
-            return /statements/.test(currentPath)
-          },
-          items: getSectionMenu(MODULES.REPORT),
-        },
-    ].filter(item => !item?.hidden);
+        visibleItems.push({
+          ...item,
+          label: t(item.label),
+          ...(item.items ? {
+            items: item.items.map((subItem) => ({
+              ...subItem,
+              label: t(subItem.label),
+            }))
+          } : {})
+        })
+      }
+      return visibleItems;
+    }, []);
 
     let mobileMenu = cloneDeep(appMenu).filter( item => !item.hideMobile);
-    mobileMenu.splice(2, null, {
+    mobileMenu.splice(2, 0, {
         name: 'add',
-        label: 'Add',
+        label: t('Add'),
         icon: IMdiPlus,
-        action: 'openAddModal'
+        action: 'openAddModal',
+        as: 'button'
     });
 
     const headerMenu =  [

@@ -26,13 +26,14 @@ trait HasEnrichedRequest {
         return $postData;
     }
 
-    protected function getFilterDates($filters = [], $subCount=0) {
-        $dates = isset($filters['date']) ? explode("~", $filters['date']) : [
-            Carbon::now()->subMonths($subCount)->startOfMonth()->format('Y-m-d'),
-            Carbon::now()->endOfMonth()->format('Y-m-d')
-        ];
-        return $dates;
-    }
+    protected function getFilterDates($filters = [], string $timeZone = "America/Santo_Domingo", $subCount=0) {
+      $zone = $timeZone ?? config("app.timezone");
+      $dates = isset($filters['date']) ? explode("~", $filters['date']) : [
+          Carbon::now()->setTimezone($zone)->subMonths($subCount)->startOfMonth()->format('Y-m-d'),
+          Carbon::now()->setTimezone($zone)->endOfMonth()->format('Y-m-d')
+      ];
+      return $dates;
+  }
 
     protected function getServerParams() {
         $queryParams = request()->query();

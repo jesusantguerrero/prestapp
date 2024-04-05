@@ -10,6 +10,7 @@ withDefaults(
     placeholder?: string;
     disabled?: boolean;
     numberFormat?: boolean;
+    row?: boolean;
   }>(),
   {
     required: false,
@@ -21,6 +22,7 @@ withDefaults(
   <AtField
     :label="label"
     class="w-full capitalize text-secondary font-bold"
+    :class="row ? 'flex space-x-2' : ''"
     :required="required"
   >
     <slot>
