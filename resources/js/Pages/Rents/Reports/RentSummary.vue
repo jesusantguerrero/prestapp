@@ -7,13 +7,11 @@ import { toRefs } from "@vueuse/shared";
 import { useI18n } from "vue-i18n";
 import { ElMessageBox, ElTag } from "element-plus";
 
-import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
 import InvoiceTable from "@/Components/templates/InvoiceTable";
 import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import Simple from "@/Pages/Journal/Invoices/printTemplates/Simple.vue";
-import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
 import SectionNav from "@/Components/SectionNav.vue";
 
 import { formatDate, formatMoney } from "@/utils";
@@ -25,7 +23,7 @@ import {
   InteractionsState,
 } from "@/Modules/clients/clientInteractions";
 import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
-import { useServerSearch } from "@/utils/useServerSearch";
+import { useServerSearch } from "@/utils/useServerSearchV2";
 import { getRentStatusColor } from "@/Modules/properties/constants";
 import { useResponsive } from "@/utils/useResponsive";
 import { format } from "date-fns";
@@ -165,16 +163,11 @@ function printExternal(invoice: IInvoice) {
 }
 
 const { serverSearchOptions } = toRefs(props);
-const { executeSearchWithDelay, updateSearch, state: pageState } = useServerSearch(
-  serverSearchOptions,
-  (finalUrl: string) => {
-    console.log(finalUrl);
-    updateSearch(`/rent-reports/monthly-summary?${finalUrl}`);
-  },
-  {
-    manual: true,
-  }
-);
+const { executeSearchWithDelay, state: pageState } = useServerSearch(serverSearchOptions,
+{
+  manual: false,
+  remember: true
+});
 const onDelete = async (invoice: IInvoice) => {
   const isValid = await ElMessageBox.confirm(
     `Estas seguro de eliminar la factura ${invoice.concept} por ${formatMoney(
