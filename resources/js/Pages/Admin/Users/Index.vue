@@ -51,8 +51,8 @@ const tableConfig = {
   pagination: true,
 };
 
-const approveTeam = (team: Record<string, string>) => {
-  router.post(route("admin.teams.approve", team));
+const linkNeatlancerUser = (user: Record<string, string>) => {
+  router.post(route("admin.users.link", user));
 };
 
 const deleteTeam = () => {};
@@ -96,9 +96,17 @@ const deleteTeam = () => {};
             </Link>
             <AppButton
               variant="neutral"
+              class="hover:text-slate-900 transition items-center flex flex-col justify-center hover:border-slate-900"
+              @click="linkNeatlancerUser(row)"
+              title="Link User"
+            >
+              <IMdiLink />
+            </AppButton>
+            <AppButton
+              variant="neutral"
               class="hover:text-error transition items-center flex flex-col justify-center hover:border-red-400"
               @click="deleteTeam(row)"
-              title="Approve team"
+              title="Delete user"
             >
               <IMdiTrash />
             </AppButton>
