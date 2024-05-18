@@ -9,13 +9,14 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BackgroundController;
 use App\Http\Controllers\CRM\ClientController;
-
 use App\Http\Controllers\Api\RentApiController;
+
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Api\ClientApiController;
 use App\Http\Controllers\Api\AccountApiController;
 use App\Http\Controllers\Api\CategoryApiController;
 use App\Http\Controllers\Api\PropertyApiController;
+use App\Domains\Core\Http\Controllers\SSOController;
 use App\Http\Controllers\Api\TransactionLineApiController;
 
 /*
@@ -49,6 +50,10 @@ Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->name('api.')->g
     Route::apiResource('properties', PropertyApiController::class);
     Route::apiResource('rents', RentApiController::class);
 });
+
+Route::get('/oauth/sso', [SSOController::class, 'connect']);
+Route::get('/oauth/accept', [SSOController::class, 'accept']);
+Route::get('/oauth/user', [SSOController::class, 'getUser']);
 
 Route::get('/background/run', BackgroundController::class);
 Route::get('/background/update-late-payments', [BackgroundController::class, 'updateLatePayments']);

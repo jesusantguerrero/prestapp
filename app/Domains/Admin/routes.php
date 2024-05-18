@@ -1,12 +1,12 @@
 <?php
 
-use App\Domains\Admin\Http\Controllers\AdminBackupController;
-use App\Domains\Admin\Http\Controllers\AdminBillingController;
+use Illuminate\Support\Facades\Route;
 use App\Domains\Admin\Http\Controllers\AdminController;
-use App\Domains\Admin\Http\Controllers\AdminSubscriptionController;
 use App\Domains\Admin\Http\Controllers\AdminTeamController;
 use App\Domains\Admin\Http\Controllers\AdminUserController;
-use Illuminate\Support\Facades\Route;
+use App\Domains\Admin\Http\Controllers\AdminBackupController;
+use App\Domains\Admin\Http\Controllers\AdminBillingController;
+use App\Domains\Admin\Http\Controllers\AdminSubscriptionController;
 
 Route::middleware([
   'auth:sanctum',
@@ -22,6 +22,9 @@ Route::middleware([
     Route::post('/teams/{team}/subscribe/{planId}', [AdminBillingController::class, 'subscribe'])->name('billing.subscribe');
 
     Route::resource('/users', AdminUserController::class);
+    Route::post('/users/{user}/link', [AdminUserController::class, 'linkUser'])->name('users.link');
+
+
     Route::resource('/subscriptions', AdminSubscriptionController::class);
 
     Route::get('/commands', [AdminController::class, 'commandList']);
