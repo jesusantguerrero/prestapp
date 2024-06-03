@@ -2,8 +2,7 @@ import { endOfMonth, startOfMonth, format, parseISO } from 'date-fns';
 // import { format, parseISO } from "date-fns";
 import { reactive, Ref, watch, nextTick, computed, ref, inject } from "vue";
 import debounce from "lodash/debounce";
-import { config } from '@/config';
-import {  useLocalStorage } from "@vueuse/core"
+import { useUserSessionConfig } from './useUserSessionConfig';
 
 export enum SearchFilterMode {
   Replace = 1,
@@ -20,10 +19,15 @@ export interface IServerSearchData {
   page?: number;
 }
 
+interface RememberCredentials {
+    user: string;
+    token: string
+}
 interface IServerSearchOptions {
   manual?: boolean;
   mainDateField?: string;
-  remember: string
+  remember?: RememberCredentials,
+  defaultDates: boolean;
 }
 
 interface IDateSpan {
@@ -125,7 +129,7 @@ export const parseParams = (state: ISearchState) => {
     .join("&");
 };
 
-function parseDateFilters(options: Ref<Partial<IServerSearchData>>, setDefaultDate: boolean) {
+function parseDateFilters(options: Ref<Partial<IServerSearchData>>, setDefaultDate: boolean = false) {
 
     const defaultDates = setDefaultDate ? [
         format(startOfMonth(new Date()), 'yyyy-MM-dd'),
@@ -148,6 +152,9 @@ function parseDateFilters(options: Ref<Partial<IServerSearchData>>, setDefaultDa
 const getCurrentLocationParams = () => {
   return location.search.toString();
 };
+
+
+const isLoading = ref(false);
 
 const defaultSearchInertia = async (
   router: InertiaRouterType,
@@ -237,15 +244,33 @@ const setSearchState = (serverSearchData: Record<string, any>, dates: any) => {
     Object.assign(searchState, state)
 }
 
+// remember creadentials
+const getLastSearch = (remember?: RememberCredentials) => {
+  let lastSearch = null;
+  if (remember?.token && remember.user) {
+    const { searchFilters } = useUserSessionConfig(remember.user, ref(remember.token));
+    lastSearch = searchFilters.value.search;
+  }
+  return lastSearch ?? location.search;
+}
+
+const updateLastSearch = (newSearch: string, token?: RememberCredentials) => {
+  if (token?.token && token.user) {
+    const { searchFilters } = useUserSessionConfig(token.user, ref(token.token));
+    searchFilters.value =  {
+      search: newSearch
+    };
+  }
+}
 
 export const useServerSearch = (
   _serverSearchData: Ref<Partial<IServerSearchData>>,
-  options: IServerSearchOptions = {},
+  options: Partial<IServerSearchOptions> = {},
   onUrlChange?: UrlChangeCallback,
   router?: InertiaRouterType
 ) => {
-    const serverSearchData = ref(searchFromSearchString(location.search));
-    const dates = parseDateFilters(serverSearchData, options.defaultDates)
+    const serverSearchData = ref(searchFromSearchString(getLastSearch(options.remember)));
+    const dates = parseDateFilters(serverSearchData, options?.defaultDates)
     const isLoaded = ref(false)
     const preventWatch = ref(true);
 
@@ -263,9 +288,15 @@ export const useServerSearch = (
 
     const updateSearch = (urlParams: string) => {
         const finalUrl = `${window.location.pathname}?${urlParams}`;
-        return localRouter.get(finalUrl, undefined, {
+        return localRouter.get(finalUrl, {}, {
           preserveState: true,
           preserveScroll: true,
+          onStart: () => {
+            isLoading.value = true;
+          },
+          onSuccess: () => {
+            isLoading.value = false;
+          },
         });
     };
 
@@ -281,6 +312,8 @@ export const useServerSearch = (
       const urlParams = parseParams(searchState);
       const currentUrl = getCurrentLocationParams();
       if (urlParams == currentUrl || !localUrlChange) return;
+
+      updateLastSearch(urlParams, options.remember);
 
       if (!delay) {
         localUrlChange(urlParams, updateSearch);
@@ -304,7 +337,7 @@ export const useServerSearch = (
 
 
   watch(() => searchState,
-    debounce((newValue: any, oldValue: any) => {
+    debounce(() => {
       if (isLoaded.value && !preventWatch.value) {
         executeSearch();
       }
@@ -366,6 +399,7 @@ export const useServerSearch = (
     changeSize,
     paginate,
     reset,
+    isLoading,
     executeSearchWithDelay: (delay = 200) => executeSearch(delay),
   };
 };
