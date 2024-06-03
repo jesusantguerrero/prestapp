@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, watch, nextTick, ref, computed } from "vue";
+import { reactive, watch, nextTick, ref, computed, onUnmounted, onMounted } from "vue";
 // @ts-ignore
 import { AtBackgroundIconCard, AtDatePager } from "atmosphere-ui";
 import { Link, router, useForm } from "@inertiajs/vue3";
@@ -162,12 +162,49 @@ function printExternal(invoice: IInvoice) {
     });
 }
 
+const storageKey = ref(`${props.user?.id}_${props.user?.current_team_id}`);
+const listToken = ref(`filters::rent-summary`);
+
 const { serverSearchOptions } = toRefs(props);
-const { executeSearchWithDelay, state: pageState } = useServerSearch(serverSearchOptions,
-{
+
+const {
+  executeSearchWithDelay,
+  state: pageState,
+  isLoading: isSearchLoading,
+} = useServerSearch(serverSearchOptions, {
   manual: false,
-  remember: true
+  remember: {
+    user: storageKey.value,
+    token: listToken.value,
+  },
 });
+
+const isLoading = ref(false);
+
+const listeners = ref({
+  start: null,
+  finish: null,
+});
+
+onMounted(() => {
+  listeners.value.start = router.on("start", (event) => {
+    console.log({ event, props });
+    if (event.detail.visit.method !== "delete") {
+      isLoading.value = true;
+    }
+  });
+
+  listeners.value.finish = router.on("finish", () => {
+    isLoading.value = false;
+  });
+});
+
+onUnmounted(() => {
+  Object.values(listeners.value).forEach((listener) => {
+    listener?.();
+  });
+});
+
 const onDelete = async (invoice: IInvoice) => {
   const isValid = await ElMessageBox.confirm(
     `Estas seguro de eliminar la factura ${invoice.concept} por ${formatMoney(
@@ -221,17 +258,6 @@ const deleteRentPayments = async (invoice: IInvoice) => {
     );
   }
 };
-
-const isLoading = ref(false);
-router.on("start", (event) => {
-  if (event.detail.visit.method !== "delete") {
-    isLoading.value = true;
-  }
-});
-
-router.on("finish", () => {
-  isLoading.value = false;
-});
 
 const { isMobile } = useResponsive();
 
@@ -338,7 +364,7 @@ const invoiceGroups = computed(() => {
         </header>
         <InvoiceTable
           :invoice-data="ownerInvoices"
-          :is-loading="isLoading"
+          :is-loading="isLoading || isSearchLoading"
           class="rounded-md bg-base-lvl-3 mt-0"
           :responsive-actions="{
             payment: handlePayment,
