@@ -2,8 +2,10 @@
 
 namespace App\Domains\Admin\Http\Controllers;
 
-use App\Http\Controllers\InertiaController;
+use Exception;
 use App\Models\User;
+use App\Http\Controllers\InertiaController;
+use App\Domains\Core\Services\NeatlancerService;
 
 class AdminUserController extends InertiaController
 {
@@ -27,6 +29,9 @@ class AdminUserController extends InertiaController
 
       // $this->authorizeResource(Team::class, 'index');
       // $this->authorizeResource(Team::class, 'show');
+    }
 
+    public function linkUser(User $user, NeatlancerService $neatlancerService) {
+        $neatlancerService->createUser($user->toArray());
     }
 }

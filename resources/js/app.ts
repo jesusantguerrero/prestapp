@@ -3,7 +3,7 @@ import '../css/app.css';
 import "atmosphere-ui/style.css"
 
 import { createApp, h } from 'vue';
-import { createInertiaApp } from '@inertiajs/vue3';
+import { createInertiaApp, router } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
 import ElementPlus from 'element-plus'
@@ -47,6 +47,7 @@ createInertiaApp({
             .use(VueApexCharts)
             .use(autoAnimatePlugin)
             .component('multiselect', VueMultiselect)
+            .provide("router", router)
             .directive('ripple', vRipple)
             .mount(el);
     },

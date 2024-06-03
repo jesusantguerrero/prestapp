@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AtAuthBox, AtAuthForm } from "atmosphere-ui";
+import { AtAuthBox, AtAuthForm, AtButton } from "atmosphere-ui";
 import { router, useForm, Link, Head } from "@inertiajs/vue3";
 
 import DemoInstructions from "./Partials/DemoInstructions.vue";
@@ -36,6 +36,10 @@ const submit = (formData) => {
       onFinish: () => form.reset("password"),
     });
 };
+
+const ssoLogin = () => {
+  window.location.href = "/oauth/sso";
+};
 </script>
 
 <template>
@@ -60,6 +64,11 @@ const submit = (formData) => {
         <DemoInstructions
           class="rounded-md mt-6 text-center py-2 px-5 bg-primary bg-opacity-25 text-sm font-sans"
         />
+      </template>
+      <template #more-actions>
+        <AtButton @click="ssoLogin" class="bg-slate-900 w-full text-white" rounded>
+          Connect with neatlancer
+        </AtButton>
       </template>
     </AtAuthForm>
   </AtAuthBox>
