@@ -91,4 +91,3 @@ class SSOService {
         return $response->json();
       }
     }
-}
