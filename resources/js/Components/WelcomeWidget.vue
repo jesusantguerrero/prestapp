@@ -50,7 +50,7 @@ const cardSize = computed(() => {
         </h1>
       </slot>
 
-      <div class="w-full" v-if="$slots.actions || actionLabel">
+      <div class="w-full  flex justify-end" v-if="$slots.actions || actionLabel">
         <slot name="actions">
           <div class="space-x-2" v-if="actionLabel && actionLink">
             <AtButton

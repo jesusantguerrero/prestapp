@@ -7,6 +7,7 @@ withDefaults(
     modelValue?: string;
     sections: Record<string, any>;
     selectedClass?: string;
+    noPadding: boolean
   }>(),
   {
     selectedClass: "border-primary text-primary",
@@ -25,7 +26,7 @@ const handleClick = (section: any, sectionName: string | number) => {
 </script>
 
 <template>
-  <div class="flex justify-between w-full md:pr-8">
+  <div class="flex justify-between w-full" :class="{'md:pr-8': !noPadding }">
     <SectionNavTab
       v-for="(section, sectionName) in sections"
       @click="handleClick(section, sectionName)"

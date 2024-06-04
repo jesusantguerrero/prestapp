@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { router } from "@inertiajs/core";
-// @ts-ignore
+import { Link } from "@inertiajs/vue3";
+import { useI18n } from "vue-i18n";
 import { AtBackgroundIconCard } from "atmosphere-ui";
+import { ref } from "vue";
+import { config } from "@/config";
+
 import AppButton from "@/Components/shared/AppButton.vue";
 import IncomeSummaryWidget from "./Partials/IncomeSummaryWidget.vue";
 import WelcomeWidget from "@/Components/WelcomeWidget.vue";
 import SectionFooterCard from "./Partials/SectionFooterCard.vue";
+import FastAccessOptions from "./Partials/FastAccessOptions.vue";
 
 import { formatMoney } from "@/utils/formatMoney";
 import { useTransactionModal } from "@/Modules/transactions/useTransactionModal";
-import FastAccessOptions from "./Partials/FastAccessOptions.vue";
-import { Link } from "@inertiajs/vue3";
-import { useI18n } from "vue-i18n";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
 import { useResponsive } from "@/utils/useResponsive";
 
@@ -64,6 +66,22 @@ const props = defineProps({
   },
   isTeamApproved: {
     type: Boolean,
+  },
+  expiringRents: {
+    type: Object,
+    default() {
+      return {
+        expired: 0,
+        in_month: 0,
+        within_three_months: 0,
+      };
+    },
+  },
+  rentStats: {
+    type: Object,
+  },
+  paidCommissions: {
+    type: Object,
   },
 });
 
@@ -184,12 +202,88 @@ const onBoardSteps = [
 const isOnboardingOpen = inject("isOnboardingOpen");
 
 const { isMobile } = useResponsive();
+
+const unitStats = [
+  {
+    label: t("Total units"),
+    value: props.rentStats?.total || 0,
+  },
+  {
+    label: t("Rented"),
+    icon: "fa-money",
+    value: `${props.rentStats?.rented || 0}`,
+  },
+  {
+    label: t("Available"),
+    icon: "fa-money",
+    value: `${props.rentStats?.available || 0}`,
+  },
+];
+
+const getMonthsOfYear = (locale = "es-ES") => {
+  const startDate = startOfYear(new Date());
+  return [...Array(12).keys()].map((monthIndex) => {
+    return new Intl.DateTimeFormat(locale, {
+      month: "short",
+    }).format(startOfMonth(addMonths(startDate, monthIndex)));
+  });
+};
+
+const currentMonth = new Date().getMonth();
+const interestPerformance = {
+  headers: {
+    gapName: "Year",
+    month: props.paidCommissions?.months.at(currentMonth).income,
+    avg: props.paidCommissions?.avg,
+    current: props.paidCommissions?.year,
+  },
+  options: {
+    chart: {
+      id: "commissions",
+      type: "bar",
+    },
+    stroke: {
+      curve: "smooth",
+    },
+    xaxis: {
+      categories: [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ],
+    },
+    colors: [config.colors.highlight, config.colors.info],
+  },
+  series: [
+    {
+      name: t("Interest profit"),
+      data: props.paidCommissions?.months.map(
+        (item: Record<string, any>) => item.income ?? 0
+      ),
+    },
+  ],
+};
+const summaryType = ref("cash-flow");
 </script>
 
 <script lang="ts">
 import DashboardTemplate from "./Partials/DashboardTemplate.vue";
 import OnboardingSection from "./Partials/OnboardingSection.vue";
 import { inject } from "vue";
+import ExpiringRentsChart from "./Partials/ExpiringRentsChart.vue";
+import RentsWidget from "./Partials/RentsWidget.vue";
+import WidgetPropertiesStats from "./Partials/WidgetPropertiesStats.vue";
+import { addMonths, startOfMonth, startOfYear } from "date-fns";
+import ChartBar from "./Partials/ChartBar.vue";
 
 export default {
   layout: DashboardTemplate,
@@ -253,12 +347,6 @@ export default {
                       {{ formatMoney(stats.overdue) }} {{ $t("Late") }}
                     </span>
                   </Link>
-                  <!-- <AtButton
-                    rounded
-                    class="flex items-center text-xs md:text-base text-primary hover:bg-primary/10"
-                  >
-                    <IIcSharpPayment class="mr-2" /> Recibir Pago
-                  </AtButton> -->
                 </template>
               </SectionFooterCard>
             </section>
@@ -283,23 +371,64 @@ export default {
       </WelcomeWidget>
     </section>
     <section class="flex flex-col mt-8 lg:space-x-4 lg:flex-row">
-      <IncomeSummaryWidget
-        class="order-2 mt-4 lg:w-9/12 lg:mt-0 lg:order-1"
-        :chart="comparisonRevenue"
-        :style="{ height: '310px' }"
-      />
+      <section class="order-2 mt-4 lg:w-9/12 lg:mt-0 lg:order-1">
+          <WelcomeWidget
+            :message="$t('month performance')"
+            class="order-2 mt-4 lg:mt-0 lg:order-1"
+          >
+            <template #actions>
+              <section class="flex space-x-2 w-full justify-end">
+                <button
+                  @click="summaryType = 'gains'"
+                  class="bg-base-lvl-2 capitalize py-1 rounded-3xl text-body-1 px-4 border border-transparent"
+                  :class="{
+                    'bg-primary/10 border-primary  text-primary': summaryType == 'gains',
+                  }"
+                >
+                  {{ $t("earnings") }}
+                </button>
+                <button
+                  @click="summaryType = 'cash-flow'"
+                  class="bg-base-lvl-2 capitalize py-1 rounded-3xl text-body-1 px-4 border border-transparent"
+                  :class="{
+                    'bg-primary/10 border-primary  text-primary':
+                      summaryType == 'cash-flow',
+                  }"
+                >
+                  {{ $t("cashflow") }}
+                </button>
+              </section>
+            </template>
+            <template #content>
+              <IncomeSummaryWidget
+              v-if="summaryType == 'cash-flow'"
+              :chart="comparisonRevenue"
+              :style="{ height: '350px' }"
+              :labels="getMonthsOfYear()"
+            />
+              <ChartBar
+                v-else
+                class="bg-white rounded-lg overflow-hidden"
+                title="Ganancias"
+                description="Ganancias por comisiones en el año"
+                :chart="interestPerformance"
+                :headerInfo="interestPerformance.headers"
+              />
+            </template>
+          </WelcomeWidget>
+
+      </section>
+
       <article class="order-1 md:space-y-2 lg:w-3/12 lg:order-2">
         <div
-          class="flex justify-between md:block mb-2 md:space-y-2 dashboard-bank-accounts"
+          class="justify-between block mb-2 space-y-2 dashboard-bank-accounts"
         >
-          <AtBackgroundIconCard
-            class="md:h-32 border-2 cursor-pointer text-primary bg-primary/10 border-primary/20"
-            icon="fas fa-wallet"
-            :value="formatMoney(props.dailyBox?.balance | 0)"
-            :title="$t('Loan account')"
-            icon-class="text-primary opacity-40"
-            @click="openLoanAccount()"
-          />
+
+        <WidgetPropertiesStats
+          :total="rentStats?.total"
+          :description="$t('Properties')"
+          :unit-stats="unitStats"
+        />
           <AtBackgroundIconCard
             class="md:h-32 border-2 cursor-pointer text-secondary bg-secondary/10 border-secondary/20"
             icon="fas fa-wallet"
@@ -312,6 +441,21 @@ export default {
           {{ $t("Add funds") }}
         </AppButton>
       </article>
+    </section>
+    <section class="md:flex md:space-x-4">
+      <article class="md:w-5/12 mt-4">
+        <WelcomeWidget
+          :message="$t('Expiring rents')"
+          class="text-body-1 shadow-md"
+          :action-label="$t('See details')"
+          action-link="/rent-renewals/"
+        >
+          <template #content>
+            <ExpiringRentsChart :stats="expiringRents" :style="{ height: '350px' }" />
+          </template>
+      </WelcomeWidget>
+      </article>
+    <RentsWidget class="md:w-7/12 mt-4" />
     </section>
   </main>
 </template>
