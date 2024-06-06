@@ -33,6 +33,9 @@ const props = defineProps({
       };
     },
   },
+  totals: {
+    type: Object,
+  },
   user: {
     type: Object,
     required: true,
@@ -284,6 +287,7 @@ import RentsWidget from "./Partials/RentsWidget.vue";
 import WidgetPropertiesStats from "./Partials/WidgetPropertiesStats.vue";
 import { addMonths, startOfMonth, startOfYear } from "date-fns";
 import ChartBar from "./Partials/ChartBar.vue";
+import BudgetProgress from "@/Components/BudgetProgress.vue";
 
 export default {
   layout: DashboardTemplate,
@@ -403,7 +407,7 @@ export default {
               <IncomeSummaryWidget
               v-if="summaryType == 'cash-flow'"
               :chart="comparisonRevenue"
-              :style="{ height: '350px' }"
+              :style="{ height: '300px' }"
               :labels="getMonthsOfYear()"
             />
               <ChartBar
@@ -412,6 +416,7 @@ export default {
                 title="Ganancias"
                 description="Ganancias por comisiones en el año"
                 :chart="interestPerformance"
+                height="260px"
                 :headerInfo="interestPerformance.headers"
               />
             </template>
@@ -429,6 +434,22 @@ export default {
           :description="$t('Properties')"
           :unit-stats="unitStats"
         />
+        <!-- <BudgetProgress
+        :goal="totals?.total"
+        :current="totals?.paid"
+        class="h-2.5 text-white rounded-md"
+        :progress-class="['bg-primary', 'bg-primary/20']"
+        :show-labels="false"
+      >
+        <template v-slot:before="{ progress }">
+          <header class="mb-1 font-bold flex justify-between">
+            <span>
+              {{ formatMoney(totals?.paid) }} of {{ formatMoney(totals?.total) }}
+            </span>
+            <span class="text-primary">{{ progress }}% </span>
+          </header>
+        </template>
+      </BudgetProgress> -->
           <AtBackgroundIconCard
             class="md:h-32 border-2 cursor-pointer text-secondary bg-secondary/10 border-secondary/20"
             icon="fas fa-wallet"
@@ -446,16 +467,16 @@ export default {
       <article class="md:w-5/12 mt-4">
         <WelcomeWidget
           :message="$t('Expiring rents')"
-          class="text-body-1 shadow-md"
+          class="text-body-1 shadow-sm"
           :action-label="$t('See details')"
           action-link="/rent-renewals/"
         >
           <template #content>
-            <ExpiringRentsChart :stats="expiringRents" :style="{ height: '350px' }" />
+            <ExpiringRentsChart :stats="expiringRents" :style="{ height: '390px' }" />
           </template>
       </WelcomeWidget>
       </article>
-    <RentsWidget class="md:w-7/12 mt-4" />
+    <RentsWidget class="md:w-7/12 mt-4 shadow-sm bg-base-lvl-3" />
     </section>
   </main>
 </template>

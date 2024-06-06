@@ -8,6 +8,16 @@
           :cols="cols"
           :table-data="notifications"
         >
+          <template #header-actions v-if="notifications.length">
+            <div class="flex items-center ml-auto space-x-2 justify-end mr-2">
+                <TabButton @click="markAllAsRead" :keep-active-mode="false" class="hover:text-primary">
+                    <span class="text-lg">
+                        <IMdiEmailCheck  />
+                    </span>
+                </TabButton>
+
+            </div>
+        </template>
           <template #data="{ scope }">
             <section class="w-full">
               <article class="py-3">
