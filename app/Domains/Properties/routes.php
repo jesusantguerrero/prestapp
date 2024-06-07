@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Domains\Properties\Http\Controllers\RentController;
+use App\Domains\Properties\Http\Controllers\RentalController;
 use App\Domains\Properties\Http\Controllers\PropertyController;
 use App\Domains\Properties\Http\Controllers\RentAgentController;
 use App\Domains\Properties\Http\Controllers\RentReportController;
@@ -18,6 +19,15 @@ use App\Domains\Properties\Http\Controllers\PropertyTransactionController;
 Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->name('api.')->group(function () {
   Route::apiResource('invoices', InvoiceApiController::class);
   Route::apiResource('rent-payments', PaymentApiController::class);
+});
+
+// Rentals
+Route::controller(RentalController::class)->group(function() {
+  Route::get('rentals/bad-unit-status', 'listBadState');
+  Route::get('rentals', 'index');
+  // Route::post('properties/{property}/units', 'addUnit');
+  // Route::put('properties/{property}/units/{propertyUnit}', 'updateUnit');
+  // Route::delete('properties/{property}/units/{propertyUnit}','removeUnit');
 });
 
 Route::middleware([
@@ -38,6 +48,8 @@ Route::middleware([
       Route::put('properties/{property}/units/{propertyUnit}', 'updateUnit');
       Route::delete('properties/{property}/units/{propertyUnit}','removeUnit');
     });
+
+
 
      // property transactions
      Route::controller(PropertyTransactionController::class)->group(function () {
@@ -72,7 +84,7 @@ Route::middleware([
     Route::get('/rent-reports/occupancy', [RentReportController::class, 'occupancy']);
     Route::get('/property-reports', [RentReportController::class, 'management']);
 
-   
+
 
     // Owner
     Route::controller(PropertyOwnerController::class)->group(function() {
