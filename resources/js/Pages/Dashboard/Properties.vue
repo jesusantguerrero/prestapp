@@ -89,23 +89,6 @@ const props = defineProps({
   },
 });
 
-const unitStats = [
-  {
-    label: t("Total units"),
-    value: props.stats?.total || 0,
-  },
-  {
-    label: t("Rented"),
-    icon: "fa-money",
-    value: `${props.stats?.rented || 0}`,
-  },
-  {
-    label: t("Available"),
-    icon: "fa-money",
-    value: `${props.stats?.available || 0}`,
-  },
-];
-
 const ownerStats = computed(() => [
   {
     label: "Owners",
@@ -310,11 +293,7 @@ const summaryType = ref("cash-flow");
               <ExpiringRentsChart :stats="expiringRents" :style="{ height: '350px' }" />
             </template>
           </WelcomeWidget>
-          <WidgetPropertiesStats
-            :total="stats?.total"
-            :description="$t('Properties')"
-            :unit-stats="unitStats"
-          />
+
         </section>
       </section>
       <section class="flex mt-4 space-x-4">

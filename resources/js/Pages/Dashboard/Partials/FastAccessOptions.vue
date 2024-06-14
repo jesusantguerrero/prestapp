@@ -6,7 +6,7 @@ import { useResponsive } from "@/utils/useResponsive";
 import { useI18n } from "vue-i18n";
 
 const props = defineProps<{
-  extended: boolean;
+  extended?: boolean;
 }>();
 
 const { openModal } = useToggleModal("contact");
@@ -48,7 +48,6 @@ const welcomeCards = computed(() => {
       action() {
         router.visit("/rents/create");
       },
-      extended: true,
     },
     {
       label: t("Property expense"),

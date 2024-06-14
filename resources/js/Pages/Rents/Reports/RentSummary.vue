@@ -275,15 +275,14 @@ type InvoicesByOwner = Record<string, IInvoiceWithRelations[]>;
 const invoiceGroups = computed(() => {
   return !props.invoices
     ? {}
-    : Object.entries(props.invoices[selectedTab.value].owners as InvoicesByOwner).reduce(
-        (filteredGroups: InvoicesByOwner, [ownerName, invoices]) => {
-          if (invoices.length) {
-            filteredGroups[ownerName] = invoices;
-          }
-          return filteredGroups;
-        },
-        {}
-      );
+    : Object.entries(
+        props.invoices[selectedTab.value]?.owners ?? ({} as InvoicesByOwner)
+      ).reduce((filteredGroups: InvoicesByOwner, [ownerName, invoices]) => {
+        if (invoices.length) {
+          filteredGroups[ownerName] = invoices;
+        }
+        return filteredGroups;
+      }, {});
 });
 </script>
 

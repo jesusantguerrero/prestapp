@@ -1,12 +1,48 @@
+<script lang="ts" setup>
+import formatMoney from "@/utils/formatMoney";
+import VueApexCharts from "vue3-apexcharts";
+
+  const props = defineProps({
+    title: {
+      type: String,
+      default: "bar",
+    },
+    description: {
+      type: String,
+      default: "bar",
+    },
+    type: {
+      type: String,
+      default: "bar",
+    },
+    headerInfo: {
+      type: Object,
+      required: true,
+    },
+    chart: {
+      type: Object,
+      required: true,
+    },
+    icon: {
+      type: String,
+      default: "home",
+    },
+    height: {
+      type: String,
+      default: "240px",
+    }
+  });
+</script>
+
 <template>
   <div class="w-full comparison-card">
     <div class="px-5 pb-10">
-      <h5 class="p-4 text-left card-title flex flex-col">
+      <!-- <h5 class="p-4 text-left card-title flex flex-col">
         <span class="font-bold">
           {{ title }}
         </span>
         <small>{{ description }}</small>
-      </h5>
+      </h5> -->
       <div class="card-text flex">
         <div class="mb-2 flex-col flex justify-center items-center">
           <section class="text-gray-500 space-x-8 bg-gray-100 px-10 comparison-header">
@@ -32,7 +68,7 @@
             >
           </div>
         </div>
-        <div style="height: 240px; background: white; width: 100%">
+        <div style="background: white; width: 100%" :style="{ height: height }">
           <VueApexCharts
             ref="apexchart"
             width="100%"
@@ -47,45 +83,6 @@
   </div>
 </template>
 
-<script lang="ts">
-import formatMoney from "@/utils/formatMoney";
-import VueApexCharts from "vue3-apexcharts";
-
-export default {
-  props: {
-    title: {
-      type: String,
-      default: "bar",
-    },
-    description: {
-      type: String,
-      default: "bar",
-    },
-    type: {
-      type: String,
-      default: "bar",
-    },
-    headerInfo: {
-      type: Object,
-      required: true,
-    },
-    chart: {
-      type: Object,
-      required: true,
-    },
-    icon: {
-      type: String,
-      default: "home",
-    },
-  },
-  setup() {
-    return {
-      formatMoney,
-    };
-  },
-  components: { VueApexCharts },
-};
-</script>
 
 <style lang="scss" scoped>
 .comparison-card {

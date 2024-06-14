@@ -438,7 +438,8 @@ class RentService {
         ->join('invoices', 'invoices.id', '=', 'invoice_line_taxes.invoice_id')
         ->join('invoice_lines', 'invoice_lines.id', '=', 'invoice_line_taxes.invoice_line_id')
         ->join('clients', 'clients.id', '=', 'invoices.client_id')
-        ->groupBy(['clients.names', 'clients.id', 'invoices.debt', 'invoices.due_date', 'invoices.id', 'invoices.concept'])
+        ->groupBy(['invoices.debt', 'invoices.due_date', 'invoices.id', 'invoices.concept'])
+        ->orderBy('date', 'desc')
         ->take(5);
 
         return $query;

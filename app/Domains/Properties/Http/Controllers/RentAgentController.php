@@ -2,9 +2,9 @@
 
 namespace App\Domains\Properties\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Domains\CRM\Services\ClientService;
 use App\Domains\Properties\Services\RentService;
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\HasEnrichedRequest;
 
 class RentAgentController extends Controller

@@ -52,9 +52,10 @@ const expiringEndpoint = computed(() => {
     >
       <template #title>
         <SectionNav
-          class="bg-base-lvl-3 w-full"
+          class="bg-base-lvl-3 w-full "
           selected-class="border-primary font-bold text-primary"
           v-model="selectedTab"
+          no-padding
           :sections="tabs"
         />
       </template>
@@ -82,6 +83,7 @@ const expiringEndpoint = computed(() => {
         <SectionNav
           class="bg-base-lvl-3 w-full"
           selected-class="border-primary font-bold text-primary"
+          no-padding
           v-model="selectedTab"
           :sections="tabs"
         />
@@ -114,6 +116,7 @@ const expiringEndpoint = computed(() => {
         <SectionNav
           class="bg-base-lvl-3 w-full"
           selected-class="border-primary font-bold text-primary"
+          no-padding
           v-model="selectedTab"
           :sections="tabs"
         />
