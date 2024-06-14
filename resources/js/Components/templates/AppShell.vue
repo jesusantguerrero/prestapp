@@ -4,14 +4,14 @@
     :class="{ expanded: isExpanded }"
   >
     <nav
-      class="app-header md:pl-{var(--app)} bg-primary md:bg-neutral imary border-b"
-      :class="navClass"
+      class="app-header bg-primary md:bg-neutral primary border-b"
+      :class="[navClass, $slots.aside && 'with-nav']"
     >
       <slot name="navigation" />
     </nav>
 
-    <article class="app-content">
-      <aside class="app-side-container">
+    <article class="app-content" :class="{'with-nav': $slots.aside }">
+      <aside class="app-side-container" v-if="$slots.aside">
         <slot name="aside" />
       </aside>
 
@@ -59,7 +59,10 @@ defineProps({
 
 @screen lg {
   .app-header {
-    padding-left: var(--app-side-width);
+    padding-left: 0;
+    &.with-nav {
+      padding-left: var(--app-side-width);
+    }
   }
 }
 
@@ -73,11 +76,15 @@ defineProps({
 }
 
 .app-content {
-  display: grid;
-  grid-template-columns: var(--app-side-width) minmax(0, 1fr);
+  display: flex;
   position: relative;
   height: 100vh;
   transition: all ease 0.3s;
+
+  &.with-nav {
+    display: grid !important;
+    grid-template-columns: var(--app-side-width) minmax(0, 1fr);
+  }
 
   &__inner {
     width: 100%;

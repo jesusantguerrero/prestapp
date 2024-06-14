@@ -66,7 +66,7 @@ const ssoLogin = () => {
         />
       </template>
       <template #more-actions>
-        <AtButton @click="ssoLogin" class="bg-slate-900 w-full text-white" rounded>
+        <AtButton @click="ssoLogin" class="bg-slate-900 w-full text-white" rounded type="button" attr-type="button">
           Connect with neatlancer
         </AtButton>
       </template>

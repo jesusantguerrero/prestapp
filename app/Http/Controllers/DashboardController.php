@@ -56,10 +56,18 @@ class DashboardController extends Controller
       ];
 
       $appAccounts = $accounts[request()->user()->currentTeam->app_profile_name ?? AppProfileEnum::Renting->value];
+      $propertyTotals = PropertyService::totalByStatusFor($teamId);
+      $rentTotals = RentService::invoiceByPaymentStatus($teamId, $startDate, $endDate);
+      $monthPassedInYear = now()->diffInMonths(now()->startOfYear());
 
       return inertia('Dashboard/Index',
       [
-          "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId, $appAccounts["revenueAccounts"], $startYear, $endYear, null)->all(), now()->format('Y')),
+          "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId,
+            $appAccounts["revenueAccounts"],
+            $startYear,
+            $endYear,
+            null)->all(), now()->format('Y')
+          ),
           "stats" => AccountStatWidget::stats($teamId, $startDate, $endDate),
           'accounts' => $reportHelper->getTransactionsByAccount($teamId, $appAccounts["revenue"] ,$startDate, $endDate, 'display_id'),
           'paidCommissions' => AccountStatWidget::balanceInPeriodFor($appAccounts["commissions"], $teamId, $startDate, $endDate),
@@ -68,7 +76,26 @@ class DashboardController extends Controller
           'section' => "general",
           'pendingDraws' => OwnerService::pendingDrawsCount($teamId),
           "serverSearchOptions" => $this->getServerParams(),
-      ]);
+          "expiringRents" => RentService::expiredRentStats($teamId),
+          "rentStats" => [
+            "total" => $propertyTotals->sum(),
+            "available" => $propertyTotals->get(Property::STATUS_AVAILABLE),
+            "rented" => $propertyTotals->get(Property::STATUS_RENTED),
+          ],
+          "ownerStats" => [
+            "total" => Client::where('team_id', $teamId)->owner()->active()->count(),
+            "paid" => Invoice::where('team_id', $teamId)
+              ->category(PropertyInvoiceTypes::OwnerDistribution->value)
+              ->whereBetween('due_date', [$startDate, $endDate])
+              ->paid()
+              ->sum('total')
+          ],
+          "totals" => $rentTotals,
+          'pendingDraws' => OwnerService::pendingDrawsCount($teamId) ?? 0,
+          "paidCommissions" => AccountStatWidget::accountNetByPeriod($teamId, 'real_state_operative', 'month', $monthPassedInYear),
+          'section' => "realState",
+          "serverSearchOptions" => $this->getServerParams(),
+        ]);
     }
 
     public function property(Request $request) {
