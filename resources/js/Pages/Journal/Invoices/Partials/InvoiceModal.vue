@@ -69,6 +69,7 @@ function onSubmit() {
   const data = {
     ...formData.data(),
     due_date: formatDate(formData.due_date || new Date(), "yyyy-MM-dd"),
+    date: formatDate(formData.due_date || new Date(), "yyyy-MM-dd"),
   };
 
   isLoading.value = true;
