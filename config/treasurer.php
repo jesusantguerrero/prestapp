@@ -23,6 +23,7 @@ return [
       'log.FileName' => storage_path() . '/logs/treasurer.log',
       'log.LogLevel' => 'DEBUG'
   ],
+  'implementation' => Insane\Journal\Models\Invoice\Invoice::class,
   "plans" => [
     [
         "name" => "plan_starter",
@@ -67,6 +68,6 @@ return [
       "price" => 25,
       "public_plan" => true,
       "trial" => 14,
+    ]
   ]
-]
 ];

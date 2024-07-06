@@ -8,6 +8,7 @@ use App\Domains\Properties\Models\Rent;
 use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Helpers\ReportHelper;
 use Insane\Journal\Models\Invoice\Invoice;
+use App\Domains\Core\Services\AuditService;
 use App\Domains\Properties\Models\Property;
 use Insane\Journal\Models\Invoice\InvoiceNote;
 use App\Domains\Accounting\Helpers\InvoiceHelper;
@@ -62,7 +63,7 @@ class PropertyTransactionService {
           'payment_method' => $data['payment_method'] ?? 'cash'
         ];
       }
-     
+
 
       return Invoice::createDocument($data);
     }
@@ -280,7 +281,7 @@ class PropertyTransactionService {
     }
 
     public static function createOrUpdateExpense(Property $property, $formData, $invoiceId = null) {
-     
+
       $vendorAccountId = Account::guessAccount($property, [$property->name, 'expected_payments_vendors']);
       $expenseAccountId = Account::guessAccount($property, ['General Expenses', 'expenses'], [
         'alias' => 'Gastos Generales'
@@ -357,7 +358,7 @@ class PropertyTransactionService {
 
       if ($invoice) {
         $invoice->update([
-          'status' => 'overdue'
+          'status' => Invoice::STATUS_OVERDUE
         ]);
 
         $invoice->invoiceable->update([
@@ -367,7 +368,7 @@ class PropertyTransactionService {
 
       $amount =  $formData['amount'] ?? $penaltyAmount;
 
-      PropertyTransactionService::createInvoice([
+      $lateFeeInvoice = PropertyTransactionService::createInvoice([
         "name" => "Factura de mora",
         "concept" => $formData['concept'] ?? "Factura de mora {$rent->client->fullName}",
         'invoice_account_id' => $rent->late_fee_account_id,
@@ -384,6 +385,11 @@ class PropertyTransactionService {
       ], $rent);
 
       $rent->client->checkStatus();
+      AuditService::dispatchCustomEvent(
+        $rent,
+        AuditService::RENT_LATE_INVOICE_NEW,
+        $lateFeeInvoice->toArray()
+      );
     }
 
     public static function createOwnerDistribution($client, $invoiceId = null) {

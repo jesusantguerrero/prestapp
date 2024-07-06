@@ -4,14 +4,14 @@ import { router } from "@inertiajs/core";
 import AppButton from "@/Components/shared/AppButton.vue";
 import TeamMemberCard from "@/Pages/Teams/Partials/TeamMemberCard.vue";
 import AdminTemplate from "../Partials/AdminTemplate.vue";
-import TeamBillingSection from "@/Components/templates/TeamBillingSection.vue";
+import TeamBillingDetailSection from "@/Components/templates/TeamBillingDetailSection.vue";
 
 defineProps<{
   teams: Record<string, string | Object>;
   user: Record<string, string>;
   sessions: any;
   plans: any;
-  subscriptions: any;
+  subscriptions: Record<string, string | Object>;
 }>();
 
 const impersonateUser = (user: Record<string, string>) => {
@@ -22,11 +22,11 @@ const impersonateUser = (user: Record<string, string>) => {
 <template>
   <AdminTemplate title="Teams">
     <main class="pb-16">
-      <TeamBillingSection
+      <TeamBillingDetailSection
         :sessions="sessions"
         :plans="plans"
-        :subscriptions="subscriptions"
-        :team-id="teams.id"
+        :subscriptions="[subscriptions]"
+        :team-id="subscriptions.id"
       />
     </main>
   </AdminTemplate>

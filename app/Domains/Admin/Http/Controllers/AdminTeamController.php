@@ -2,11 +2,11 @@
 
 namespace App\Domains\Admin\Http\Controllers;
 
-use App\Domains\Admin\Services\AdminTeamService;
-use App\Http\Controllers\InertiaController;
 use App\Models\Team;
 use Illuminate\Http\Request;
-use Insane\Treasurer\Models\Plan;
+use App\Http\Controllers\InertiaController;
+use Insane\Treasurer\Models\SubscriptionPlan;
+use App\Domains\Admin\Services\AdminTeamService;
 
 class AdminTeamController extends InertiaController
 {
@@ -40,7 +40,7 @@ class AdminTeamController extends InertiaController
     protected function getEditProps(Request $request, $biller)
     {
       return [
-        "plans" => Plan::orderBy('quantity')->get(),
+        "plans" => SubscriptionPlan::orderBy('quantity')->get(),
         "subscriptions" => $biller ? $biller->subscriptions : [],
         "transactions" => []
       ];
