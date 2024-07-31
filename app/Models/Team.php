@@ -54,4 +54,9 @@ class Team extends JetstreamTeam
         'updated' => TeamUpdated::class,
         'deleted' => TeamDeleted::class,
     ];
+
+
+    static function admin() {
+      return Team::where('app_profile_name', 'admin')->first();
+    }
 }

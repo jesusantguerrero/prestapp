@@ -3,13 +3,7 @@
 namespace App\Domains\Core\Services;
 
 
-// Used to process plans
-
-use Exception;
-use GuzzleHttp\Client;
-use PayPal\Rest\ApiContext;
-use PayPal\Auth\OAuthTokenCredential;
-use Insane\Treasurer\Models\SubscriptionPlan;
+// Us
 use App\Domains\Core\Services\Neatlancer\NeatlancerClient;
 
 class NeatlancerService {

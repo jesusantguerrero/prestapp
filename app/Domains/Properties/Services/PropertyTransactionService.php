@@ -8,6 +8,7 @@ use App\Domains\Properties\Models\Rent;
 use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Helpers\ReportHelper;
 use Insane\Journal\Models\Invoice\Invoice;
+use App\Domains\Core\Services\AuditService;
 use App\Domains\Properties\Models\Property;
 use Insane\Journal\Models\Invoice\InvoiceNote;
 use App\Domains\Accounting\Helpers\InvoiceHelper;
@@ -62,7 +63,7 @@ class PropertyTransactionService {
           'payment_method' => $data['payment_method'] ?? 'cash'
         ];
       }
-     
+
 
       return Invoice::createDocument($data);
     }
@@ -79,7 +80,7 @@ class PropertyTransactionService {
 
       $data = array_merge($formData, [
         'concept' =>  $formData['concept'] ?? 'Factura de Renta',
-        'description' => $formData['description'] ?? "Mensualidad {$rent->client->fullName}",
+        'description' => $formData['description'] ?? "{$rent->unit->name} Mensualidad {$rent->client->fullName}",
         'user_id' => $rent->user_id,
         'team_id' => $rent->team_id,
         'client_id' => $rent->client_id,
@@ -112,7 +113,7 @@ class PropertyTransactionService {
     }
 
     public static function createDepositTransaction(Rent $rent, mixed $rentData) {
-      $description = "Déposito de {$rent->client->fullName}";
+      $description = "{$rent->unit->name} Déposito de {$rent->client->fullName}";
 
       $formData = [
         "date" => $rent->deposit_due,
@@ -280,7 +281,7 @@ class PropertyTransactionService {
     }
 
     public static function createOrUpdateExpense(Property $property, $formData, $invoiceId = null) {
-     
+
       $vendorAccountId = Account::guessAccount($property, [$property->name, 'expected_payments_vendors']);
       $expenseAccountId = Account::guessAccount($property, ['General Expenses', 'expenses'], [
         'alias' => 'Gastos Generales'
@@ -357,7 +358,7 @@ class PropertyTransactionService {
 
       if ($invoice) {
         $invoice->update([
-          'status' => 'overdue'
+          'status' => Invoice::STATUS_OVERDUE
         ]);
 
         $invoice->invoiceable->update([
@@ -367,16 +368,16 @@ class PropertyTransactionService {
 
       $amount =  $formData['amount'] ?? $penaltyAmount;
 
-      PropertyTransactionService::createInvoice([
-        "name" => "Factura de mora",
-        "concept" => $formData['concept'] ?? "Factura de mora {$rent->client->fullName}",
+      $lateFeeInvoice = PropertyTransactionService::createInvoice([
+        "concept" => "Factura de mora",
+        "description" => $formData['concept'] ?? "{$rent->unit} Mora {$rent->client->fullName}",
         'invoice_account_id' => $rent->late_fee_account_id,
         'amount' => $amount,
         'due_date' => $formData['due_date'] ?? null,
         'category_type' => PropertyInvoiceTypes::LateFee,
         "items" => [[
-            "name" => "mora de renta",
-            "concept" => $formData['concept'] ?? "mora de {$rent->client->fullName}",
+            "name" => "Mora de renta",
+            "concept" => $formData['concept'] ?? "{$rent->unit} Mora de {$rent->client->fullName}",
             "quantity" => 1,
             "price" => $amount,
             "amount" => $amount,
@@ -384,6 +385,11 @@ class PropertyTransactionService {
       ], $rent);
 
       $rent->client->checkStatus();
+      AuditService::dispatchCustomEvent(
+        $rent,
+        AuditService::RENT_LATE_INVOICE_NEW,
+        $lateFeeInvoice->toArray()
+      );
     }
 
     public static function createOwnerDistribution($client, $invoiceId = null) {

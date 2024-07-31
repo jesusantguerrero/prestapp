@@ -13,9 +13,8 @@ use Insane\Journal\Contracts\PdfExporter;
 use Insane\Journal\Helpers\CategoryHelper;
 use Insane\Journal\Models\Invoice\Invoice;
 use Insane\Journal\Models\Product\Product;
-use Insane\Journal\Services\InvoiceService;
+use App\Domains\Core\Services\InvoiceService;
 use App\Domains\Core\Services\SignatureService;
-use App\Domains\Properties\Services\OwnerService;
 use App\Http\Controllers\Traits\HasEnrichedRequest;
 use App\Domains\Properties\Services\OwnerReportService;
 

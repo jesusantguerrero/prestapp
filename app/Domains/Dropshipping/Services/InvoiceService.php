@@ -6,7 +6,7 @@ use Illuminate\Support\Str;
 use App\Domains\CRM\Models\Client;
 use App\Domains\Dropshipping\Models\Order;
 use Insane\Journal\Models\Invoice\Invoice;
-use App\Domains\Dropshipping\Data\OrderData;
+use Insane\Journal\Models\Core\Transaction;
 
 class InvoiceService
 {
