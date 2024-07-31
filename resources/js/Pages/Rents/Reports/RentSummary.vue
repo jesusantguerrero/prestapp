@@ -188,7 +188,6 @@ const listeners = ref({
 
 onMounted(() => {
   listeners.value.start = router.on("start", (event) => {
-    console.log({ event, props });
     if (event.detail.visit.method !== "delete") {
       isLoading.value = true;
     }

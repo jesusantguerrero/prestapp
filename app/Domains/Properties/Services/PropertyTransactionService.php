@@ -80,7 +80,7 @@ class PropertyTransactionService {
 
       $data = array_merge($formData, [
         'concept' =>  $formData['concept'] ?? 'Factura de Renta',
-        'description' => $formData['description'] ?? "Mensualidad {$rent->client->fullName}",
+        'description' => $formData['description'] ?? "{$rent->unit->name} Mensualidad {$rent->client->fullName}",
         'user_id' => $rent->user_id,
         'team_id' => $rent->team_id,
         'client_id' => $rent->client_id,
@@ -113,7 +113,7 @@ class PropertyTransactionService {
     }
 
     public static function createDepositTransaction(Rent $rent, mixed $rentData) {
-      $description = "Déposito de {$rent->client->fullName}";
+      $description = "{$rent->unit->name} Déposito de {$rent->client->fullName}";
 
       $formData = [
         "date" => $rent->deposit_due,
@@ -369,15 +369,15 @@ class PropertyTransactionService {
       $amount =  $formData['amount'] ?? $penaltyAmount;
 
       $lateFeeInvoice = PropertyTransactionService::createInvoice([
-        "name" => "Factura de mora",
-        "concept" => $formData['concept'] ?? "Factura de mora {$rent->client->fullName}",
+        "concept" => "Factura de mora",
+        "description" => $formData['concept'] ?? "{$rent->unit} Mora {$rent->client->fullName}",
         'invoice_account_id' => $rent->late_fee_account_id,
         'amount' => $amount,
         'due_date' => $formData['due_date'] ?? null,
         'category_type' => PropertyInvoiceTypes::LateFee,
         "items" => [[
-            "name" => "mora de renta",
-            "concept" => $formData['concept'] ?? "mora de {$rent->client->fullName}",
+            "name" => "Mora de renta",
+            "concept" => $formData['concept'] ?? "{$rent->unit} Mora de {$rent->client->fullName}",
             "quantity" => 1,
             "price" => $amount,
             "amount" => $amount,
