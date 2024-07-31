@@ -92,7 +92,7 @@ const deleteTeam = () => {};
 
             <Link
               class="relative inline-block cursor-pointer ml-4 hover:bg-primary hover:text-white px-5 py-2 overflow-hidden font-bold text-body transition rounded-md focus:outline-none hover:bg-opacity-80 min-w-max"
-              :href="`/admin/teams/${row.id}`"
+              :href="`/admin/subscriptions/${row.id}`"
             >
               <IMdiChevronRight />
             </Link>

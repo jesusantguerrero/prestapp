@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import axios from "axios";
 import { debounce } from "lodash";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 type SelectOption = Object | any[] | string | number | null;
 
@@ -71,8 +71,13 @@ const emit = defineEmits([
   "update:label",
 ]);
 
-const localOptions = ref(props.options ?? []);
+const localOptions = ref<any[]>(props.options ?? []);
 const isLoading = ref(false);
+
+
+watch(() => props.options, (options: any[]) => {
+  localOptions.value = options;
+})
 
 const resultParser = (apiOptions: Record<string, string>[], query: string = "") => {
   let includeCustom = true;

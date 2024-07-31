@@ -52,6 +52,13 @@ class DashboardController extends Controller
           'realEstate' => 'daily_box',
           'revenue' => ['cash_and_bank'],
           'commissions' => 'daily_box'
+        ],
+        AppProfileEnum::Admin->value => [
+          'revenueAccounts' => ['cash_and_bank'],
+          'dailyBox' => "daily_box",
+          'realEstate' => 'daily_box',
+          'revenue' => ['cash_and_bank'],
+          'commissions' => 'daily_box'
         ]
       ];
 

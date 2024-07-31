@@ -28,8 +28,7 @@ const { formData } = useReactiveForm(
 );
 
 const availableUnits = computed(() => {
-  // @ts-expect-error
-  return formData.property?.units.filter((unit: IUnit) => unit.status !== "RENTED");
+  return formData.property?.units?.filter?.((unit: IUnit) => unit.status !== "RENTED");
 });
 
 const unitLabel = (unit: IUnit) => {
@@ -37,7 +36,8 @@ const unitLabel = (unit: IUnit) => {
 };
 
 const propertyLabel = (property: IProperty) => {
-  return `${property.name} [${property?.units?.length}] (${property.address}) `;
+  const availableUnits = property?.units?.filter?.(unit => unit.status == 'AVAILABLE');
+  return `${property.name} [${availableUnits.length}] (${property.address}) `;
 };
 </script>
 

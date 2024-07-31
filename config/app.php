@@ -185,7 +185,8 @@ return [
         /*
          * Package Service Providers...
          */
-
+        Lab404\Impersonate\ImpersonateServiceProvider::class,
+        OwenIt\Auditing\AuditingServiceProvider::class,
         /*
          * Application Service Providers...
          */
@@ -199,7 +200,6 @@ return [
         App\Providers\JournalServiceProvider::class,
         App\Providers\AtmosphereImpersonateProvider::class,
         App\Providers\TreasurerServiceProvider::class,
-        Lab404\Impersonate\ImpersonateServiceProvider::class,
     ],
 
     /*

@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+      $schedule->command('background:generate-billing-invoices')->daily()->at('01:00')->runInBackground();
       $schedule->command('background:generate-invoices')->daily()->at('01:00')->runInBackground();
       $schedule->command('background:generate-invoices --late-fees')->daily()->at('01:00')->runInBackground();
       $schedule->command('background:generate-owner-distributions')->daily()->at('01:00')->runInBackground();

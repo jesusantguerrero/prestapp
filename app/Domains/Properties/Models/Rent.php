@@ -2,18 +2,20 @@
 
 namespace App\Domains\Properties\Models;
 
-use App\Domains\CRM\Models\Client;
-use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 use App\Models\User;
+use App\Domains\CRM\Models\Client;
 use Insane\Journal\Models\Core\Payment;
-use Insane\Journal\Models\Core\Transaction;
+use OwenIt\Auditing\Contracts\Auditable;
 use Insane\Journal\Models\Invoice\Invoice;
-use Insane\Journal\Traits\HasPaymentDocuments;
-use Insane\Journal\Traits\IPayableDocument;
 use Insane\Journal\Traits\Transactionable;
+use Insane\Journal\Models\Core\Transaction;
+use Insane\Journal\Traits\IPayableDocument;
+use Insane\Journal\Traits\HasPaymentDocuments;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 
-class Rent extends Transactionable implements IPayableDocument {
+class Rent extends Transactionable implements IPayableDocument, Auditable {
     use HasPaymentDocuments;
+    use \OwenIt\Auditing\Auditable;
     // use Searchable;
 
     const STATUS_ACTIVE = 'ACTIVE';

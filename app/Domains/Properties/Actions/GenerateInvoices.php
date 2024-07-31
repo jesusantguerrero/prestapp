@@ -44,16 +44,23 @@ class GenerateInvoices {
     }
 
     public static function chargeLateFees(bool $forceCharge = false) {
-      $lateInvoices = Invoice::select(['invoices.*','rents.id as rentId', 'rents.grace_days as rentGraceDays'])
-      ->whereRaw('debt > 0 AND DATE_ADD(due_date, INTERVAL COALESCE(rents.grace_days, 0) DAY) < curdate() AND rents.late_fee > 0')
+      $lateInvoices = Invoice::selectRaw(
+        'invoices.*,
+        rents.id as rentId,
+        rents.grace_days as rentGraceDays,
+        DATE_ADD(due_date, INTERVAL COALESCE(rents.grace_days - 2, 0) DAY)  as lateFeeAt'
+      )
+      ->whereRaw('debt > 0 AND DATE_ADD(due_date, INTERVAL COALESCE(rents.grace_days - 2, 0) DAY) < curdate() AND rents.late_fee > 0')
       ->join('rents', 'invoiceable_id', 'rents.id')
       ->where('invoiceable_type', Rent::class)
       ->where('category_type', PropertyInvoiceTypes::Rent->value)
-      ->when(!$forceCharge, fn ($query) => $query->whereNot('invoices.status', 'overdue'))
+      // ->when(!$forceCharge, fn ($query) => $query->whereNot('invoices.status', Invoice::STATUS_OVERDUE))
       ->get();
 
+      // dd($lateInvoices->map(fn ($li) => $li->description . " " . $li->lateFeeAt));
+
       if (count($lateInvoices)) {
-          PropertyTransactionService::createLateFees($lateInvoices);
+          PropertyTransactionService::createLateFees([$lateInvoices->last()]);
       }
     }
 

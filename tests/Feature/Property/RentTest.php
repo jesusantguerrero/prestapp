@@ -201,5 +201,40 @@ class RentTest extends PropertyBase
 
     $this->assertEquals($rent->owner->status, ClientStatus::Active);
   }
+
+  public function testItShouldAllowMultipleRentsToTenant() {
+    $this->seed();
+    $this->actingAs($this->user);
+
+    $response = $this->post('/rents', array_merge($this->rentData, [
+      'deposit' => 12000,
+      'amount' => 6000,
+      'date' => now()->subMonths(8)->format('Y-m-d'),
+      'deposit_due' => now()->subMonths(8)->format('Y-m-d'),
+      'first_invoice_date' => now()->subMonths(7)->format('Y-m-d'),
+    ]));
+
+    $response->assertStatus(302);
+
+    $rent = Rent::latest()->first();
+    $this->assertCount(8, $rent->rentInvoices);
+    $this->assertStringContainsString($this->property->units[0]->name, $rent->rentInvoices[0]->description);
+
+    $response2 = $this->post('/rents', array_merge($this->rentData, [
+      "deposit" => 20000,
+      'amount' => 10000,
+      'date' => now()->subMonths(8)->format('Y-m-d'),
+      'deposit_due' => now()->subMonths(8)->format('Y-m-d'),
+      'first_invoice_date' => now()->subMonths(7)->format('Y-m-d'),
+      "unit_id" => $this->property->units[1]->id,
+    ]));
+
+    $response2->assertStatus(302);
+
+    $rent2 = Rent::latest()->first();
+    $this->assertCount(8, $rent2->rentInvoices);
+    $this->assertStringContainsString($this->property->units[1]->name, $rent2->rentInvoices[0]->description);
+    $this->assertStringContainsString($this->property->units[1]->name, $rent2->depositInvoices[0]->description);
+  }
 }
 

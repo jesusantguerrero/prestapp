@@ -1,7 +1,7 @@
 <?php
 
 return [
-  'driver' => env('TREASURER_DRIVER', 'local'),
+  'driver' => env('TREASURER_DRIVER', 'neatlancer'),
   'drivers' => [
       'paypal' => [
         'driver' => 'pusher',
@@ -10,10 +10,15 @@ return [
         'live_client_id' => env('PAYPAL_LIVE_CLIENT_ID', ''),
         'live_secret' => env('PAYPAL_LIVE_SECRET', ''),
       ],
-
       'local' => [
           'driver' => 'local',
           'key' => env('TREASURER_KEY'),
+      ],
+      'neatlancer' => [
+        'driver' => 'neatlancer',
+        "url" => env('SSO_URL'),
+        'client_id' => env("SSO_APP_KEY"),
+        'secret_id' => env("SSO_APP_SECRET"),
       ],
   ],
   'settings' => [
@@ -23,6 +28,7 @@ return [
       'log.FileName' => storage_path() . '/logs/treasurer.log',
       'log.LogLevel' => 'DEBUG'
   ],
+  'implementation' => Insane\Journal\Models\Invoice\Invoice::class,
   "plans" => [
     [
         "name" => "plan_starter",
@@ -67,6 +73,6 @@ return [
       "price" => 25,
       "public_plan" => true,
       "trial" => 14,
+    ]
   ]
-]
 ];
