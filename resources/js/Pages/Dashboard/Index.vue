@@ -83,9 +83,6 @@ const props = defineProps({
   rentStats: {
     type: Object,
   },
-  paidCommissions: {
-    type: Object,
-  },
 });
 
 interface IStatDetails {
