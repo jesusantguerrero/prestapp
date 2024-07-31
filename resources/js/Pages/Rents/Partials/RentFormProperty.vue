@@ -43,7 +43,6 @@ const propertyLabel = (property: IProperty) => {
 
 <template>
   <section>
-    {{ formData.property.name }}
     <FormSection section-class="flex flex-col md:space-x-4 md:flex-row">
       <AppFormField class="w-full" :label="$t('property')">
         <BaseSelect
