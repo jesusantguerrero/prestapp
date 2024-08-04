@@ -28,6 +28,9 @@ const formData = useForm({
   bathrooms: 1,
 });
 
+const close = () => {
+  emit('close');
+}
 // api calls
 const onSubmit = () => {
   if (formData.processing) return;
@@ -49,7 +52,7 @@ const onSubmit = () => {
           title: "Unidad agregada",
           type: "success",
         });
-        emit("close");
+        close();
       },
     });
   }
@@ -62,7 +65,7 @@ const updateUnit = () => {
         title: "Unidad agregada",
         type: "success",
       });
-      emit("close");
+      close();
     },
   });
 };
@@ -104,7 +107,7 @@ watch(
     <footer
       class="px-6 py-4 flex justify-end space-x-3 text-gray-600 text-right bg-neutral"
     >
-      <AppButton variant="neutral" @click="$emit('close')"> Cerrar </AppButton>
+      <AppButton variant="neutral" @click="close()"> Cerrar </AppButton>
       <AppButton variant="secondary" @click="onSubmit()"> Guardar </AppButton>
     </footer>
   </main>
