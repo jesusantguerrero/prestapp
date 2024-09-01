@@ -8,17 +8,18 @@ import AtTable from "@/Components/shared/BaseTable.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 
 import cols from "./cols";
-import { IRent } from "@/Modules/property/propertyEntity";
 import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
 import { IServerSearchData, useServerSearch } from "@/utils/useServerSearch";
 import AdminTemplate from "../Partials/AdminTemplate.vue";
 
+type Team = Record<string, string>;
+
 interface IPaginatedData {
-  data: IRent[];
+  data: Team[];
 }
 
 const props = defineProps<{
-  teams: IRent[] | IPaginatedData;
+  teams: Team[] | IPaginatedData;
   serverSearchOptions: IServerSearchData;
   user: Record<string, string>;
 }>();

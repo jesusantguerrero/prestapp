@@ -3,19 +3,20 @@
 namespace App\Providers;
 
 use App\Events\Heartbeat;
-use App\Listeners\ClearRentInvoiceData;
 use App\Listeners\Heartbeaten;
+use Illuminate\Auth\Events\Login;
 use App\Listeners\HeartbeatListener;
 use App\Listeners\RegisterLastLogin;
-use Illuminate\Auth\Events\Login;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Registered;
+use App\Listeners\ClearRentInvoiceData;
+use Laravel\Jetstream\Events\TeamCreated;
+use Insane\Journal\Listeners\CreateTeamAccounts;
+use Lab404\Impersonate\Events\TakeImpersonation;
+use Lab404\Impersonate\Events\LeaveImpersonation;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
-use Lab404\Impersonate\Events\LeaveImpersonation;
-use Lab404\Impersonate\Events\TakeImpersonation;
-use Insane\Journal\Listeners\CreateTeamAccounts;
-use Laravel\Jetstream\Events\TeamCreated;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -49,8 +50,21 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-      Event::listen(TakeImpersonation::class, fn() => $this->clearAuthHashes());
-      Event::listen(LeaveImpersonation::class, fn() => $this->clearAuthHashes());
+      Event::listen(function (TakeImpersonation $event) {
+        session()->put([
+            'password_hash_sanctum' => $event->impersonated->getAuthPassword(),
+        ]);
+    });
+
+    Event::listen(function (LeaveImpersonation $event) {
+        session()->remove('password_hash_web');
+        session()->put([
+            'password_hash_sanctum' => $event->impersonator->getAuthPassword(),
+        ]);
+        Auth::setUser($event->impersonator);
+    });
+      // Event::listen(TakeImpersonation::class, fn() => $this->clearAuthHashes());
+      // Event::listen(LeaveImpersonation::class, fn() => $this->clearAuthHashes());
     }
 
     private function clearAuthHashes() {
@@ -64,6 +78,10 @@ class EventServiceProvider extends ServiceProvider
           'password_hash_web',
           'password_hash_'. session('impersonate.guard'),
         ]));
+
+        session()->put([
+          'password_hash_sanctum' => $event->impersonated->getAuthPassword(),
+        ]);
     }
 
     /**

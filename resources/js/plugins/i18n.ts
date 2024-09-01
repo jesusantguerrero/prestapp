@@ -32,13 +32,6 @@ export const getLocales = () => {
   });
 }
 
-createI18n({
-  locale: 'es',
-  fallbackLocale: 'en',
-  messages: localesMessages,
-  legacy: false,
-})
-
 export default i18n;
 export const initWithLocale = (locale = 'es') => {
   const i18n = createI18n({

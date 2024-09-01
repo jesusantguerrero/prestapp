@@ -298,7 +298,7 @@ router.on("finish", () => {
       </section>
 
       <div class="mt-4 overflow-hidden rounded-md bg-base-lvl-3">
-        <AppFormField label="Propietario" v-if="!owner && !isLoading">
+        <AppFormField label="Propietario" class="px-4" v-if="!owner && !isLoading">
           <article
             v-for="owner in invoices"
             @click="filters.owner = owner.owner_id"

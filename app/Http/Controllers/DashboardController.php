@@ -67,6 +67,7 @@ class DashboardController extends Controller
       $rentTotals = RentService::invoiceByPaymentStatus($teamId, $startDate, $endDate);
       $monthPassedInYear = now()->diffInMonths(now()->startOfYear());
 
+
       return inertia('Dashboard/Index',
       [
           "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId,

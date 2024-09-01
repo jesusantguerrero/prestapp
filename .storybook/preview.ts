@@ -1,3 +1,15 @@
+import "../resources/css/app.css"
+import { initWithLocale} from '../resources/js/plugins/i18n.ts';
+import { setup } from '@storybook/vue3';
+
+setup((app) => {
+  app.use(initWithLocale('en'));
+  app.mixin({
+    /* My mixin */
+  });
+});
+
+
 /** @type { import('@storybook/vue3').Preview } */
 const preview = {
   parameters: {

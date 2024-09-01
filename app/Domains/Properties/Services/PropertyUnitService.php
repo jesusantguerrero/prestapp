@@ -2,10 +2,10 @@
 
 namespace App\Domains\Properties\Services;
 
+use Exception;
+use App\Domains\Properties\Models\Rent;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
-use App\Domains\Properties\Models\Rent;
-use Exception;
 
 class PropertyUnitService {
     public static function appendTo(Property $property, mixed $unitData) {
@@ -26,10 +26,16 @@ class PropertyUnitService {
     }
 
     public static function updateIn(PropertyUnit $unit, mixed $unitData) {
-      if ($unit->team_id == auth()->user()->current_team_id && $unit->status == PropertyUnit::STATUS_RENTED) {
+      $name = $unitData["name"] ?? "";
+      $isRented = $unit->status == PropertyUnit::STATUS_RENTED;
+      if ($unit->team_id == auth()->user()->current_team_id && $name == $unit->name && $isRented) {
         throw new Exception(__("This unit is currently rented"));
       }
-      $unit->update($unitData);
+      if ($isRented) {
+        $unit->update(collect($unitData)->only(['name'])->all());
+      } else {
+        $unit->update($unitData);
+      }
     }
 
     public static function withBadStatus($teamId) {

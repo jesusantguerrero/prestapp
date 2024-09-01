@@ -21,6 +21,7 @@
 ## About ICLoan
 ICLoan is a Loan & Property Management Software that can handle properties with multiple units, owner distribution, rental contracts and rental expenses along with loan with rates.
 
+![Dashboard](https://github.com/jesusantguerrero/prestapp/assets/17421742/eb28873b-8ab8-47d7-9c51-3b0f25b42ef2)
 
 ## ✨Features:
 

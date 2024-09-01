@@ -5,7 +5,8 @@ import { ElNotification } from "element-plus";
 
 import AppButton from "@/Components/shared/AppButton.vue";
 import UnitForm from "./UnitForm.vue";
-import { watch } from "vue";
+import { computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
 
 const props = defineProps({
   property: {
@@ -26,6 +27,15 @@ const formData = useForm({
   area: "",
   bedrooms: 1,
   bathrooms: 1,
+});
+
+const close = () => {
+  emit('close');
+}
+
+const { t } = useI18n();
+const formTitle = computed(() => {
+  return props.unit?.id ? t('Update unit') : t('Create unit');
 });
 
 // api calls
@@ -49,7 +59,7 @@ const onSubmit = () => {
           title: "Unidad agregada",
           type: "success",
         });
-        emit("close");
+        close();
       },
     });
   }
@@ -62,7 +72,7 @@ const updateUnit = () => {
         title: "Unidad agregada",
         type: "success",
       });
-      emit("close");
+      close();
     },
   });
 };
@@ -90,7 +100,7 @@ watch(
     <header
       class="border-b bg-secondary/80 text-white py-4 px-4 flex items-center justify-between"
     >
-      <h4 class="font-bold text-xl">{{ $t("Create unit") }}</h4>
+      <h4 class="font-bold text-xl">{{ formTitle }}</h4>
       <button class="hover:text-danger" @click="close()">
         <IMdiClose />
       </button>
@@ -104,7 +114,7 @@ watch(
     <footer
       class="px-6 py-4 flex justify-end space-x-3 text-gray-600 text-right bg-neutral"
     >
-      <AppButton variant="neutral" @click="$emit('close')"> Cerrar </AppButton>
+      <AppButton variant="neutral" @click="close()"> Cerrar </AppButton>
       <AppButton variant="secondary" @click="onSubmit()"> Guardar </AppButton>
     </footer>
   </main>

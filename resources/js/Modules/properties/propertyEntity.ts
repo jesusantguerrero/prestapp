@@ -10,9 +10,10 @@ export interface IProperty {
     // basic info
     address: string;
     // payment details
-    price: number
-    units: IUnit[]
-    contract?: IRent
+    description: string;
+    price: number;
+    units: IUnit[];
+    contract?: IRent;
 }
 
 export interface IUnit {

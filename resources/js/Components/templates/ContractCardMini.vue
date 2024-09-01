@@ -9,7 +9,7 @@ import { Link } from "@inertiajs/vue3";
 defineProps<{
   contract: IRent;
   actions?: Record<string, any>;
-  allowEdit: boolean;
+  allowEdit?: boolean;
 }>();
 </script>
 
