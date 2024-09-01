@@ -7,6 +7,7 @@ use App\Domains\Properties\Http\Controllers\PropertyController;
 use App\Domains\Properties\Http\Controllers\RentAgentController;
 use App\Domains\Properties\Http\Controllers\RentReportController;
 use App\Domains\Properties\Http\Controllers\TenantRentController;
+use App\Domains\Properties\Http\Controllers\Api\UnitApiController;
 use App\Domains\Properties\Http\Controllers\RentRenewalController;
 use App\Domains\Properties\Http\Controllers\PropertyUnitController;
 use App\Domains\Properties\Http\Controllers\PropertyOwnerController;
@@ -19,6 +20,10 @@ use App\Domains\Properties\Http\Controllers\PropertyTransactionController;
 Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->name('api.')->group(function () {
   Route::apiResource('invoices', InvoiceApiController::class);
   Route::apiResource('rent-payments', PaymentApiController::class);
+});
+
+Route::prefix('/api')->name('api.')->group(function () {
+  Route::apiResource('rentals', UnitApiController::class);
 });
 
 // Rentals

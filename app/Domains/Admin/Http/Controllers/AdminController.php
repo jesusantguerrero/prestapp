@@ -2,13 +2,13 @@
 
 namespace App\Domains\Admin\Http\Controllers;
 
-use App\Domains\Admin\Services\CommandService;
-use App\Domains\Properties\Models\Property;
-use App\Domains\Properties\Models\PropertyUnit;
-use App\Http\Controllers\InertiaController;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
+use App\Domains\Properties\Models\Property;
+use App\Http\Controllers\InertiaController;
+use App\Domains\Admin\Services\CommandService;
+use App\Domains\Properties\Models\PropertyUnit;
 
 class AdminController extends InertiaController
 {
@@ -56,7 +56,7 @@ class AdminController extends InertiaController
     }
 
     public function impersonateUser (int $userToImpersonate) {
-      if (! Gate::allows('superadmin')) {
+      if (!Gate::allows('superadmin')) {
         abort(403);
       }
       $user = User::find($userToImpersonate);

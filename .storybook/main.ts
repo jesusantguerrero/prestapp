@@ -1,5 +1,4 @@
-/** @type { import('@storybook/vue3-vite').StorybookConfig } */
-const config = {
+const config: StorybookConfig = {
   stories: ["../resources/js/stories/**/*.mdx", "../resources/js/stories/**/*.stories.@(js|jsx|ts|tsx)"],
   addons: [
     "@storybook/addon-links",
@@ -14,4 +13,5 @@ const config = {
   },
   docs: {}
 };
+
 export default config;

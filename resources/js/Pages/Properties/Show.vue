@@ -8,7 +8,6 @@ import AppLayout from "@/Components/templates/AppLayout.vue";
 import AppButton from "@/Components/shared/AppButton.vue";
 import AppSectionHeader from "../../Components/AppSectionHeader.vue";
 import IconMarker from "@/Components/icons/IconMarker.vue";
-import IconCoins from "@/Components/icons/IconCoins.vue";
 import IconPersonSafe from "@/Components/icons/IconPersonSafe.vue";
 import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.vue";
 import ContractCard from "./Partials/ContractCard.vue";
@@ -18,16 +17,18 @@ import UnitForm from "./Partials/UnitFormModal.vue";
 import { formatMoney } from "@/utils";
 import { ILoanInstallment } from "@/Modules/loans/loanInstallmentEntity";
 import { IProperty, IUnit } from "@/Modules/properties/propertyEntity";
-import { ElMessageBox, ElNotification, ElTag } from "element-plus";
+import { ElMessageBox, ElNotification } from "element-plus";
 import { clientInteractions } from "@/Modules/clients/clientInteractions";
-import UnitTitle from "@/Components/realState/UnitTitle.vue";
-import UnitTag from "@/Components/realState/UnitTag.vue";
 import UnitCard from "./UnitCard.vue";
 
 export interface Props {
   properties: IProperty;
   currentTab: string;
 }
+
+defineOptions({
+  name: "PropertyShow"
+});
 
 const props = withDefaults(defineProps<Props>(), {
   currentTab: "summary",
@@ -53,17 +54,7 @@ type IPaymentMetaData = ILoanInstallment & {
 
 const isPaymentModalOpen = ref(false);
 const selectedPayment = ref<IPaymentMetaData | null>(null);
-const onPayment = (installment: ILoanInstallment) => {
-  selectedPayment.value = {
-    ...installment,
-    // @ts-ignore solve backend sending decimals as strings
-    amount: parseFloat(installment.amount_due) || installment.amount,
-    id: undefined,
-    installment_id: installment.id,
-  };
 
-  isPaymentModalOpen.value = true;
-};
 const paymentConcept = computed(() => {
   return (
     selectedPayment.value &&
