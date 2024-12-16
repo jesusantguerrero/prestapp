@@ -29,7 +29,7 @@ export const clientStatus = Object.entries(CLIENT_STATUS).map(([name, value]) =>
 
 
 export const getClientLink = (client: Record<string, any>, forcedType = 'lender') => {
-  const type = forcedType ?? (client && Object.entries(client).reduce((type, [field, value]) => {
+  const type = forcedType?.toLowerCase?.() ?? (client && Object.entries(client).reduce((type, [field, value]) => {
     if (field.match(/owner|tenant|lender/) && value == 1) {
       type = field.replace('is_', '');
     }

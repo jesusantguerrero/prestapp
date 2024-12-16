@@ -74,7 +74,8 @@ export default function (t: Function, defaultType = 'lender') {
     },
     {
         name: 'actions',
-        label: 'Acciones'
+        label: 'Acciones',
+        width: 200,
     }
 ]
 }
