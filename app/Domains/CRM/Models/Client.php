@@ -2,10 +2,12 @@
 
 namespace App\Domains\CRM\Models;
 
+use App\Models\User;
 use Illuminate\Support\Str;
 use Spatie\Searchable\Searchable;
 use Illuminate\Support\Facades\DB;
 use Spatie\Searchable\SearchResult;
+use Illuminate\Support\Facades\Hash;
 use Database\Factories\ClientFactory;
 use App\Domains\CRM\Enums\ClientStatus;
 use Illuminate\Database\Eloquent\Model;
@@ -130,6 +132,24 @@ class Client extends Model implements Searchable {
     protected static function newFactory()
     {
         return ClientFactory::new();
+    }
+
+    public function user() {
+      return $this->hasOne(User::class);
+    }
+
+    public function createUser() {
+
+      $plaintext = Str::random(32);
+      $token = Hash::make(hash('sha256', $plaintext));
+
+      return $this->user()->create([
+        'name' => $this->fullName,
+        'email' => $this->email,
+        'password' => $token,
+        'current_team_id' => $this->team_id,
+        'client_id' => $this->client_id
+      ]);
     }
 
 
