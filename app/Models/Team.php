@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use Insane\Treasurer\Billable;
+use App\Actions\Jetstream\AddTeamMember;
 use Laravel\Jetstream\Events\TeamCreated;
 use Laravel\Jetstream\Events\TeamDeleted;
 use Laravel\Jetstream\Events\TeamUpdated;
 use App\Models\Traits\HasTeamProfilePhoto;
 use Laravel\Jetstream\Team as JetstreamTeam;
+use Laravel\Jetstream\Events\TeamMemberAdded;
+use Laravel\Jetstream\Events\AddingTeamMember;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Team extends JetstreamTeam
@@ -59,4 +62,32 @@ class Team extends JetstreamTeam
     static function admin() {
       return Team::where('app_profile_name', 'admin')->first();
     }
+
+
+    public function addMember(User $user, $roleName) {
+      AddingTeamMember::dispatch($this, $user);
+
+      if (!$this->ensureUserIsNotAlreadyOnTeam($this, $user->email)) {
+        $this->users()->attach(
+            $user, ['role' => $roleName]
+        );
+
+        TeamMemberAdded::dispatch($this, $user);
+      }
+
+
+      return $user;
+    }
+
+
+   protected function ensureUserIsNotAlreadyOnTeam($team, string $email)
+   {
+       return function ($validator) use ($team, $email) {
+           $validator->errors()->addIf(
+               $team->hasUserWithEmail($email),
+               'email',
+               __('This user already belongs to the team.')
+           );
+       };
+   }
 }

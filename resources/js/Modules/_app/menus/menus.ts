@@ -124,6 +124,14 @@ const menus = {
         },
         icon: MaterialSymbolsHomeWorkOutline,
         as: Link,
+      }, {
+      label: 'Herramientas',
+      to: '/agents/tools',
+      isActiveFunction(currentPath: string) {
+        return /agents\/tools/.test(currentPath)
+      },
+      icon: MaterialSymbolsHomeWorkOutline,
+      as: Link,
     }],
     [MODULES.REPORT]: [
       {

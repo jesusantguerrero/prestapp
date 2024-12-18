@@ -32,11 +32,18 @@ class DashboardController extends Controller
     public function general(Request $request)
     {
       $reportHelper = new ReportHelper();
-      $teamId = $request->user()->current_team_id;
+      $team = $request->user()->currentTeam;
+      $teamId = $team?->id;
       $filters = $request->query('filter');
       [$startDate, $endDate] = $this->getFilterDates($filters);
       $startYear = now()->startOfYear()->format('Y-m-d');
       $endYear = now()->endOfYear()->format('Y-m-d');
+
+      $role = $team ? strtolower($request->user()->teamRole($team)?->name) : null;
+
+      if (!$role || $role == 'property') {
+        return $this->owner();
+      }
 
       $accounts = [
         AppProfileEnum::Renting->value => [
@@ -168,6 +175,16 @@ class DashboardController extends Controller
           'bank' => $reportHelper->smallBoxRevenue('loan_business', $teamId),
           'section' => "loans",
           "serverSearchOptions" => $this->getServerParams(),
+      ]);
+    }
+
+    public function owner() {
+      $reportHelper = new ReportHelper();
+      $teamId = request()->user()->current_team_id;
+
+      return inertia('Dashboard/Owner',
+      [
+
       ]);
     }
 }

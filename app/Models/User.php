@@ -74,16 +74,18 @@ class User extends Authenticatable
 
     public function sendLoginLink() {
         $plaintext = Str::random(32);
-        $token = $this->loginTokens()->create([
+        $expirationDate = now()->addMinutes(15);
+        $this->loginTokens()->create([
           'token' => hash('sha256', $plaintext),
-          'expires_at' => now()->addMinutes(15),
+          'expires_at' => $expirationDate,
         ]);
 
-       $url = URL::temporarySignedRoute('verify-login', $this->expiresAt, [
-          'token' => $plaintext,
-        ]);
+        $url = URL::temporarySignedRoute(
+          'verify-login',
+          $expirationDate,
+          [ 'token' => $plaintext]
+        );
 
-        dd($url);
-        // Mail::to($this->email)->queue(new MagicLoginLink($plaintext, $token->expires_at));
+        Mail::to($this->email)->queue(new MagicLoginLink($this->name, $url));
     }
 }
