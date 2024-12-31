@@ -47,13 +47,14 @@ class PropertyUnitService {
 
     public static function freeUnitsWithBadStatus($teamId) {
       $units = self::withBadStatus($teamId)->get();
+      echo count($units);
 
       foreach ($units as $unit) {
         $unit->update(['status' => PropertyUnit::STATUS_AVAILABLE]);
 
-        return activity()
+        activity()
         ->performedOn($unit)
-        ->log("Admin fixed bad status for unit $unit->name");
+        ->log("Admin fixed bad status for unit $unit->name of $unit->property_name");
       }
     }
 }
