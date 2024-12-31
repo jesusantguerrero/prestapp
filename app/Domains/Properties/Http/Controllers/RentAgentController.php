@@ -68,8 +68,8 @@ class RentAgentController extends Controller
         $client->save();
       }
 
-      $user = $client->findOrCreateTeamUser('owner');
-      $user->sendLoginLink();
+      $user = $client->findOrCreateTeamUser('property');
+      $user->sendLoginLink($client->team_id);
 
       session()->flash('success', true);
       return redirect()->back();

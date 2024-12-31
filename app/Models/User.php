@@ -72,7 +72,7 @@ class User extends Authenticatable
     }
 
 
-    public function sendLoginLink() {
+    public function sendLoginLink($teamId) {
         $plaintext = Str::random(32);
         $expirationDate = now()->addMinutes(15);
         $this->loginTokens()->create([
@@ -83,7 +83,7 @@ class User extends Authenticatable
         $url = URL::temporarySignedRoute(
           'verify-login',
           $expirationDate,
-          [ 'token' => $plaintext]
+          [ 'token' => $plaintext, 'team' => $teamId]
         );
 
         Mail::to($this->email)->queue(new MagicLoginLink($this->name, $url));
