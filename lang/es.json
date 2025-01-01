@@ -3,7 +3,8 @@
       "ACTIVE": "Activo",
       "INACTIVE": "Inactivo",
       "LATE": "En mora",
-      "new": "Nuevo"
+      "new": "Nuevo",
+      "CANCELLED" : "Cancelado"
     },
     "validation": {
       "unique": ""
@@ -98,6 +99,7 @@
     "This rent has payments and can't be eliminated": "Este contrato tiene pagos  y tienen que ser eliminados primero",
     "This property has contracts and can't be eliminated": "Esta propiedad tiene contratos que tienen que ser eliminados primero",
     "The payment entered is more than the total amount due for this invoice. Please check and retry": "El pago de la factura es mayor al total de la factura, por favor revise e intente de nuevo",
+    "Cant update a cancelled contract": "No puede modificar un contrato cancelado",
     "january": "Enero",
     "february": "Febrero",
     "march": "Marzo",

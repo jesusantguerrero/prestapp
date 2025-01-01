@@ -78,10 +78,18 @@ const isEditingDate = computed(() => {
 const isEditingAmount = computed(() => {
   return isEditing.value =='amount'
 })
+
+const isCancelled =computed(() => {
+  return props.rents.status == 'CANCELLED'
+})
 </script>
 
 <template>
-  <RentTemplate :rents="rents" :current-tab="currentTab">
+  <RentTemplate
+    :rents="rents"
+    :current-tab="currentTab"
+    :allow-edit="!isCancelled"
+  >
     <WelcomeWidget
       message="Detalles de contrato"
       class="w-full text-body-1"
@@ -119,7 +127,7 @@ const isEditingAmount = computed(() => {
                   class="h-10 w-14 flex justify-center items-center"
                   :variant="isEditingAmount ? 'success' : 'neutral'">
                   <IMdiContentSaveCheck v-if="isEditingAmount" />
-                  <IMdiEdit  v-else />
+                  <IMdiEdit  v-else-if="!isCancelled" />
               </AppButton>
               <AppButton
                   v-if="isEditingAmount"
@@ -155,7 +163,7 @@ const isEditingAmount = computed(() => {
                   :variant="isEditingDate ? 'success' : 'neutral'"
                >
                 <IMdiContentSaveCheck v-if="isEditingDate" />
-                  <IMdiEdit class="ml-2" v-else />
+                  <IMdiEdit class="ml-2" v-else-if="!isCancelled" />
                 </AppButton>
                 <AppButton
                 v-if="isEditingDate"
