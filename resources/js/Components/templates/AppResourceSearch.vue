@@ -110,6 +110,11 @@ input[type="search"] {
   transition: all ease 0.3s;
 }
 .search-container.focus {
+  border: 0 solid !important;
+  outline-color: var(--primary-color);
+  outline: 1px solid var(--primary-color);
+  box-shadow: 0 0 0 0.2rem transparentize(#087a9c, 0.9);
+
   input {
     outline: none !important;
     box-shadow: none !important;
@@ -120,11 +125,6 @@ input[type="search"] {
     color: var(--primary-color);
     border: 0 solid !important;
   }
-
-  border: 0 solid !important;
-  outline-color: var(--primary-color);
-  outline: 1px solid var(--primary-color);
-  box-shadow: 0 0 0 0.2rem transpaterize(#087a9c, 0.9);
 }
 </style>
 

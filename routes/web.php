@@ -10,14 +10,15 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BackgroundController;
 use App\Http\Controllers\CRM\ClientController;
 use App\Http\Controllers\Api\RentApiController;
-
 use App\Http\Controllers\NotificationController;
+
 use App\Http\Controllers\Api\ClientApiController;
 use App\Http\Controllers\Api\AccountApiController;
 use App\Http\Controllers\Api\CategoryApiController;
 use App\Http\Controllers\Api\PropertyApiController;
 use App\Domains\Core\Http\Controllers\SSOController;
 use App\Http\Controllers\Api\TransactionLineApiController;
+use App\Domains\Core\Http\Controllers\AuthClientController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,8 +60,16 @@ Route::get('/background/run', BackgroundController::class);
 Route::get('/background/update-late-payments', [BackgroundController::class, 'updateLatePayments']);
 Route::get('/background/generate-rent-invoices', [BackgroundController::class, 'generateRentInvoices']);
 
+Route::impersonate();
+
+Route::middleware(['guest'])->prefix('/portal')->group(function() {
+  Route::get('login', [AuthClientController::class, 'show'])->name('login.show');
+  Route::post('login', [AuthClientController::class, 'login'])->name('portal.login');
+  Route::get('verify/{token}', [AuthClientController::class, 'verify'])->name('verify-login');
+});
+
 Route::middleware([
-    'auth:sanctum',
+    'auth:web,sanctum',
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {

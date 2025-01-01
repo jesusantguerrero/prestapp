@@ -2,16 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Fortify\TwoFactorAuthenticatable;
-use Laravel\Jetstream\HasProfilePhoto;
+use Illuminate\Support\Str;
+use App\Mail\MagicLoginLink;
 use Laravel\Jetstream\HasTeams;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Mail;
+use Laravel\Jetstream\HasProfilePhoto;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Notifications\Notifiable;
 use Lab404\Impersonate\Models\Impersonate;
+use Laravel\Fortify\TwoFactorAuthenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
@@ -63,4 +66,26 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function loginTokens() {
+      return $this->hasMany(LoginToken::class);
+    }
+
+
+    public function sendLoginLink($teamId) {
+        $plaintext = Str::random(32);
+        $expirationDate = now()->addMinutes(15);
+        $this->loginTokens()->create([
+          'token' => hash('sha256', $plaintext),
+          'expires_at' => $expirationDate,
+        ]);
+
+        $url = URL::temporarySignedRoute(
+          'verify-login',
+          $expirationDate,
+          [ 'token' => $plaintext, 'team' => $teamId]
+        );
+
+        Mail::to($this->email)->queue(new MagicLoginLink($this->name, $url));
+    }
 }

@@ -13,7 +13,6 @@ Route::middleware([
   config('jetstream.auth_session'),
   'verified',
 ])->prefix('/admin')->name('admin.')->group(function () {
-    Route::impersonate();
     Route::get('/', AdminController::class);
     Route::resource('/teams', AdminTeamController::class);
     Route::post('/teams/{team}/approve', [AdminTeamController::class, 'approve'])->name('teams.approve');

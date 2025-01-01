@@ -28,6 +28,10 @@ export interface Props {
   currentTab: string;
 }
 
+defineOptions({
+  name: 'PropertyUnitsShow'
+});
+
 const props = withDefaults(defineProps<Props>(), {
   currentTab: "summary",
 });
@@ -85,6 +89,7 @@ const addUnit = () => {
     <template #header>
       <PropertySectionNav>
         <template #actions>
+          <section class="flex space-x-2 bg-red-600">
           <AppButton
             @click="router.visit(route('properties.edit', properties))"
             variant="inverse"
@@ -95,8 +100,9 @@ const addUnit = () => {
             @click="router.visit(route('rents.create', { propertyId: properties.id }))"
             variant="inverse"
           >
-            Nuevo Contrato
+            Nuevo Contrato b
           </AppButton>
+          </section>
         </template>
       </PropertySectionNav>
     </template>

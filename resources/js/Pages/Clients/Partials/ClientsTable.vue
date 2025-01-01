@@ -8,7 +8,7 @@ import AppButton from "@/Components/shared/AppButton.vue";
 
 import cols from "./cols";
 import { IPaginatedData } from "@/utils/constants";
-import { IClient } from "@/Modules/clients/clientEntity.ts";
+import { IClient } from "@/Modules/clients/clientEntity";
 import { getClientLink } from "@/Modules/clients/constants";
 
 const { t } = useI18n();
@@ -52,7 +52,7 @@ getClientLink;
         <div class="flex justify-end items-center">
           <Link
             class="relative inline-block cursor-pointer ml-4 hover:bg-primary hover:text-white px-5 py-2 overflow-hidden font-bold text-body transition rounded-md focus:outline-none hover:bg-opacity-80 min-w-max"
-            :href="getClientLink(row)"
+            :href="getClientLink(row, type)"
           >
             <IMdiChevronRight />
           </Link>

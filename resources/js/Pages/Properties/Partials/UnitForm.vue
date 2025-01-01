@@ -13,9 +13,14 @@ defineProps<{
 <template>
   <section>
     <section class="grid grid-cols-4 gap-4">
+      <AppFormField class="w-full" label="Nombre de unidad">
+        <AtInput v-model="unit.name" class="w-full" rounded placeholder="Appto #512" />
+      </AppFormField>
       <AppFormField class="w-full" label="Precio de Renta">
         <AtInput v-model="unit.price" class="w-full" rounded number-format />
       </AppFormField>
+    </section>
+    <section class="grid grid-cols-4 gap-4">
       <AppFormField class="w-full" label="Area" v-model="unit.area" rounded>
         <template #prefix>
           <span class="inline-blocks h-full flex items-center px-2">

@@ -55,10 +55,14 @@ class RentService {
     }
 
     public static function updateRent(Rent $rent, mixed $rentData) {
+      if (!$rent->isActive()) {
+        throw new Exception(__("Cant update a cancelled contract"));
+      }
+
       return DB::transaction(function() use ($rentData, $rent) {
         $rentData['unit_id'] = $rentData['unit_id'] ?? $rentData['unit']['id'] ?? $rent->unit_id;
 
-        if ($rent->unit_id !== $rentData['unit_id']) {
+        if ($rent->unit_id !== $rentData['unit_id'] && $rent->isActive()) {
           $unit = PropertyUnit::find($rentData['unit_id']);
           if (!$unit || $unit->status !== PropertyUnit::STATUS_AVAILABLE) {
             throw new Exception('This unit is not available at the time');

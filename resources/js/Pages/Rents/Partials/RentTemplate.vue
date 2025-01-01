@@ -21,6 +21,7 @@ interface Props {
   rents: IRent;
   currentTab: string;
   hidePanel?: boolean;
+  allowEdit?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -187,7 +188,7 @@ const onEdit = (invoice: IInvoice) => {
               variant="neutral"
               @click="router.visit(route('rents.edit', rents))"
             >
-              <IMdiEdit />
+              <IMdiEdit v-if="allowEdit" />
             </AppButton>
           </section>
         </template>

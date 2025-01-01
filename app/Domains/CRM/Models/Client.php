@@ -2,13 +2,17 @@
 
 namespace App\Domains\CRM\Models;
 
+use App\Models\Team;
+use App\Models\User;
 use Illuminate\Support\Str;
 use Spatie\Searchable\Searchable;
 use Illuminate\Support\Facades\DB;
 use Spatie\Searchable\SearchResult;
+use Illuminate\Support\Facades\Hash;
 use Database\Factories\ClientFactory;
 use App\Domains\CRM\Enums\ClientStatus;
 use Illuminate\Database\Eloquent\Model;
+use App\Actions\Jetstream\AddTeamMember;
 use App\Domains\CRM\Models\Traits\OwnerTrait;
 use App\Domains\CRM\Models\Traits\TenantTrait;
 use App\Domains\CRM\Models\Traits\BorrowerTrait;
@@ -132,26 +136,64 @@ class Client extends Model implements Searchable {
         return ClientFactory::new();
     }
 
+    public function user() {
+      return $this->hasOne(User::class);
+    }
+
+    public function team() {
+      return $this->belongsTo(Team::class);
+    }
+
+    public function createUser() {
+
+      $plaintext = Str::random(32);
+      $token = Hash::make(hash('sha256', $plaintext));
+
+      return $this->user()->create([
+        'name' => $this->fullName,
+        'email' => $this->email,
+        'password' => $token,
+        'current_team_id' => $this->team_id,
+        'client_id' => $this->client_id
+      ]);
+    }
+
 
     public static function findOrCreateByName($session, string $name) {
-        $client = self::where(
-          [
-              'display_name' => $name,
-              'team_id' => $session['team_id'],
-          ])->limit(1)->get();
+          $client = self::where(
+            [
+                'display_name' => $name,
+                'team_id' => $session['team_id'],
+            ])->limit(1)->get();
 
-      if (!count($client)) {
-          $names = explode(" ", trim($name));
-          $lastNames = [...$names];
-          array_shift($lastNames);
-          return self::create([
-              'names' => $names[0],
-              'lastnames' => count($lastNames) ? implode(" ", $lastNames) : "",
-              'user_id' => $session['user_id'],
-              'team_id' => $session['team_id'],
-          ]);
-      } else {
-          return $client->first();
+        if (!count($client)) {
+            $names = explode(" ", trim($name));
+            $lastNames = [...$names];
+            array_shift($lastNames);
+            return self::create([
+                'names' => $names[0],
+                'lastnames' => count($lastNames) ? implode(" ", $lastNames) : "",
+                'user_id' => $session['user_id'],
+                'team_id' => $session['team_id'],
+            ]);
+        } else {
+            return $client->first();
+        }
+    }
+
+    public function findOrCreateTeamUser(string $roleName) {
+
+      $user = User::where([
+        'email' => $this->email,
+      ])->first();
+
+
+      if (!$this->user || !$user) {
+        $user = $this->createUser();
       }
-  }
+
+      $this->team->addMember($user, 'owner');
+      return $user;
+    }
+
 }

@@ -2,12 +2,12 @@
 
 namespace App\Domains\Properties\Services;
 
+use Exception;
 use App\Domains\CRM\Models\Client;
+use Illuminate\Support\Facades\DB;
+use App\Domains\Properties\Models\Rent;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
-use App\Domains\Properties\Models\Rent;
-use Exception;
-use Illuminate\Support\Facades\DB;
 
 class PropertyService {
 
@@ -36,13 +36,6 @@ class PropertyService {
         throw new Exception(__("This unit is linked to a past rent"));
       }
       $unit->delete();
-    }
-
-    public static function updateUnit(PropertyUnit $unit, mixed $unitData) {
-      if ($unit->team_id == auth()->user()->current_team_id && $unit->status == PropertyUnit::STATUS_RENTED) {
-        throw new Exception(__("This unit is currently rented"));
-      }
-      $unit->update($unitData);
     }
 
     public static function ofTeam($teamId, $status= Property::STATUS_AVAILABLE) {

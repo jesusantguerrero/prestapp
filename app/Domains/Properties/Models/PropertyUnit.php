@@ -2,16 +2,18 @@
 
 namespace App\Domains\Properties\Models;
 
-use App\Domains\CRM\Models\Client;
-use Database\Factories\PropertyUnitFactory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Insane\Journal\Traits\HasResourceAccounts;
 use Laravel\Scout\Searchable;
+use App\Domains\CRM\Models\Client;
+use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
+use Database\Factories\PropertyUnitFactory;
+use Insane\Journal\Traits\HasResourceAccounts;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class PropertyUnit extends Model {
+class PropertyUnit extends Model implements Auditable {
     use HasFactory;
     use HasResourceAccounts;
+    use \OwenIt\Auditing\Auditable;
     // use Searchable;
 
     const STATUS_BUILDING = 'BUILDING';
