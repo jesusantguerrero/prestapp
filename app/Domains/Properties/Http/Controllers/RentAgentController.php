@@ -2,6 +2,9 @@
 
 namespace App\Domains\Properties\Http\Controllers;
 
+use Exception;
+use Insane\Journal\Features;
+use App\Domains\CRM\Models\Client;
 use App\Http\Controllers\Controller;
 use App\Domains\CRM\Services\ClientService;
 use App\Domains\Properties\Services\RentService;
@@ -45,4 +48,33 @@ class RentAgentController extends Controller
           })
       ]);
     }
+
+    public function showTools()
+    {
+      return inertia('RentAgent/Tools',
+      [
+          "client-portal" => Features::enabled('client-portal')
+      ]);
+    }
+
+    public function sendPortalLink(Client $client)
+    {
+      $postData = request()->post();
+      if (!$client->email || !$postData['email'])
+      throw new Exception('The client has no valid email, please add an email for this client');
+
+      if ($client->email !== $postData['email']) {
+        $client->email = $postData['email'];
+        $client->save();
+      }
+
+      $user = $client->findOrCreateTeamUser('property');
+      $user->sendLoginLink($client->team_id);
+
+      session()->flash('success', true);
+      return redirect()->back();
   }
+
+
+
+}

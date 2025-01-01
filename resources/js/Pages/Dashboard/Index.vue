@@ -284,7 +284,6 @@ import RentsWidget from "./Partials/RentsWidget.vue";
 import WidgetPropertiesStats from "./Partials/WidgetPropertiesStats.vue";
 import { addMonths, startOfMonth, startOfYear } from "date-fns";
 import ChartBar from "./Partials/ChartBar.vue";
-import BudgetProgress from "@/Components/BudgetProgress.vue";
 
 export default {
   layout: DashboardTemplate,

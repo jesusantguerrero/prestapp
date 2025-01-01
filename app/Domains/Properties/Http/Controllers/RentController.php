@@ -2,15 +2,15 @@
 
 namespace App\Domains\Properties\Http\Controllers;
 
-use App\Domains\Properties\Models\Rent;
-use App\Domains\Properties\Services\PropertyService;
-use App\Domains\Properties\Services\RentService;
-use App\Http\Controllers\InertiaController;
 use Exception;
 use Illuminate\Http\Request;
+use App\Domains\Properties\Models\Rent;
 use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Core\Payment;
 use Insane\Journal\Models\Invoice\Invoice;
+use App\Http\Controllers\InertiaController;
+use App\Domains\Properties\Services\RentService;
+use App\Domains\Properties\Services\PropertyService;
 
 class RentController extends InertiaController
 {
@@ -76,8 +76,12 @@ class RentController extends InertiaController
 
     protected function updateResource($resource, $postData)
     {
+      try {
         RentService::updateRent($resource, $postData);
         return $resource;
+      } catch (\Exception $e) {
+        return redirect()->back()->withErrors(['default' => $e->getMessage()]);
+      }
     }
 
     protected function getEditProps(Request $request, $rent)

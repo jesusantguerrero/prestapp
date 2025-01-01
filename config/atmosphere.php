@@ -1,5 +1,7 @@
 <?php
 
+use App\Contracts\Features;
+
 return [
   "superadmin" => [
     "email" => env('APP_SUPER_ADMIN', null)
@@ -19,5 +21,16 @@ return [
     "url" => env('SSO_URL'),
     "key" => env("SSO_APP_KEY"),
     "secret" => env("SSO_APP_SECRET")
-  ]
+  ],
+  'features' => [
+    Features::agentProfile(),
+    Features::publicInvoices(),
+    Features::clientPortal(['roles' => ['property-owner', 'tenant']]),
+    // Features::companyProfile(),
+    /* Features::listings([
+       "applications" => true
+       "application" => true
+    ]),*/
+    // Features::listings(),
+],
 ];

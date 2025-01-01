@@ -102,6 +102,8 @@ Route::middleware([
     });
 
     // Agent
+    Route::get('/agents/tools', [RentAgentController::class, 'showTools']);
+    Route::post('/agents/tools/portal/{client}/send-link', [RentAgentController::class, 'sendPortalLink']);
     Route::get('/agents/{viewName}', [RentAgentController::class, 'list']);
 
     // Tenant
