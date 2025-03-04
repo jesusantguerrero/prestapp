@@ -38,6 +38,7 @@ declare module 'vue' {
     IMdiNoteOff: typeof import('~icons/mdi/note-off')['default']
     IMdiPlus: typeof import('~icons/mdi/plus')['default']
     IMdiQuestionMark: typeof import('~icons/mdi/question-mark')['default']
+    IMdiReceiptTextRemove: typeof import('~icons/mdi/receipt-text-remove')['default']
     IMdiSearch: typeof import('~icons/mdi/search')['default']
     IMdiSort: typeof import('~icons/mdi/sort')['default']
     IMdiTrash: typeof import('~icons/mdi/trash')['default']

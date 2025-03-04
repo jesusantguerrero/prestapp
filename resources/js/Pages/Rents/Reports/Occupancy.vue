@@ -1,35 +1,19 @@
 <script lang="ts" setup>
-import { reactive, watch, nextTick, ref, computed } from "vue";
+import { reactive, watch, ref, computed } from "vue";
 // @ts-ignore
 import { AtDatePager } from "atmosphere-ui";
-import { Link, router, useForm } from "@inertiajs/vue3";
+import { router } from "@inertiajs/vue3";
 import { toRefs } from "@vueuse/shared";
-import { useI18n } from "vue-i18n";
-import { ElMessageBox, ElTag } from "element-plus";
 
-import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
-import InvoiceTable from "@/Components/templates/InvoiceTable";
 import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.vue";
-import AppButton from "@/Components/shared/AppButton.vue";
-import Simple from "@/Pages/Journal/Invoices/printTemplates/Simple.vue";
-import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
-import SectionNav from "@/Components/SectionNav.vue";
 
-import { formatDate, formatMoney } from "@/utils";
 import { IInvoice } from "@/Modules/invoicing/entities";
-import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
-import { usePrint } from "@/utils/usePrint";
-import {
-  clientInteractions,
-  InteractionsState,
-} from "@/Modules/clients/clientInteractions";
-import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
 import { useServerSearch } from "@/utils/useServerSearch";
-import { getRentStatusColor } from "@/Modules/properties/constants";
 import { useResponsive } from "@/utils/useResponsive";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { formatMoney } from "@/utils";
 
 const props = defineProps({
   invoices: {
@@ -99,7 +83,6 @@ watch(
     router.get(
       location.pathname,
       {
-        // @ts-ignore
         filters: selectedFilters,
       },
       { preserveState: true }
@@ -108,107 +91,16 @@ watch(
   { deep: true }
 );
 
-const { openModal } = usePaymentModal();
-
-const handlePayment = (invoice: IInvoice) => {
-  const payment = {
-    ...invoice,
-    // @ts-ignore solve backend sending decimals as strings
-    amount: parseFloat(invoice.debt) || invoice.total,
-    id: undefined,
-    invoice_id: invoice.id,
-  };
-
-  const url = `/rents/${invoice.invoiceable_id}/invoices/${invoice?.id}/payments`;
-
-  nextTick(() => {
-    openModal({
-      data: {
-        title: `Pagar ${invoice.concept}`,
-        payment: payment,
-        endpoint: url,
-        due: payment?.amount,
-        defaultConcept: "Pago de " + invoice.concept,
-        accountsEndpoint: "/invoices",
-        hideAccountSelector: true,
-      },
-    });
-  });
-};
-
-interface InvoiceResponse {
-  invoice: IInvoice;
-  businessData: Record<string, string>;
-}
-
-const selectedInvoice = ref<InvoiceResponse | null>(null);
-
-const isPrinting = ref(false);
-
 const { serverSearchOptions } = toRefs(props);
 const { executeSearchWithDelay, updateSearch, state: pageState } = useServerSearch(
   serverSearchOptions,
   (finalUrl: string) => {
-    console.log(finalUrl);
-    updateSearch(`/rent-reports/monthly-summary?${finalUrl}`);
+    updateSearch(`/rent-reports/occupancy?${finalUrl}`);
   },
   {
     manual: true,
   }
 );
-const onDelete = async (invoice: IInvoice) => {
-  const isValid = await ElMessageBox.confirm(
-    `Estas seguro de eliminar la factura ${invoice.concept} por ${formatMoney(
-      invoice.total
-    )}?`,
-    "Eliminar factura"
-  );
-
-  if (isValid) {
-    router.delete(`/invoices/${invoice.id}`, {
-      onSuccess() {
-        router.reload({
-          preserveState: true,
-          preserveScroll: true,
-        });
-      },
-    });
-  }
-};
-
-const { t } = useI18n();
-const invoiceTypes = computed(() => Object.keys(props.invoices));
-const selectedTab = ref(invoiceTypes.value[0]);
-const tabs = computed(() =>
-  invoiceTypes.value.reduce((tabs: Record<string, any>, invoiceType: string) => {
-    tabs[invoiceType] = {
-      label: t(invoiceType),
-    };
-    return tabs;
-  }, {})
-);
-
-const sectionLabel = computed(() => {
-  return "Reporte rentas de " + formatDate(pageState?.dates?.startDate, "MMMM");
-});
-
-const deletePaymentForm = useForm({});
-const deleteRentPayments = async (invoice: IInvoice) => {
-  const isValid = await ElMessageBox.confirm(
-    `Estas seguro de eliminar los pagos de factura de ${invoice.client_name}?`,
-    "Eliminar pago de factura"
-  );
-  if (isValid) {
-    deletePaymentForm.delete(
-      `/rents/${invoice.invoiceable_id}/invoices/${invoice.id}/payments`,
-      {
-        onSuccess() {
-          router.reload();
-        },
-      }
-    );
-  }
-};
 
 const isLoading = ref(false);
 router.on("start", (event) => {
@@ -232,10 +124,121 @@ const selectedMonthName = computed(() => {
     return pageState.dates.startDate;
   }
 });
+
+const propertyStats = computed(() => {
+  if (!props.invoices) return [];
+  
+  return Object.entries(props.invoices).map(([ownerName, details]: [string, any]) => {
+    const properties = details.properties;
+    return Object.entries(properties).map(([propertyId, propertyUnits]: [string, any]) => {
+      const units = propertyUnits;
+      const totalUnits = units.length;
+      
+      const stats = {
+        // Payment Status
+        paid: units.filter((unit: any) => unit.rent_status === 'PAID').length,
+        unpaid: units.filter((unit: any) => unit.rent_status === 'LATE' || unit.rent_status === 'PARTIALLY_PAID').length,
+        available: units.filter((unit: any) => !unit.rent_id).length,
+        retained: units.filter((unit: any) => unit.rent_id && unit.rent_status === 'LATE').length,
+        
+        // Unit Status
+        building: units.filter((unit: any) => unit.current_status === 'BUILDING').length,
+        maintenance: units.filter((unit: any) => unit.current_status === 'MAINTENANCE').length,
+        rented: units.filter((unit: any) => unit.current_status === 'RENTED').length,
+        
+        // Rent Status
+        active: units.filter((unit: any) => unit.rent_status === 'ACTIVE').length,
+        late: units.filter((unit: any) => unit.rent_status === 'LATE').length,
+        grace: units.filter((unit: any) => unit.rent_status === 'GRACE').length,
+        cancelled: units.filter((unit: any) => unit.rent_status === 'CANCELLED').length,
+        expired: units.filter((unit: any) => unit.rent_status === 'EXPIRED').length,
+
+        // Unit Details
+        totalPrice: units.reduce((sum: number, unit: any) => sum + (parseFloat(unit.price) || 0), 0),
+        totalCommission: units.reduce((sum: number, unit: any) => sum + (parseFloat(unit.commission) || 0), 0),
+        averagePrice: units.reduce((sum: number, unit: any) => sum + (parseFloat(unit.price) || 0), 0) / totalUnits,
+        averageCommission: units.reduce((sum: number, unit: any) => sum + (parseFloat(unit.commission) || 0), 0) / totalUnits,
+        
+        // Unit Types
+        byBedrooms: units.reduce((acc: Record<string, number>, unit: any) => {
+          const beds = unit.bedrooms || 'studio';
+          acc[beds] = (acc[beds] || 0) + 1;
+          return acc;
+        }, {}),
+        
+        byBathrooms: units.reduce((acc: Record<string, number>, unit: any) => {
+          const baths = unit.bathrooms || '0';
+          acc[baths] = (acc[baths] || 0) + 1;
+          return acc;
+        }, {}),
+        
+        // Amenities
+        amenities: units.reduce((acc: Record<string, number>, unit: any) => {
+          const unitAmenities = JSON.parse(unit.amenities || '[]');
+          unitAmenities.forEach((amenity: string) => {
+            acc[amenity] = (acc[amenity] || 0) + 1;
+          });
+          return acc;
+        }, {})
+      };
+
+      return {
+        ownerName,
+        propertyId,
+        propertyName: units[0]?.property_name || 'Unknown Property',
+        totalUnits,
+        ...stats,
+        occupancyRate: ((totalUnits - stats.available) / totalUnits) * 100,
+        maintenanceRate: (stats.maintenance / totalUnits) * 100,
+        buildingRate: (stats.building / totalUnits) * 100,
+        revenueRate: (stats.totalPrice / totalUnits) * (stats.occupancyRate / 100)
+      };
+    });
+  }).flat();
+});
+
+const totalStats = computed(() => {
+  if (!propertyStats.value.length) return null;
+  
+  return propertyStats.value.reduce((acc: any, curr: any) => {
+    acc.totalUnits += curr.totalUnits;
+    acc.paid += curr.paid;
+    acc.unpaid += curr.unpaid;
+    acc.available += curr.available;
+    acc.retained += curr.retained;
+    acc.building += curr.building;
+    acc.maintenance += curr.maintenance;
+    acc.rented += curr.rented;
+    acc.active += curr.active;
+    acc.late += curr.late;
+    acc.grace += curr.grace;
+    acc.cancelled += curr.cancelled;
+    acc.expired += curr.expired;
+    acc.totalPrice += curr.totalPrice;
+    acc.totalCommission += curr.totalCommission;
+    return acc;
+  }, {
+    totalUnits: 0,
+    paid: 0,
+    unpaid: 0,
+    available: 0,
+    retained: 0,
+    building: 0,
+    maintenance: 0,
+    rented: 0,
+    active: 0,
+    late: 0,
+    grace: 0,
+    cancelled: 0,
+    expired: 0,
+    totalPrice: 0,
+    totalCommission: 0
+  });
+});
 </script>
 
 <template>
-  <AppLayout :title="sectionLabel">
+  <AppLayout :title="'Occupancy Report - ' + selectedMonthName">
     <template #title v-if="isMobile">
       <AtDatePager
         class="h-12 ml-4 border-none bg-base-lvl-1 text-body w-44"
@@ -264,132 +267,152 @@ const selectedMonthName = computed(() => {
     </template>
 
     <div class="pt-16 mx-auto md:py-10 sm:px-6 lg:px-8">
-      <section class="px-4 bg-base-lvl-3">
-        <article v-for="(details, ownerName) in invoices" :key="ownerName" class="mb-5">
-          <header class="py-2 font-bold">
-            {{
-              $t(":owner, (:count) units", {
-                owner: ownerName,
-                count: details.total,
-              })
-            }}
-          </header>
-          <section v-for="propertyUnits in details.properties">
-            <InvoiceTable
-              :invoice-data="propertyUnits"
-              :is-loading="isLoading"
-              class="mt-0 rounded-md bg-base-lvl-3"
-              :responsive-actions="{
-                payment: handlePayment,
-                delete: onDelete,
-              }"
-            >
-              <template v-slot:concept="{ row }">
-                <section v-if="!isLoading">
-                  <p>
-                    <Link
-                      :href="`/${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}`"
-                      class="inline-flex justify-between text-sm text-blue-400 capitalize border-b border-blue-400 border-dashed cursor-pointer"
-                      :title="row.description"
-                    >
-                      <section>
-                        {{ row.concept }}
-                        <span class="font-bold text-gray-300">
-                          {{ row.series }} #{{ row.number }}
-                        </span>
-                      </section>
-                    </Link>
-                  </p>
-                  <p class="flex items-center mt-2">
-                    <IClarityContractLine class="mr-2" />
-                    {{ row.client_name }}
-                    <ElTag
-                      :type="getRentStatusColor(row.rent_status)"
-                      class="ml-2"
-                      v-if="row.rent_status"
-                    >
-                      {{ $t(row.rent_status ?? "") }} {{ row.move_out_at }}
-                    </ElTag>
-                  </p>
-                </section>
-                <ElSkeleton :rows="1" animated v-else />
-              </template>
-              <template v-slot:actions="{ row }">
-                <div class="flex items-center justify-end space-x-2s group">
-                  <div
-                    class="text-sm font-bold capitalize"
-                    :class="getStatusColor(row.status)"
-                  >
-                    <i :class="getStatusIcon(row.status)" />
-                    {{ getStatus(row.status) }}
-                  </div>
-                  <div class="flex">
-                    <Link
-                      class="relative inline-block px-5 py-2 ml-4 overflow-hidden font-bold transition rounded-md cursor-pointer hover:bg-primary hover:text-white text-body focus:outline-none hover:bg-opacity-80 min-w-max"
-                      :href="`/properties/${row.property_id}?unit=${row.id}`"
-                    >
-                      <IMdiChevronRight />
-                    </Link>
-                    <AppButton
-                      @click="handlePayment(row)"
-                      variant="inverse-secondary"
-                      class="flex items-center justify-center"
-                      v-if="row?.status !== 'paid' && filters.section !== 'commissions'"
-                      title="Pagar"
-                    >
-                      <IIcSharpPayment />
-                    </AppButton>
-                    <AppButton
-                      @click="deleteRentPayments(row)"
-                      :disabled="deletePaymentForm.processing"
-                      variant="error"
-                      class="flex items-center justify-center"
-                      v-else
-                      title="Eliminar pago"
-                    >
-                      <IMdiReceiptTextRemove />
-                    </AppButton>
-                    <div class="flex space-x-2">
-                      <AppButton
-                        v-if="filters.section == 'bills' && row.status != 'paid'"
-                        class="mr-2"
-                        variant="neutral"
-                        :process="InteractionsState.isGeneratingDistribution"
-                        @click="
-                          clientInteractions.generateOwnerDistribution(
-                            row.contact_id,
-                            row.id
-                          )
-                        "
-                      >
-                        Re-generar
-                      </AppButton>
-                    </div>
-                    <AppButton
-                      variant="neutral"
-                      class="flex flex-col items-center justify-center transition hover:text-error hover:border-red-400"
-                      @click="onDelete(row)"
-                      title="Eliminar"
-                    >
-                      <IMdiTrash />
-                    </AppButton>
+      <!-- Total Statistics -->
+      <div v-if="totalStats" class="grid grid-cols-1 gap-4 mb-8 md:grid-cols-4">
+        <div class="p-4 bg-green-100 rounded-lg">
+          <h3 class="text-lg font-semibold text-green-800">Paid Units</h3>
+          <p class="text-2xl font-bold text-green-900">{{ totalStats.paid }}</p>
+        </div>
+        <div class="p-4 bg-red-100 rounded-lg">
+          <h3 class="text-lg font-semibold text-red-800">Unpaid Units</h3>
+          <p class="text-2xl font-bold text-red-900">{{ totalStats.unpaid }}</p>
+        </div>
+        <div class="p-4 bg-blue-100 rounded-lg">
+          <h3 class="text-lg font-semibold text-blue-800">Available Units</h3>
+          <p class="text-2xl font-bold text-blue-900">{{ totalStats.available }}</p>
+        </div>
+        <div class="p-4 bg-yellow-100 rounded-lg">
+          <h3 class="text-lg font-semibold text-yellow-800">Retained Units</h3>
+          <p class="text-2xl font-bold text-yellow-900">{{ totalStats.retained }}</p>
+        </div>
+      </div>
+
+      <!-- Property Statistics -->
+      <div class="space-y-6">
+        <div v-for="stat in propertyStats" :key="stat.propertyId" class="p-4 bg-white rounded-lg shadow">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">{{ stat.propertyName }}</h2>
+            <span class="text-sm text-gray-600">Owner: {{ stat.ownerName }}</span>
+          </div>
+          
+          <!-- Payment Status -->
+          <div class="mb-4">
+            <h3 class="text-sm font-semibold text-gray-700 mb-2">Payment Status</h3>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+              <div class="p-3 bg-green-50 rounded">
+                <h3 class="text-sm font-semibold text-green-800">Paid</h3>
+                <p class="text-lg font-bold text-green-900">{{ stat.paid }}</p>
+              </div>
+              <div class="p-3 bg-red-50 rounded">
+                <h3 class="text-sm font-semibold text-red-800">Unpaid</h3>
+                <p class="text-lg font-bold text-red-900">{{ stat.unpaid }}</p>
+              </div>
+              <div class="p-3 bg-blue-50 rounded">
+                <h3 class="text-sm font-semibold text-blue-800">Available</h3>
+                <p class="text-lg font-bold text-blue-900">{{ stat.available }}</p>
+              </div>
+              <div class="p-3 bg-yellow-50 rounded">
+                <h3 class="text-sm font-semibold text-yellow-800">Retained</h3>
+                <p class="text-lg font-bold text-yellow-900">{{ stat.retained }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Unit Status -->
+          <div class="mb-4">
+            <h3 class="text-sm font-semibold text-gray-700 mb-2">Unit Status</h3>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+              <div class="p-3 bg-purple-50 rounded">
+                <h3 class="text-sm font-semibold text-purple-800">Building</h3>
+                <p class="text-lg font-bold text-purple-900">{{ stat.building }}</p>
+              </div>
+              <div class="p-3 bg-orange-50 rounded">
+                <h3 class="text-sm font-semibold text-orange-800">Maintenance</h3>
+                <p class="text-lg font-bold text-orange-900">{{ stat.maintenance }}</p>
+              </div>
+              <div class="p-3 bg-indigo-50 rounded">
+                <h3 class="text-sm font-semibold text-indigo-800">Rented</h3>
+                <p class="text-lg font-bold text-indigo-900">{{ stat.rented }}</p>
+              </div>
+              <div class="p-3 bg-teal-50 rounded">
+                <h3 class="text-sm font-semibold text-teal-800">Available</h3>
+                <p class="text-lg font-bold text-teal-900">{{ stat.available }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Unit Details -->
+          <div class="mb-4">
+            <h3 class="text-sm font-semibold text-gray-700 mb-2">Unit Details</h3>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+              <div class="p-3 bg-slate-50 rounded">
+                <h3 class="text-sm font-semibold text-slate-800">Total Price</h3>
+                <p class="text-lg font-bold text-slate-900">{{ formatMoney(stat.totalPrice) }}</p>
+              </div>
+              <div class="p-3 bg-slate-50 rounded">
+                <h3 class="text-sm font-semibold text-slate-800">Total Commission</h3>
+                <p class="text-lg font-bold text-slate-900">{{ formatMoney(stat.totalCommission) }}</p>
+              </div>
+              <div class="p-3 bg-slate-50 rounded">
+                <h3 class="text-sm font-semibold text-slate-800">Average Price</h3>
+                <p class="text-lg font-bold text-slate-900">{{ formatMoney(stat.averagePrice) }}</p>
+              </div>
+              <div class="p-3 bg-slate-50 rounded">
+                <h3 class="text-sm font-semibold text-slate-800">Average Commission</h3>
+                <p class="text-lg font-bold text-slate-900">{{ formatMoney(stat.averageCommission) }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Unit Distribution -->
+          <div class="mb-4">
+            <h3 class="text-sm font-semibold text-gray-700 mb-2">Unit Distribution</h3>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div class="p-3 bg-slate-50 rounded">
+                <h3 class="text-sm font-semibold text-slate-800">By Bedrooms</h3>
+                <div class="space-y-1">
+                  <div v-for="(count, beds) in stat.byBedrooms" :key="beds" class="flex justify-between">
+                    <span>{{ beds }} beds</span>
+                    <span class="font-semibold">{{ count }}</span>
                   </div>
                 </div>
-              </template>
-            </InvoiceTable>
-          </section>
-        </article>
-      </section>
-    </div>
+              </div>
+              <div class="p-3 bg-slate-50 rounded">
+                <h3 class="text-sm font-semibold text-slate-800">By Bathrooms</h3>
+                <div class="space-y-1">
+                  <div v-for="(count, baths) in stat.byBathrooms" :key="baths" class="flex justify-between">
+                    <span>{{ baths }} baths</span>
+                    <span class="font-semibold">{{ count }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-    <div id="invoice-content" v-if="selectedInvoice">
-      <Simple
-        v-if="selectedInvoice?.invoice"
-        :user="user"
-        :type="type"
-        :business-data="selectedInvoice.businessData"
-        :invoice-data="selectedInvoice.invoice"
-      />
+          <!-- Amenities -->
+          <div class="mb-4" v-if="Object.keys(stat.amenities).length">
+            <h3 class="text-sm font-semibold text-gray-700 mb-2">Amenities</h3>
+            <div class="flex flex-wrap gap-2">
+              <div v-for="(count, amenity) in stat.amenities" :key="amenity" 
+                   class="px-2 py-1 bg-slate-100 rounded-full text-sm">
+                {{ amenity }} ({{ count }})
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-4">
+            <div class="flex justify-between text-sm text-gray-600">
+              <span>Total Units: {{ stat.totalUnits }}</span>
+              <div class="space-x-4">
+                <span>Occupancy Rate: {{ stat.occupancyRate.toFixed(1) }}%</span>
+                <span>Maintenance Rate: {{ stat.maintenanceRate.toFixed(1) }}%</span>
+                <span>Building Rate: {{ stat.buildingRate.toFixed(1) }}%</span>
+                <span>Revenue Rate: {{ formatMoney(stat.revenueRate) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </AppLayout>
 </template>
