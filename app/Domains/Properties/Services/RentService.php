@@ -217,6 +217,7 @@ class RentService {
       ->get();
     }
 
+
     public static function expiredRentStats($teamId = null) {
       $startOfMonth = now()->startOfMonth()->format('Y-m-d');
       $endOfThisMonth = now()->endOfMonth()->format('Y-m-d');

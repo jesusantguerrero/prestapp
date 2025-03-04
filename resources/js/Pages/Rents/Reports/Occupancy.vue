@@ -143,27 +143,7 @@ interface InvoiceResponse {
 
 const selectedInvoice = ref<InvoiceResponse | null>(null);
 
-const { customPrint } = usePrint();
 const isPrinting = ref(false);
-function printExternal(invoice: IInvoice) {
-  isPrinting.value = invoice.id;
-  axios
-    .get(`/invoices/${invoice.id}/preview?json=true`)
-    .then(({ data }) => {
-      selectedInvoice.value = data;
-      nextTick(() => {
-        customPrint("invoice-content", {
-          beforePrint() {
-            selectedInvoice.value = null;
-          },
-          delay: 800,
-        });
-      });
-    })
-    .then(() => {
-      isPrinting.value = false;
-    });
-}
 
 const { serverSearchOptions } = toRefs(props);
 const { executeSearchWithDelay, updateSearch, state: pageState } = useServerSearch(
@@ -301,7 +281,6 @@ const selectedMonthName = computed(() => {
               class="mt-0 rounded-md bg-base-lvl-3"
               :responsive-actions="{
                 payment: handlePayment,
-                download: printExternal,
                 delete: onDelete,
               }"
             >
@@ -371,16 +350,6 @@ const selectedMonthName = computed(() => {
                       <IMdiReceiptTextRemove />
                     </AppButton>
                     <div class="flex space-x-2">
-                      <AppButton
-                        class="flex flex-col items-center justify-center transition hover:text-primary hover:border-primary-400"
-                        variant="neutral"
-                        title="Imprimir"
-                        :processing="isPrinting == row.id"
-                        :disabled="isPrinting == row.id"
-                        @click="printExternal(row)"
-                      >
-                        <IMdiFile />
-                      </AppButton>
                       <AppButton
                         v-if="filters.section == 'bills' && row.status != 'paid'"
                         class="mr-2"

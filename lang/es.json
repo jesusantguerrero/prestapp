@@ -4,7 +4,8 @@
       "INACTIVE": "Inactivo",
       "LATE": "En mora",
       "new": "Nuevo",
-      "CANCELLED" : "Cancelado"
+      "CANCELLED" : "Cancelado",
+      "EXPIRED" : "Vencido"
     },
     "validation": {
       "unique": ""
