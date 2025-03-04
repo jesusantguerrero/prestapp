@@ -17,7 +17,7 @@ return new class extends Migration
         Schema::create('property_units', function (Blueprint $table) {
             $table->id();
             $table->foreignId('team_id');
-            $table->foreignId('user_id');
+            $table->foreignId('user_id'); 
             $table->foreignId('owner_id');
             $table->foreignId('property_id')->nullable();
 
@@ -28,11 +28,11 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->integer('index');
 
+            // Financial
             $table->decimal('price', 14, 4)->default(0.00);
             $table->decimal('commission', 14, 4)->default(0.00);
             $table->enum('commission_type', ['PERCENTAGE', 'FIXED'])->default('PERCENTAGE');
 
-            // amenities
             $table->string('area')->nullable();
             $table->string('bathrooms')->nullable();
             $table->string('bedrooms')->nullable();
@@ -45,6 +45,7 @@ return new class extends Migration
                 Property::STATUS_RENTED,
                 Property::STATUS_MAINTENANCE,
             ])->default(Property::STATUS_AVAILABLE);
+
             $table->timestamps();
         });
     }
