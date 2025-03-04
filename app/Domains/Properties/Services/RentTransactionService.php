@@ -264,7 +264,8 @@ class RentTransactionService {
         $today = now()->timezone('America/Santo_Domingo')->format('Y-m-d');
 
           $rentClients = DB::table('invoices')
-          ->selectRaw('concat(clients.names," ", clients.id, " ", sum(invoices.debt)) contact,  group_concat(concat(invoices.due_date, "(", invoices.debt, ")")) ids')
+          ->selectRaw('invoices.id id')
+          // ->selectRaw('invoices.id, concat(clients.names," ", clients.id, " ", sum(invoices.debt)) contact,  group_concat(concat(invoices.due_date, "(", invoices.debt, ")")) ids')
             ->where([
               'invoices.team_id' => $teamId,
               'invoices.type' => 'INVOICE',
@@ -276,13 +277,14 @@ class RentTransactionService {
             ->where('debt', '>', 0)
             ->where('total', '>', 0)
             ->orderByDesc('invoices.due_date')
-            ->groupBy('invoices.client_id')
+            // ->groupBy('invoices.client_id')
             ->join('clients', 'clients.id', '=', 'invoices.client_id')
             ->get();
 
         echo  count($rentClients) . " clients with back invoices" . PHP_EOL;
-        foreach ($rentClients as $client) {
-          print_r($client);
+        foreach ($rentClients as $clientInvoice) {
+          print_r($clientInvoice);
+          Invoice::destroy($clientInvoice->id);
           // $description = "removing invoice {$invoice->client} of {$invoice?->due_date} because too large";
           echo PHP_EOL;
         }

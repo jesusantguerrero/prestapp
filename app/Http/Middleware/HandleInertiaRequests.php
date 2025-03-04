@@ -45,6 +45,7 @@ class HandleInertiaRequests extends Middleware
 
         return array_merge(parent::share($request), [
             "accounts" => $team ? Account::getByDetailTypes($team->id) : [],
+            "user" => $user,
             "categories" => $team ? Category::where([
                 'categories.team_id' => $team->id,
                 'categories.resource_type' => 'transactions'
