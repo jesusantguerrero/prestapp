@@ -13,15 +13,15 @@ use Insane\Journal\Models\Core\Account;
 use Insane\Journal\Models\Core\Payment;
 use App\Notifications\ExpiringRentNotice;
 use Insane\Journal\Models\Invoice\Invoice;
-use App\Domains\Properties\Models\Property;
 use Insane\Journal\Services\InvoiceService;
 use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Accounting\Helpers\InvoiceHelper;
 use Insane\Journal\Models\Invoice\InvoiceLineTax;
 use \Insane\Journal\Services\InvoiceValidatorService;
+use App\Domains\Properties\Services\PropertyUnitService;
 
 class RentService {
-    public static function createRent(mixed $rentData, mixed $schedule = null) {
+    public static function createRent(mixed $rentData, mixed $schedule = null, $user = null) {
       $rentData['unit_id'] = $rentData['unit_id'] ?? $rentData['unit']['id'];
       $unit = PropertyUnit::find($rentData['unit_id']);
       if (!$unit || $unit->status !== PropertyUnit::STATUS_AVAILABLE) {
@@ -32,7 +32,7 @@ class RentService {
         throw new Exception(__("The percentage can't be greater than 100%"));
       }
 
-      return DB::transaction(function() use ($rentData, $unit) {
+      return DB::transaction(function() use ($rentData, $unit, $user) {
         $property = $unit->property;
         if (!$property->account_id) {
           $property->initAccounts();
@@ -45,21 +45,22 @@ class RentService {
           'late_fee_account_id' => $property->late_fee_account_id,
         ]);
         $rent = Rent::create($rentData);
-        $rent->unit->update(['status' => PropertyUnit::STATUS_RENTED]);
+        PropertyUnitService::updateStatus($rent->unit, PropertyUnit::STATUS_RENTED, $user);
         $rent->client->update(['status' => ClientStatus::Active]);
         $rent->owner->checkStatus();
         PropertyTransactionService::createDepositTransaction($rent->fresh(), $rentData);
         PropertyTransactionService::generateFirstInvoice($rent);
         RentTransactionService::generateUpToDate($rent->fresh(), isset($rentData['paid_until']), $rentData['paid_until'] ?? null);
+        return $rent;
       });
     }
 
-    public static function updateRent(Rent $rent, mixed $rentData) {
+    public static function updateRent(Rent $rent, mixed $rentData, $user = null) {
       if (!$rent->isActive()) {
         throw new Exception(__("Cant update a cancelled contract"));
       }
 
-      return DB::transaction(function() use ($rentData, $rent) {
+      return DB::transaction(function() use ($rentData, $rent, $user) {
         $rentData['unit_id'] = $rentData['unit_id'] ?? $rentData['unit']['id'] ?? $rent->unit_id;
 
         if ($rent->unit_id !== $rentData['unit_id'] && $rent->isActive()) {
@@ -68,8 +69,8 @@ class RentService {
             throw new Exception('This unit is not available at the time');
           }
 
-          $rent->unit->update(['status' => PropertyUnit::STATUS_AVAILABLE]);
-          $unit->update(['status' => PropertyUnit::STATUS_RENTED]);
+          PropertyUnitService::updateStatus($rent->unit, PropertyUnit::STATUS_AVAILABLE, $user);
+          PropertyUnitService::updateStatus($unit, PropertyUnit::STATUS_RENTED, $user);
           $property = $unit->property;
         } else {
           $property = $rent->unit->property;
@@ -79,40 +80,34 @@ class RentService {
           throw new Exception(__("The percentage can't be greater than 100%"));
         }
 
-
         if (!$property->account_id) {
           $property->initAccounts();
           $property = $unit->property()->first();
         }
 
-        $shouldUpdateAmount = isset($rentData["amount"]) &&  $rentData["amount"] !== $rent->amount;
+        dd($rentData);
 
+        $shouldUpdateAmount = isset($rentData["amount"]) &&  $rentData["amount"] !== $rent->amount;
         $rent->update(collect($rentData)->only(['amount', 'notes', 'next_invoice_date'])->all());
-        $rent->unit->update(['status' => PropertyUnit::STATUS_RENTED]);
+        PropertyUnitService::updateStatus($rent->unit, PropertyUnit::STATUS_RENTED, $user);
         $rent->client->update(['status' => ClientStatus::Active]);
         $rent->owner->checkStatus();
 
         if ($shouldUpdateAmount) {
           self::updateRentInvoices($rent);
         }
-
-        if (!$rent->payments()->count()) {
-          // Invoice::destroy($rent->invoices()->pluck('id'));
-          // PropertyTransactionService::createDepositTransaction($rent->fresh(), $rentData);
-          // PropertyTransactionService::generateFirstInvoice($rent);
-          // RentTransactionService::generateUpToDate($rent->fresh(), isset($rentData['paid_until']), $rentData['paid_until'] ?? null);
-        }
+        return $rent;
       });
     }
 
-    public static function removeRent(Rent $rent) {
+    public static function removeRent(Rent $rent, $user = null) {
       if ($rent->payments()->count()) {
         throw new Exception(__("This rent has payments and can't be eliminated"));
       }
 
-      return DB::transaction(function() use ($rent) {
+      return DB::transaction(function() use ($rent, $user) {
         if ($rent->isActive()) {
-          $rent->unit->update(['status' => PropertyUnit::STATUS_AVAILABLE]);
+          PropertyUnitService::updateStatus($rent->unit, PropertyUnit::STATUS_AVAILABLE, $user);
           if ($rent->client->isActive()) {
             $rent->client->update(['status' => ClientStatus::Active]);
           }
@@ -132,7 +127,7 @@ class RentService {
       $validData = [];
       $cantUpdate = collect([
         'rent_id',
-        'property_id'
+        'property_id',
       ]);
 
       foreach ($rentData as $key => $value) {
@@ -143,16 +138,16 @@ class RentService {
       return $validData;
     }
 
-    public static function endTerm(Rent $rent, $formData) {
+    public static function endTerm(Rent $rent, $formData, $user = null) {
       if ($rent->status !== Rent::STATUS_CANCELLED) {
-        DB::transaction(function () use ($rent, $formData) {
+        DB::transaction(function () use ($rent, $formData, $user) {
           $rent->update(array_merge(
             $formData,
             [
               "status" => Rent::STATUS_CANCELLED,
               "end_date" => $formData['move_out_at']
             ]));
-          $rent->unit->update(['status' => Property::STATUS_AVAILABLE]);
+          PropertyUnitService::updateStatus($rent->unit, PropertyUnit::STATUS_AVAILABLE, $user);
           Invoice::destroy($rent->invoices()->unpaid()->pluck('id'));
         });
         return $rent;
@@ -523,5 +518,40 @@ class RentService {
         $invoice->save();
         $rent->client->checkStatus();
 
+    }
+
+    public static function create($data, $user = null) {
+      $unit = PropertyUnit::find($data['unit_id']);
+      if (!$unit || $unit->status !== PropertyUnit::STATUS_AVAILABLE) {
+        throw new \Exception('Unit is not available');
+      }
+
+      $rent = Rent::create($data);
+      PropertyUnitService::updateStatus($rent->unit, PropertyUnit::STATUS_RENTED, $user);
+      return $rent;
+    }
+
+    public static function transfer($rent, $newUnitId, $user = null) {
+      $unit = PropertyUnit::find($newUnitId);
+      if (!$unit || $unit->status !== PropertyUnit::STATUS_AVAILABLE) {
+        throw new \Exception('Unit is not available');
+      }
+
+      PropertyUnitService::updateStatus($rent->unit, PropertyUnit::STATUS_AVAILABLE, $user);
+      PropertyUnitService::updateStatus($unit, PropertyUnit::STATUS_RENTED, $user);
+      $rent->update(['unit_id' => $newUnitId]);
+      return $rent;
+    }
+
+    public static function cancel($rent, $user = null) {
+      $rent->update(['status' => Rent::STATUS_CANCELLED]);
+      PropertyUnitService::updateStatus($rent->unit, PropertyUnit::STATUS_AVAILABLE, $user);
+      return $rent;
+    }
+
+    public static function renew($rent, $data, $user = null) {
+      $rent->update($data);
+      PropertyUnitService::updateStatus($rent->unit, PropertyUnit::STATUS_RENTED, $user);
+      return $rent;
     }
 }

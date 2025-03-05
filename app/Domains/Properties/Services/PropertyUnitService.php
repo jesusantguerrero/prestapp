@@ -57,4 +57,26 @@ class PropertyUnitService {
         ->log("Admin fixed bad status for unit $unit->name of $unit->property_name");
       }
     }
+
+    public static function updateStatus(PropertyUnit $unit, $status, $user = null) {
+      $oldStatus = $unit->status;
+      $unit->update(['status' => $status]);
+
+      activity()
+      ->performedOn($unit)
+      ->by($user)
+      ->log("updated status for unit $unit->name of $unit->property_name from $oldStatus to $status");
+    }
+
+    public static function fixBadStatus(PropertyUnit $unit) {
+      if ($unit->team_id == auth()->user()->current_team_id && $unit->status == PropertyUnit::STATUS_RENTED) {
+        $rent = $unit->currentRent;
+        if (!$rent) {
+          self::updateStatus($unit, PropertyUnit::STATUS_AVAILABLE);
+          activity()
+          ->performedOn($unit)
+          ->log("Admin fixed bad status for unit $unit->name of $unit->property_name");
+        }
+      }
+    }
 }
