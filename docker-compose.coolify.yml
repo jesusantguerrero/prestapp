@@ -10,7 +10,6 @@ services:
     container_name: neatrents-app
     restart: unless-stopped
     volumes:
-      - ./docker-compose/web/timezone:/etc/timezone
       - ./storage:/var/www/storage
     env_file:
       - .env
