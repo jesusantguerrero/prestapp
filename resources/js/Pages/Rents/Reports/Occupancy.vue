@@ -128,70 +128,50 @@ const selectedMonthName = computed(() => {
 const propertyStats = computed(() => {
   if (!props.invoices) return [];
   
-  return Object.entries(props.invoices).map(([ownerName, details]: [string, any]) => {
-    const properties = details.properties;
-    return Object.entries(properties).map(([propertyId, propertyUnits]: [string, any]) => {
-      const units = propertyUnits;
-      const totalUnits = units.length;
-      
-      const stats = {
+  return Object.entries(props.invoices).map(([ownerName, properties]: [string, any]) => {
+    return Object.entries(properties).map(([propertyId, propertyData]: [string, any]) => {
+      return {
+        ownerName: propertyData.ownerName,
+        propertyId: propertyData.propertyId,
+        propertyName: propertyData.propertyName,
+        totalUnits: propertyData.totalUnits,
+        
         // Payment Status
-        paid: units.filter((unit: any) => unit.rent_status === 'PAID').length,
-        unpaid: units.filter((unit: any) => unit.rent_status === 'LATE' || unit.rent_status === 'PARTIALLY_PAID').length,
-        available: units.filter((unit: any) => !unit.rent_id).length,
-        retained: units.filter((unit: any) => unit.rent_id && unit.rent_status === 'LATE').length,
+        paid: propertyData.paid,
+        unpaid: propertyData.unpaid,
+        available: propertyData.available,
+        rented: propertyData.rented + propertyData.retained,
+        realRented: propertyData.realRented,
         
         // Unit Status
-        building: units.filter((unit: any) => unit.current_status === 'BUILDING').length,
-        maintenance: units.filter((unit: any) => unit.current_status === 'MAINTENANCE').length,
-        rented: units.filter((unit: any) => unit.current_status === 'RENTED').length,
+        building: propertyData.building,
+        maintenance: propertyData.maintenance,
         
         // Rent Status
-        active: units.filter((unit: any) => unit.rent_status === 'ACTIVE').length,
-        late: units.filter((unit: any) => unit.rent_status === 'LATE').length,
-        grace: units.filter((unit: any) => unit.rent_status === 'GRACE').length,
-        cancelled: units.filter((unit: any) => unit.rent_status === 'CANCELLED').length,
-        expired: units.filter((unit: any) => unit.rent_status === 'EXPIRED').length,
-
+        active: propertyData.active,
+        late: propertyData.late,
+        grace: propertyData.grace,
+        cancelled: propertyData.cancelled,
+        expired: propertyData.expired,
+        
         // Unit Details
-        totalPrice: units.reduce((sum: number, unit: any) => sum + (parseFloat(unit.price) || 0), 0),
-        totalCommission: units.reduce((sum: number, unit: any) => sum + (parseFloat(unit.commission) || 0), 0),
-        averagePrice: units.reduce((sum: number, unit: any) => sum + (parseFloat(unit.price) || 0), 0) / totalUnits,
-        averageCommission: units.reduce((sum: number, unit: any) => sum + (parseFloat(unit.commission) || 0), 0) / totalUnits,
+        totalPrice: propertyData.totalPrice,
+        totalCommission: propertyData.totalCommission,
+        averagePrice: propertyData.averagePrice,
+        averageCommission: propertyData.averageCommission,
         
         // Unit Types
-        byBedrooms: units.reduce((acc: Record<string, number>, unit: any) => {
-          const beds = unit.bedrooms || 'studio';
-          acc[beds] = (acc[beds] || 0) + 1;
-          return acc;
-        }, {}),
-        
-        byBathrooms: units.reduce((acc: Record<string, number>, unit: any) => {
-          const baths = unit.bathrooms || '0';
-          acc[baths] = (acc[baths] || 0) + 1;
-          return acc;
-        }, {}),
+        byBedrooms: propertyData.byBedrooms,
+        byBathrooms: propertyData.byBathrooms,
         
         // Amenities
-        amenities: units.reduce((acc: Record<string, number>, unit: any) => {
-          const unitAmenities = JSON.parse(unit.amenities || '[]');
-          unitAmenities.forEach((amenity: string) => {
-            acc[amenity] = (acc[amenity] || 0) + 1;
-          });
-          return acc;
-        }, {})
-      };
-
-      return {
-        ownerName,
-        propertyId,
-        propertyName: units[0]?.property_name || 'Unknown Property',
-        totalUnits,
-        ...stats,
-        occupancyRate: ((totalUnits - stats.available) / totalUnits) * 100,
-        maintenanceRate: (stats.maintenance / totalUnits) * 100,
-        buildingRate: (stats.building / totalUnits) * 100,
-        revenueRate: (stats.totalPrice / totalUnits) * (stats.occupancyRate / 100)
+        amenities: propertyData.amenities,
+        
+        // Rates
+        occupancyRate: propertyData.occupancyRate,
+        maintenanceRate: propertyData.maintenanceRate,
+        buildingRate: propertyData.buildingRate,
+        revenueRate: propertyData.revenueRate
       };
     });
   }).flat();
@@ -205,10 +185,10 @@ const totalStats = computed(() => {
     acc.paid += curr.paid;
     acc.unpaid += curr.unpaid;
     acc.available += curr.available;
-    acc.retained += curr.retained;
+    acc.rented += curr.rented;
+    acc.realRented += curr.realRented;
     acc.building += curr.building;
     acc.maintenance += curr.maintenance;
-    acc.rented += curr.rented;
     acc.active += curr.active;
     acc.late += curr.late;
     acc.grace += curr.grace;
@@ -222,10 +202,10 @@ const totalStats = computed(() => {
     paid: 0,
     unpaid: 0,
     available: 0,
-    retained: 0,
+    rented: 0,
+    realRented: 0,
     building: 0,
     maintenance: 0,
-    rented: 0,
     active: 0,
     late: 0,
     grace: 0,
@@ -270,9 +250,15 @@ const totalStats = computed(() => {
       <!-- Total Statistics -->
       <div v-if="totalStats" class="grid grid-cols-1 gap-4 mb-8 md:grid-cols-4">
         <div class="p-4 bg-green-100 rounded-lg">
+          <h3 class="text-lg font-semibold text-green-800">Total Units</h3>
+          <p class="text-2xl font-bold text-green-900">{{ totalStats.totalUnits }}</p>
+        </div>
+
+        <div class="p-4 bg-green-100 rounded-lg">
           <h3 class="text-lg font-semibold text-green-800">Paid Units</h3>
           <p class="text-2xl font-bold text-green-900">{{ totalStats.paid }}</p>
         </div>
+
         <div class="p-4 bg-red-100 rounded-lg">
           <h3 class="text-lg font-semibold text-red-800">Unpaid Units</h3>
           <p class="text-2xl font-bold text-red-900">{{ totalStats.unpaid }}</p>
@@ -282,8 +268,12 @@ const totalStats = computed(() => {
           <p class="text-2xl font-bold text-blue-900">{{ totalStats.available }}</p>
         </div>
         <div class="p-4 bg-yellow-100 rounded-lg">
-          <h3 class="text-lg font-semibold text-yellow-800">Retained Units</h3>
-          <p class="text-2xl font-bold text-yellow-900">{{ totalStats.retained }}</p>
+          <h3 class="text-lg font-semibold text-yellow-800">Rented Units</h3>
+          <p class="text-2xl font-bold text-yellow-900">{{ totalStats.rented }}</p>
+        </div>
+        <div class="p-4 bg-yellow-100 rounded-lg">
+          <h3 class="text-lg font-semibold text-yellow-800">Rented Units</h3>
+          <p class="text-2xl font-bold text-yellow-900">{{ totalStats.realRented }}</p>
         </div>
       </div>
 
@@ -312,8 +302,8 @@ const totalStats = computed(() => {
                 <p class="text-lg font-bold text-blue-900">{{ stat.available }}</p>
               </div>
               <div class="p-3 bg-yellow-50 rounded">
-                <h3 class="text-sm font-semibold text-yellow-800">Retained</h3>
-                <p class="text-lg font-bold text-yellow-900">{{ stat.retained }}</p>
+                <h3 class="text-sm font-semibold text-yellow-800">Rented</h3>
+                <p class="text-lg font-bold text-yellow-900">{{ stat.rented }}</p>
               </div>
             </div>
           </div>

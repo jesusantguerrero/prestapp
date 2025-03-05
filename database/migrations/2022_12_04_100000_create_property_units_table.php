@@ -36,7 +36,7 @@ return new class extends Migration
             $table->string('area')->nullable();
             $table->string('bathrooms')->nullable();
             $table->string('bedrooms')->nullable();
-            $table->json('amenities')->default('[]');
+            $table->json('amenities')->nullable();
 
             // state
             $table->enum('status', [

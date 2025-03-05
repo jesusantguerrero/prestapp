@@ -211,7 +211,7 @@ class RentService {
       ")
       ->whereNotNull('end_date')
       ->whereRaw('DATEDIFF(end_date, now()) <= 60')
-      ->whereNotIn('status', [Rent::STATUS_CANCELLED])
+      ->whereNotIn('status', [Rent::STATUS_CANCELLED, Rent::STATUS_EXPIRED])
       ->when($teamId, fn ($q) => $q->where('team_id', $teamId))
       ->when($state, fn ($q) => $q->whereRaw("$stateRaw = '$state'"))
       ->get();
@@ -282,7 +282,6 @@ class RentService {
           activity()
           ->causedBy($expiredRent)
           ->log("System changed status of {$expiredRent->client_name} because expired on {$expiredRent->end_date}");
-
       }
     }
 

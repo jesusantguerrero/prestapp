@@ -16,6 +16,7 @@ use App\Domains\Properties\Http\Controllers\Api\PaymentApiController;
 use App\Domains\Properties\Http\Controllers\PropertyInvoiceController;
 use App\Domains\Properties\Http\Controllers\RentTransactionController;
 use App\Domains\Properties\Http\Controllers\PropertyTransactionController;
+use App\Http\Controllers\RentReportController as ControllersRentReportController;
 
 Route::middleware(['auth:sanctum', 'verified'])->prefix('/api')->name('api.')->group(function () {
   Route::apiResource('invoices', InvoiceApiController::class);
@@ -86,7 +87,7 @@ Route::middleware([
 
     // reports
     Route::get('/rent-reports/monthly-summary', [RentReportController::class, 'monthlySummary']);
-    Route::get('/rent-reports/occupancy', [RentReportController::class, 'occupancy']);
+    Route::get('/rent-reports/occupancy', [ControllersRentReportController::class, 'occupancy']);
     Route::get('/property-reports', [RentReportController::class, 'management']);
 
 

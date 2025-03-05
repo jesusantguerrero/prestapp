@@ -9,6 +9,8 @@ use OwenIt\Auditing\Contracts\Auditable;
 use Database\Factories\PropertyUnitFactory;
 use Insane\Journal\Traits\HasResourceAccounts;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Domains\Properties\Models\Rent;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class PropertyUnit extends Model implements Auditable {
     use HasFactory;
@@ -78,6 +80,13 @@ class PropertyUnit extends Model implements Auditable {
       return $this->contract?->client->display_name;
     }
 
+    public function currentRent(): HasOne
+    {
+        return $this->hasOne(Rent::class, 'unit_id')
+            ->where('status', '!=', 'CANCELLED')
+            ->where('status', '!=', 'EXPIRED')
+            ->latest();
+    }
 
     /**
      * Create a new factory instance for the model.

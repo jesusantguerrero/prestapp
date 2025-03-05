@@ -48,7 +48,7 @@ return new class extends Migration
             $table->string('bank_name')->nullable();
             $table->string('bank_account_number')->nullable();
             $table->integer('owner_distribution_date')->nullable();
-            $table->json('generated_distribution_dates')->default('[]');
+            $table->json('generated_distribution_dates')->nullable();
 
             //
             $table->boolean('is_company')->default(false);
