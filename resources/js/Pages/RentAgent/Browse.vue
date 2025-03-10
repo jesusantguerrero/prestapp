@@ -23,7 +23,7 @@ import {
 import { ElMessageBox } from "element-plus";
 import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
 import axios from "axios";
-import PropertyReport from '@/Components/Reports/PropertyReport.vue'
+import OccupancyReport from '@/Components/Reports/OccupancyReport.vue'
 
 const props = defineProps({
   invoices: {
@@ -138,6 +138,7 @@ const handlePayment = (invoice: IInvoice) => {
 interface InvoiceResponse {
   invoice: IInvoice;
   businessData: Record<string, string>;
+  report: any;
 }
 
 const selectedInvoice = ref<InvoiceResponse | null>(null);
@@ -292,7 +293,7 @@ const onDelete = async (invoice: IInvoice) => {
       </InvoiceTable>
     </div>
 
-    <div class="print-container">
+    <div class="print-container" id="invoice-content">
       <div class="invoice-section">
         <Simple
           v-if="selectedInvoice?.invoice"
@@ -304,11 +305,9 @@ const onDelete = async (invoice: IInvoice) => {
       </div>
 
       <div class="property-section mt-8 print:mt-0 print:page-break-before-always">
-        <PropertyReport
-          v-if="selectedInvoice?.rent"
-          :property="selectedInvoice.rent.property"
-          :unit="selectedInvoice.rent.unit"
-          :rent="selectedInvoice.rent"
+        <OccupancyReport
+          v-if="selectedInvoice?.report"
+          :report="selectedInvoice.report"
         />
       </div>
     </div>

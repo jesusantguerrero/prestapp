@@ -17,6 +17,7 @@ use App\Domains\Core\Services\InvoiceService;
 use App\Domains\Core\Services\SignatureService;
 use App\Http\Controllers\Traits\HasEnrichedRequest;
 use App\Domains\Properties\Services\OwnerReportService;
+use Illuminate\Support\Facades\DB;
 
 class InvoiceController
 {
@@ -214,9 +215,25 @@ class InvoiceController
         $isJson = request()->query('json');
         $withReport = request()->query('report');
 
+        $invoiceDates = $invoice->relatedChilds()
+            ->select(
+                DB::raw('MAX(invoices.date) as max_date'),
+                DB::raw('MIN(invoices.date) as min_date'),
+                DB::raw('GROUP_CONCAT(invoices.id) as ids')
+            )
+            ->first();
+
+
         if ($withReport) {
-          $report = OwnerReportService::occupancyMonth($invoice->team_id, $invoice->client_id, $invoice->due_date);
+          $report = OwnerReportService::occupancyMonth(
+            $invoice->team_id, 
+            $invoice->client_id, 
+            $invoiceDates->max_date,
+            $invoiceDates->ids
+          );
         }
+
+      
 
         $response = [
           'invoice' => [
