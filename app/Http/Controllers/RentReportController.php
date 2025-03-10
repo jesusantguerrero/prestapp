@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Domains\CRM\Models\Client;
 use App\Domains\Properties\Models\Property;
 use App\Domains\Properties\Models\PropertyUnit;
+use App\Domains\Properties\Models\Rent;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -16,99 +17,141 @@ class RentReportController extends Controller
         $startDate = $request->get('start_date', now()->startOfMonth());
         $endDate = $request->get('end_date', now()->endOfMonth());
         
-        // Get all property units with their current rent status
+        // Optimize query with specific field selection and eager loading
         $units = PropertyUnit::query()
-            ->with(['property', 'owner', 'currentRent'])
+            ->select([
+                'property_units.*',
+                'properties.name as property_name',
+                'clients.display_name as owner_name',
+                'rents.status as rent_status',
+                'rents.id as rent_id'
+            ])
+            ->join('properties', 'property_units.property_id', '=', 'properties.id')
+            ->join('clients', 'property_units.owner_id', '=', 'clients.id')
+            ->leftJoin('rents', function($join) {
+                $join->on('property_units.id', '=', 'rents.unit_id')
+                    ->whereNotIn('rents.status', [Rent::STATUS_CANCELLED, Rent::STATUS_EXPIRED])
+                    ->whereNull('rents.move_out_at');
+            })
             ->when($request->owner_id, function ($query, $ownerId) {
-                return $query->where('owner_id', $ownerId);
+                return $query->where('property_units.owner_id', $ownerId);
             })
             ->when($request->property_id, function ($query, $propertyId) {
-                return $query->where('property_id', $propertyId);
+                return $query->where('property_units.property_id', $propertyId);
             })
-            ->where([
-                'team_id' => $request->user()->currentTeam->id,
-            ])
+            ->where('property_units.team_id', $request->user()->currentTeam->id)
             ->get()
-            ->groupBy('owner.display_name')
+            ->groupBy('owner_name')
             ->map(function ($ownerUnits) {
                 return $ownerUnits->groupBy('property_id')
                     ->map(function ($propertyUnits) {
                         $units = $propertyUnits;
                         $totalUnits = $units->count();
                         
-                        // Get current rent status for each unit
-                        $units = $units->map(function ($unit) {
-                            $rent = $unit->currentRent;
-                            $unit->rent_status = $rent ? $rent->status : null;
-                            $unit->rent_id = $rent ? $rent->id : null;
-                            return $unit;
-                        });
-
-                        // Calculate rented units (including retained)
-                        $rentedUnits = $units->filter(fn($unit) => $unit->rent_id);
+                        // Pre-calculate common filters
+                        $rentedUnits = $units->whereNotNull('rent_id');
                         $rentedCount = $rentedUnits->count();
-                        $realRentedCount = $units->filter(fn($unit) => $unit->status === Property::STATUS_RENTED)->count();
+                        
+                        // Create status counts using a single loop
+                        $statusCounts = $units->reduce(function ($counts, $unit) {
+                            $counts['paid'] += $unit->rent_status === 'PAID' ? 1 : 0;
+                            $counts['unpaid'] += in_array($unit->rent_status, ['LATE', 'PARTIALLY_PAID']) ? 1 : 0;
+                            $counts['building'] += $unit->status === Property::STATUS_BUILDING ? 1 : 0;
+                            $counts['maintenance'] += $unit->status === Property::STATUS_MAINTENANCE ? 1 : 0;
+                            $counts['active'] += $unit->rent_status === 'ACTIVE' ? 1 : 0;
+                            $counts['late'] += $unit->rent_status === 'LATE' ? 1 : 0;
+                            $counts['grace'] += $unit->rent_status === 'GRACE' ? 1 : 0;
+                            $counts['cancelled'] += $unit->rent_status === 'CANCELLED' ? 1 : 0;
+                            $counts['expired'] += $unit->rent_status === 'EXPIRED' ? 1 : 0;
+                            $counts['real_rented'] += $unit->status === Property::STATUS_RENTED ? 1 : 0;
+                            return $counts;
+                        }, [
+                            'paid' => 0, 'unpaid' => 0, 'building' => 0, 'maintenance' => 0,
+                            'active' => 0, 'late' => 0, 'grace' => 0, 'cancelled' => 0,
+                            'expired' => 0, 'real_rented' => 0
+                        ]);
+
+                        // Calculate sums in a single loop
+                        $financials = $units->reduce(function ($sums, $unit) {
+                            $sums['totalPrice'] += $unit->price ?? 0;
+                            $sums['totalCommission'] += $unit->commission ?? 0;
+                            return $sums;
+                        }, ['totalPrice' => 0, 'totalCommission' => 0]);
+
+                        // Calculate distributions efficiently
+                        $byBedrooms = $units->groupBy('bedrooms')->map->count();
+                        $byBathrooms = $units->groupBy('bathrooms')->map->count();
+                        
+                        // Optimize amenities counting
+                        $amenities = $units->reduce(function ($counts, $unit) {
+                            $unitAmenities = json_decode($unit->amenities, true) ?? [];
+                            foreach ($unitAmenities as $amenity) {
+                                $counts[$amenity] = ($counts[$amenity] ?? 0) + 1;
+                            }
+                            return $counts;
+                        }, []);
 
                         return [
-                            'ownerName' => $units->first()->owner->display_name,
+                            'ownerName' => $units->first()->owner_name,
                             'propertyId' => $units->first()->property_id,
-                            'propertyName' => $units->first()?->property?->name,
+                            'propertyName' => $units->first()->property_name,
                             'totalUnits' => $totalUnits,
                             
                             // Payment Status
-                            'paid' => $units->filter(fn($unit) => $unit->rent_status === 'PAID')->count(),
-                            'unpaid' => $units->filter(fn($unit) => in_array($unit->rent_status, ['LATE', 'PARTIALLY_PAID']))->count(),
-                            'available' => $units->filter(fn($unit) => !$unit->rent_id)->count(),
+                            'paid' => $statusCounts['paid'],
+                            'unpaid' => $statusCounts['unpaid'],
+                            'available' => $totalUnits - $rentedCount,
                             'rented' => $rentedCount,
-                            'real_rented' => $realRentedCount,
+                            'real_rented' => $statusCounts['real_rented'],
                             
                             // Unit Status
-                            'building' => $units->filter(fn($unit) => $unit->status === Property::STATUS_BUILDING)->count(),
-                            'maintenance' => $units->filter(fn($unit) => $unit->status === Property::STATUS_MAINTENANCE)->count(),
+                            'building' => $statusCounts['building'],
+                            'maintenance' => $statusCounts['maintenance'],
                             
                             // Rent Status
-                            'active' => $units->filter(fn($unit) => $unit->rent_status === 'ACTIVE')->count(),
-                            'late' => $units->filter(fn($unit) => $unit->rent_status === 'LATE')->count(),
-                            'grace' => $units->filter(fn($unit) => $unit->rent_status === 'GRACE')->count(),
-                            'cancelled' => $units->filter(fn($unit) => $unit->rent_status === 'CANCELLED')->count(),
-                            'expired' => $units->filter(fn($unit) => $unit->rent_status === 'EXPIRED')->count(),
+                            'active' => $statusCounts['active'],
+                            'late' => $statusCounts['late'],
+                            'grace' => $statusCounts['grace'],
+                            'cancelled' => $statusCounts['cancelled'],
+                            'expired' => $statusCounts['expired'],
                             
                             // Unit Details
-                            'totalPrice' => $units->sum('price'),
-                            'totalCommission' => $units->sum('commission'),
-                            'averagePrice' => $units->avg('price'),
-                            'averageCommission' => $units->avg('commission'),
+                            'totalPrice' => $financials['totalPrice'],
+                            'totalCommission' => $financials['totalCommission'],
+                            'averagePrice' => $totalUnits > 0 ? $financials['totalPrice'] / $totalUnits : 0,
+                            'averageCommission' => $totalUnits > 0 ? $financials['totalCommission'] / $totalUnits : 0,
                             
                             // Unit Types
-                            'byBedrooms' => $units->groupBy('bedrooms')
-                                ->map(fn($group) => $group->count()),
-                            'byBathrooms' => $units->groupBy('bathrooms')
-                                ->map(fn($group) => $group->count()),
+                            'byBedrooms' => $byBedrooms,
+                            'byBathrooms' => $byBathrooms,
                             
                             // Amenities
-                            'amenities' => $units->flatMap(fn($unit) => json_decode($unit->amenities, true) ?? [])
-                                ->countBy(),
+                            'amenities' => $amenities,
                             
                             // Rates
-                            'occupancyRate' => ($rentedCount / $totalUnits) * 100,
-                            'maintenanceRate' => ($units->filter(fn($unit) => $unit->status === Property::STATUS_MAINTENANCE)->count() / $totalUnits) * 100,
-                            'buildingRate' => ($units->filter(fn($unit) => $unit->status === Property::STATUS_BUILDING)->count() / $totalUnits) * 100,
-                            'revenueRate' => ($units->sum('price') / $totalUnits) * ($rentedCount / $totalUnits)
+                            'occupancyRate' => $totalUnits > 0 ? ($rentedCount / $totalUnits) * 100 : 0,
+                            'maintenanceRate' => $totalUnits > 0 ? ($statusCounts['maintenance'] / $totalUnits) * 100 : 0,
+                            'buildingRate' => $totalUnits > 0 ? ($statusCounts['building'] / $totalUnits) * 100 : 0,
+                            'revenueRate' => $totalUnits > 0 ? ($financials['totalPrice'] / $totalUnits) * ($rentedCount / $totalUnits) : 0
                         ];
                     });
             });
+
+        // Optimize summary calculations
+        $flattenedUnits = $units->flatMap(fn($units) => $units->values());
+
         $data = [
             'invoices' => $units,
             'type' => 'occupancy',
-            'outstanding' => $units->flatMap(fn($units) => $units->values())->sum('unpaid'),
-            'paid' => $units->flatMap(fn($units) => $units->values())->sum('paid'),
-            'total' => $units->flatMap(fn($units) => $units->values())->sum('totalUnits'),
-            'available' => $units->flatMap(fn($units) => $units->values())->sum('available'),
-            'rented' => $units->flatMap(fn($units) => $units->values())->sum('rented'),
-            'real_rented' => $units->flatMap(fn($units) => $units->values())->sum('real_rented'),
-            'lateDays' => 0, // This should be calculated based on your business logic
-            'properties' => Property::select('id', 'name')->get(),
-            'owners' => Client::select('id', 'display_name')->get(),
+            'outstanding' => $flattenedUnits->sum('unpaid'),
+            'paid' => $flattenedUnits->sum('paid'),
+            'total' => $flattenedUnits->sum('totalUnits'),
+            'available' => $flattenedUnits->sum('available'),
+            'rented' => $flattenedUnits->sum('rented'),
+            'real_rented' => $flattenedUnits->sum('real_rented'),
+            'lateDays' => 0,
+            'properties' => Property::select(['id', 'name'])->get(),
+            'owners' => Client::select(['id', 'display_name'])->get(),
             'businessData' => Setting::getByTeam($request->user()->currentTeam->id),
             'user' => $request->user(),
             'section' => 'occupancy',
@@ -118,9 +161,8 @@ class RentReportController extends Controller
                     'endDate' => $endDate,
                 ],
             ],
-        ];  
+        ];
 
-        dd($data);
         return Inertia::render('Rents/Reports/Occupancy', $data);
     }
 } 

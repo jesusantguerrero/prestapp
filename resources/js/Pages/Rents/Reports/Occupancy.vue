@@ -25,6 +25,15 @@ const props = defineProps({
   outstanding: {
     type: Number,
   },
+  available: {
+    type: Number,
+  },
+  rented: {
+    type: Number,
+  },
+  unpaid: {
+    type: Number,
+  },
   paid: {
     type: Number,
   },
@@ -176,50 +185,20 @@ const propertyStats = computed(() => {
     });
   }).flat();
 });
-
-const totalStats = computed(() => {
-  if (!propertyStats.value.length) return null;
-  
-  return propertyStats.value.reduce((acc: any, curr: any) => {
-    acc.totalUnits += curr.totalUnits;
-    acc.paid += curr.paid;
-    acc.unpaid += curr.unpaid;
-    acc.available += curr.available;
-    acc.rented += curr.rented;
-    acc.realRented += curr.realRented;
-    acc.building += curr.building;
-    acc.maintenance += curr.maintenance;
-    acc.active += curr.active;
-    acc.late += curr.late;
-    acc.grace += curr.grace;
-    acc.cancelled += curr.cancelled;
-    acc.expired += curr.expired;
-    acc.totalPrice += curr.totalPrice;
-    acc.totalCommission += curr.totalCommission;
-    return acc;
-  }, {
-    totalUnits: 0,
-    paid: 0,
-    unpaid: 0,
-    available: 0,
-    rented: 0,
-    realRented: 0,
-    building: 0,
-    maintenance: 0,
-    active: 0,
-    late: 0,
-    grace: 0,
-    cancelled: 0,
-    expired: 0,
-    totalPrice: 0,
-    totalCommission: 0
-  });
-});
 </script>
 
 <template>
   <AppLayout :title="'Occupancy Report - ' + selectedMonthName">
     <template #title v-if="isMobile">
+      <BaseSelect
+             class="min-w-max"
+             size="large"
+              v-model="pageState.filters.owner"
+             endpoint="/api/clients?filter[is_owner]=1"
+             :placeholder="$t('select an owner')"
+             label="display_name"
+             track-by="id"
+           />
       <AtDatePager
         class="h-12 ml-4 border-none bg-base-lvl-1 text-body w-44"
         v-model:startDate="pageState.dates.startDate"
@@ -248,32 +227,49 @@ const totalStats = computed(() => {
 
     <div class="pt-16 mx-auto md:py-10 sm:px-6 lg:px-8">
       <!-- Total Statistics -->
-      <div v-if="totalStats" class="grid grid-cols-1 gap-4 mb-8 md:grid-cols-4">
-        <div class="p-4 bg-green-100 rounded-lg">
-          <h3 class="text-lg font-semibold text-green-800">Total Units</h3>
-          <p class="text-2xl font-bold text-green-900">{{ totalStats.totalUnits }}</p>
+      <div class="grid grid-cols-1 gap-4 mb-8 md:grid-cols-2">
+        <div class="p-4 bg-white rounded-lg shadow-sm">
+          <h3 class="text-lg font-semibold text-gray-800">Total Units</h3>
+          
+          <p class="text-3xl font-bold text-gray-900 mb-4">{{ total }}</p>
+          
+          <div class="grid grid-cols-2 gap-3">
+            <div class="flex flex-col">
+              <span class="text-sm font-medium text-green-600">Paid Units</span>
+              <span class="text-xl font-semibold text-green-700">{{ paid }}</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-sm font-medium text-red-600">Unpaid Units</span>
+              <span class="text-xl font-semibold text-red-700">{{ unpaid }}</span>
+            </div>
+          </div>
+          
+          <div class="mt-3 bg-gray-100 rounded-full h-2 overflow-hidden">
+            <div class="h-full bg-green-500" 
+                 :style="{ width: ((paid / total) * 100) + '%' }"></div>
+          </div>
         </div>
 
-        <div class="p-4 bg-green-100 rounded-lg">
-          <h3 class="text-lg font-semibold text-green-800">Paid Units</h3>
-          <p class="text-2xl font-bold text-green-900">{{ totalStats.paid }}</p>
-        </div>
-
-        <div class="p-4 bg-red-100 rounded-lg">
-          <h3 class="text-lg font-semibold text-red-800">Unpaid Units</h3>
-          <p class="text-2xl font-bold text-red-900">{{ totalStats.unpaid }}</p>
-        </div>
-        <div class="p-4 bg-blue-100 rounded-lg">
-          <h3 class="text-lg font-semibold text-blue-800">Available Units</h3>
-          <p class="text-2xl font-bold text-blue-900">{{ totalStats.available }}</p>
-        </div>
-        <div class="p-4 bg-yellow-100 rounded-lg">
-          <h3 class="text-lg font-semibold text-yellow-800">Rented Units</h3>
-          <p class="text-2xl font-bold text-yellow-900">{{ totalStats.rented }}</p>
-        </div>
-        <div class="p-4 bg-yellow-100 rounded-lg">
-          <h3 class="text-lg font-semibold text-yellow-800">Rented Units</h3>
-          <p class="text-2xl font-bold text-yellow-900">{{ totalStats.realRented }}</p>
+        <div class="p-4 bg-white rounded-lg shadow-sm">
+          <h3 class="text-lg font-semibold text-gray-800">Unit Status</h3>
+          <p class="text-3xl font-bold text-gray-900 mb-4">{{ total }}</p>
+          
+          <div class="grid grid-cols-2 gap-3">
+            <div class="flex flex-col">
+              
+              <span class="text-sm font-medium text-blue-600">Available Units</span>
+              <span class="text-xl font-semibold text-blue-700">{{ available }}</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-sm font-medium text-yellow-600">Rented Units</span>
+              <span class="text-xl font-semibold text-yellow-700">{{ rented }}</span>
+            </div>
+          </div>
+          
+          <div class="mt-3 bg-gray-100 rounded-full h-2 overflow-hidden">
+            <div class="h-full bg-yellow-500" 
+                 :style="{ width: ((rented / total) * 100) + '%' }"></div>
+          </div>
         </div>
       </div>
 

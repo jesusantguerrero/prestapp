@@ -93,6 +93,16 @@ const formatDateSafe = (date: string | null) => {
   if (!date) return '-'
   return formatDate(date)
 }
+
+const formatNumberSafe = (value: number | string | null | undefined): string => {
+  if (value === null || value === undefined || isNaN(Number(value))) return '0'
+  return value.toString()
+}
+
+const formatPercentage = (value: number | string | null | undefined): string => {
+  if (value === null || value === undefined || isNaN(Number(value))) return '0.0'
+  return Number(value).toFixed(1)
+}
 </script>
 
 <template>
@@ -174,29 +184,29 @@ const formatDateSafe = (date: string | null) => {
         <h3 class="text-sm font-medium text-gray-700 mb-2">Distribución de Estados</h3>
         <div class="relative h-4 rounded-full overflow-hidden bg-gray-200">
           <div class="absolute top-0 left-0 h-full bg-green-500" 
-               :style="{ width: summaryStats.occupancyRate + '%' }"
-               :title="`${summaryStats.rentedUnits} unidades rentadas (${summaryStats.occupancyRate}%)`">
+               :style="{ width: formatPercentage(summaryStats.occupancyRate) + '%' }"
+               :title="`${formatNumberSafe(summaryStats.rentedUnits)} unidades rentadas (${formatPercentage(summaryStats.occupancyRate)}%)`">
           </div>
           <div class="absolute top-0 h-full bg-yellow-500" 
                :style="{ 
-                 left: summaryStats.occupancyRate + '%',
-                 width: ((summaryStats.occupiedUnits - summaryStats.rentedUnits) / summaryStats.totalUnits * 100) + '%'
+                 left: formatPercentage(summaryStats.occupancyRate) + '%',
+                 width: formatPercentage((summaryStats.occupiedUnits - summaryStats.rentedUnits) / summaryStats.totalUnits * 100) + '%'
                }"
-               :title="`${summaryStats.occupiedUnits - summaryStats.rentedUnits} unidades en mantenimiento`">
+               :title="`${formatNumberSafe(summaryStats.occupiedUnits - summaryStats.rentedUnits)} unidades en mantenimiento`">
           </div>
         </div>
         <div class="flex justify-between mt-2 text-xs text-gray-500">
           <div class="flex items-center">
             <div class="w-3 h-3 rounded-full bg-green-500 mr-1"></div>
-            <span>Rentadas ({{ summaryStats.occupancyRate }}%)</span>
+            <span>Rentadas ({{ formatPercentage(summaryStats.occupancyRate) }}%)</span>
           </div>
           <div class="flex items-center">
             <div class="w-3 h-3 rounded-full bg-yellow-500 mr-1"></div>
-            <span>Mantenimiento ({{ ((summaryStats.occupiedUnits - summaryStats.rentedUnits) / summaryStats.totalUnits * 100).toFixed(1) }}%)</span>
+            <span>Mantenimiento ({{ formatPercentage((summaryStats.occupiedUnits - summaryStats.rentedUnits) / summaryStats.totalUnits * 100) }}%)</span>
           </div>
           <div class="flex items-center">
             <div class="w-3 h-3 rounded-full bg-gray-200 mr-1"></div>
-            <span>Disponible ({{ (100 - (summaryStats.occupiedUnits / summaryStats.totalUnits * 100)).toFixed(1) }}%)</span>
+            <span>Disponible ({{ formatPercentage(100 - (summaryStats.occupiedUnits / summaryStats.totalUnits * 100)) }}%)</span>
           </div>
         </div>
       </div>
@@ -227,15 +237,15 @@ const formatDateSafe = (date: string | null) => {
                 <div class="flex flex-col space-y-2">
                   <div>
                     <div class="flex items-center space-x-2">
-                      <div class="text-base font-semibold text-gray-900">{{ unit.unit_name }}</div>
-                      <div class="text-sm text-gray-500">({{ unit.property_name }})</div>
+                      <div class="text-base font-semibold text-gray-900">{{ unit.unit_name || '-' }}</div>
+                      <div class="text-sm text-gray-500">({{ unit.property_name || '-' }})</div>
                     </div>
                     <div class="text-sm text-gray-500 mt-0.5 flex items-center">
                       <svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
-                      {{ unit.address }}
+                      {{ unit.address || '-' }}
                     </div>
                   </div>
                   <div class="flex items-center">
@@ -250,7 +260,7 @@ const formatDateSafe = (date: string | null) => {
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span :class="getStatusClass(unit.current_status)" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
-                  {{ $t(unit.current_status) }}
+                  {{ $t(unit.current_status || 'NONE') }}
                 </span>
                 <span v-if="unit.rent_status" :class="getRentStatusClass(unit.rent_status)" class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
                   {{ $t(unit.rent_status) }}
@@ -270,7 +280,7 @@ const formatDateSafe = (date: string | null) => {
                     <span :class="getInvoiceStatusClass(getInvoiceStatus(unit.invoice_month))" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
                       {{ $t(getInvoiceStatus(unit.invoice_month)) }}
                     </span>
-                    <span class="ml-2 text-sm font-medium text-gray-900">{{ formatMoney(unit.total_in_month) }}</span>
+                    <span class="ml-2 text-sm font-medium text-gray-900">{{ formatMoney(unit.total_in_month || 0) }}</span>
                   </div>
                   <div v-if="unit.invoice_month" class="text-xs text-gray-400 mt-1">
                     {{ formatDateSafe(unit.invoice_month) }}
