@@ -16,6 +16,7 @@ use Insane\Journal\Models\Invoice\Invoice;
 use Insane\Journal\Services\InvoiceService;
 use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Accounting\Helpers\InvoiceHelper;
+use App\Domains\Properties\Models\Property;
 use Insane\Journal\Models\Invoice\InvoiceLineTax;
 use \Insane\Journal\Services\InvoiceValidatorService;
 use App\Domains\Properties\Services\PropertyUnitService;
@@ -553,5 +554,43 @@ class RentService {
       $rent->update($data);
       PropertyUnitService::updateStatus($rent->unit, PropertyUnit::STATUS_RENTED, $user);
       return $rent;
+    }
+
+    public static function occupancy($teamId, $clientId) {
+      $properties = Property::where([
+        'team_id' => $teamId,
+        'owner_id' => $clientId
+      ])->select('id', 'name', 'address')->get();
+
+      $rents = Rent::where([
+        'team_id' => $teamId,
+        'unit_id' => $properties->pluck('id')
+      ])->whereIn('property_id', $properties->pluck('id'))->get();
+      
+      $totalUnits = PropertyUnit::where([
+        'team_id' => $teamId, 
+      ])
+      ->whereIn('property_id', $properties->pluck('id'))
+      ->count();
+      
+      $occupiedUnits = $rents->count();
+      $rate = $occupiedUnits / $totalUnits * 100;
+
+      
+
+      $properties->each(function ($property) use ($rents) {
+        $property->paid = $rents->where('status', Rent::STATUS_ACTIVE)->count();
+        $property->unpaid = $rents->where('status', Rent::STATUS_LATE)->count();
+        $property->late = $rents->where('status', Rent::STATUS_LATE)->count();
+        $property->expired = $rents->where('status', Rent::STATUS_EXPIRED)->count();
+        $property->cancelled = $rents->where('status', Rent::STATUS_CANCELLED)->count();
+      });
+
+      return [
+        'occupied' => $occupiedUnits,
+        'total' => $totalUnits,
+        'rate' => $rate,
+        'properties' => $properties
+      ];
     }
 }
