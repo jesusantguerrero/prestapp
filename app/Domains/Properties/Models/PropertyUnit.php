@@ -20,6 +20,8 @@ class PropertyUnit extends Model implements Auditable {
 
     const STATUS_BUILDING = 'BUILDING';
     const STATUS_AVAILABLE =  'AVAILABLE';
+    const STATUS_PENDING_TO_SIGN = 'PENDING_TO_SIGN';
+    const STATUS_PENDING_MOVE_OUT = 'PENDING_MOVE_OUT';
     const STATUS_RENTED = 'RENTED';
     const STATUS_MAINTENANCE = 'MAINTENANCE';
 

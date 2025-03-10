@@ -12,6 +12,8 @@ use Insane\Journal\Models\Invoice\Invoice;
 use App\Domains\CRM\Services\ClientService;
 use App\Domains\Loans\Services\LoanService;
 use App\Domains\Properties\Models\Property;
+use App\Domains\Properties\Models\PropertyUnit;
+use App\Domains\Properties\Models\Rent;
 use App\Domains\Loans\Models\LoanInstallment;
 use App\Domains\Properties\Services\RentService;
 use App\Domains\Properties\Services\OwnerService;
@@ -27,6 +29,30 @@ class DashboardController extends Controller
     public function __invoke(Request $request, $section = "general")
     {
       return $this->$section($request);
+    }
+
+    protected function getUnitsRequiringAction($teamId) {
+        return PropertyUnit::query()
+            ->select([
+                'property_units.id',
+                'property_units.name',
+                'property_units.status',
+                'properties.name as property_name',
+                'clients.display_name as client_name',
+                'rents.status as rent_status',
+                'rents.move_out_at',
+                'rents.end_date'
+            ])
+            ->join('properties', 'property_units.property_id', '=', 'properties.id')
+            ->leftJoin('rents', function($join) {
+                $join->on('property_units.id', '=', 'rents.unit_id')
+                    ->whereIn('rents.status', [Rent::STATUS_EXPIRED, Rent::STATUS_CANCELLED]);
+            })
+            ->leftJoin('clients', 'rents.client_id', '=', 'clients.id')
+            ->where('property_units.team_id', $teamId)
+            ->where('property_units.status', PropertyUnit::STATUS_RENTED)
+            ->whereNotNull('rents.id')
+            ->get();
     }
 
     public function general(Request $request)
@@ -74,7 +100,6 @@ class DashboardController extends Controller
       $rentTotals = RentService::invoiceByPaymentStatus($teamId, $startDate, $endDate);
       $monthPassedInYear = now()->diffInMonths(now()->startOfYear());
 
-
       return inertia('Dashboard/Index',
       [
           "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId,
@@ -110,6 +135,7 @@ class DashboardController extends Controller
           "paidCommissions" => AccountStatWidget::accountNetByPeriod($teamId, 'real_state_operative', 'month', $monthPassedInYear),
           'section' => "realState",
           "serverSearchOptions" => $this->getServerParams(),
+          "unitsRequiringAction" => $this->getUnitsRequiringAction($teamId),
         ]);
     }
 
