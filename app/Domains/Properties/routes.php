@@ -53,6 +53,7 @@ Route::middleware([
       Route::post('properties/{property}/units', 'addUnit');
       Route::put('properties/{property}/units/{propertyUnit}', 'updateUnit');
       Route::delete('properties/{property}/units/{propertyUnit}','removeUnit');
+      Route::put('properties/{property}/units/{propertyUnit}/update-status', 'updateUnitStatus');
     });
 
 

@@ -71,7 +71,7 @@ class PropertyUnit extends Model implements Auditable {
     }
 
     public function contracts() {
-      return $this->hasMany(Rent::class, 'unit_id');
+      return $this->hasMany(Rent::class, 'unit_id')->latestOfMany('created_at');
     }
 
     public function contract() {

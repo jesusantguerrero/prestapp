@@ -14,6 +14,12 @@ import { useResponsive } from "@/utils/useResponsive";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { formatMoney } from "@/utils";
+import PropertyPaymentStatus from "@/Components/Reports/PropertyPaymentStatus.vue";
+import PropertyUnitStatus from "@/Components/Reports/PropertyUnitStatus.vue";
+import PropertyUnitDetails from "@/Components/Reports/PropertyUnitDetails.vue";
+import PropertyUnitDistribution from "@/Components/Reports/PropertyUnitDistribution.vue";
+import PropertyAmenities from "@/Components/Reports/PropertyAmenities.vue";
+import { useI18n } from "vue-i18n";
 
 const props = defineProps({
   invoices: {
@@ -134,8 +140,12 @@ const selectedMonthName = computed(() => {
   }
 });
 
+const { t } = useI18n();
+
 const propertyStats = computed(() => {
   if (!props.invoices) return [];
+
+  console.log(props.invoices);
   
   return Object.entries(props.invoices).map(([ownerName, properties]: [string, any]) => {
     return Object.entries(properties).map(([propertyId, propertyData]: [string, any]) => {
@@ -149,7 +159,7 @@ const propertyStats = computed(() => {
         paid: propertyData.paid,
         unpaid: propertyData.unpaid,
         available: propertyData.available,
-        rented: propertyData.rented + propertyData.retained,
+        rented: propertyData.rented,
         realRented: propertyData.realRented,
         
         // Unit Status
@@ -256,13 +266,12 @@ const propertyStats = computed(() => {
           
           <div class="grid grid-cols-2 gap-3">
             <div class="flex flex-col">
-              
-              <span class="text-sm font-medium text-blue-600">Available Units</span>
-              <span class="text-xl font-semibold text-blue-700">{{ available }}</span>
-            </div>
-            <div class="flex flex-col">
               <span class="text-sm font-medium text-yellow-600">Rented Units</span>
               <span class="text-xl font-semibold text-yellow-700">{{ rented }}</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-sm font-medium text-blue-600">Available Units</span>
+              <span class="text-xl font-semibold text-blue-700">{{ available }}</span>
             </div>
           </div>
           
@@ -278,122 +287,47 @@ const propertyStats = computed(() => {
         <div v-for="stat in propertyStats" :key="stat.propertyId" class="p-4 bg-white rounded-lg shadow">
           <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold">{{ stat.propertyName }}</h2>
-            <span class="text-sm text-gray-600">Owner: {{ stat.ownerName }}</span>
+            <span class="text-sm text-gray-600">{{ $t('Owner') }}: {{ stat.ownerName }}</span>
           </div>
           
-          <!-- Payment Status -->
-          <div class="mb-4">
-            <h3 class="text-sm font-semibold text-gray-700 mb-2">Payment Status</h3>
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
-              <div class="p-3 bg-green-50 rounded">
-                <h3 class="text-sm font-semibold text-green-800">Paid</h3>
-                <p class="text-lg font-bold text-green-900">{{ stat.paid }}</p>
-              </div>
-              <div class="p-3 bg-red-50 rounded">
-                <h3 class="text-sm font-semibold text-red-800">Unpaid</h3>
-                <p class="text-lg font-bold text-red-900">{{ stat.unpaid }}</p>
-              </div>
-              <div class="p-3 bg-blue-50 rounded">
-                <h3 class="text-sm font-semibold text-blue-800">Available</h3>
-                <p class="text-lg font-bold text-blue-900">{{ stat.available }}</p>
-              </div>
-              <div class="p-3 bg-yellow-50 rounded">
-                <h3 class="text-sm font-semibold text-yellow-800">Rented</h3>
-                <p class="text-lg font-bold text-yellow-900">{{ stat.rented }}</p>
-              </div>
-            </div>
-          </div>
+          <PropertyPaymentStatus
+            :paid="stat.paid"
+            :unpaid="stat.unpaid"
+            :available="stat.available"
+            :rented="stat.rented"
+          />
 
-          <!-- Unit Status -->
-          <div class="mb-4">
-            <h3 class="text-sm font-semibold text-gray-700 mb-2">Unit Status</h3>
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
-              <div class="p-3 bg-purple-50 rounded">
-                <h3 class="text-sm font-semibold text-purple-800">Building</h3>
-                <p class="text-lg font-bold text-purple-900">{{ stat.building }}</p>
-              </div>
-              <div class="p-3 bg-orange-50 rounded">
-                <h3 class="text-sm font-semibold text-orange-800">Maintenance</h3>
-                <p class="text-lg font-bold text-orange-900">{{ stat.maintenance }}</p>
-              </div>
-              <div class="p-3 bg-indigo-50 rounded">
-                <h3 class="text-sm font-semibold text-indigo-800">Rented</h3>
-                <p class="text-lg font-bold text-indigo-900">{{ stat.rented }}</p>
-              </div>
-              <div class="p-3 bg-teal-50 rounded">
-                <h3 class="text-sm font-semibold text-teal-800">Available</h3>
-                <p class="text-lg font-bold text-teal-900">{{ stat.available }}</p>
-              </div>
-            </div>
-          </div>
+          <PropertyUnitStatus
+            :building="stat.building"
+            :maintenance="stat.maintenance"
+            :rented="stat.rented"
+            :available="stat.available"
+          />
 
-          <!-- Unit Details -->
-          <div class="mb-4">
-            <h3 class="text-sm font-semibold text-gray-700 mb-2">Unit Details</h3>
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
-              <div class="p-3 bg-slate-50 rounded">
-                <h3 class="text-sm font-semibold text-slate-800">Total Price</h3>
-                <p class="text-lg font-bold text-slate-900">{{ formatMoney(stat.totalPrice) }}</p>
-              </div>
-              <div class="p-3 bg-slate-50 rounded">
-                <h3 class="text-sm font-semibold text-slate-800">Total Commission</h3>
-                <p class="text-lg font-bold text-slate-900">{{ formatMoney(stat.totalCommission) }}</p>
-              </div>
-              <div class="p-3 bg-slate-50 rounded">
-                <h3 class="text-sm font-semibold text-slate-800">Average Price</h3>
-                <p class="text-lg font-bold text-slate-900">{{ formatMoney(stat.averagePrice) }}</p>
-              </div>
-              <div class="p-3 bg-slate-50 rounded">
-                <h3 class="text-sm font-semibold text-slate-800">Average Commission</h3>
-                <p class="text-lg font-bold text-slate-900">{{ formatMoney(stat.averageCommission) }}</p>
-              </div>
-            </div>
-          </div>
+          <PropertyUnitDetails
+            :total-price="stat.totalPrice"
+            :total-commission="stat.totalCommission"
+            :average-price="stat.averagePrice"
+            :average-commission="stat.averageCommission"
+          />
 
-          <!-- Unit Distribution -->
-          <div class="mb-4">
-            <h3 class="text-sm font-semibold text-gray-700 mb-2">Unit Distribution</h3>
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div class="p-3 bg-slate-50 rounded">
-                <h3 class="text-sm font-semibold text-slate-800">By Bedrooms</h3>
-                <div class="space-y-1">
-                  <div v-for="(count, beds) in stat.byBedrooms" :key="beds" class="flex justify-between">
-                    <span>{{ beds }} beds</span>
-                    <span class="font-semibold">{{ count }}</span>
-                  </div>
-                </div>
-              </div>
-              <div class="p-3 bg-slate-50 rounded">
-                <h3 class="text-sm font-semibold text-slate-800">By Bathrooms</h3>
-                <div class="space-y-1">
-                  <div v-for="(count, baths) in stat.byBathrooms" :key="baths" class="flex justify-between">
-                    <span>{{ baths }} baths</span>
-                    <span class="font-semibold">{{ count }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <PropertyUnitDistribution
+            :by-bedrooms="stat.byBedrooms"
+            :by-bathrooms="stat.byBathrooms"
+          />
 
-          <!-- Amenities -->
-          <div class="mb-4" v-if="Object.keys(stat.amenities).length">
-            <h3 class="text-sm font-semibold text-gray-700 mb-2">Amenities</h3>
-            <div class="flex flex-wrap gap-2">
-              <div v-for="(count, amenity) in stat.amenities" :key="amenity" 
-                   class="px-2 py-1 bg-slate-100 rounded-full text-sm">
-                {{ amenity }} ({{ count }})
-              </div>
-            </div>
-          </div>
+          <PropertyAmenities
+            :amenities="stat.amenities"
+          />
           
           <div class="mt-4">
             <div class="flex justify-between text-sm text-gray-600">
-              <span>Total Units: {{ stat.totalUnits }}</span>
+              <span>{{ t('Total Units') }}: {{ stat.totalUnits }}</span>
               <div class="space-x-4">
-                <span>Occupancy Rate: {{ stat.occupancyRate.toFixed(1) }}%</span>
-                <span>Maintenance Rate: {{ stat.maintenanceRate.toFixed(1) }}%</span>
-                <span>Building Rate: {{ stat.buildingRate.toFixed(1) }}%</span>
-                <span>Revenue Rate: {{ formatMoney(stat.revenueRate) }}</span>
+                <span>{{ t('Occupancy Rate') }}: {{ stat.occupancyRate.toFixed(1) }}%</span>
+                <span>{{ t('Maintenance Rate') }}: {{ stat.maintenanceRate.toFixed(1) }}%</span>
+                <span>{{ t('Building Rate') }}: {{ stat.buildingRate.toFixed(1) }}%</span>
+                <span>{{ t('Revenue Rate') }}: {{ formatMoney(stat.revenueRate) }}</span>
               </div>
             </div>
           </div>

@@ -59,6 +59,14 @@ class PropertyUnitService {
     }
 
     public static function updateStatus(PropertyUnit $unit, $status, $user = null) {
+      if ($unit->currentRent && $status == PropertyUnit::STATUS_AVAILABLE) {
+        throw new Exception(__("This unit is currently rented"));
+      }
+
+      if (!$unit->currentRent && $status == PropertyUnit::STATUS_RENTED) {
+        throw new Exception(__("This unit doesn't have a rent"));
+      }
+
       $oldStatus = $unit->status;
       $unit->update(['status' => $status]);
 
@@ -84,8 +92,9 @@ class PropertyUnitService {
       $badRentedUnits = PropertyUnit::query()
           ->select([
               'property_units.id',
-              'property_units.name',
+              'property_units.name', 
               'property_units.status',
+              'properties.id as property_id',
               'properties.name as property_name',
               'clients.display_name as client_name',
               'clients.id as client_id',
@@ -101,10 +110,15 @@ class PropertyUnitService {
           ->join('properties', 'property_units.property_id', '=', 'properties.id')
           ->join('rents', function($join) {
               $join->on('property_units.id', '=', 'rents.unit_id')
-                  ->whereIn('rents.status', [Rent::STATUS_EXPIRED, Rent::STATUS_CANCELLED]);
+                  ->whereRaw('rents.id = (
+                      SELECT id FROM rents r2 
+                      WHERE r2.unit_id = property_units.id
+                      ORDER BY created_at DESC 
+                      LIMIT 1
+                  )');
           })
-          ->join('clients', 'rents.client_id', '=', 'clients.id')
-          ->join('invoices as last_invoice', function($join) {
+          ->leftJoin('clients', 'rents.client_id', '=', 'clients.id') // Changed to leftJoin in case client was deleted
+          ->leftJoin('invoices as last_invoice', function($join) { // Changed to leftJoin to match client join
               $join->on('rents.id', '=', 'last_invoice.invoiceable_id')
                   ->where('last_invoice.invoiceable_type', Rent::class)
                   ->whereRaw('last_invoice.id = (
@@ -115,6 +129,7 @@ class PropertyUnitService {
           })
           ->where('property_units.team_id', $teamId)
           ->where('property_units.status', PropertyUnit::STATUS_RENTED)
+          ->whereIn('rents.status', [Rent::STATUS_EXPIRED, Rent::STATUS_CANCELLED])
           ->whereNotNull('rents.id')
           ->get();
 
@@ -122,6 +137,7 @@ class PropertyUnitService {
             'property_units.id',
             'property_units.name',
             'property_units.status',
+            'properties.id as property_id',
             'properties.name as property_name',
             'clients.display_name as client_name',
             'rents.status as rent_status',
@@ -153,11 +169,7 @@ class PropertyUnitService {
         ->get();
 
         $units = $badRentedUnits->merge($badAvailableUnits);
-
         return $units;
-        
-        
-        
   }
 }
 

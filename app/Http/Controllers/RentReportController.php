@@ -41,6 +41,7 @@ class RentReportController extends Controller
             })
             ->where('property_units.team_id', $request->user()->currentTeam->id)
             ->get()
+            ->sortBy('owner_name')
             ->groupBy('owner_name')
             ->map(function ($ownerUnits) {
                 return $ownerUnits->groupBy('property_id')
@@ -141,7 +142,7 @@ class RentReportController extends Controller
         $flattenedUnits = $units->flatMap(fn($units) => $units->values());
 
         $data = [
-            'invoices' => $units,
+            'invoices' => $units->sortBy('name'),
             'type' => 'occupancy',
             'outstanding' => $flattenedUnits->sum('unpaid'),
             'paid' => $flattenedUnits->sum('paid'),
