@@ -240,7 +240,7 @@ const handleContractClick = (unit: IUnit) => {
                     router.visit(`/owners/draws?filters[owner]=${properties.owner_id}`)
                   "
                 >
-                  Generar Pago a {{ properties.owner.names }}
+                  Distribucion de Propietarios
                 </AppButton>
               </section>
               <!-- <EmptyAddTool> Notes </EmptyAddTool>

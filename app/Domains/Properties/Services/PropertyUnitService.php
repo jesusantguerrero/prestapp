@@ -79,4 +79,86 @@ class PropertyUnitService {
         }
       }
     }
+
+    public static function getUnitsRequiringAction($teamId) {
+      $badRentedUnits = PropertyUnit::query()
+          ->select([
+              'property_units.id',
+              'property_units.name',
+              'property_units.status',
+              'properties.name as property_name',
+              'clients.display_name as client_name',
+              'clients.id as client_id',
+              'rents.id as rent_id',
+              'rents.status as rent_status',
+              'rents.move_out_at',
+              'rents.end_date',
+              'last_invoice.due_date as last_invoice_date',
+              'last_invoice.total as last_invoice_amount',
+              'last_invoice.debt as last_invoice_debt',
+              'last_invoice.status as last_invoice_status'
+          ])
+          ->join('properties', 'property_units.property_id', '=', 'properties.id')
+          ->join('rents', function($join) {
+              $join->on('property_units.id', '=', 'rents.unit_id')
+                  ->whereIn('rents.status', [Rent::STATUS_EXPIRED, Rent::STATUS_CANCELLED]);
+          })
+          ->join('clients', 'rents.client_id', '=', 'clients.id')
+          ->join('invoices as last_invoice', function($join) {
+              $join->on('rents.id', '=', 'last_invoice.invoiceable_id')
+                  ->where('last_invoice.invoiceable_type', Rent::class)
+                  ->whereRaw('last_invoice.id = (
+                      SELECT MAX(id) FROM invoices 
+                      WHERE invoiceable_id = rents.id 
+                      AND invoiceable_type = ?
+                  )', [Rent::class]);
+          })
+          ->where('property_units.team_id', $teamId)
+          ->where('property_units.status', PropertyUnit::STATUS_RENTED)
+          ->whereNotNull('rents.id')
+          ->get();
+
+        $badAvailableUnits = PropertyUnit::query()->select([
+            'property_units.id',
+            'property_units.name',
+            'property_units.status',
+            'properties.name as property_name',
+            'clients.display_name as client_name',
+            'rents.status as rent_status',
+            'rents.move_out_at',
+            'rents.end_date',
+            'last_invoice.due_date as last_invoice_date',
+            'last_invoice.total as last_invoice_amount',
+            'last_invoice.debt as last_invoice_debt',
+            'last_invoice.status as last_invoice_status'
+        ])
+        ->join('properties', 'property_units.property_id', '=', 'properties.id')
+        ->join('rents', function($join) {
+            $join->on('property_units.id', '=', 'rents.unit_id')
+                ->whereIn('rents.status', [Rent::STATUS_ACTIVE]);
+        })
+        ->leftJoin('clients', 'rents.client_id', '=', 'clients.id')
+        ->leftJoin('invoices as last_invoice', function($join) {
+            $join->on('rents.id', '=', 'last_invoice.invoiceable_id')
+                ->where('last_invoice.invoiceable_type', Rent::class)
+                ->whereRaw('last_invoice.id = (
+                    SELECT MAX(id) FROM invoices 
+                    WHERE invoiceable_id = rents.id 
+                    AND invoiceable_type = ?
+                )', [Rent::class]);
+        })
+        ->where('property_units.team_id', $teamId)
+        ->where('property_units.status', '!=', PropertyUnit::STATUS_RENTED)
+        ->whereNotNull('rents.id')
+        ->get();
+
+        $units = $badRentedUnits->merge($badAvailableUnits);
+
+        return $units;
+        
+        
+        
+  }
 }
+
+

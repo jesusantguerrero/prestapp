@@ -119,7 +119,7 @@ const isCancelled =computed(() => {
                 </template>
               </AtInput>
             </div>
-            <section class="flex">
+            <section class="flex" v-if="!isCancelled">
               <AppButton
                   @click="toggleQuickEdit('amount')"
                   :processing="isEditingAmount && updateRentForm.processing"
@@ -127,7 +127,7 @@ const isCancelled =computed(() => {
                   class="h-10 w-14 flex justify-center items-center"
                   :variant="isEditingAmount ? 'success' : 'neutral'">
                   <IMdiContentSaveCheck v-if="isEditingAmount" />
-                  <IMdiEdit  v-else-if="!isCancelled" />
+                  <IMdiEdit v-else-if="!isCancelled" />
               </AppButton>
               <AppButton
                   v-if="isEditingAmount"
@@ -154,7 +154,7 @@ const isCancelled =computed(() => {
                 {{ formatDate(rents.next_invoice_date) }}
               </span>
               <ElDatePicker v-else v-model="updateRentForm.next_invoice_date" size="large" class="ml-2" />
-              <section class="flex">
+              <section class="flex" v-if="!isCancelled">
                 <AppButton
                   @click="toggleQuickEdit('next_invoice_date')"
                   class="h-10 w-14 flex justify-center items-center"

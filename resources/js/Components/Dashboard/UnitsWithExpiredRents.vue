@@ -2,6 +2,7 @@
 import { Link } from "@inertiajs/vue3";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { formatMoney } from "@/utils/formatMoney";
 
 const { t } = useI18n();
 
@@ -10,9 +11,15 @@ interface Unit {
   name: string;
   property_name: string;
   client_name: string;
+  current_tenant?: string;
   rent_status: string;
   move_out_at: string;
   end_date: string;
+  status: string;
+  last_invoice_date?: string;
+  last_invoice_amount?: number;
+  last_invoice_debt?: number;
+  last_invoice_status?: string;
 }
 
 const props = defineProps<{
@@ -75,7 +82,61 @@ const isExpanded = (unitId: number) => expandedUnits.value.includes(unitId);
               <span class="font-medium">{{ t('Property') }}:</span> {{ unit.property_name }}
             </p>
             <p class="text-sm text-gray-600">
-              <span class="font-medium">{{ t('Last tenant') }}:</span> {{ unit.client_name }}
+              <span class="font-medium">{{ t('Unit status') }}:</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                    :class="{
+                      'bg-green-100 text-green-800': unit.status === 'AVAILABLE',
+                      'bg-blue-100 text-blue-800': unit.status === 'RENTED',
+                      'bg-yellow-100 text-yellow-800': unit.status === 'MAINTENANCE',
+                      'bg-gray-100 text-gray-800': unit.status === 'BUILDING'
+                    }">
+                {{ unit.status }}
+              </span>
+            </p>
+            <div class="flex flex-col space-y-1">
+              <p class="text-sm text-gray-600">
+                <span class="font-medium">{{ t('Last tenant') }}:</span>
+                {{ unit.client_name }} {{ unit.client_id }}
+              </p>
+            </div>
+            <div class="flex flex-col space-y-1 border-t border-gray-100 pt-2">
+              <h4 class="text-sm font-medium text-gray-700">{{ t('Last Invoice') }}</h4>
+              <div v-if="unit.last_invoice_date" class="grid grid-cols-2 gap-2 text-sm">
+                <p class="text-gray-600">
+                  <span class="font-medium">{{ t('Due Date') }}:</span> {{ unit.last_invoice_date }}
+                </p>
+                <p class="text-gray-600">
+                  <span class="font-medium">{{ t('Status') }}:</span>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ml-1"
+                        :class="{
+                          'bg-green-100 text-green-800': unit.last_invoice_status === 'PAID',
+                          'bg-yellow-100 text-yellow-800': unit.last_invoice_status === 'PARTIALLY_PAID',
+                          'bg-red-100 text-red-800': unit.last_invoice_status === 'UNPAID'
+                        }">
+                    {{ unit.last_invoice_status }}
+                  </span>
+                </p>
+                <p class="text-gray-600">
+                  <span class="font-medium">{{ t('Amount') }}:</span> {{ formatMoney(unit.last_invoice_amount) }}
+                </p>
+                <p class="text-gray-600">
+                  <span class="font-medium">{{ t('Debt') }}:</span> 
+                  <span :class="{'text-red-600': unit.last_invoice_debt > 0}">
+                    {{ formatMoney(unit.last_invoice_debt) }}
+                  </span>
+                </p>
+              </div>
+              <p v-else class="text-sm text-gray-500 italic">{{ t('No invoices found') }}</p>
+            </div>
+            <p class="text-sm text-gray-600">
+              <span class="font-medium">{{ t('Rent status') }}:</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                    :class="{
+                      'bg-yellow-100 text-yellow-800': unit.rent_status === 'EXPIRED',
+                      'bg-red-100 text-red-800': unit.rent_status === 'CANCELLED'
+                    }">
+                {{ unit.rent_status }} {{ unit.rent_id }}
+              </span>
             </p>
             <p class="text-sm text-gray-600">
               <span class="font-medium">{{ t('Ended') }}:</span> {{ unit.move_out_at || unit.end_date }}

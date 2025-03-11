@@ -21,7 +21,7 @@ export const ClientProfile = defineComponent({
   setup(props) {
         const initials = props.client?.names ? props.client?.names[0] + props.client?.lastnames[0] : props.name.split(' ').map(name => name?.at(0)).join('');
         const type = props.type ?? Object.entries(props.client).reduce((type, [field, value]) => {
-          if (field.match(/owner|tenant|lender/) && value == 1) {
+          if (field.match(/owner|tenant/) && value == 1) {
             type = field.replace('is_', '');
           }
           return type;
