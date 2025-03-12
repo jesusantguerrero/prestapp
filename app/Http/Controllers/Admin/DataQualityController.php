@@ -188,14 +188,20 @@ class DataQualityController extends Controller
 
     private function findDuplicateProperties()
     {
-        $properties = Property::with('owner')
+        $properties = Property::with(['owner', 'rents.client'])
             ->select('id', 'name', 'address', 'owner_id')
             ->where('team_id', request()->user()->current_team_id)
             ->get();
 
+        $processedIds = [];
         $duplicates = [];
 
         foreach ($properties as $property) {
+            // Skip if we've already processed this property as part of another group
+            if (in_array($property->id, $processedIds)) {
+                continue;
+            }
+
             $similar = $properties->filter(function ($otherProperty) use ($property) {
                 if ($property->id === $otherProperty->id) {
                     return false;
@@ -220,32 +226,86 @@ class DataQualityController extends Controller
                 $totalScore = ($namePercentage * 0.4) + ($addressPercentage * 0.6);
                 
                 return $totalScore > 80; // 80% similarity threshold
-            })
-            ->map(function ($similar) use ($property) {
-                $percentage = 0;
-                similar_text(
-                    Str::lower($property->name),
-                    Str::lower($similar->name),
-                    $percentage
-                );
-
-                return [
-                    'id' => $similar->id,
-                    'name' => $similar->name,
-                    'address' => $similar->address,
-                    'similarity_score' => $percentage / 100,
-                ];
-            })
-            ->values();
+            });
 
             if ($similar->isNotEmpty()) {
+                // Add all similar IDs to processed list to avoid duplicates
+                $processedIds[] = $property->id;
+                foreach ($similar as $s) {
+                    $processedIds[] = $s->id;
+                }
+
+                // Map similar properties with similarity scores
+                $similarProperties = $similar->map(function ($similar) use ($property) {
+                    $namePercentage = 0;
+                    $addressPercentage = 0;
+
+                    similar_text(
+                        Str::lower($property->name),
+                        Str::lower($similar->name),
+                        $namePercentage
+                    );
+
+                    similar_text(
+                        Str::lower($property->address),
+                        Str::lower($similar->address),
+                        $addressPercentage
+                    );
+
+                    $totalScore = ($namePercentage * 0.4) + ($addressPercentage * 0.6);
+
+                    // Get rent history for the property
+                    $rentHistory = collect();
+                    $rentHistory = $rentHistory->concat($similar->rents->map(function ($rent) {
+                        return [
+                            'id' => $rent->id,
+                            'unit_name' => $rent->unit->name,
+                            'tenant_name' => $rent->client->display_name,
+                            'start_date' => $rent->start_date,
+                            'end_date' => $rent->end_date,
+                                'status' => $rent->status,
+                            ];
+                        }));
+
+                    return [
+                        'id' => $similar->id,
+                        'name' => $similar->name,
+                        'address' => $similar->address,
+                        'owner_id' => $similar->owner_id,
+                        'owner_name' => $similar->owner->display_name,
+                        'units_count' => $similar->units->count(),
+                        'rent_history' => $rentHistory->sortByDesc('start_date')->values(),
+                        'similarity_scores' => [
+                            'name' => round($namePercentage, 1),
+                            'address' => round($addressPercentage, 1),
+                            'total' => round($totalScore, 1)
+                        ]
+                    ];
+                })->values();
+
+                // Get rent history for the main property
+                $rentHistory = collect();
+                $rentHistory = $rentHistory->concat($property->rents->map(function ($rent) {
+                    return [
+                        'id' => $rent->id,
+                        'unit_name' => $rent->unit->name,
+                        'tenant_name' => $rent->client->display_name,
+                        'start_date' => $rent->start_date,
+                            'end_date' => $rent->end_date,
+                            'status' => $rent->status,
+                        ];
+                    }));
+
                 $duplicates[] = [
                     'id' => $property->id,
                     'name' => $property->name,
                     'address' => $property->address,
                     'owner_id' => $property->owner_id,
                     'owner_name' => $property->owner->display_name,
-                    'similar_properties' => $similar,
+                    'units_count' => $property->units->count(),
+                    'rent_history' => $rentHistory->sortByDesc('start_date')->values(),
+                    'total_instances' => $similar->count() + 1,
+                    'similar_properties' => $similarProperties,
                 ];
             }
         }
