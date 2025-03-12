@@ -9,6 +9,7 @@ use App\Models\Team;
 use App\Policies\TeamPolicy;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -29,6 +30,11 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-      $this->registerPolicies();
+        $this->registerPolicies();
+
+        // Define the manage-data-quality permission
+        Gate::define('manage-data-quality', function ($user) {
+            return $user->hasRole('admin') || $user->hasPermissionTo('manage-data-quality');
+        });
     }
 }
