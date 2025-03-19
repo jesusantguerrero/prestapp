@@ -168,8 +168,9 @@ class OwnerService {
       })->values();
     }
 
-    public static function occupancyByMonth($teamId, $date, $ownerId = null) {
+    public static function getOccupancyByMonth($teamId, $date, $ownerId = null, $invoiceIds = null) {
       $referenceDate = Carbon::createFromFormat('Y-m-d', $date);
+
       try {
         return DB::query()->from("property_units")->selectRaw("
           CONCAT(property_units.property_name,'-',property_units.name) unit_name,
@@ -185,8 +186,9 @@ class OwnerService {
           clients.display_name owner_name,
           rents.client_name,
           rents.status rent_status,
-          SUM(COALESCE(invoices.total, 0.00)) total_in_month,
+          SUM(invoices.total - invoices.debt) total_in_month,
           invoices.due_date invoice_month,
+          invoices.status invoice_status,
           property_units.status current_status"
         )->where([
           "property_units.team_id" => $teamId,
@@ -205,6 +207,7 @@ class OwnerService {
             PropertyInvoiceTypes::Deposit->value
           ])
           ->whereRaw('DATE_FORMAT(due_date, "%Y-%m-01") = ?', [ $referenceDate->format('Y-m-01') ])
+          ->when($invoiceIds, fn($q) => $q->whereIn('invoices.id', explode(',', $invoiceIds)))
         )
         ->join('clients', 'clients.id', '=', 'property_units.owner_id')
         ->join('properties', 'properties.id', '=', 'property_units.property_id')

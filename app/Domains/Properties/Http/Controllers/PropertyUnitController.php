@@ -56,6 +56,15 @@ class PropertyUnitController extends InertiaController
     }
   }
 
+  public function updateUnitStatus(Property $property, PropertyUnit $propertyUnit) {
+    try {
+      $requestData = request()->only(['status']);
+      PropertyUnitService::updateStatus($propertyUnit, $requestData['status']);
+    } catch (Exception $e) {
+      return redirect()->back()->withErrors($e->getMessage());
+    }
+  }
+
   public function listBadState(PropertyUnitService $propertyUnitService) {
     try {
       return inertia('Properties/UnitList', [

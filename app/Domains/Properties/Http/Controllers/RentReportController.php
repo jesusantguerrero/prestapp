@@ -155,7 +155,7 @@ class RentReportController extends Controller
           'invoice' => $invoice->getInvoiceData(),
           'businessData' => Setting::getByTeam($invoice->team_id),
           'type' => $invoice->type,
-          'occupancy' => RentService::occupancy($invoice->team_id)
+          'occupancy' => RentService::occupancy($invoice->team_id, $invoice->client_id)
         ];
 
         if ($isJson) {

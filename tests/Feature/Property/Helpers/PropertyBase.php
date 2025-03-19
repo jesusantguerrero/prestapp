@@ -82,9 +82,10 @@ class PropertyBase extends TestCase
 
   protected function createRent($data = []) {
     $this->actingAs($this->user);
-    $this->post('/rents', array_merge($this->rentData, $data));
+    $response = $this->post('/rents?json=true', array_merge($this->rentData, $data));
+    $rentId = $response->json('data')['id'];
 
-    return Rent::latest()->first();
+    return Rent::find($rentId);
   }
 
   protected function createUnit($data = []) {

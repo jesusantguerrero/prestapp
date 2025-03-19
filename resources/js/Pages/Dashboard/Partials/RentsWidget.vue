@@ -25,21 +25,21 @@ const monthEndpoint = computed(() => {
   return `/api/rents?filter[end_date]=${formatDate(
     startOfMonth(new Date()),
     "yyyy-MM-dd"
-  )}~${formatDate(endOfMonth(new Date()), "yyyy-MM-dd")}&sort=end_date`;
+  )}~${formatDate(endOfMonth(new Date()), "yyyy-MM-dd")}&sort=end_date&filter[status]=~cancelled`;
 });
 
 const expiredEndpoint = computed(() => {
   return `/api/rents?filter[end_date]=<${formatDate(
     startOfMonth(new Date()),
     "yyyy-MM-dd"
-  )}&sort=end_date`;
+  )}&sort=end_date&filter[status]=~cancelled`;
 });
 
 const expiringEndpoint = computed(() => {
   return `/api/rents?filter[end_date]=${formatDate(
-    startOfMonth(new Date()),
+    addMonths(startOfMonth(new Date()), 1),
     "yyyy-MM-dd"
-  )}~${formatDate(endOfMonth(addMonths(new Date(), 3)), "yyyy-MM-dd")}&sort=end_date`;
+  )}~${formatDate(endOfMonth(addMonths(new Date(), 3)), "yyyy-MM-dd")}&sort=end_date&filter[status]=~cancelled`;
 });
 </script>
 

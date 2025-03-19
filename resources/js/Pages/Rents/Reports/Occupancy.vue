@@ -1,35 +1,25 @@
 <script lang="ts" setup>
-import { reactive, watch, nextTick, ref, computed } from "vue";
+import { reactive, watch, ref, computed } from "vue";
 // @ts-ignore
 import { AtDatePager } from "atmosphere-ui";
-import { Link, router, useForm } from "@inertiajs/vue3";
+import { router } from "@inertiajs/vue3";
 import { toRefs } from "@vueuse/shared";
-import { useI18n } from "vue-i18n";
-import { ElMessageBox, ElTag } from "element-plus";
 
-import BaseSelect from "@/Components/shared/BaseSelect.vue";
 import AppLayout from "@/Components/templates/AppLayout.vue";
-import InvoiceTable from "@/Components/templates/InvoiceTable";
 import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.vue";
-import AppButton from "@/Components/shared/AppButton.vue";
-import Simple from "@/Pages/Journal/Invoices/printTemplates/Simple.vue";
-import AppSearch from "@/Components/shared/AppSearch/AppSearch.vue";
-import SectionNav from "@/Components/SectionNav.vue";
 
-import { formatDate, formatMoney } from "@/utils";
 import { IInvoice } from "@/Modules/invoicing/entities";
-import { usePaymentModal } from "@/Modules/transactions/usePaymentModal";
-import { usePrint } from "@/utils/usePrint";
-import {
-  clientInteractions,
-  InteractionsState,
-} from "@/Modules/clients/clientInteractions";
-import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
 import { useServerSearch } from "@/utils/useServerSearch";
-import { getRentStatusColor } from "@/Modules/properties/constants";
 import { useResponsive } from "@/utils/useResponsive";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { formatMoney } from "@/utils";
+import PropertyPaymentStatus from "@/Components/Reports/PropertyPaymentStatus.vue";
+import PropertyUnitStatus from "@/Components/Reports/PropertyUnitStatus.vue";
+import PropertyUnitDetails from "@/Components/Reports/PropertyUnitDetails.vue";
+import PropertyUnitDistribution from "@/Components/Reports/PropertyUnitDistribution.vue";
+import PropertyAmenities from "@/Components/Reports/PropertyAmenities.vue";
+import { useI18n } from "vue-i18n";
 
 const props = defineProps({
   invoices: {
@@ -39,6 +29,15 @@ const props = defineProps({
     type: String,
   },
   outstanding: {
+    type: Number,
+  },
+  available: {
+    type: Number,
+  },
+  rented: {
+    type: Number,
+  },
+  unpaid: {
     type: Number,
   },
   paid: {
@@ -99,7 +98,6 @@ watch(
     router.get(
       location.pathname,
       {
-        // @ts-ignore
         filters: selectedFilters,
       },
       { preserveState: true }
@@ -108,127 +106,16 @@ watch(
   { deep: true }
 );
 
-const { openModal } = usePaymentModal();
-
-const handlePayment = (invoice: IInvoice) => {
-  const payment = {
-    ...invoice,
-    // @ts-ignore solve backend sending decimals as strings
-    amount: parseFloat(invoice.debt) || invoice.total,
-    id: undefined,
-    invoice_id: invoice.id,
-  };
-
-  const url = `/rents/${invoice.invoiceable_id}/invoices/${invoice?.id}/payments`;
-
-  nextTick(() => {
-    openModal({
-      data: {
-        title: `Pagar ${invoice.concept}`,
-        payment: payment,
-        endpoint: url,
-        due: payment?.amount,
-        defaultConcept: "Pago de " + invoice.concept,
-        accountsEndpoint: "/invoices",
-        hideAccountSelector: true,
-      },
-    });
-  });
-};
-
-interface InvoiceResponse {
-  invoice: IInvoice;
-  businessData: Record<string, string>;
-}
-
-const selectedInvoice = ref<InvoiceResponse | null>(null);
-
-const { customPrint } = usePrint();
-const isPrinting = ref(false);
-function printExternal(invoice: IInvoice) {
-  isPrinting.value = invoice.id;
-  axios
-    .get(`/invoices/${invoice.id}/preview?json=true`)
-    .then(({ data }) => {
-      selectedInvoice.value = data;
-      nextTick(() => {
-        customPrint("invoice-content", {
-          beforePrint() {
-            selectedInvoice.value = null;
-          },
-          delay: 800,
-        });
-      });
-    })
-    .then(() => {
-      isPrinting.value = false;
-    });
-}
-
 const { serverSearchOptions } = toRefs(props);
 const { executeSearchWithDelay, updateSearch, state: pageState } = useServerSearch(
   serverSearchOptions,
   (finalUrl: string) => {
-    console.log(finalUrl);
-    updateSearch(`/rent-reports/monthly-summary?${finalUrl}`);
+    updateSearch(`/rent-reports/occupancy?${finalUrl}`);
   },
   {
     manual: true,
   }
 );
-const onDelete = async (invoice: IInvoice) => {
-  const isValid = await ElMessageBox.confirm(
-    `Estas seguro de eliminar la factura ${invoice.concept} por ${formatMoney(
-      invoice.total
-    )}?`,
-    "Eliminar factura"
-  );
-
-  if (isValid) {
-    router.delete(`/invoices/${invoice.id}`, {
-      onSuccess() {
-        router.reload({
-          preserveState: true,
-          preserveScroll: true,
-        });
-      },
-    });
-  }
-};
-
-const { t } = useI18n();
-const invoiceTypes = computed(() => Object.keys(props.invoices));
-const selectedTab = ref(invoiceTypes.value[0]);
-const tabs = computed(() =>
-  invoiceTypes.value.reduce((tabs: Record<string, any>, invoiceType: string) => {
-    tabs[invoiceType] = {
-      label: t(invoiceType),
-    };
-    return tabs;
-  }, {})
-);
-
-const sectionLabel = computed(() => {
-  return "Reporte rentas de " + formatDate(pageState?.dates?.startDate, "MMMM");
-});
-
-const deletePaymentForm = useForm({});
-const deleteRentPayments = async (invoice: IInvoice) => {
-  const isValid = await ElMessageBox.confirm(
-    `Estas seguro de eliminar los pagos de factura de ${invoice.client_name}?`,
-    "Eliminar pago de factura"
-  );
-  if (isValid) {
-    deletePaymentForm.delete(
-      `/rents/${invoice.invoiceable_id}/invoices/${invoice.id}/payments`,
-      {
-        onSuccess() {
-          router.reload();
-        },
-      }
-    );
-  }
-};
 
 const isLoading = ref(false);
 router.on("start", (event) => {
@@ -252,11 +139,76 @@ const selectedMonthName = computed(() => {
     return pageState.dates.startDate;
   }
 });
+
+const { t } = useI18n();
+
+const propertyStats = computed(() => {
+  if (!props.invoices) return [];
+
+  console.log(props.invoices);
+  
+  return Object.entries(props.invoices).map(([ownerName, properties]: [string, any]) => {
+    return Object.entries(properties).map(([propertyId, propertyData]: [string, any]) => {
+      return {
+        ownerName: propertyData.ownerName,
+        propertyId: propertyData.propertyId,
+        propertyName: propertyData.propertyName,
+        totalUnits: propertyData.totalUnits,
+        
+        // Payment Status
+        paid: propertyData.paid,
+        unpaid: propertyData.unpaid,
+        available: propertyData.available,
+        rented: propertyData.rented,
+        realRented: propertyData.realRented,
+        
+        // Unit Status
+        building: propertyData.building,
+        maintenance: propertyData.maintenance,
+        
+        // Rent Status
+        active: propertyData.active,
+        late: propertyData.late,
+        grace: propertyData.grace,
+        cancelled: propertyData.cancelled,
+        expired: propertyData.expired,
+        
+        // Unit Details
+        totalPrice: propertyData.totalPrice,
+        totalCommission: propertyData.totalCommission,
+        averagePrice: propertyData.averagePrice,
+        averageCommission: propertyData.averageCommission,
+        
+        // Unit Types
+        byBedrooms: propertyData.byBedrooms,
+        byBathrooms: propertyData.byBathrooms,
+        
+        // Amenities
+        amenities: propertyData.amenities,
+        
+        // Rates
+        occupancyRate: propertyData.occupancyRate,
+        maintenanceRate: propertyData.maintenanceRate,
+        buildingRate: propertyData.buildingRate,
+        revenueRate: propertyData.revenueRate
+      };
+    });
+  }).flat();
+});
 </script>
 
 <template>
-  <AppLayout :title="sectionLabel">
+  <AppLayout :title="'Occupancy Report - ' + selectedMonthName">
     <template #title v-if="isMobile">
+      <BaseSelect
+             class="min-w-max"
+             size="large"
+              v-model="pageState.filters.owner"
+             endpoint="/api/clients?filter[is_owner]=1"
+             :placeholder="$t('select an owner')"
+             label="display_name"
+             track-by="id"
+           />
       <AtDatePager
         class="h-12 ml-4 border-none bg-base-lvl-1 text-body w-44"
         v-model:startDate="pageState.dates.startDate"
@@ -284,143 +236,103 @@ const selectedMonthName = computed(() => {
     </template>
 
     <div class="pt-16 mx-auto md:py-10 sm:px-6 lg:px-8">
-      <section class="px-4 bg-base-lvl-3">
-        <article v-for="(details, ownerName) in invoices" :key="ownerName" class="mb-5">
-          <header class="py-2 font-bold">
-            {{
-              $t(":owner, (:count) units", {
-                owner: ownerName,
-                count: details.total,
-              })
-            }}
-          </header>
-          <section v-for="propertyUnits in details.properties">
-            <InvoiceTable
-              :invoice-data="propertyUnits"
-              :is-loading="isLoading"
-              class="mt-0 rounded-md bg-base-lvl-3"
-              :responsive-actions="{
-                payment: handlePayment,
-                download: printExternal,
-                delete: onDelete,
-              }"
-            >
-              <template v-slot:concept="{ row }">
-                <section v-if="!isLoading">
-                  <p>
-                    <Link
-                      :href="`/${row.type == 'INVOICE' ? 'invoices' : 'bills'}/${row.id}`"
-                      class="inline-flex justify-between text-sm text-blue-400 capitalize border-b border-blue-400 border-dashed cursor-pointer"
-                      :title="row.description"
-                    >
-                      <section>
-                        {{ row.concept }}
-                        <span class="font-bold text-gray-300">
-                          {{ row.series }} #{{ row.number }}
-                        </span>
-                      </section>
-                    </Link>
-                  </p>
-                  <p class="flex items-center mt-2">
-                    <IClarityContractLine class="mr-2" />
-                    {{ row.client_name }}
-                    <ElTag
-                      :type="getRentStatusColor(row.rent_status)"
-                      class="ml-2"
-                      v-if="row.rent_status"
-                    >
-                      {{ $t(row.rent_status ?? "") }} {{ row.move_out_at }}
-                    </ElTag>
-                  </p>
-                </section>
-                <ElSkeleton :rows="1" animated v-else />
-              </template>
-              <template v-slot:actions="{ row }">
-                <div class="flex items-center justify-end space-x-2s group">
-                  <div
-                    class="text-sm font-bold capitalize"
-                    :class="getStatusColor(row.status)"
-                  >
-                    <i :class="getStatusIcon(row.status)" />
-                    {{ getStatus(row.status) }}
-                  </div>
-                  <div class="flex">
-                    <Link
-                      class="relative inline-block px-5 py-2 ml-4 overflow-hidden font-bold transition rounded-md cursor-pointer hover:bg-primary hover:text-white text-body focus:outline-none hover:bg-opacity-80 min-w-max"
-                      :href="`/properties/${row.property_id}?unit=${row.id}`"
-                    >
-                      <IMdiChevronRight />
-                    </Link>
-                    <AppButton
-                      @click="handlePayment(row)"
-                      variant="inverse-secondary"
-                      class="flex items-center justify-center"
-                      v-if="row?.status !== 'paid' && filters.section !== 'commissions'"
-                      title="Pagar"
-                    >
-                      <IIcSharpPayment />
-                    </AppButton>
-                    <AppButton
-                      @click="deleteRentPayments(row)"
-                      :disabled="deletePaymentForm.processing"
-                      variant="error"
-                      class="flex items-center justify-center"
-                      v-else
-                      title="Eliminar pago"
-                    >
-                      <IMdiReceiptTextRemove />
-                    </AppButton>
-                    <div class="flex space-x-2">
-                      <AppButton
-                        class="flex flex-col items-center justify-center transition hover:text-primary hover:border-primary-400"
-                        variant="neutral"
-                        title="Imprimir"
-                        :processing="isPrinting == row.id"
-                        :disabled="isPrinting == row.id"
-                        @click="printExternal(row)"
-                      >
-                        <IMdiFile />
-                      </AppButton>
-                      <AppButton
-                        v-if="filters.section == 'bills' && row.status != 'paid'"
-                        class="mr-2"
-                        variant="neutral"
-                        :process="InteractionsState.isGeneratingDistribution"
-                        @click="
-                          clientInteractions.generateOwnerDistribution(
-                            row.contact_id,
-                            row.id
-                          )
-                        "
-                      >
-                        Re-generar
-                      </AppButton>
-                    </div>
-                    <AppButton
-                      variant="neutral"
-                      class="flex flex-col items-center justify-center transition hover:text-error hover:border-red-400"
-                      @click="onDelete(row)"
-                      title="Eliminar"
-                    >
-                      <IMdiTrash />
-                    </AppButton>
-                  </div>
-                </div>
-              </template>
-            </InvoiceTable>
-          </section>
-        </article>
-      </section>
-    </div>
+      <!-- Total Statistics -->
+      <div class="grid grid-cols-1 gap-4 mb-8 md:grid-cols-2">
+        <div class="p-4 bg-white rounded-lg shadow-sm">
+          <h3 class="text-lg font-semibold text-gray-800">Total Units</h3>
+          
+          <p class="text-3xl font-bold text-gray-900 mb-4">{{ total }}</p>
+          
+          <div class="grid grid-cols-2 gap-3">
+            <div class="flex flex-col">
+              <span class="text-sm font-medium text-green-600">Paid Units</span>
+              <span class="text-xl font-semibold text-green-700">{{ paid }}</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-sm font-medium text-red-600">Unpaid Units</span>
+              <span class="text-xl font-semibold text-red-700">{{ unpaid }}</span>
+            </div>
+          </div>
+          
+          <div class="mt-3 bg-gray-100 rounded-full h-2 overflow-hidden">
+            <div class="h-full bg-green-500" 
+                 :style="{ width: ((paid / total) * 100) + '%' }"></div>
+          </div>
+        </div>
 
-    <div id="invoice-content" v-if="selectedInvoice">
-      <Simple
-        v-if="selectedInvoice?.invoice"
-        :user="user"
-        :type="type"
-        :business-data="selectedInvoice.businessData"
-        :invoice-data="selectedInvoice.invoice"
-      />
+        <div class="p-4 bg-white rounded-lg shadow-sm">
+          <h3 class="text-lg font-semibold text-gray-800">Unit Status</h3>
+          <p class="text-3xl font-bold text-gray-900 mb-4">{{ total }}</p>
+          
+          <div class="grid grid-cols-2 gap-3">
+            <div class="flex flex-col">
+              <span class="text-sm font-medium text-yellow-600">Rented Units</span>
+              <span class="text-xl font-semibold text-yellow-700">{{ rented }}</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-sm font-medium text-blue-600">Available Units</span>
+              <span class="text-xl font-semibold text-blue-700">{{ available }}</span>
+            </div>
+          </div>
+          
+          <div class="mt-3 bg-gray-100 rounded-full h-2 overflow-hidden">
+            <div class="h-full bg-yellow-500" 
+                 :style="{ width: ((rented / total) * 100) + '%' }"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Property Statistics -->
+      <div class="space-y-6">
+        <div v-for="stat in propertyStats" :key="stat.propertyId" class="p-4 bg-white rounded-lg shadow">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">{{ stat.propertyName }}</h2>
+            <span class="text-sm text-gray-600">{{ $t('Owner') }}: {{ stat.ownerName }}</span>
+          </div>
+          
+          <PropertyPaymentStatus
+            :paid="stat.paid"
+            :unpaid="stat.unpaid"
+            :available="stat.available"
+            :rented="stat.rented"
+          />
+
+          <PropertyUnitStatus
+            :building="stat.building"
+            :maintenance="stat.maintenance"
+            :rented="stat.rented"
+            :available="stat.available"
+          />
+
+          <PropertyUnitDetails
+            :total-price="stat.totalPrice"
+            :total-commission="stat.totalCommission"
+            :average-price="stat.averagePrice"
+            :average-commission="stat.averageCommission"
+          />
+
+          <PropertyUnitDistribution
+            :by-bedrooms="stat.byBedrooms"
+            :by-bathrooms="stat.byBathrooms"
+          />
+
+          <PropertyAmenities
+            :amenities="stat.amenities"
+          />
+          
+          <div class="mt-4">
+            <div class="flex justify-between text-sm text-gray-600">
+              <span>{{ t('Total Units') }}: {{ stat.totalUnits }}</span>
+              <div class="space-x-4">
+                <span>{{ t('Occupancy Rate') }}: {{ stat.occupancyRate.toFixed(1) }}%</span>
+                <span>{{ t('Maintenance Rate') }}: {{ stat.maintenanceRate.toFixed(1) }}%</span>
+                <span>{{ t('Building Rate') }}: {{ stat.buildingRate.toFixed(1) }}%</span>
+                <span>{{ t('Revenue Rate') }}: {{ formatMoney(stat.revenueRate) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </AppLayout>
 </template>

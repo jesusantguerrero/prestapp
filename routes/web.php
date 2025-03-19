@@ -120,10 +120,15 @@ Route::middleware([
     Route::post('/invoices/{invoice}/sign', [InvoiceController::class, 'signInvoice']);
     // Bills
     Route::resource('/bills', InvoiceController::class);
-  });
+});
 
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/admin/data-quality', [App\Http\Controllers\Admin\DataQualityController::class, 'index'])
+        ->name('admin.data-quality');
+        // ->middleware('can:manage-data-quality');
+});
 
-  // Admin
+// Admin
 Route::group([],  app_path('/Domains/Admin/routes.php'));
 // Loans
 Route::group([],  app_path('/Domains/Loans/routes.php'));

@@ -16,8 +16,45 @@ import { formatMoney } from "@/utils/formatMoney";
 import { useTransactionModal } from "@/Modules/transactions/useTransactionModal";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
 import { useResponsive } from "@/utils/useResponsive";
+import UnitsWithExpiredRents from "@/Components/Dashboard/UnitsWithExpiredRents.vue";
 
 const { t } = useI18n();
+
+interface IStatDetails {
+  total: number;
+  income?: number;
+  outcome?: number;
+}
+
+interface IExpiringRents {
+  expired: number;
+  in_month: number;
+  within_three_months: number;
+}
+
+interface IWelcomeWidgetProps {
+  message: string;
+  username?: string;
+  cards?: any[];
+  actionLabel?: string;
+  actionLink?: string;
+  rounded?: boolean;
+  size?: string;
+  class?: string;
+}
+
+interface IIncomeSummaryProps {
+  chart: {
+    series: any[];
+    options: Record<string, any>;
+  };
+  labels?: string[];
+  type: string;
+  title: string;
+  description: string;
+  sections?: any[];
+  sectionTotalField: string;
+}
 
 const props = defineProps({
   revenue: {
@@ -71,7 +108,7 @@ const props = defineProps({
     type: Boolean,
   },
   expiringRents: {
-    type: Object,
+    type: Object as () => IExpiringRents,
     default() {
       return {
         expired: 0,
@@ -83,11 +120,11 @@ const props = defineProps({
   rentStats: {
     type: Object,
   },
+  unitsRequiringAction: {
+    type: Array,
+    default: () => [],
+  },
 });
-
-interface IStatDetails {
-  total: number;
-}
 
 const comparisonRevenue = {
   headers: {
@@ -301,151 +338,147 @@ export default {
       :description="$t('Initial steps to setup your system')"
       @close="isOnboardingOpen = !isOnboardingOpen"
     />
-    <section class="w-full md:flex md:space-x-4">
-      <div class="flex flex-col justify-between w-full md:w-9/12">
-        <WelcomeWidget :message="$t('Performance of the month')" class="shadow-sm">
+    <section class="w-full space-y-4">
+      <UnitsWithExpiredRents :units="unitsRequiringAction" />
+      <div class="md:flex md:space-x-4">
+        <div class="flex flex-col justify-between w-full md:w-9/12">
+          <WelcomeWidget 
+            :message="$t('Performance of the month')" 
+            class="shadow-sm"
+            rounded
+            size="default"
+          >
+            <template #content>
+              <section class="flex py-4 space-y-4 md:grid md:grid-cols-2 md:divide-x-2">
+                <SectionFooterCard
+                  :title="$t('Gross earnings')"
+                  :value="formatMoney(paidCommissions.totalInPeriod)"
+                  class="w-full"
+                >
+                  <template #footer>
+                    <p class="flex items-center text-xs text-success md:text-sm" rounded>
+                      <IMdiArrowUpThick />
+                      <span class="font-bold">
+                        {{ formatMoney(accounts.cash_and_bank?.at(0)?.income ?? 0) }}
+                        {{ !isMobile ? $t("Inflow") : "" }}
+                      </span>
+                    </p>
+                    <p class="flex items-center text-xs text-error/70 md:text-sm" rounded>
+                      <IMdiArrowDownThick />
+                      <span class="font-bold">
+                        {{ formatMoney(accounts.cash_and_bank?.at(0)?.outcome ?? 0) }}
+                        {{ !isMobile ? $t("Outflow") : "" }}
+                      </span>
+                    </p>
+                  </template>
+                </SectionFooterCard>
+                <SectionFooterCard
+                  :title="$t('Pending balance')"
+                  :value="`${formatMoney(stats.outstanding)} (${formatMoney(
+                    stats.outstanding_in_month
+                  )})`"
+                  class="md:pl-6 w-full"
+                  value-link="/property-reports?filters[owner]=&filters[property]=&filters[section]=invoices"
+                >
+                  <template #footer class="flex">
+                    <Link
+                      class="flex items-center px-2 -ml-6 text-xs md:text-sm text-error/70 hover:bg-error/10"
+                      rounded
+                      href="/property-reports?filters[owner]=&filters[property]=&filters[section]=invoices&filters[status]=overdue"
+                    >
+                      <IMdiFileDocumentAlertOutline class="mr-2" />
+                      <span class="font-bold">
+                        {{ formatMoney(stats.overdue) }} {{ $t("Late") }}
+                      </span>
+                    </Link>
+                  </template>
+                </SectionFooterCard>
+              </section>
+            </template>
+          </WelcomeWidget>
+          <Link
+            href="/property-reports"
+            class="flex items-center justify-center w-full h-10 mt-4 transition-all rounded-md shadow-sm hover:text-primary hover:font-bold bg-base-lvl-3 md:mt-4"
+          >
+            {{ $t("Pending owner draws") }}
+            <IMdiChevronRight />
+            <span> {{ pendingDraws }} </span>
+          </Link>
+        </div>
+        <WelcomeWidget
+          :message="$t('Fast access')"
+          class="w-full mt-4 md:mt-0 md:w-3/12"
+          rounded
+          size="default"
+        >
           <template #content>
-            <section class="flex py-4 space-y-4 md:grid md:grid-cols-2 md:divide-x-2">
-              <SectionFooterCard
-                :title="$t('Gross earnings')"
-                :value="formatMoney(paidCommissions.totalInPeriod)"
-                class="w-full"
-              >
-                <template #footer>
-                  <p class="flex items-center text-xs text-success md:text-sm" rounded>
-                    <IMdiArrowUpThick />
-                    <span class="font-bold">
-                      {{ formatMoney(accounts.cash_and_bank?.at(0)?.income ?? 0) }}
-                      {{ !isMobile ? $t("Inflow") : "" }}
-                    </span>
-                  </p>
-                  <p class="flex items-center text-xs text-error/70 md:text-sm" rounded>
-                    <IMdiArrowDownThick />
-                    <span class="font-bold">
-                      {{ formatMoney(accounts.cash_and_bank?.at(0)?.outcome ?? 0) }}
-                      {{ !isMobile ? $t("Outflow") : "" }}
-                    </span>
-                  </p>
-                </template>
-              </SectionFooterCard>
-              <SectionFooterCard
-                :title="$t('Pending balance')"
-                :value="`${formatMoney(stats.outstanding)} (${formatMoney(
-                  stats.outstanding_in_month
-                )})`"
-                class="md:pl-6 w-full"
-                value-link="/property-reports?filters[owner]=&filters[property]=&filters[section]=invoices"
-              >
-                <template #footer class="flex">
-                  <Link
-                    class="flex items-center px-2 -ml-6 text-xs md:text-sm text-error/70 hover:bg-error/10"
-                    rounded
-                    href="/property-reports?filters[owner]=&filters[property]=&filters[section]=invoices&filters[status]=overdue"
-                  >
-                    <IMdiFileDocumentAlertOutline class="mr-2" />
-                    <span class="font-bold">
-                      {{ formatMoney(stats.overdue) }} {{ $t("Late") }}
-                    </span>
-                  </Link>
-                </template>
-              </SectionFooterCard>
-            </section>
+            <FastAccessOptions />
           </template>
         </WelcomeWidget>
-        <Link
-          href="/property-reports"
-          class="flex items-center justify-center w-full h-10 mt-4 transition-all rounded-md shadow-sm hover:text-primary hover:font-bold bg-base-lvl-3 md:mt-4"
-        >
-          {{ $t("Pending owner draws") }}
-          <IMdiChevronRight />
-          <span> {{ pendingDraws }} </span>
-        </Link>
       </div>
-      <WelcomeWidget
-        :message="$t('Fast access')"
-        class="w-full mt-4 md:block md:mt-0 md:w-3/12"
-      >
-        <template #content>
-          <FastAccessOptions />
-        </template>
-      </WelcomeWidget>
     </section>
     <section class="flex flex-col mt-8 lg:space-x-4 lg:flex-row">
       <section class="order-2 mt-4 lg:w-9/12 lg:mt-0 lg:order-1">
-          <WelcomeWidget
-            :message="$t('month performance')"
-            class="order-2 mt-4 lg:mt-0 lg:order-1"
-          >
-            <template #actions>
-              <section class="flex space-x-2 w-full justify-end">
-                <button
-                  @click="summaryType = 'gains'"
-                  class="bg-base-lvl-2 capitalize py-1 rounded-3xl text-body-1 px-4 border border-transparent"
-                  :class="{
-                    'bg-primary/10 border-primary  text-primary': summaryType == 'gains',
-                  }"
-                >
-                  {{ $t("earnings") }}
-                </button>
-                <button
-                  @click="summaryType = 'cash-flow'"
-                  class="bg-base-lvl-2 capitalize py-1 rounded-3xl text-body-1 px-4 border border-transparent"
-                  :class="{
-                    'bg-primary/10 border-primary  text-primary':
-                      summaryType == 'cash-flow',
-                  }"
-                >
-                  {{ $t("cashflow") }}
-                </button>
-              </section>
-            </template>
-            <template #content>
-              <IncomeSummaryWidget
+        <WelcomeWidget
+          :message="$t('month performance')"
+          class="order-2 mt-4 lg:mt-0 lg:order-1"
+          rounded
+          size="default"
+        >
+          <template #actions>
+            <section class="flex space-x-2 w-full justify-end">
+              <button
+                @click="summaryType = 'gains'"
+                class="bg-base-lvl-2 capitalize py-1 rounded-3xl text-body-1 px-4 border border-transparent"
+                :class="{
+                  'bg-primary/10 border-primary  text-primary': summaryType == 'gains',
+                }"
+              >
+                {{ $t("earnings") }}
+              </button>
+              <button
+                @click="summaryType = 'cash-flow'"
+                class="bg-base-lvl-2 capitalize py-1 rounded-3xl text-body-1 px-4 border border-transparent"
+                :class="{
+                  'bg-primary/10 border-primary  text-primary':
+                    summaryType == 'cash-flow',
+                }"
+              >
+                {{ $t("cashflow") }}
+              </button>
+            </section>
+          </template>
+          <template #content>
+            <IncomeSummaryWidget
               v-if="summaryType == 'cash-flow'"
               :chart="comparisonRevenue"
               :style="{ height: '300px' }"
               :labels="getMonthsOfYear()"
+              type="line"
+              title="Revenue Comparison"
+              description="Monthly revenue comparison"
+              sectionTotalField="total"
             />
-              <ChartBar
-                v-else
-                class="bg-white rounded-lg overflow-hidden"
-                title="Ganancias"
-                description="Ganancias por comisiones en el año"
-                :chart="interestPerformance"
-                height="260px"
-                :headerInfo="interestPerformance.headers"
-              />
-            </template>
-          </WelcomeWidget>
-
+            <ChartBar
+              v-else
+              class="bg-white rounded-lg overflow-hidden"
+              title="Ganancias"
+              description="Ganancias por comisiones en el año"
+              :chart="interestPerformance"
+              height="260px"
+              :headerInfo="interestPerformance.headers"
+            />
+          </template>
+        </WelcomeWidget>
       </section>
 
       <article class="order-1 md:space-y-2 lg:w-3/12 lg:order-2">
-        <div
-          class="justify-between block mb-2 space-y-2 dashboard-bank-accounts"
-        >
-
-        <WidgetPropertiesStats
-          :total="rentStats?.total"
-          :description="$t('Properties')"
-          :unit-stats="unitStats"
-        />
-        <!-- <BudgetProgress
-        :goal="totals?.total"
-        :current="totals?.paid"
-        class="h-2.5 text-white rounded-md"
-        :progress-class="['bg-primary', 'bg-primary/20']"
-        :show-labels="false"
-      >
-        <template v-slot:before="{ progress }">
-          <header class="mb-1 font-bold flex justify-between">
-            <span>
-              {{ formatMoney(totals?.paid) }} of {{ formatMoney(totals?.total) }}
-            </span>
-            <span class="text-primary">{{ progress }}% </span>
-          </header>
-        </template>
-      </BudgetProgress> -->
+        <div class="justify-between block mb-2 space-y-2 dashboard-bank-accounts">
+          <WidgetPropertiesStats
+            :total="rentStats?.total"
+            :description="$t('Properties')"
+            :unit-stats="unitStats"
+          />
           <AtBackgroundIconCard
             class="md:h-32 border-2 cursor-pointer text-secondary bg-secondary/10 border-secondary/20"
             icon="fas fa-wallet"
@@ -466,13 +499,15 @@ export default {
           class="text-body-1 shadow-sm"
           :action-label="$t('See details')"
           action-link="/rent-renewals/"
+          rounded
+          size="default"
         >
           <template #content>
             <ExpiringRentsChart :stats="expiringRents" :style="{ height: '390px' }" />
           </template>
-      </WelcomeWidget>
+        </WelcomeWidget>
       </article>
-    <RentsWidget class="md:w-7/12 mt-4 shadow-sm bg-base-lvl-3" />
+      <RentsWidget class="md:w-7/12 mt-4 shadow-sm bg-base-lvl-3" />
     </section>
   </main>
 </template>

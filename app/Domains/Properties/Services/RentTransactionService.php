@@ -2,10 +2,12 @@
 
 namespace App\Domains\Properties\Services;
 
-use App\Domains\Accounting\Helpers\InvoiceHelper;
+use Illuminate\Support\Facades\DB;
 use App\Domains\Properties\Models\Rent;
 use Insane\Journal\Models\Core\Payment;
 use Insane\Journal\Models\Invoice\Invoice;
+use App\Domains\Accounting\Helpers\InvoiceHelper;
+use App\Domains\Properties\Enums\PropertyInvoiceTypes;
 
 class RentTransactionService {
     public  static function orphansInvoices($teamId, $with = []) {
@@ -201,5 +203,92 @@ class RentTransactionService {
           ->causedBy($rent)
           ->log("System {$description}");
       }
+    }
+
+    public static function removeChargeInvoices($teamId) {
+      $invoices = Invoice::where([
+        'invoices.team_id' => $teamId,
+        'invoices.type' => 'INVOICE',
+        'invoiceable_type' => Rent::class,
+        'category_type' => PropertyInvoiceTypes::LateFee,
+      ])
+      ->select("invoices.*")
+      ->whereIn('invoices.status', [Invoice::STATUS_UNPAID, Invoice::STATUS_OVERDUE])
+      ->join('rents', 'rents.id', '=', 'invoices.invoiceable_id')
+      ->get();
+
+      foreach ($invoices as $invoice) {
+          $description = "removing invoice {$invoice->description} charge from {$invoice?->due_date} because charges are not automatic anymore {$invoice->rent_move_out_at}";
+          echo $description . PHP_EOL;
+          Invoice::destroy($invoice->id);
+          $rent = Rent::find($invoice->invoiceable_id);
+
+          activity()
+          ->causedBy($rent)
+          ->log("System {$description}");
+      }
+    }
+
+
+    public static function removeOverContractedRentInvoice($teamId = null, $state = null) {
+      $rent = Rent::whereRaw('DATEDIFF(next_invoice_date, now()) > 365')
+      ->whereNotIn('status', [Rent::STATUS_CANCELLED])
+      ->when($teamId, fn ($q) => $q->where('team_id', $teamId))
+      ->get();
+
+      foreach ($rent as $rent) {
+        $rent->invoices()->select('id')
+        ->where([
+          'invoices.type' => 'INVOICE',
+          'invoiceable_type' => Rent::class,
+        ])
+        ->whereIn('invoices.status', [Invoice::STATUS_UNPAID, Invoice::STATUS_OVERDUE])
+        ->whereRaw('DATEDIFF(due_date, now()) > 365')->get();
+
+        foreach ($rent->invoices as $invoice) {
+          $description = "removing invoice {$invoice->description} of {$invoice?->due_date} because too large";
+          echo $description . PHP_EOL;
+          Invoice::destroy($invoice->id);
+          Invoice::destroy($invoice->id);
+        }
+
+        $generatedDates = $rent->invoices()->select('due_date')->orderBy('due_date')->get()->pluck('due_date');
+        $rent->update([
+          'next_invoice_date' => $generatedDates->last(),
+          'generated_invoice_dates' => $generatedDates->all()
+        ]);
+      }
+    }
+
+    public static function getSoBackInvoices(int $teamId, $startDate = null, $endDate = null) {
+        $today = now()->timezone('America/Santo_Domingo')->format('Y-m-d');
+
+          $rentClients = DB::table('invoices')
+          ->selectRaw('invoices.id id')
+          // ->selectRaw('invoices.id, concat(clients.names," ", clients.id, " ", sum(invoices.debt)) contact,  group_concat(concat(invoices.due_date, "(", invoices.debt, ")")) ids')
+            ->where([
+              'invoices.team_id' => $teamId,
+              'invoices.type' => 'INVOICE',
+            ])
+            ->where(fn ($q) => $q->where('invoiceable_type', Rent::class)->orWhereNull('invoiceable_type'))
+            ->where('debt', '>', 0)
+            ->when($endDate, fn ($q) => $q->where('due_date', '<=', $endDate))
+            ->when($today, fn ($q) => $q->where('due_date', '<', $today))
+            ->where('debt', '>', 0)
+            ->where('total', '>', 0)
+            ->orderByDesc('invoices.due_date')
+            // ->groupBy('invoices.client_id')
+            ->join('clients', 'clients.id', '=', 'invoices.client_id')
+            ->get();
+
+        echo  count($rentClients) . " clients with back invoices" . PHP_EOL;
+        foreach ($rentClients as $clientInvoice) {
+          print_r($clientInvoice);
+          Invoice::destroy($clientInvoice->id);
+          // $description = "removing invoice {$invoice->client} of {$invoice?->due_date} because too large";
+          echo PHP_EOL;
+        }
+        echo  count($rentClients) . " clients with back invoices" . PHP_EOL;
+
     }
 }

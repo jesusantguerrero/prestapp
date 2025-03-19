@@ -15,24 +15,6 @@ class AccountStatWidget {
   public static function stats(int $teamId, $startDate = null, $endDate = null) {
     $today = now()->timezone('America/Santo_Domingo')->format('Y-m-d');
 
-
-    $loans = LoanInstallment::byTeam($teamId)
-      ->where('amount_due', '>', 0)
-      ->when($startDate, fn ($q) => $q->where('due_date', '>=', $startDate))
-      ->when($endDate, fn ($q) => $q->where('due_date', '<=', $endDate))
-      ->when($endDate && $startDate, fn ($q) => $q->where('due_date', '<=', $today))
-      ->selectRaw('amount_due, due_date')
-      ->select(DB::raw("
-        sum(COALESCE(amount_due, 0)) outstanding,
-        sum(COALESCE(
-          CASE
-          WHEN now() > due_date THEN amount_due
-          ELSE 0
-        END, 0)) overdue, team_id")
-      )->first();
-
-
-
       $stats = DB::table('invoices')
       ->selectRaw('clients.names contact, clients.id contact_id, invoices.debt, invoices.due_date, invoices.id id, invoices.concept')
         ->where([
@@ -45,6 +27,8 @@ class AccountStatWidget {
         ->when($endDate && $startDate, fn ($q) => $q->where('due_date', '<=', $today))
         ->selectRaw("
           COALESCE(sum(debt), 0) as outstanding,
+          GROUP_CONCAT(CASE
+          WHEN debt > 0 then concat(invoices.id, ':', invoices.due_date) else '' end) as outstanding_invoices,
           COALESCE(sum(
             CASE
             WHEN due_date < ? AND invoices.status = ? THEN debt
@@ -74,14 +58,7 @@ class AccountStatWidget {
         ])->join('clients', 'clients.id', '=', 'invoices.client_id')
         ->first();
 
-        $stats = collect([$loans, $stats])->reduce(function($stats, $item) {
-        $stats['outstanding'] += $item->outstanding;
-        $stats['overdue']  += $item->overdue;
-        return $stats;
-      }, [
-        "outstanding" => 0,
-        "overdue" => 0
-      ]);
+        // dd($stats);
 
       return $stats;
   }

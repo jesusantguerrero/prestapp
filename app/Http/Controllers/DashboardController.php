@@ -12,6 +12,8 @@ use Insane\Journal\Models\Invoice\Invoice;
 use App\Domains\CRM\Services\ClientService;
 use App\Domains\Loans\Services\LoanService;
 use App\Domains\Properties\Models\Property;
+use App\Domains\Properties\Models\PropertyUnit;
+use App\Domains\Properties\Models\Rent;
 use App\Domains\Loans\Models\LoanInstallment;
 use App\Domains\Properties\Services\RentService;
 use App\Domains\Properties\Services\OwnerService;
@@ -19,6 +21,7 @@ use App\Http\Controllers\Traits\HasEnrichedRequest;
 use App\Domains\Accounting\Widget\AccountStatWidget;
 use App\Domains\Properties\Services\PropertyService;
 use App\Domains\Properties\Enums\PropertyInvoiceTypes;
+use App\Domains\Properties\Services\PropertyUnitService;
 
 class DashboardController extends Controller
 {
@@ -74,7 +77,6 @@ class DashboardController extends Controller
       $rentTotals = RentService::invoiceByPaymentStatus($teamId, $startDate, $endDate);
       $monthPassedInYear = now()->diffInMonths(now()->startOfYear());
 
-
       return inertia('Dashboard/Index',
       [
           "revenue" => $reportHelper->mapInMonths($reportHelper->getTransactionsByAccount($teamId,
@@ -110,6 +112,7 @@ class DashboardController extends Controller
           "paidCommissions" => AccountStatWidget::accountNetByPeriod($teamId, 'real_state_operative', 'month', $monthPassedInYear),
           'section' => "realState",
           "serverSearchOptions" => $this->getServerParams(),
+          "unitsRequiringAction" => PropertyUnitService::getUnitsRequiringAction($teamId),
         ]);
     }
 

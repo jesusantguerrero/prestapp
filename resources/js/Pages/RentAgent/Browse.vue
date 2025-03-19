@@ -23,6 +23,7 @@ import {
 import { ElMessageBox } from "element-plus";
 import { getStatus, getStatusColor, getStatusIcon } from "@/Modules/invoicing/constants";
 import axios from "axios";
+import OccupancyReport from '@/Components/Reports/OccupancyReport.vue'
 
 const props = defineProps({
   invoices: {
@@ -62,6 +63,10 @@ const props = defineProps({
   section: {
     type: String,
   },
+  selectedInvoice: {
+    type: Object,
+    required: true
+  }
 });
 
 interface IFilter {
@@ -133,6 +138,7 @@ const handlePayment = (invoice: IInvoice) => {
 interface InvoiceResponse {
   invoice: IInvoice;
   businessData: Record<string, string>;
+  report: any;
 }
 
 const selectedInvoice = ref<InvoiceResponse | null>(null);
@@ -142,7 +148,7 @@ const isPrinting = ref<number | boolean>(false);
 function printExternal(invoice: IInvoice) {
   isPrinting.value = invoice.id;
   axios
-    .get(`/invoices/${invoice.id}/preview?json=true`)
+    .get(`/invoices/${invoice.id}/preview?json=true&report=true`)
     .then(({ data }) => {
       selectedInvoice.value = data;
       nextTick(() => {
@@ -287,14 +293,23 @@ const onDelete = async (invoice: IInvoice) => {
       </InvoiceTable>
     </div>
 
-    <div id="invoice-content" v-if="selectedInvoice">
-      <Simple
-        v-if="selectedInvoice?.invoice"
-        :user="user"
-        :type="type"
-        :business-data="selectedInvoice.businessData"
-        :invoice-data="selectedInvoice.invoice"
-      />
+    <div class="print-container" id="invoice-content">
+      <div class="invoice-section">
+        <Simple
+          v-if="selectedInvoice?.invoice"
+          :user="user"
+          :type="type"
+          :business-data="selectedInvoice.businessData"
+          :invoice-data="selectedInvoice.invoice"
+        />
+      </div>
+
+      <div class="property-section mt-8 print:mt-0 print:page-break-before-always">
+        <OccupancyReport
+          v-if="selectedInvoice?.report"
+          :report="selectedInvoice.report"
+        />
+      </div>
     </div>
   </AppLayout>
 </template>
@@ -325,6 +340,16 @@ const onDelete = async (invoice: IInvoice) => {
     button {
       margin-left: auto;
     }
+  }
+}
+
+.print-container {
+  @apply space-y-8 print:space-y-0;
+}
+
+@media print {
+  .property-section {
+    page-break-before: always;
   }
 }
 </style>
