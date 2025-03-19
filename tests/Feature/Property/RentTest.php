@@ -3,6 +3,7 @@
 namespace Tests\Feature\Property;
 
 use App\Domains\CRM\Enums\ClientStatus;
+use App\Domains\Properties\Models\PropertyUnit;
 use App\Domains\Properties\Models\Rent;
 use Insane\Journal\Models\Invoice\Invoice;
 use Tests\Feature\Property\Helpers\PropertyBase;
@@ -23,6 +24,23 @@ class RentTest extends PropertyBase
   public function testItShouldCreateRent() {
     $this->seed();
     $this->actingAs($this->user);
+
+    $response = $this->post('/rents', $this->rentData);
+    $response->assertStatus(302);
+    $this->assertCount(1, Rent::all());
+  }
+  public function testItShouldNotCreateDuplicatedRents() {
+    $this->seed();
+    $this->actingAs($this->user);
+
+    $response = $this->post('/rents', $this->rentData);
+    $response->assertStatus(302);
+    $this->assertCount(1, Rent::all());
+
+    $rent = Rent::first();
+    $rent->unit->update([
+      'status' => PropertyUnit::STATUS_AVAILABLE,
+    ]);
 
     $response = $this->post('/rents', $this->rentData);
     $response->assertStatus(302);
