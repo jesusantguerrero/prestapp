@@ -7,9 +7,9 @@ use App\Domains\Atmosphere\DTO\ReportVisualData;
 use Illuminate\Support\Carbon;
 
 class OwnerReportService {
-    public static function occupancyMonth($teamId, $ownerId, $date) {
+    public static function occupancyMonth($teamId, $ownerId, $date, $invoiceIds) {
       $referenceDate = Carbon::createFromFormat('Y-m-d', $date);
-      $data = OwnerService::occupancyByMonth($teamId, $date, $ownerId);
+      $data = OwnerService::getOccupancyByMonth($teamId, $date, $ownerId, $invoiceIds);
 
       return new ReportData(
         __("Occupancy report"),

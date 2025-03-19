@@ -8,7 +8,7 @@ import WelcomeWidget from "@/Components/WelcomeWidget.vue";
 import DashboardTemplate from "./Partials/AdminTemplate.vue";
 
 const props = defineProps({
-  user: {
+  auth: {
     type: Object,
   },
   revenue: {
@@ -114,7 +114,8 @@ const comparisonRevenue = {
 </script>
 
 <template>
-  <DashboardTemplate :user="user">
+  {{ $props }}
+  <!-- <DashboardTemplate :user="auth.user">
     <header class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
       <WelcomeWidget
         message="Estadisticas de usuarios"
@@ -182,5 +183,5 @@ const comparisonRevenue = {
         </WelcomeWidget>
       </article>
     </section>
-  </DashboardTemplate>
+  </DashboardTemplate> -->
 </template>

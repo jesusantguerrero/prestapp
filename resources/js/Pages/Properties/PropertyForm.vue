@@ -195,10 +195,23 @@ const onCancel = () => {
         <template v-if="!properties?.id">
           <section v-for="(unit, index) in formData.units" class="">
             <header class="flex space-x-4 items-center justify-between">
-              <section class="grid grid-cols-4 gap-4 w-full">
+              <section class="flex space-x-4 items-center justify-between">
+                <AppFormField class="w-full" label="Nombre de unidad">
+                  <AtInput v-model="unit.name" class="w-full" rounded placeholder="Appto #512" />
+                </AppFormField>
                 <AppFormField class="w-full" :label="$t('rent price')" required>
                   <AtInput v-model="unit.price" class="w-full" rounded number-format />
                 </AppFormField>
+              </section>
+             
+              <button
+                class="bg-error/60 mt-4 justify-center flex text-white items-center h-8 w-8 rounded-full"
+                @click="removeUnit(index)"
+              >
+                <IMdiMinus />
+              </button>
+            </header>
+            <section class="grid grid-cols-4 gap-4 w-full">
                 <AppFormField class="w-full" label="Area" v-model="unit.area" rounded>
                   <template #prefix>
                     <span class="inline-blocks h-full flex items-center px-2">
@@ -232,13 +245,6 @@ const onCancel = () => {
                   </template>
                 </AppFormField>
               </section>
-              <button
-                class="bg-error/60 mt-4 justify-center flex text-white items-center h-8 w-8 rounded-full"
-                @click="removeUnit(index)"
-              >
-                <IMdiMinus />
-              </button>
-            </header>
             <AppFormField :label="$t('description')">
               <AtTextarea
                 v-model="unit.description"

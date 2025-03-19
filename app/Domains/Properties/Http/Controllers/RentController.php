@@ -71,13 +71,13 @@ class RentController extends InertiaController
 
     protected function createResource(Request $request, $postData)
     {
-        return RentService::createRent($postData);
+        return RentService::createRent($postData, $request->user());
     }
 
-    protected function updateResource($resource, $postData)
+    protected function updateResource(Request $request, $resource, $postData)
     {
       try {
-        RentService::updateRent($resource, $postData);
+        RentService::updateRent($resource, $postData, $request->user());
         return $resource;
       } catch (\Exception $e) {
         return redirect()->back()->withErrors(['default' => $e->getMessage()]);
@@ -94,12 +94,12 @@ class RentController extends InertiaController
     public function destroy(Request $request, int $id) {
       $resource = $this->model::findOrFail($id);
       try {
-        RentService::removeRent($resource);
+        RentService::removeRent($resource, $request->user());
         return redirect()->back();
       } catch (Exception $e) {
         return redirect()->back()->withErrors(['default' => $e->getMessage()]);
       }
-  }
+    }
 
     public function withPendingGeneration(RentService $rentService) {
       return inertia($this->templates['index'], [
@@ -184,6 +184,15 @@ class RentController extends InertiaController
       return [
         "expenses" => $rent->rentExpenses,
       ];
+    }
+
+    public function endTerm(Request $request, Rent $rent) {
+      try {
+        RentService::endTerm($rent, $this->getPostData(), $request->user());
+        return redirect()->back();
+      } catch (Exception $e) {
+        return redirect()->back()->withErrors(['default' => $e->getMessage()]);
+      }
     }
 
 }

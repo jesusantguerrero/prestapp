@@ -68,22 +68,29 @@ class InertiaController extends Controller {
         $postData = $request->post();
         $postData['user_id'] = $request->user()->id;
         $postData['team_id'] = $request->user()->current_team_id;
+        $isJson = $request->query('json');
 
         $this->validate($request, $this->getValidationRules($postData));
         try {
           $resource = $this->createResource($request, $postData);
 
           $this->afterSave($postData, $resource);
-          if ($this->responseType == 'inertia') {
+          if ($this->responseType == 'inertia' && !$isJson) {
               return redirect()->back();
           } else {
-              return $response->setContent($resource);
+              return $response->setContent([
+                'status' => 'success',
+                'data' => $resource
+              ]);
           }
         } catch (Exception $e) {
-          if ($this->responseType == 'inertia') {
+          if ($this->responseType == 'inertia' && !$isJson) {
             return redirect()->back()->withErrors($e->getMessage());
           } else {
-            return $response->setContent($resource);
+            return $response->setContent([
+              'status' => 'error',
+              'error' => $e->getMessage(),
+            ])->setStatusCode(400);
           }
         }
     }
@@ -95,7 +102,7 @@ class InertiaController extends Controller {
     public function update(Request $request, int $id) {
         $resource = $this->model::findOrFail($id);
         $postData = $request->post();
-        $resource = $this->updateResource($resource, $postData);
+        $resource = $this->updateResource($request, $resource, $postData);
         $this->afterSave($postData, $resource);
 
         if ($this->responseType == 'inertia') {
@@ -105,7 +112,7 @@ class InertiaController extends Controller {
         }
     }
 
-    protected function updateResource($resource, $postData) {
+    protected function updateResource(Request $request, $resource, $postData) {
       $resource->update($postData);
       return $resource;
     }

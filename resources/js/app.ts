@@ -11,7 +11,7 @@ import 'element-plus/dist/index.css'
 import VueApexCharts from 'vue3-apexcharts';
 import VueMultiselect from 'vue-multiselect';
 import { vRipple } from './utils/vRipple';
-import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
+// import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
 import { initWithLocale} from './plugins/i18n.ts';
 import { es , enUS } from "date-fns/locale";
 import setDefaultOptions from "date-fns/setDefaultOptions";
@@ -45,7 +45,7 @@ createInertiaApp({
             .use(ElementPlus)
             .use(initWithLocale(locale))
             .use(VueApexCharts)
-            .use(autoAnimatePlugin)
+            // .use(autoAnimatePlugin)
             .component('multiselect', VueMultiselect)
             .provide("router", router)
             .directive('ripple', vRipple)

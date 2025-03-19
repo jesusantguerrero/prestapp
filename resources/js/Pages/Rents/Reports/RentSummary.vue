@@ -13,6 +13,7 @@ import PropertySectionNav from "@/Pages/Properties/Partials/PropertySectionNav.v
 import AppButton from "@/Components/shared/AppButton.vue";
 import Simple from "@/Pages/Journal/Invoices/printTemplates/Simple.vue";
 import SectionNav from "@/Components/SectionNav.vue";
+import PropertyReport from '@/Components/Reports/PropertyReport.vue'
 
 import { formatDate, formatMoney } from "@/utils";
 import { IInvoice, IInvoiceWithRelations } from "@/Modules/invoicing/entities";
@@ -71,6 +72,10 @@ const props = defineProps({
     type: String,
   },
   serverSearchOptions: Object,
+  selectedInvoice: {
+    type: Object,
+    required: true
+  }
 });
 
 interface IFilter {
@@ -138,20 +143,18 @@ interface InvoiceResponse {
   businessData: Record<string, string>;
 }
 
-const selectedInvoice = ref<InvoiceResponse | null>(null);
-
 const { customPrint } = usePrint();
 const isPrinting = ref(false);
 function printExternal(invoice: IInvoice) {
   isPrinting.value = invoice.id;
   axios
-    .get(`/invoices/${invoice.id}/preview?json=true`)
+    .get(`/invoices/${invoice.id}/preview?json=true&report=true`)
     .then(({ data }) => {
-      selectedInvoice.value = data;
+      props.selectedInvoice = data;
       nextTick(() => {
         customPrint("invoice-content", {
           beforePrint() {
-            selectedInvoice.value = null;
+            props.selectedInvoice = null;
           },
           delay: 800,
         });
@@ -473,14 +476,25 @@ const invoiceGroups = computed(() => {
       </section>
     </div>
 
-    <div id="invoice-content" v-if="selectedInvoice">
-      <Simple
-        v-if="selectedInvoice?.invoice"
-        :user="user"
-        :type="type"
-        :business-data="selectedInvoice.businessData"
-        :invoice-data="selectedInvoice.invoice"
-      />
+    <div class="print-container">
+      <div class="invoice-section">
+        <Simple
+          v-if="selectedInvoice?.invoice"
+          :user="user"
+          :type="type"
+          :business-data="selectedInvoice.businessData"
+          :invoice-data="selectedInvoice.invoice"
+        />
+      </div>
+
+      <div class="property-section mt-8 print:mt-0 print:page-break-before-always">
+        <PropertyReport
+          v-if="selectedInvoice?.rent"
+          :property="selectedInvoice.rent.property"
+          :unit="selectedInvoice.rent.unit"
+          :rent="selectedInvoice.rent"
+        />
+      </div>
     </div>
   </AppLayout>
 </template>
@@ -511,6 +525,16 @@ const invoiceGroups = computed(() => {
     button {
       margin-left: auto;
     }
+  }
+}
+
+.print-container {
+  @apply space-y-8 print:space-y-0;
+}
+
+@media print {
+  .property-section {
+    page-break-before: always;
   }
 }
 </style>

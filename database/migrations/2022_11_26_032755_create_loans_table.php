@@ -61,11 +61,7 @@ return new class extends Migration
             $table->text('cancel_reason')->nullable();
             $table->decimal('cancel_at_debt', 14, 4)->default(0.00);
             $table->date('cancelled_at')->nullable();
-            $table->json('write_off_amounts')->default('{
-              "fee": 0,
-              "interest": 0,
-              "penalty": 0
-            }');
+            $table->json('write_off_amounts')->nullable();
 
             // state
             $table->date('last_paid_at')->nullable();

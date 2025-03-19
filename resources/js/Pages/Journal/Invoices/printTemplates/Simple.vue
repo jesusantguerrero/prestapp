@@ -183,7 +183,7 @@ const hideLogo = computed(() => {
         class="w-full mt-5 main-grid"
       >
         <template #prepend>
-          <div class="py-1 text-base font-bold text-center text-body-1">
+          <div class="py-1 text-base font-bold text-center text-black">
             {{ invoice.concept }} {{ invoice.description }}
           </div>
         </template>

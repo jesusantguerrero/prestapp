@@ -40,13 +40,14 @@ const valueStyles = computed(() => {
 
   .value {
     text-align: right;
-    color: #666;
+    color: #222;
     font-weight: bold;
   }
 
   .label {
     text-align: right;
     margin-right: 10px;
+    color: #333;
   }
 }
 

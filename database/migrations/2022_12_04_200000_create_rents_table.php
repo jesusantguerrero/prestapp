@@ -54,8 +54,8 @@ return new class extends Migration
             $table->integer('grace_days')->default(0);
 
             // config
-            $table->json('generated_invoice_dates')->default('[]');
-            $table->json('additional_fees')->default('[]');
+            $table->json('generated_invoice_dates')->nullable();
+            $table->json('additional_fees')->nullable();
 
             $table->text('notes')->nullable();
             $table->date('move_out_at')->nullable();

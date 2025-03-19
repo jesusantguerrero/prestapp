@@ -220,7 +220,7 @@ class RentTest extends PropertyBase
     $this->assertCount(8, $rent->rentInvoices);
     $this->assertStringContainsString($this->property->units[0]->name, $rent->rentInvoices[0]->description);
 
-    $response2 = $this->post('/rents', array_merge($this->rentData, [
+    $response2 = $this->post('/rents?json=true', array_merge($this->rentData, [
       "deposit" => 20000,
       'amount' => 10000,
       'date' => now()->subMonths(8)->format('Y-m-d'),
@@ -229,9 +229,10 @@ class RentTest extends PropertyBase
       "unit_id" => $this->property->units[1]->id,
     ]));
 
-    $response2->assertStatus(302);
+    $response2->assertStatus(200);
+    $rent2Id = $response2->json('data')['id'];
 
-    $rent2 = Rent::latest()->first();
+    $rent2 = Rent::find($rent2Id);
     $this->assertCount(8, $rent2->rentInvoices);
     $this->assertStringContainsString($this->property->units[1]->name, $rent2->rentInvoices[0]->description);
     $this->assertStringContainsString($this->property->units[1]->name, $rent2->depositInvoices[0]->description);
