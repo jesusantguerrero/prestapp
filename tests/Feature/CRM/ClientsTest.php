@@ -54,6 +54,22 @@ class ClientsTest extends TestCase
       $this->assertCount(1, Client::all());
     }
 
+    public function testItShouldNotCreateDuplicatedClient() {
+      $this->actingAs($this->user);
+
+      $response = $this->post('/clients', $this->clientData);
+      $response->assertStatus(302);
+      $this->assertCount(1, Client::all());
+
+      $response = $this->post('/clients', $this->clientData);
+      $this->assertCount(1, Client::all());
+
+      $response = $this->post('/clients', array_merge($this->clientData, [
+        'dni' => '1-23456-7',
+      ]));
+      $this->assertCount(1, Client::all());
+    }
+
     public function testItShouldUpdateClient() {
       $this->actingAs($this->user);
       $client = Client::factory()->create($this->clientData);

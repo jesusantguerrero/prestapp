@@ -34,6 +34,18 @@ class ClientController extends InertiaController
       ];
   }
 
+  public function createResource(Request $request, $postData) {
+    try {
+      $resource = $this->clientService->create($postData);
+      return $resource;
+    } catch (Exception $e) {
+      $message = $e->getMessage();
+      return response()->json([
+        'message' => $message
+      ], 400);
+    }
+  }
+
   protected function byTypes(Request $request, $type) {
     $resourceName = $this->resourceName ?? $this->model->getTable();
     $resources = $this->parser($this->getModelQuery($request,null, function ($builder) use ($type) {
