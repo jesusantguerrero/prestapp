@@ -169,7 +169,7 @@ class Rent extends Transactionable implements IPayableDocument, Auditable {
      */
     public function scopeActive($query)
     {
-        return $query->whereNotIn('status', [self::STATUS_CANCELLED, self::STATUS_PAID]);
+        return $query->whereNotIn('status', [self::STATUS_CANCELLED, self::STATUS_PAID, self::STATUS_EXPIRED]);
     }
 
     public function hasLateInvoices() {

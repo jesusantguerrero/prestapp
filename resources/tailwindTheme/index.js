@@ -95,27 +95,36 @@ module.exports = {
         "body-1": "#9298AD"
     },
     realEstate: {
-        primary: "#263141",
-        "primary-light": "#63D0DD",
-        "primary-shade-1": "#47A9F1",
-        "primary-shade-2": "#47A9F1",
-        "primary-shade-3": "#47A9F1",
-        "primary-shade-4": "#47A9F1",
-        "secondary": "#3d4b5f",
-        "accent": "#8ec1d6",
-        "highlight": "#8799af",
-        "neutral": "#CBD5E1",
-        "base-deep-1": colors.slate[400],
-        "base-100": "#F5F6FA",
+        // Main brand colors
+        primary: "#1E40AF", // Deep blue - professional and trustworthy
+        "primary-light": "#3B82F6", // Lighter blue for hover states
+        "primary-shade-1": "#2563EB", // Mid-tone blue
+        "primary-shade-2": "#1D4ED8", // Slightly darker blue
+        "primary-shade-3": "#1E40AF", // Deep blue
+        "primary-shade-4": "#1E3A8A", // Darkest blue
+        
+        // Secondary colors
+        "secondary": "#059669", // Emerald - success and growth
+        "accent": "#0EA5E9", // Sky blue - fresh and modern
+        "highlight": "#6366F1", // Indigo - for important elements
+        
+        // Neutral colors
+        "neutral": "#64748B", // Slate - professional gray
+        "base-deep-1": colors.slate[600],
+        "base-100": "#F8FAFC", // Very light slate
         "base-lvl-1": colors.slate[100],
         "base-lvl-2": colors.slate[50],
         "base-lvl-3": colors.white,
-        info: "#3D68F5",
-        success: "#79E7AE",
-        warning: "#D39E17",
-        error: "#F61909",
-        "body": "#2E384D",
-        "body-1": "#9298AD"
+        
+        // Status colors
+        info: "#3B82F6", // Blue
+        success: "#10B981", // Emerald
+        warning: "#F59E0B", // Amber
+        error: "#EF4444", // Red
+        
+        // Text colors
+        "body": "#0F172A", // Slate 900 - main text
+        "body-1": "#475569" // Slate 600 - secondary text
     },
     blueLight: {
         primary: "#47A9F1",

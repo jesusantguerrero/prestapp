@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppLayout from "@/Components/templates/AppLayout.vue";
+import { config } from "@/config";
 
 defineProps<{
   user: Object;
@@ -9,9 +10,9 @@ defineProps<{
 <template>
   <AppLayout title="Ayuda y soporte">
     <section class="w-full md:space-x-4 pb-56">
-      <h1>Hola {{ user.name }} Bienvenido a ICLoan!</h1>
+      <h1>Hola {{ user.name }} Bienvenido a {{ config.appName }}!</h1>
       <article class="mt-4">
-        <h4 class="text-primary font-bold text-4xl">Introduccion a ICLoan</h4>
+        <h4 class="text-primary font-bold text-4xl">Introduccion a {{ config.appName }}</h4>
         <div class="rounded-md overflow-hidden mt-4">
           <iframe
             width="640"

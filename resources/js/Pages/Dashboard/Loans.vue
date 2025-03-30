@@ -161,7 +161,7 @@ export default {
 <template>
   <main>
     <WelcomeWidget
-      message="Bienvenido a ICLoan"
+      message="Bienvenido a {{ config.appName }}"
       :username="user.name"
       :cards="welcomeCards"
     />

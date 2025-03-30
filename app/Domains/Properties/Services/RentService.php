@@ -29,6 +29,15 @@ class RentService {
         throw new Exception('This unit is not available at the time');
       }
 
+      $existingRent = Rent::where([
+        'unit_id' => $rentData['unit_id'],
+        'status' => Rent::STATUS_ACTIVE,
+      ])->first();
+
+      if ($existingRent) {
+        throw new Exception('This unit is already rented, you must cancel the existing rent first');
+      }
+
       if ($rentData['commission_type'] == Rent::COMMISSION_PERCENTAGE && $rentData['commission'] > 100) {
         throw new Exception(__("The percentage can't be greater than 100%"));
       }
@@ -211,6 +220,10 @@ class RentService {
       ->when($teamId, fn ($q) => $q->where('team_id', $teamId))
       ->when($state, fn ($q) => $q->whereRaw("$stateRaw = '$state'"))
       ->get();
+    }
+
+    public static function rentsStats($teamId = null) {
+      return Rent::where('team_id', $teamId)->active()->count();
     }
 
 

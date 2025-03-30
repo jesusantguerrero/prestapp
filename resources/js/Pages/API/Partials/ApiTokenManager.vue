@@ -14,6 +14,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import SectionBorder from '@/Components/SectionBorder.vue';
 import TextInput from '@/Components/TextInput.vue';
+import AppButton from '@/Components/shared/AppButton.vue';
 
 const props = defineProps({
     tokens: Array,
@@ -30,7 +31,7 @@ const updateApiTokenForm = useForm({
     permissions: [],
 });
 
-const deleteApiTokenForm = useForm();
+const deleteApiTokenForm = useForm({});
 
 const displayingToken = ref(false);
 const managingPermissionsFor = ref(null);
@@ -42,6 +43,9 @@ const createApiToken = () => {
         onSuccess: () => {
             displayingToken.value = true;
             createApiTokenForm.reset();
+        },
+        onError: () => {
+            console.log('error');
         },
     });
 };
@@ -118,9 +122,9 @@ const deleteApiToken = () => {
                     Created.
                 </ActionMessage>
 
-                <PrimaryButton :class="{ 'opacity-25': createApiTokenForm.processing }" :disabled="createApiTokenForm.processing">
+                <AppButton variant="primary" :processing="createApiTokenForm.processing" attr-type="submit" @click="createApiToken">
                     Create
-                </PrimaryButton>
+                </AppButton>
             </template>
         </FormSection>
 
