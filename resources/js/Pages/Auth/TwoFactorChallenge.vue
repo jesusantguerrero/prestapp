@@ -6,6 +6,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { AtAuthBox, AtAuthForm, AtField, AtInput } from 'atmosphere-ui';
+import { config } from '@/config';
 
 const recovery = ref(false);
 
@@ -53,7 +54,7 @@ const linkLabel = computed(() => {
 
     <AtAuthBox>
         <AtAuthForm
-            app-name="ICLoan"
+            :app-name="config.appName"
             btn-label="Login"
             custom-link-label="Recovery"
             btn-class="mb-2 font-bold border-2 rounded-md border-primary bg-gradient-to-br from-purple-400 to-primary hover:bg-primary"

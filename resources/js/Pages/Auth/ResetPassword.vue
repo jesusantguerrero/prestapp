@@ -1,4 +1,5 @@
 <script setup>
+import { config } from '@/config';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { AtAuthBox, AtAuthForm, AtField, AtInput, AtInputPassword } from 'atmosphere-ui';
 
@@ -26,7 +27,7 @@ const submit = () => {
 
     <AtAuthBox>
         <AtAuthForm
-            app-name="ICLoan"
+            :app-name="config.appName"
             btn-label="Send email"
             btn-class="mb-2 font-bold border-2 rounded-md border-primary bg-gradient-to-br from-purple-400 to-primary hover:bg-primary"
             link-class="text-primary hover:text-primary"

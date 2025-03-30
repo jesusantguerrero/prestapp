@@ -334,7 +334,7 @@ export default {
       v-auto-animate
       v-if="isOnboardingOpen"
       :steps="onBoardSteps"
-      :title="$t('Explore ICLoan')"
+      :title="$t('Explore {appName}', { appName: config.appName })"
       :description="$t('Initial steps to setup your system')"
       @close="isOnboardingOpen = !isOnboardingOpen"
     />

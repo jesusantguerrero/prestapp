@@ -20,5 +20,6 @@ export const config = {
     "body-1": "#9298AD"
   },
   supabaseKey: import.meta.env.VITE_SUPABASE_APP_KEY,
-  supabaseAnonKey: import.meta.env.VITE_SUPABASE_ANON_KEY
+  supabaseAnonKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+  appName: "NeatRents"
 }

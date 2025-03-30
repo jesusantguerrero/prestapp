@@ -1,6 +1,7 @@
 <script setup>
 import { AtAuthBox, AtAuthForm, AtField, AtInput } from "atmosphere-ui";
 import { router, useForm, Link, Head } from "@inertiajs/vue3";
+import { config } from "@/config";
 
 defineProps({
     canResetPassword: Boolean,
@@ -42,7 +43,7 @@ const submit = (formData) => {
 
     <AtAuthBox>
         <AtAuthForm
-            app-name="ICLoan"
+            :app-name="config.appName"
             btn-class="mb-2 font-bold border-2 rounded-md border-primary bg-gradient-to-br from-purple-400 to-primary hover:bg-primary"
             link-class="text-primary hover:text-primary"
             mode="register"
@@ -54,7 +55,7 @@ const submit = (formData) => {
         >
             <template #brand>
                 <Link :to="{name: 'landing'}" class="w-full font-light font-brand">
-                    ICLoan
+                    {{ config.appName }}
                 </Link>
             </template>
             <template #prependInput>

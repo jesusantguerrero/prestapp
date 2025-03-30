@@ -27,6 +27,7 @@ import AppButtonCircle from "../shared/AppButtonCircle.vue";
 import FastAccessOptions from "@/Pages/Dashboard/Partials/FastAccessOptions.vue";
 import { useToggleModal } from "@/Modules/_app/useToggleModal";
 import ResponsiveModal from "../ResponsiveModal.vue";
+import { config } from "@/config";
 
 defineProps({
   title: String,
@@ -270,7 +271,7 @@ function refresh() {
         <AtSide
           v-auto-animate
           class="border-none shadow-none text-secondary text-bold bg-secondary"
-          title="ICLoan"
+          :title="config.appName"
           :is-expanded="isExpanded"
           @update:isExpanded="isExpanded = $event"
           :menu="currentMenu"
@@ -296,7 +297,7 @@ function refresh() {
               >
                 <ApplicationMark class="flex justify-center w-10 h-14" />
                 <span class="text-xl font-bold text-white" v-if="isExpanded">
-                  ICLoan
+                  {{ config.appName }}
                 </span>
               </Link>
             </h1>
