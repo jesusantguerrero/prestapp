@@ -27,6 +27,29 @@ interface IExpiringRents {
   within_three_months: number;
 }
 
+interface IWelcomeWidgetProps {
+  message: string;
+  username?: string;
+  cards?: any[];
+  actionLabel?: string;
+  actionLink?: string;
+  rounded?: boolean;
+  size?: string;
+  class?: string;
+}
+
+interface IIncomeSummaryProps {
+  chart: {
+    series: any[];
+    options: Record<string, any>;
+  };
+  labels?: string[];
+  type: string;
+  title: string;
+  description: string;
+  sections?: any[];
+  sectionTotalField: string;
+}
 const props = defineProps({
   revenue: {
     type: Object,
@@ -387,8 +410,6 @@ export default {
           </template>
         </WelcomeWidget>
       </section>
-
-
     </section>
     <section class="w-full mt-4">
       <RentsWidget class="shadow-sm bg-base-lvl-3" />

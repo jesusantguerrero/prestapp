@@ -129,6 +129,7 @@ function handleDeleteClient(clientId: number) {
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <!-- Navigation Tabs -->
         <div class="mb-4 border-b border-slate-200">
+
           <nav class="flex space-x-8" aria-label="Tabs">
             <button
               v-for="tab in ['clients', 'properties', 'rents']"
@@ -138,6 +139,7 @@ function handleDeleteClient(clientId: number) {
                 activeTab === tab
                   ? 'border-indigo-600 text-indigo-600'
                   : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300',
+
                 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
               ]"
             >
@@ -145,6 +147,7 @@ function handleDeleteClient(clientId: number) {
               <span
                 :class="[
                   activeTab === tab ? 'bg-indigo-50 text-indigo-600' : 'bg-slate-100 text-slate-900',
+
                   'ml-3 hidden px-2.5 py-0.5 rounded-full text-xs font-medium md:inline-block'
                 ]"
               >
@@ -173,6 +176,7 @@ function handleDeleteClient(clientId: number) {
                 </button>
               </div>
               <div class="mt-1 text-sm text-slate-500 space-y-1">
+
                 <p>{{ t('Email') }}: {{ client.email }}</p>
                 <p>{{ t('Phone') }}: {{ client.phone }}</p>
                 <p>{{ t('DNI') }}: {{ client.dni }}</p>
@@ -182,6 +186,7 @@ function handleDeleteClient(clientId: number) {
                 <div class="space-y-2">
                   <div v-for="rent in client.rents" :key="rent.id" 
                        class="flex items-center justify-between bg-slate-50 p-2 rounded text-sm">
+
                     <span>{{ rent.property_name }} - {{ rent.unit_name }}</span>
                     <span :class="[getRentStatusColor(rent.status), 'px-2 py-1 rounded-full text-xs font-medium']">
                       {{ rent.status }}
@@ -245,6 +250,7 @@ function handleDeleteClient(clientId: number) {
                   </span>
                 </div>
               </div>
+
               <div class="mt-1 text-sm text-slate-500">
                 <p>{{ t('Address') }}: {{ property.address }}</p>
                 <p>{{ t('Owner') }}: {{ property.owner_name }}</p>
