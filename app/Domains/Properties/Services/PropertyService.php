@@ -47,13 +47,28 @@ class PropertyService {
 
     public static function totalByStatusFor(int $teamId) {
         $properties = PropertyUnit::where('team_id', $teamId)
-        ->select(DB::raw('count(*) as total, status'))
-        ->groupBy('status')
-        ->get();
-
-        return  collect(self::mapInStatus($properties->toArray()))->mapWithKeys(function ($item) {
-          return [$item['status'] => $item['total']];
-      });;
+        ->selectRaw('
+        Sum(CASE WHEN status = ? THEN 1 ELSE 0 END) as status_available,
+        Sum(CASE WHEN status = ? THEN 1 ELSE 0 END) as status_rented,
+        Sum(CASE WHEN status = ? THEN 1 ELSE 0 END) as status_building,
+        Sum(CASE WHEN status = ? THEN 1 ELSE 0 END) as status_maintenance,
+        count(distinct property_id) as property_count', [
+          Property::STATUS_AVAILABLE,
+          Property::STATUS_RENTED,
+          Property::STATUS_BUILDING,
+          Property::STATUS_MAINTENANCE,
+        ])
+        ->first();
+        
+        return [
+          "units" => [
+            "available" => $properties->status_available,
+            "rented" => $properties->status_rented,
+            "building" => $properties->status_building,
+            "maintenance" => $properties->status_maintenance,
+          ],
+          "properties" => $properties->property_count,
+        ];
     }
 
     public static function mapInStatus($results) {

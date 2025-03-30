@@ -76,6 +76,7 @@ class DashboardController extends Controller
       $propertyTotals = PropertyService::totalByStatusFor($teamId);
       $rentTotals = RentService::invoiceByPaymentStatus($teamId, $startDate, $endDate);
       $monthPassedInYear = now()->diffInMonths(now()->startOfYear());
+      $rentsStats = RentService::rentsStats($teamId);
 
       return inertia('Dashboard/Index',
       [
@@ -94,11 +95,7 @@ class DashboardController extends Controller
           'pendingDraws' => OwnerService::pendingDrawsCount($teamId),
           "serverSearchOptions" => $this->getServerParams(),
           "expiringRents" => RentService::expiredRentStats($teamId),
-          "rentStats" => [
-            "total" => $propertyTotals->sum(),
-            "available" => $propertyTotals->get(Property::STATUS_AVAILABLE),
-            "rented" => $propertyTotals->get(Property::STATUS_RENTED),
-          ],
+          "propertyStats" => $propertyTotals,
           "ownerStats" => [
             "total" => Client::where('team_id', $teamId)->owner()->active()->count(),
             "paid" => Invoice::where('team_id', $teamId)
@@ -107,6 +104,7 @@ class DashboardController extends Controller
               ->paid()
               ->sum('total')
           ],
+          "rentsStats" => $rentsStats,
           "totals" => $rentTotals,
           'pendingDraws' => OwnerService::pendingDrawsCount($teamId) ?? 0,
           "paidCommissions" => AccountStatWidget::accountNetByPeriod($teamId, 'real_state_operative', 'month', $monthPassedInYear),
