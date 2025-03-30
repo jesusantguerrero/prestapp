@@ -10,6 +10,9 @@
     "validation": {
       "unique": ""
     },
+    "Units Requiring Action": "Unidades que requieren acción",
+    "Units with expired or cancelled rents still marked as rented": "Unidades con rentas vencidas o canceladas todavia marcadas como rentadas",
+    "No units require action at this time": "No hay unidades que requieran acción en este momento",
     "month performance": "Rendimiento del mes",
     "notifications": "notificaciones",
     "Performance of the month": "Estadisticas del mes",

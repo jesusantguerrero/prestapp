@@ -222,6 +222,9 @@ class RentService {
       ->get();
     }
 
+    public static function rentsStats($teamId = null) {
+      return Rent::where('team_id', $teamId)->active()->count();
+    }
 
     public static function expiredRentStats($teamId = null) {
       $startOfMonth = now()->startOfMonth()->format('Y-m-d');

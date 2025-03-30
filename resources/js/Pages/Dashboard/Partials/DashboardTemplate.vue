@@ -59,7 +59,7 @@ const { executeSearchWithDelay, updateSearch, state: pageState } = useServerSear
   }
 );
 
-const isOnboardingOpen = useLocalStorage("icloan:isOnboardingOpen", true);
+const isOnboardingOpen = useLocalStorage("app:isOnboardingOpen", true);
 provide("isOnboardingOpen", isOnboardingOpen);
 
 const { isMobile } = useResponsive();
