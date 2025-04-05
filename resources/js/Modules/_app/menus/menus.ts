@@ -88,7 +88,7 @@ const menus = {
     },
     {
         label: 'Rents',
-        to: '/rents/',
+        to: '/rents?filter[status]=LATE,ACTIVE&page=1&limit=10',
         as: Link,
         icon:  ClarityContractLine
     },
