@@ -199,7 +199,7 @@ class OwnerService {
           $join->on('rents.unit_id', '=', 'property_units.id')
           ->where('date', '<=', $referenceDate->endOfMonth()->format('Y-m-d'))
           ->where(fn ($q) => $q->whereNull("move_out_at")->orWhere("move_out_at", ">=",  $referenceDate->startOfMonth()->format('Y-m-d')))
-          ->whereNotIn('rents.status', [Rent::STATUS_CANCELLED, Rent::STATUS_CANCELLED])
+          ->whereNotIn('rents.status', [Rent::STATUS_EXPIRED, Rent::STATUS_CANCELLED])
         )
         ->leftJoin('invoices', fn ($join)=>
           $join->on('invoiceable_id', '=', 'rents.id')
