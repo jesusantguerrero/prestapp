@@ -49,12 +49,12 @@ const props = defineProps<{
                     <div class="flex items-center justify-between text-sm">
                         <div class="flex items-center space-x-1.5 text-success">
                             <IMdiArrowUpThick class="h-4 w-4" />
-                            <span>{{ formatMoney(accounts.cash_and_bank.income) }}</span>
+                            <span>{{ formatMoney(accounts.cash_and_bank?.income ?? 0) }}</span>
                             <span class="text-xs text-body-1 hidden md:inline">{{ $t("Inflow") }}</span>
                         </div>
                         <div class="flex items-center space-x-1.5 text-error/70">
                             <IMdiArrowDownThick class="h-4 w-4" />
-                            <span>{{ formatMoney(accounts.cash_and_bank.outcome) }}</span>
+                            <span>{{ formatMoney(accounts.cash_and_bank?.outcome ?? 0) }}</span>
                             <span class="text-xs text-body-1 hidden md:inline">{{ $t("Outflow") }}</span>
                         </div>
                     </div>

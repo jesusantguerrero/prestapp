@@ -101,6 +101,7 @@ Route::middleware([
       Route::post('/owners/{client}/draws', 'storeDraws')->name('owners.draw.store');
       Route::post('/owners/{client}/draws/{drawId}', 'updateDraws')->name('owners.draw.update');
       Route::post('/owners/{client}/draws/{drawId}/payments', 'payDraw')->name('owners.draw.pay');
+      Route::post('/owners/{client}/finish-administration', 'finishAdministration')->name('owners.finish-administration');
     });
 
     // Agent

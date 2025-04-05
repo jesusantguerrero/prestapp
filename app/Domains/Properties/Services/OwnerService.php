@@ -2,6 +2,7 @@
 
 namespace App\Domains\Properties\Services;
 
+use App\Domains\CRM\Enums\ClientStatus;
 use Illuminate\Support\Carbon;
 use App\Domains\CRM\Models\Client;
 use Illuminate\Support\Facades\DB;
@@ -245,4 +246,23 @@ class OwnerService {
       }
     }
 
+    public static function finishAdministration($teamId, $ownerId) {
+      $owner = Client::find($ownerId);
+
+      $properties = Property::where('owner_id', $ownerId)->get();
+
+      foreach ($properties as $property) {
+        $activeRents = $property->activeRents();
+
+        foreach ($activeRents as $rent) {
+          RentService::endTerm($rent, [], request()->user());
+        }
+      }
+
+      $properties->each->close();
+
+      $owner->update([
+        'status' => ClientStatus::Inactive
+      ]);
+    }
 }
