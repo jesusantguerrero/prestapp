@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Link, router } from "@inertiajs/vue3";
+import { Link, router, useForm } from "@inertiajs/vue3";
 // @ts-ignore
 import { AtBackgroundIconCard } from "atmosphere-ui";
 import { ElTag } from "element-plus";
@@ -55,6 +55,16 @@ const sectionName = computed(() => {
 
   return clientTypes[props.type] ?? clientTypes.lenders;
 });
+
+const finishAdministrationForm = useForm({});
+
+const finishAdministration = () => {
+  finishAdministrationForm.post(route("owners.finish-administration", { client: props.clients.id }), {
+    onSuccess: () => {
+      router.reload();
+    },
+  });
+};
 </script>
 
 <template>
@@ -125,6 +135,16 @@ const sectionName = computed(() => {
               <IMdiEdit />
             </AppButton>
           </section>
+        </template>
+        <template #actions v-if="type == 'owner'">
+          <AppButton
+            title="Finalizar administración"
+            variant="neutral"
+            :processing="finishAdministrationForm.processing"
+            @click="finishAdministration()"
+          >
+            Finalizar administración
+          </AppButton>
         </template>
       </AppSectionHeader>
       <header

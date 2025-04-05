@@ -2,7 +2,6 @@
 
 namespace App\Domains\CRM\Services;
 
-use App\Domains\CRM\Data\ContactData;
 use App\Domains\CRM\Models\Client;
 use App\Domains\Loans\Models\Loan;
 use Exception;
@@ -18,17 +17,21 @@ class ClientService
     $client = Client::where([
       'team_id' => $clientData['team_id'],
     ])->where(function ($query) use ($clientData) {
-      $query->where('email', $clientData['email'])
-        ->orWhere('dni', preg_replace('/[A-Za-z0-9]/', '', $clientData['dni']));
+      $query->when($clientData['email'], function ($query) use ($clientData) {
+        $query->where('email', $clientData['email']);
+      })
+      ->orWhere('dni', preg_replace('/[A-Za-z0-9]/', '', $clientData['dni']));
     })->first();
-
 
     if ($client) {
       throw new Exception('Client already exists');
     }
-    return Client::create(array_merge($clientData, [
-      'display_name' => $clientData['names']
-    ]));
+
+    return Client::create([
+      ...$clientData,
+      'display_name' => $clientData['names'] . ' ' . $clientData['lastnames']
+    ]);
+
   }
 
   public static function ofTeam($teamId)

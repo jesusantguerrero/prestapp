@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Http\Request;
 use App\Domains\CRM\Models\Client;
 use App\Domains\CRM\Data\ContactData;
+use App\Domains\CRM\Enums\ClientStatus;
 use App\Domains\CRM\Services\ClientService;
 use App\Http\Controllers\InertiaController;
 
@@ -23,7 +24,9 @@ class ClientController extends InertiaController
       ];
       $this->sorts = ['created_at'];
       $this->includes = ['properties', 'account'];
-      $this->filters = [];
+      $this->filters = [
+        'status' => ClientStatus::Active->value
+      ];
       $this->page = 1;
       $this->limit = 10;
       $this->resourceName= "clients";
@@ -35,15 +38,9 @@ class ClientController extends InertiaController
   }
 
   public function createResource(Request $request, $postData) {
-    try {
       $resource = $this->clientService->create($postData);
       return $resource;
-    } catch (Exception $e) {
-      $message = $e->getMessage();
-      return response()->json([
-        'message' => $message
-      ], 400);
-    }
+
   }
 
   protected function byTypes(Request $request, $type) {

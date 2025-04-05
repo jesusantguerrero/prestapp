@@ -2,6 +2,7 @@
 
 namespace App\Domains\Properties\Services;
 
+use App\Domains\CRM\Enums\ClientStatus;
 use Illuminate\Support\Carbon;
 use App\Domains\CRM\Models\Client;
 use Illuminate\Support\Facades\DB;
@@ -198,6 +199,7 @@ class OwnerService {
           $join->on('rents.unit_id', '=', 'property_units.id')
           ->where('date', '<=', $referenceDate->endOfMonth()->format('Y-m-d'))
           ->where(fn ($q) => $q->whereNull("move_out_at")->orWhere("move_out_at", ">=",  $referenceDate->startOfMonth()->format('Y-m-d')))
+          ->whereNotIn('rents.status', [Rent::STATUS_CANCELLED, Rent::STATUS_CANCELLED])
         )
         ->leftJoin('invoices', fn ($join)=>
           $join->on('invoiceable_id', '=', 'rents.id')
@@ -245,4 +247,23 @@ class OwnerService {
       }
     }
 
+    public static function finishAdministration($teamId, $ownerId) {
+      $owner = Client::find($ownerId);
+
+      $properties = Property::where('owner_id', $ownerId)->get();
+
+      foreach ($properties as $property) {
+        $activeRents = $property->activeRents();
+
+        foreach ($activeRents as $rent) {
+          RentService::endTerm($rent, [], request()->user());
+        }
+      }
+
+      $properties->each->close();
+
+      $owner->update([
+        'status' => ClientStatus::Inactive
+      ]);
+    }
 }

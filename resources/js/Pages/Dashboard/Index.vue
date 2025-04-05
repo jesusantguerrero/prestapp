@@ -27,29 +27,6 @@ interface IExpiringRents {
   within_three_months: number;
 }
 
-interface IWelcomeWidgetProps {
-  message: string;
-  username?: string;
-  cards?: any[];
-  actionLabel?: string;
-  actionLink?: string;
-  rounded?: boolean;
-  size?: string;
-  class?: string;
-}
-
-interface IIncomeSummaryProps {
-  chart: {
-    series: any[];
-    options: Record<string, any>;
-  };
-  labels?: string[];
-  type: string;
-  title: string;
-  description: string;
-  sections?: any[];
-  sectionTotalField: string;
-}
 const props = defineProps({
   revenue: {
     type: Object,
@@ -334,14 +311,13 @@ const summaryType = ref("gains");
 import DashboardTemplate from "./Partials/DashboardTemplate.vue";
 import OnboardingSection from "./Partials/OnboardingSection.vue";
 import { inject } from "vue";
-import ExpiringRentsChart from "./Partials/ExpiringRentsChart.vue";
 import RentsWidget from "./Partials/RentsWidget.vue";
 import WidgetPropertiesStats from "./Partials/WidgetPropertiesStats.vue";
 import { addMonths, startOfMonth, startOfYear } from "date-fns";
 import ChartBar from "./Partials/ChartBar.vue";
 import ComissionSummaryWidget from "./Partials/ComissionSummaryWidget.vue";
-import FastAccessOptionsDashboard from "./Partials/FastAccessOptionsDashboard.vue";
 import WidgetRentStats from "./Partials/WidgetRentStats.vue";
+import FastAccessOptionsDashboard from "./Partials/FastAccessOptionsDashboard.vue";
 
 export default {
   layout: DashboardTemplate,
@@ -357,7 +333,7 @@ export default {
     <section class="w-full space-y-4">
       <UnitsWithExpiredRents :units="unitsRequiringAction" v-if="unitsRequiringAction.length" />
       <section class="md:flex md:space-x-4">
-        <section class="flex flex-col justify-between w-full md:w-9/12"
+        <section class="flex flex-col justify-between w-full md:w-9/12">
           <FastAccessOptionsDashboard display="row" />
           <ComissionSummaryWidget :summary-type="summaryType" :paidCommissions="paidCommissions" :accounts="accounts"
             :stats="stats" :is-mobile="isMobile" />
@@ -410,6 +386,8 @@ export default {
           </template>
         </WelcomeWidget>
       </section>
+
+
     </section>
     <section class="w-full mt-4">
       <RentsWidget class="shadow-sm bg-base-lvl-3" />

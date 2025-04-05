@@ -147,7 +147,6 @@ function handleDeleteClient(clientId: number) {
               <span
                 :class="[
                   activeTab === tab ? 'bg-indigo-50 text-indigo-600' : 'bg-slate-100 text-slate-900',
-
                   'ml-3 hidden px-2.5 py-0.5 rounded-full text-xs font-medium md:inline-block'
                 ]"
               >
@@ -176,7 +175,6 @@ function handleDeleteClient(clientId: number) {
                 </button>
               </div>
               <div class="mt-1 text-sm text-slate-500 space-y-1">
-
                 <p>{{ t('Email') }}: {{ client.email }}</p>
                 <p>{{ t('Phone') }}: {{ client.phone }}</p>
                 <p>{{ t('DNI') }}: {{ client.dni }}</p>
@@ -186,7 +184,6 @@ function handleDeleteClient(clientId: number) {
                 <div class="space-y-2">
                   <div v-for="rent in client.rents" :key="rent.id" 
                        class="flex items-center justify-between bg-slate-50 p-2 rounded text-sm">
-
                     <span>{{ rent.property_name }} - {{ rent.unit_name }}</span>
                     <span :class="[getRentStatusColor(rent.status), 'px-2 py-1 rounded-full text-xs font-medium']">
                       {{ rent.status }}
@@ -250,7 +247,6 @@ function handleDeleteClient(clientId: number) {
                   </span>
                 </div>
               </div>
-
               <div class="mt-1 text-sm text-slate-500">
                 <p>{{ t('Address') }}: {{ property.address }}</p>
                 <p>{{ t('Owner') }}: {{ property.owner_name }}</p>

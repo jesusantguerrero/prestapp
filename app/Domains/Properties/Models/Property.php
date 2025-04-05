@@ -21,6 +21,7 @@ class Property extends Model {
     const STATUS_AVAILABLE =  'AVAILABLE';
     const STATUS_RENTED = 'RENTED';
     const STATUS_MAINTENANCE = 'MAINTENANCE';
+    const STATUS_ADMINISTRATION_FINISHED = 'ADMINISTRATION_FINISHED';
 
     protected $fillable = [
         'team_id',
@@ -77,6 +78,9 @@ class Property extends Model {
     public function rents() {
       return $this->hasMany(Rent::class);
     }
+    public function activeRents() {
+      return $this->hasMany(Rent::class)->active();
+    }
 
     public function invoices() {
       return $this->hasManyThrough(Invoice::class, Rent::class, 'id', 'invoiceable_id')
@@ -87,6 +91,12 @@ class Property extends Model {
       return $this->morphMany(Invoice::class, 'invoiceable')
       ->where('invoiceable_type', Property::class)
       ->where('category_type', PropertyInvoiceTypes::UtilityExpense);
+    }
+
+    public function close() {
+      $this->update([
+        'status' => Property::STATUS_ADMINISTRATION_FINISHED
+      ]);
     }
 
     public function allInvoices() {

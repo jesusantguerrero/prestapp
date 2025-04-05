@@ -21,6 +21,9 @@ class ClientInteractions {
                 },
                 onError(reason: String) {
                     reject(reason)
+                },
+                onFinish() {
+                    resolve({ })
                 }
             });
         })

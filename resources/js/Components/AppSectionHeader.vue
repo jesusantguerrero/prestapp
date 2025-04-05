@@ -72,7 +72,7 @@ const createButtonTitle = computed(() => {
         >editing</span
       >
     </h2>
-    <div class="w-full">
+    <div class="w-full flex justify-end">
       <slot name="actions" v-if="$slots.actions || !hideAction">
         <div class="button-container">
           <div v-if="!resource || resource.id" class="flex">

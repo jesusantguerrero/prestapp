@@ -43,7 +43,8 @@ class HandleInertiaRequests extends Middleware
         $team = $user ? $user->currentTeam : null;
         $isAdmin = config('atmosphere.superadmin.email') === $user?->email;
 
-        return array_merge(parent::share($request), [
+        return [
+            ...parent::share($request),
             "accounts" => $team ? Account::getByDetailTypes($team->id) : [],
             "user" => $user,
             "categories" => $team ? Category::where([
@@ -64,6 +65,6 @@ class HandleInertiaRequests extends Middleware
             "isAdmin" => $isAdmin,
             "userSettings" => $team ? Setting::getSettingsByUser($team->id, $user->id) : [],
             "teamSettings" => $team ? Setting::getSettingsByUser($team->id, $user->id) : []
-        ]);
+        ];
     }
 }

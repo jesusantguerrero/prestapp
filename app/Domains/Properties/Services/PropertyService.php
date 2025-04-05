@@ -46,18 +46,25 @@ class PropertyService {
     }
 
     public static function totalByStatusFor(int $teamId) {
-        $properties = PropertyUnit::where('team_id', $teamId)
+        $properties = PropertyUnit::query()
+        ->where([
+          'property_units.team_id' => $teamId, 
+        ])
+        ->whereNotIn('properties.status', [Property::STATUS_ADMINISTRATION_FINISHED, Property::STATUS_MAINTENANCE])
         ->selectRaw('
-        Sum(CASE WHEN status = ? THEN 1 ELSE 0 END) as status_available,
-        Sum(CASE WHEN status = ? THEN 1 ELSE 0 END) as status_rented,
-        Sum(CASE WHEN status = ? THEN 1 ELSE 0 END) as status_building,
-        Sum(CASE WHEN status = ? THEN 1 ELSE 0 END) as status_maintenance,
-        count(distinct property_id) as property_count', [
+        Sum(CASE WHEN property_units.status = ? THEN 1 ELSE 0 END) as status_available,
+        Sum(CASE WHEN property_units.status = ? THEN 1 ELSE 0 END) as status_rented,
+        Sum(CASE WHEN property_units.status = ? THEN 1 ELSE 0 END) as status_building,
+        Sum(CASE WHEN property_units.status = ? THEN 1 ELSE 0 END) as status_maintenance,
+        count(distinct property_units.property_id) as property_count', [
           Property::STATUS_AVAILABLE,
           Property::STATUS_RENTED,
           Property::STATUS_BUILDING,
           Property::STATUS_MAINTENANCE,
         ])
+        ->join('properties', 'properties.id', '=', 'property_units.property_id')
+        ->whereNotNull('properties.status')
+
         ->first();
         
         return [
