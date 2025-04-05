@@ -31,6 +31,7 @@ class ClientService
       ...$clientData,
       'display_name' => $clientData['names'] . ' ' . $clientData['lastnames']
     ]);
+
   }
 
   public static function ofTeam($teamId)

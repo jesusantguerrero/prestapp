@@ -32,6 +32,7 @@ declare module 'vue' {
     IMdiContentSaveCheck: typeof import('~icons/mdi/content-save-check')['default']
     IMdiDocument: typeof import('~icons/mdi/document')['default']
     IMdiDownload: typeof import('~icons/mdi/download')['default']
+
     IMdiEdit: typeof import('~icons/mdi/edit')['default']
     IMdiEmailCheck: typeof import('~icons/mdi/email-check')['default']
     IMdiFile: typeof import('~icons/mdi/file')['default']
@@ -52,7 +53,6 @@ declare module 'vue' {
     IMdiPlus: typeof import('~icons/mdi/plus')['default']
     IMdiPrinter: typeof import('~icons/mdi/printer')['default']
     IMdiQuestionMark: typeof import('~icons/mdi/question-mark')['default']
-    IMdiReceipt: typeof import('~icons/mdi/receipt')['default']
     IMdiReceiptTextRemove: typeof import('~icons/mdi/receipt-text-remove')['default']
     IMdiSearch: typeof import('~icons/mdi/search')['default']
     IMdiSort: typeof import('~icons/mdi/sort')['default']
