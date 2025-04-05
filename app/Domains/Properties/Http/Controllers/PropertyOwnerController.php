@@ -80,4 +80,9 @@ class PropertyOwnerController extends InertiaController
         return back()->withErrors(["error"  => $e->getMEssage()]);
       }
     }
+
+    public function finishAdministration(Client $client) {
+      OwnerService::finishAdministration($client->team_id, $client->id);
+      return back();
+    }
 }

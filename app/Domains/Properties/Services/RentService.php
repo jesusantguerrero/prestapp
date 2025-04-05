@@ -155,7 +155,7 @@ class RentService {
             $formData,
             [
               "status" => Rent::STATUS_CANCELLED,
-              "end_date" => $formData['move_out_at']
+              "end_date" => $formData['move_out_at'] ?? now()->format('Y-m-d')
             ]));
           PropertyUnitService::updateStatus($rent->unit, PropertyUnit::STATUS_AVAILABLE, $user);
           Invoice::destroy($rent->invoices()->unpaid()->pluck('id'));

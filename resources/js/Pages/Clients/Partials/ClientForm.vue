@@ -81,17 +81,17 @@ const clientTypeId = ref(props.type);
 
 const selectedClientType = computed({
   set(type: Record<string, any>) {
-    clientTypeId.value = type.value;
+    clientTypeId.value = type?.value ?? props.type;
   },
   get() {
     return clientTypes.filter((type) => clientTypeId.value == type.value);
   },
 });
 
-const onSubmit = () => {
+const onSubmit = async () => {
   if (props.isLoading) return;
   emit("update:isLoading", true);
-  clientInteractions
+  await clientInteractions
     .create({
       ...clientForm,
       [`is_${clientTypeId.value}`]: true,
@@ -106,6 +106,8 @@ const onSubmit = () => {
     .finally(() => {
       emit("update:isLoading", false);
     });
+
+  emit("update:isLoading", false);
 };
 
 defineExpose({

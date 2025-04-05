@@ -74,6 +74,7 @@
           "hasPayments": "Este prestamo ya tiene pagos y no puede borrarse"
         }
     },
+    "No current tenant": "No hay inquilino actual",
     "Property invoice": "Factura de propiedades",
     "Monthly rent": "Mensualidad",
     "Loan account":"Cuenta de Prestamos",

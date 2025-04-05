@@ -8,6 +8,12 @@ import ClientForm from "./Partials/ClientForm.vue";
 
 import { formatMoney } from "@/utils";
 import { IClientSaved } from "@/Modules/clients/clientEntity";
+import { IProperty } from "@/Modules/properties/propertyEntity";
+import { useI18n } from "vue-i18n";
+import { ref } from "vue";
+
+const { t } = useI18n();
+const isLoading = ref(false);
 
 export interface Props {
   clients: IClientSaved;
