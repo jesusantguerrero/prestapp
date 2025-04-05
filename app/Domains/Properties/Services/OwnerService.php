@@ -80,6 +80,8 @@ class OwnerService {
           $query->orWhere('invoice_relations.invoice_id', $invoiceId);
         }
       })
+      ->whereNotIn('rents.status', [Rent::STATUS_EXPIRED, Rent::STATUS_CANCELLED])
+      ->where('clients.status', ClientStatus::Active->value)
       ->join('rents', 'invoiceable_id', 'rents.id')
       ->join('properties', 'rents.property_id', 'properties.id')
       ->join('clients', 'rents.owner_id', 'clients.id')

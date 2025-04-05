@@ -70,9 +70,18 @@ const menus = {
     [MODULES.PROPERTY]: [
     {
         label: 'Properties',
+        to: '/properties/',
+        isActiveFunction(currentPath: string) {
+          return /properties/.test(currentPath)
+        },
+        icon: MaterialSymbolsHomeWorkOutline,
+        as: Link,
+    },
+    {
+        label: 'Units',
         to: '/units/',
         isActiveFunction(currentPath: string) {
-          return /properties|units/.test(currentPath)
+          return /units/.test(currentPath)
         },
         icon: MaterialSymbolsHomeWorkOutline,
         as: Link,
