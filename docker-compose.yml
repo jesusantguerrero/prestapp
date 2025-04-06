@@ -1,0 +1,71 @@
+services:
+  neatrents:
+    build:
+      args:
+        uid: 1000
+        TZ: America\New_York
+      context: ./
+      dockerfile: Dockerfile
+    image: neatlancer/neatrents
+    container_name: neatrents-app
+    restart: unless-stopped
+    volumes:
+      - ./storage:/var/www/storage
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    environment:
+      AUTORUN_ENABLED: true
+      AUTORUN_LARAVEL_MIGRATION_ISOLATION: true
+      DB_CONNECTION: mysql
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - neatrents
+  task:
+    image: neatlancer/neatrents
+    command: ["php", "/var/www/html/artisan", "schedule:work"]
+    environment:
+      PHP_PFM_POOL_NAME: "neatrents_task"
+    depends_on:
+      - neatrents
+  queue:
+    image: neatlancer/neatrents
+    command: ["php", "/var/www/html/artisan", "queue:work", "--tries=3"]
+    environment:
+      PHP_FPM_POOL_NAME: "neatrents_queue"
+    depends_on:
+      - neatrents
+  db:
+    image: mariadb:10.8.4
+    container_name: neatrents-db
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_USER: "${DB_USERNAME}"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - ./docker-compose/mysql:/docker-entrypoint-initdb.d
+      - neatrents_db:/var/lib/mysql
+      - ./docker-compose/mysql:/home/root/cache/
+    networks:
+      - neatrents
+
+volumes:
+  neatrents_db:
+    driver: local
+networks:
+  neatrents:
+    driver: bridge

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domains\CRM\Enums;
+namespace App\Domains\Regimen\Enums;
 
 enum ClientStatus: string {
   case Inactive = 'INACTIVE';

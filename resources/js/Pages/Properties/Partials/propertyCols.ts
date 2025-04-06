@@ -10,6 +10,7 @@ import IconMarker from "@/Components/icons/IconMarker.vue";
 // @ts-ignore
 import { getPropertyStatus, getPropertyStatusColor } from "@/Modules/properties/constants";
 import IconMarkerVue from '@/Components/icons/IconMarker.vue';
+import { Link } from '@inertiajs/vue3';
 
 
 export default (t = (text: string) => text) => ([
@@ -19,7 +20,7 @@ export default (t = (text: string) => text) => ([
         class: "text-left",
         width: 500,
         render(row: IProperty) {
-          return h('div', { class: 'justify-center' }, [
+          return h(Link, { class: 'justify-center cursor-pointer', href: `/properties/${row.id}` }, [
             // @ts-ignore
               h(UnitTitle, {
                 icon: MaterialSymbolsHomeWorkOutline,
