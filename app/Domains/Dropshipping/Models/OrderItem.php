@@ -13,14 +13,14 @@ use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Order extends Model
+class OrderItem extends Model
 {
     use HasFactory;
 
-    protected $table = "dropshipping_orders";
+    protected $table = "dropshipping_order_items";
 
     protected $fillable = [
-      "user_id", "team_id", "client_id", "status"
+      "order_id", "product_id", "quantity", "price", "total"
     ];
 
     protected $attributes = [
@@ -30,15 +30,4 @@ class Order extends Model
     protected $casts = [
       'status' => OrderStatusEnum::class
     ];
-
-    public function state(): OrderStateContract {
-      return match($this->status) {
-        OrderStatusEnum::Draft => new DraftOrderState($this),
-        OrderStatusEnum::Sent => new SentOrderState($this),
-        OrderStatusEnum::Received => new ReceivedOrderState($this),
-        OrderStatusEnum::Cancelled => new CancelledOrderState($this),
-        OrderStatusEnum::Returned => new ReturnedOrderState($this),
-        default => throw new Exception("This status is not supported")
-      };
-    }
 }

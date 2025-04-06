@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\CRM;
+namespace Tests\Feature\Dropshipping;
 
 use Tests\TestCase;
 use App\Models\User;

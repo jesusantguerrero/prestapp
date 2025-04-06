@@ -47,6 +47,16 @@ class PropertyUnitController extends InertiaController
     }
   }
 
+  public function transferUnit(Property $property, PropertyUnit $propertyUnit) {
+    try {
+      $newPropertyId = request()->input('new_property_id');
+      $newProperty = Property::find($newPropertyId);
+      PropertyService::transferUnit($property, $propertyUnit, $newProperty);
+    } catch (Exception $e) {
+      return redirect()->back()->withErrors($e->getMessage());
+    }
+  }
+
   public function updateUnit(Property $property, PropertyUnit $propertyUnit) {
     try {
       $postData = request()->only(['name', 'price', 'description', 'bedrooms', 'area', 'bathrooms']);

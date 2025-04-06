@@ -71,7 +71,7 @@ class PropertyUnit extends Model implements Auditable {
     }
 
     public function contracts() {
-      return $this->hasMany(Rent::class, 'unit_id')->latestOfMany('created_at');
+      return $this->hasMany(Rent::class, 'unit_id');
     }
 
     public function contract() {
@@ -88,6 +88,10 @@ class PropertyUnit extends Model implements Auditable {
             ->where('status', '!=', 'CANCELLED')
             ->where('status', '!=', 'EXPIRED')
             ->latest();
+    }
+
+    public function scopeVisible($query) {
+      return $query->where('is_archived', false);
     }
 
     /**

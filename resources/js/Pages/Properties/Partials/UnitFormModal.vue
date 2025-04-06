@@ -20,6 +20,8 @@ const props = defineProps({
 const emit = defineEmits(["close"]);
 
 const formData = useForm({
+  id: props.unit?.id,
+  property_id: props.property?.id,
   index: 0,
   description: "",
   price: 0,
@@ -52,7 +54,7 @@ const onSubmit = () => {
   if (props.unit?.id) {
     updateUnit();
   } else {
-    formData.post(`/properties/${props.property.id}/units/`, {
+    formData.post(`/properties/${props.property?.id}/units/`, {
       onSuccess() {
         ElNotification({
           message: `Unidad ${formData.name} agregada con exito`,
@@ -65,7 +67,7 @@ const onSubmit = () => {
   }
 };
 const updateUnit = () => {
-  formData.put(`/properties/${props.property.id}/units/${props.unit?.id}`, {
+  formData.put(`/properties/${props.property?.id}/units/${props.unit?.id}`, {
     onSuccess() {
       ElNotification({
         message: `Unidad ${formData.name} actualizada con exito`,
@@ -106,10 +108,7 @@ watch(
       </button>
     </header>
     <section class="sm:px-6 lg:px-8">
-      <AtField class="w-full" label="Nombre">
-        <AtInput v-model="formData.name" class="w-full" rounded required />
-      </AtField>
-      <UnitForm :unit="formData" />
+      <UnitForm :unit="formData" :property="property" />
     </section>
     <footer
       class="px-6 py-4 flex justify-end space-x-3 text-gray-600 text-right bg-neutral"

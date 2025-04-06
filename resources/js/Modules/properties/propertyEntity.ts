@@ -2,6 +2,7 @@ import { IClientSaved } from './../clients/clientEntity';
 import { IClient } from "../clients/clientEntity";
 
 export interface IProperty {
+    id: number;
     owner: IClientSaved;
     owner_id: number;
     name: string;
@@ -17,8 +18,10 @@ export interface IProperty {
 }
 
 export interface IUnit {
+  id: number;
   property_id: number;
   name: string;
+  description: string;
   status: string;
   price: string;
   owner: IClientSaved;
@@ -51,3 +54,8 @@ export interface IRent {
   owner?: IClient;
   amount: number
 }
+
+
+export const propertyLabel = (property: IProperty) => {
+  return `${property.name} [${property?.units?.length}] (${property.address}) `;
+};

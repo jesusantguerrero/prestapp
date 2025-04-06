@@ -54,6 +54,7 @@ Route::middleware([
       Route::put('properties/{property}/units/{propertyUnit}', 'updateUnit');
       Route::delete('properties/{property}/units/{propertyUnit}','removeUnit');
       Route::put('properties/{property}/units/{propertyUnit}/update-status', 'updateUnitStatus');
+      Route::post('properties/{property}/units/{propertyUnit}/transfer', 'transferUnit')->name('units.transfer');
     });
 
 
