@@ -42,6 +42,12 @@ const onError = (message: string) => {
     message: message,
   });
 };
+
+const onSuccess = () => {
+  isLoading.value = false;
+  emit("saved");
+  close();
+};
 </script>
 
 <template>
@@ -66,7 +72,7 @@ const onError = (message: string) => {
         :type="type"
         v-model:isLoading="isLoading"
         ref="clientFormRef"
-        @success="$emit('saved')"
+        @success="onSuccess"
         @error="onError"
         class="client-form"
       />

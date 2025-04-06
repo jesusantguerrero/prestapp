@@ -41,6 +41,7 @@ const clientForm = useForm({
   bank_name: "",
   bank_account_number: "",
   owner_distribution_date: "",
+  status: "active",
 });
 
 const tabs = [
@@ -95,6 +96,7 @@ const onSubmit = async () => {
     .create({
       ...clientForm,
       [`is_${clientTypeId.value}`]: true,
+      status: clientForm.status.value,
     })
     .then(() => {
       emit("success");
@@ -109,6 +111,17 @@ const onSubmit = async () => {
 
   emit("update:isLoading", false);
 };
+
+const statuses = [
+  {
+    value: "ACTIVE",
+    label: "Activo",
+  },
+  {
+    value: "INACTIVE",
+    label: "Inactivo",
+  },
+];
 
 defineExpose({
   reset: clientForm.reset,
@@ -255,6 +268,21 @@ watch(
             v-model="clientForm.owner_distribution_date"
             :disabled="disabled"
           />
+        </section>
+        <section class="flex space-x-2">
+          <AppFormField
+            label="Estado de la cuenta"
+            :disabled="disabled"
+          >
+            <BaseSelect
+              v-model="clientForm.status"
+              :options="statuses"
+              track-by="value"
+              label="label"
+              placeholder="Estado de la cuenta"
+              :disabled="disabled"
+            />
+          </AppFormField>
         </section>
       </article>
     </main>
