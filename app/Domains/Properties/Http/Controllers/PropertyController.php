@@ -60,7 +60,7 @@ class PropertyController extends InertiaController
         $resource = $this->model::findOrFail($id);
         $postData = $request->post();
         try {
-        $resource = $this->updateResource($resource, $postData);
+        $resource = $this->updateResource($request, $resource, $postData);
         $this->afterSave($postData, $resource);
 
         return to_route('properties.show', ["property" => $resource]);
