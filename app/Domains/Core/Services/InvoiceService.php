@@ -60,7 +60,7 @@ class InvoiceService
           new CreateInvoiceRelations($invoice, $postData)
         ])->dispatch();
 
-        AuditService::dispatchCustomEvent($invoice->invoiceable, AuditService::RENT_INVOICE_UPDATED, $postData, $oldData);
+        // AuditService::dispatchCustomEvent($invoice->invoiceable, AuditService::RENT_INVOICE_UPDATED, $postData, $oldData);
 
         return $invoice;
     }
