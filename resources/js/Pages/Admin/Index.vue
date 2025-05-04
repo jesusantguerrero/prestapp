@@ -114,8 +114,7 @@ const comparisonRevenue = {
 </script>
 
 <template>
-  {{ $props }}
-  <!-- <DashboardTemplate :user="auth.user">
+  <DashboardTemplate :user="auth.user">
     <header class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
       <WelcomeWidget
         message="Estadisticas de usuarios"
@@ -183,5 +182,5 @@ const comparisonRevenue = {
         </WelcomeWidget>
       </article>
     </section>
-  </DashboardTemplate> -->
+  </DashboardTemplate>
 </template>

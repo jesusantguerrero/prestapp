@@ -4,16 +4,16 @@ import { toRefs } from "vue";
 import FormSection from "./FormSection.vue";
 import TaxTypeSelector from "@/Pages/Settings/TaxTypeSelector.vue";
 
-// @ts-expect-error
-import { AtField, AtInput, AtSimpleSelect } from "atmosphere-ui";
+import { AtInput, AtSimpleSelect } from "atmosphere-ui";
 import { useReactiveForm } from "@/utils/useReactiveForm";
 import { addMonths } from "date-fns";
-import AccountSelect from "@/Components/shared/Selects/AccountSelect.vue";
 import { paymentMethods } from "@/Modules/loans/constants";
 import AppFormField from "@/Components/shared/AppFormField.vue";
 
 const props = defineProps<{
   modelValue: Record<string, any>;
+  isProcessing: boolean;
+  errors: Record<string, string>;
 }>();
 const emit = defineEmits(["update:modelValue"]);
 
@@ -47,7 +47,7 @@ const { formData } = useReactiveForm(
       title="Datos de deposito"
       section-class="flex flex-col md:space-x-4 md:flex-row"
     >
-      <AppFormField label="Deposito" class="w-full">
+      <AppFormField label="Deposito" class="w-full" :errors="errors" field="deposit">
         <AtInput
           :number-format="true"
           :model-value="formData.deposit"
@@ -116,7 +116,7 @@ const { formData } = useReactiveForm(
       <AppFormField label="Fecha de primer pago" class="flex flex-col">
         <ElDatePicker v-model="formData.first_invoice_date" size="large" />
       </AppFormField>
-      <AppFormField label="Finaliza en" class="flex flex-col">
+      <AppFormField label="Finaliza en" class="flex flex-col" :errors="errors" field="end_date">
         <ElDatePicker v-model="formData.end_date" size="large" />
       </AppFormField>
     </FormSection>

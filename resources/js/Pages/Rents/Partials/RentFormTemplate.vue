@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { watch, computed, ref, reactive, nextTick } from "vue";
-import { addMonths, parseISO } from "date-fns";
+import { addMonths, isSameMonth, parseISO } from "date-fns";
 import { AtSteps, AtStep } from "atmosphere-ui";
 
 import AppButton from "@/Components/shared/AppButton.vue";
@@ -96,6 +96,8 @@ watch(
   { deep: true, immediate: true }
 );
 
+const errors = ref<Record<string, string>>({});
+
 // Wizard
 const validations = [
   {
@@ -105,12 +107,27 @@ const validations = [
     handle: () => rentForm.property && rentForm.unit,
   },
   {
-    handle: () => rentForm.deposit && rentForm.amount,
+    handle: () => {
+      const hasDeposit = rentForm.deposit && rentForm.amount;
+      const isValidDateRange = rentForm.end_date
+        ? !isSameMonth(rentForm.date, rentForm.end_date)
+        : true;
+
+      errors.value.end_date = isValidDateRange
+        ? ""
+        : "The end date must be in a different month than the start date";
+      
+      errors.value.deposit = !hasDeposit ? "The deposit must be greater than 0" : "";
+
+      return hasDeposit && isValidDateRange;
+    },
   },
 ];
+
 const validateStep = () => {
   return new Promise((resolve) => resolve(!validations[currentStep.value]?.handle()));
 };
+
 const currentStep = ref(0);
 const nextButtonLabel = computed(() => {
   const labels = ["property data", "rent details", "charges and penalties", "save"];
@@ -165,7 +182,12 @@ const onFinished = () => {
       <RentFormProperty :model-value="rentForm" @update:model-value="handleUpdate" />
     </AtStep>
     <AtStep name="rent_details" :title="$t('rent details')" :before-change="validateStep">
-      <RentFormContract :model-value="rentForm" @update:model-value="handleUpdate" />
+      <RentFormContract
+        :model-value="rentForm"
+        @update:model-value="handleUpdate"
+        :is-processing="isProcessing"
+        :errors="errors"
+      />
     </AtStep>
     <AtStep name="fees" :title="$t('charges and penalties')">
       <RentFormFees :model-value="rentForm" @update:model-value="handleUpdate" />
