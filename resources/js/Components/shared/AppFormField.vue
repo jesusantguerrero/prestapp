@@ -1,8 +1,8 @@
 <script setup lang="ts">
-// @ts-ignore
 import { AtField, AtInput } from "atmosphere-ui";
+import { computed } from "vue";
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     label: string;
     modelValue?: any;
@@ -11,11 +11,17 @@ withDefaults(
     disabled?: boolean;
     numberFormat?: boolean;
     row?: boolean;
+    errors?: Record<string, string>;
+    field?: string;
   }>(),
   {
     required: false,
   }
 );
+
+const hasError = computed(() => {
+  return props.field && props.errors && props.errors[props.field];
+});
 </script>
 
 <template>
@@ -44,6 +50,7 @@ withDefaults(
         </template>
       </AtInput>
     </slot>
+    <small class="text-red-500 text-sm" v-if="hasError">{{ $t(hasError) }}</small>
   </AtField>
 </template>
 
