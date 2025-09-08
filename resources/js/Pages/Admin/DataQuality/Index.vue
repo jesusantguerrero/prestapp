@@ -129,6 +129,7 @@ function handleDeleteClient(clientId: number) {
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <!-- Navigation Tabs -->
         <div class="mb-4 border-b border-slate-200">
+
           <nav class="flex space-x-8" aria-label="Tabs">
             <button
               v-for="tab in ['clients', 'properties', 'rents']"
@@ -138,6 +139,7 @@ function handleDeleteClient(clientId: number) {
                 activeTab === tab
                   ? 'border-indigo-600 text-indigo-600'
                   : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300',
+
                 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
               ]"
             >

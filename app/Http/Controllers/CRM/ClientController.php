@@ -40,6 +40,7 @@ class ClientController extends InertiaController
   public function createResource(Request $request, $postData) {
       $resource = $this->clientService->create($postData);
       return $resource;
+
   }
 
   protected function byTypes(Request $request, $type) {

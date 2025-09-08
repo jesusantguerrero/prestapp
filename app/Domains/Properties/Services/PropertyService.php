@@ -90,6 +90,7 @@ class PropertyService {
         ])
         ->join('properties', 'properties.id', '=', 'property_units.property_id')
         ->whereNotNull('properties.status')
+
         ->first();
         
         return [
