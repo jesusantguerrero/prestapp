@@ -275,5 +275,7 @@
     "This invoice is already paid": "Esta factura esta pagada",
     "Invoicing Data Updated": "Configuracion de factura actualizada",
     "Invoicing settings has being updated": "Configuración de fatura ha sido actualizada",
-    "debt": "Saldo pendiente"
+    "debt": "Saldo pendiente",
+    "The end date must be in a different month than the start date": "La fecha de finalizacion debe ser en un mes diferente a la fecha de inicio",
+    "The deposit must be greater than 0": "El deposito debe ser mayor a 0"
   }
