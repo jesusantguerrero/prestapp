@@ -244,7 +244,7 @@ class Rent extends Transactionable implements IPayableDocument, Auditable {
     }
 
     public function isActive() {
-      return array_search($this->status, [
+      return in_array($this->status, [
         Rent::STATUS_ACTIVE,
         Rent::STATUS_GRACE,
         Rent::STATUS_LATE,

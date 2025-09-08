@@ -195,6 +195,7 @@ class OwnerService {
           property_units.status current_status"
         )->where([
           "property_units.team_id" => $teamId,
+          "property_units.is_archived" => false
         ])
         ->when($ownerId, fn($q) => $q->where("property_units.owner_id",$ownerId ))
         ->leftJoin('rents', fn ($join) =>

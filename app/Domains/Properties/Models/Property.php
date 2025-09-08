@@ -72,7 +72,7 @@ class Property extends Model {
     }
 
     public function units() {
-      return $this->hasMany(PropertyUnit::class);
+      return $this->hasMany(PropertyUnit::class)->visible();
     }
 
     public function rents() {

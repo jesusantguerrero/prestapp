@@ -31,6 +31,10 @@ class Order extends Model
       'status' => OrderStatusEnum::class
     ];
 
+    public function items() {
+      return $this->hasMany(OrderItem::class);
+    }
+
     public function state(): OrderStateContract {
       return match($this->status) {
         OrderStatusEnum::Draft => new DraftOrderState($this),

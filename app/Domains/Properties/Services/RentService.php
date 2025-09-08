@@ -66,7 +66,7 @@ class RentService {
     }
 
     public static function updateRent(Rent $rent, mixed $rentData, $user = null) {
-      if (!$rent->isActive()) {
+      if (! $rent->isActive()) {
         throw new Exception(__("Cant update a cancelled contract"));
       }
 

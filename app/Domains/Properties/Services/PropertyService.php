@@ -33,10 +33,36 @@ class PropertyService {
         throw new Exception(__("This unit is currently rented"));
       }
       if (Rent::where('unit_id', $unit->id)->count()) {
-        throw new Exception(__("This unit is linked to a past rent"));
+        $rent = Rent::where('unit_id', $unit->id)->first();
+        if ($rent->status !== Rent::STATUS_CANCELLED && $rent->status !== Rent::STATUS_EXPIRED) {
+          throw new Exception(__("This unit is linked to a current rent"));
+        }
+
+        $unit->is_archived = true;
+        $unit->save();
+        return $unit;
       }
       $unit->delete();
+      return $unit;
     }
+
+    public static function transferUnit(Property $property, PropertyUnit $unit, Property $newProperty) {
+      if ($unit->team_id !== $property->team_id) {
+        throw new Exception(__("This unit is not part of this property"));
+      }
+
+      if ($property->owner_id !== $newProperty->owner_id) {
+        throw new Exception(__("This unit is not part of this property"));
+      }
+
+      $unit->property_id = $newProperty->id;
+      $unit->save();
+
+      $unit->contracts()->update([
+        'property_id' => $newProperty->id,
+      ]);
+    }
+
 
     public static function ofTeam($teamId, $status= Property::STATUS_AVAILABLE) {
       return Property::where([
