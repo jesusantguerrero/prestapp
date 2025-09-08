@@ -95,8 +95,6 @@ class RentService {
           $property = $unit->property()->first();
         }
 
-        dd($rentData);
-
         $shouldUpdateAmount = isset($rentData["amount"]) &&  $rentData["amount"] !== $rent->amount;
         $rent->update(collect($rentData)->only(['amount', 'notes', 'next_invoice_date'])->all());
         PropertyUnitService::updateStatus($rent->unit, PropertyUnit::STATUS_RENTED, $user);
