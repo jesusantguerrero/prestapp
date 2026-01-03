@@ -20,7 +20,7 @@ class ClientService
       $query->when($clientData['email'], function ($query) use ($clientData) {
         $query->where('email', $clientData['email']);
       })
-      ->orWhere('dni', preg_replace('/[A-Za-z0-9]/', '', $clientData['dni']));
+      ->orWhere('dni', preg_replace('/[^0-9]/', '', $clientData['dni']));
     })->first();
 
     if ($client) {
