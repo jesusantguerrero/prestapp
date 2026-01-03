@@ -62,6 +62,10 @@ class Client extends Model implements Searchable {
         parent::boot();
         static::saving(function ($client) {
             $client->display_name = $client->names . ' ' . $client->lastnames;
+            // Normalize DNI by removing non-numeric characters
+            if ($client->dni) {
+                $client->dni = preg_replace('/[^0-9]/', '', $client->dni);
+            }
         });
     }
 
