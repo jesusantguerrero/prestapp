@@ -19,6 +19,7 @@ interface DuplicateClient {
   email: string;
   phone: string;
   dni: string;
+  created_at: string;
   rents: ActiveRent[];
   can_be_deleted: boolean;
   similar_clients: {
@@ -27,6 +28,7 @@ interface DuplicateClient {
     email: string;
     phone: string;
     dni: string;
+    created_at: string;
     rents: ActiveRent[];
     can_be_deleted: boolean;
     similarity_scores: {
@@ -148,12 +150,12 @@ function handleDeleteClient(clientId: number) {
                   'ml-3 hidden px-2.5 py-0.5 rounded-full text-xs font-medium md:inline-block'
                 ]"
               >
-                {{ 
-                  tab === 'clients' 
-                    ? props.duplicate_clients.length 
+                {{
+                  tab === 'clients'
+                    ? props.duplicate_clients.length
                     : tab === 'properties'
                       ? props.duplicate_properties.length
-                      : props.inconsistent_rents.length 
+                      : props.inconsistent_rents.length
                 }}
               </span>
             </button>
@@ -162,10 +164,13 @@ function handleDeleteClient(clientId: number) {
 
         <!-- Duplicate Clients -->
         <div v-if="activeTab === 'clients'" class="space-y-4">
-          <div v-for="client in duplicate_clients" :key="client.id" class="bg-white shadow-sm ring-1 ring-slate-200 rounded-lg p-4">
+          <div v-for="client in props.duplicate_clients" :key="client.id" class="bg-white shadow-sm ring-1 ring-slate-200 rounded-lg p-4">
             <div class="border-b border-slate-200 pb-4 mb-4">
               <div class="flex items-center justify-between">
-                <h3 class="text-lg font-medium text-slate-900">{{ client.display_name }}</h3>
+                <div>
+                  <h3 class="text-lg font-medium text-slate-900">{{ client.display_name }}</h3>
+                  <p class="text-sm text-slate-500 mt-1">ID: {{ client.id }} | {{ t('Created') }}: {{ formatDate(client.created_at) }}</p>
+                </div>
                 <button v-if="client.can_be_deleted"
                         @click="handleDeleteClient(client.id)"
                         class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-rose-600 hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500">
@@ -180,7 +185,7 @@ function handleDeleteClient(clientId: number) {
               <div v-if="client.rents.length" class="mt-3">
                 <h4 class="text-sm font-medium text-slate-700 mb-2">{{ t('Active Rents') }}:</h4>
                 <div class="space-y-2">
-                  <div v-for="rent in client.rents" :key="rent.id" 
+                  <div v-for="rent in client.rents" :key="rent.id"
                        class="flex items-center justify-between bg-slate-50 p-2 rounded text-sm">
                     <span>{{ rent.property_name }} - {{ rent.unit_name }}</span>
                     <span :class="[getRentStatusColor(rent.status), 'px-2 py-1 rounded-full text-xs font-medium']">
@@ -192,7 +197,7 @@ function handleDeleteClient(clientId: number) {
             </div>
             <div class="space-y-3">
               <p class="text-sm font-medium text-slate-700">{{ t('Similar Clients') }}:</p>
-              <div v-for="similar in client.similar_clients" :key="similar.id" 
+              <div v-for="similar in client.similar_clients" :key="similar.id"
                    class="bg-slate-50 p-3 rounded-lg ring-1 ring-slate-200">
                 <div class="flex items-center justify-between mb-2">
                   <div class="flex items-center space-x-3">
@@ -209,6 +214,7 @@ function handleDeleteClient(clientId: number) {
                   </div>
                 </div>
                 <div class="text-sm text-slate-500 space-y-1">
+                  <p>ID: {{ similar.id }} | {{ t('Created') }}: {{ formatDate(similar.created_at) }}</p>
                   <p>{{ t('Email') }}: {{ similar.email }}</p>
                   <p>{{ t('Phone') }}: {{ similar.phone }}</p>
                   <p>{{ t('DNI') }}: {{ similar.dni }}</p>
@@ -216,7 +222,7 @@ function handleDeleteClient(clientId: number) {
                 <div v-if="similar.rents.length" class="mt-3">
                   <h4 class="text-sm font-medium text-slate-700 mb-2">{{ t('Active Rents') }}:</h4>
                   <div class="space-y-2">
-                    <div v-for="rent in similar.rents" :key="rent.id" 
+                    <div v-for="rent in similar.rents" :key="rent.id"
                          class="flex items-center justify-between bg-slate-50 p-2 rounded text-sm">
                       <span>{{ rent.property_name }} - {{ rent.unit_name }}</span>
                       <span :class="[getRentStatusColor(rent.status), 'px-2 py-1 rounded-full text-xs font-medium']">
@@ -252,7 +258,7 @@ function handleDeleteClient(clientId: number) {
               <div v-if="property.rent_history.length" class="mt-3">
                 <h4 class="text-sm font-medium text-slate-700 mb-2">{{ t('Rent History') }}:</h4>
                 <div class="space-y-2">
-                  <div v-for="rent in property.rent_history" :key="rent.id" 
+                  <div v-for="rent in property.rent_history" :key="rent.id"
                        class="flex items-center justify-between bg-slate-50 p-2 rounded text-sm">
                     <div>
                       <span class="font-medium">{{ rent.unit_name }}</span>
@@ -270,7 +276,7 @@ function handleDeleteClient(clientId: number) {
             </div>
             <div class="space-y-3">
               <p class="text-sm font-medium text-slate-700">{{ t('Similar Properties') }}:</p>
-              <div v-for="similar in property.similar_properties" :key="similar.id" 
+              <div v-for="similar in property.similar_properties" :key="similar.id"
                    class="bg-slate-50 p-3 rounded-lg ring-1 ring-slate-200">
                 <div class="flex items-center justify-between mb-2">
                   <div>
@@ -301,7 +307,7 @@ function handleDeleteClient(clientId: number) {
                 <div v-if="similar.rent_history.length" class="mt-3">
                   <h4 class="text-sm font-medium text-slate-700 mb-2">{{ t('Rent History') }}:</h4>
                   <div class="space-y-2">
-                    <div v-for="rent in similar.rent_history" :key="rent.id" 
+                    <div v-for="rent in similar.rent_history" :key="rent.id"
                          class="flex items-center justify-between bg-slate-50 p-2 rounded text-sm">
                       <div>
                         <span class="font-medium">{{ rent.unit_name }}</span>
@@ -345,7 +351,7 @@ function handleDeleteClient(clientId: number) {
             </div>
             <div v-if="rent.conflicting_rents?.length" class="space-y-3">
               <p class="text-sm font-medium text-slate-700">{{ t('Conflicting Rents') }}:</p>
-              <div v-for="conflict in rent.conflicting_rents" :key="conflict.id" 
+              <div v-for="conflict in rent.conflicting_rents" :key="conflict.id"
                    class="bg-slate-50 p-3 rounded-lg ring-1 ring-slate-200">
                 <p class="font-medium text-slate-900">{{ conflict.tenant_name }}</p>
                 <p class="text-sm text-slate-500">
@@ -358,4 +364,4 @@ function handleDeleteClient(clientId: number) {
       </div>
     </div>
   </AppLayout>
-</template> 
+</template>
