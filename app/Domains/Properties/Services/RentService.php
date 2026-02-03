@@ -166,7 +166,7 @@ class RentService {
     }
 
     public static function extend(Rent $rent, $formData) {
-      if ($rent->status == Rent::STATUS_ACTIVE || $rent->status == Rent::STATUS_EXPIRED) {
+if (in_array($rent->status, [Rent::STATUS_ACTIVE, Rent::STATUS_EXPIRED, Rent::STATUS_CANCELLED])) {
         $isExpired = now()->format('Y-m-d') > $rent->end_date;
         $rent->update(array_merge($formData, [
           'status' => Rent::STATUS_ACTIVE,
@@ -578,17 +578,17 @@ class RentService {
         'team_id' => $teamId,
         'unit_id' => $properties->pluck('id')
       ])->whereIn('property_id', $properties->pluck('id'))->get();
-      
+
       $totalUnits = PropertyUnit::where([
-        'team_id' => $teamId, 
+        'team_id' => $teamId,
       ])
       ->whereIn('property_id', $properties->pluck('id'))
       ->count();
-      
+
       $occupiedUnits = $rents->count();
       $rate = $occupiedUnits / $totalUnits * 100;
 
-      
+
 
       $properties->each(function ($property) use ($rents) {
         $property->paid = $rents->where('status', Rent::STATUS_ACTIVE)->count();
